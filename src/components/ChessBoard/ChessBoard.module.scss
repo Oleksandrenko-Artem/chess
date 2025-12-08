@@ -1,0 +1,53 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h1 {
+        text-align: center;
+        color: white;
+    }
+    .coordinates {
+        display: flex;
+        .vertical {
+            display: flex;
+            text-align: center;
+            flex-direction: column-reverse;
+            color: white;
+            width: 30px;
+            gap: 37px;
+        }
+        .chess-board {
+            display: grid;
+            position: relative;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            width: 480px;
+            height: 480px;
+            .black-tile {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                background-color: rgb(126, 94, 46);
+            }
+            .white-tile {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 60px;
+                height: 60px;
+                background-color: rgb(255, 218, 187);
+            }
+            span {
+                margin-left: 10px;
+            }
+        }
+    }
+    .horizontal {
+        span {
+            color: white;
+            padding: 26px;
+        }
+    }
+}

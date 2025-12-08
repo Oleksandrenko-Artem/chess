@@ -1,0 +1,30 @@
+.piece {
+    width: 50px;
+    height: 50px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.piece.black_king {background-image: url('../../assets/images/black_king.png');}
+.piece.black_ferz {background-image: url('../../assets/images/black_ferz.png');}
+.piece.black_rook {background-image: url('../../assets/images/black_rook.png');}
+.piece.black_bishop {background-image: url('../../assets/images/black_bishop.png');}
+.piece.black_horse {background-image: url('../../assets/images/black_horse.png');}
+.piece.black_soldier {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/black_soldier.png');
+}
+.piece.white_king {background-image: url('../../assets/images/white_king.png');}
+.piece.white_ferz {background-image: url('../../assets/images/white_ferz.png');}
+.piece.white_rook {background-image: url('../../assets/images/white_rook.png');}
+.piece.white_bishop {background-image: url('../../assets/images/white_bishop.png');}
+.piece.white_horse {background-image: url('../../assets/images/white_horse.png');}
+.piece.white_soldier {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/white_soldier.png');
+}
+.dragging {
+    opacity: 0;
+}
