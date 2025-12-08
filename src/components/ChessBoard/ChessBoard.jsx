@@ -2,7 +2,8 @@ import React from 'react';
 import styles from './ChessBoard.module.scss';
 import Pieces from '../Pieces/Pieces';
     
-const ChessBoard = () => {
+const ChessBoard = (props) => {
+    const { initialPosition } = props;
     const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
     return (
@@ -13,7 +14,7 @@ const ChessBoard = () => {
                     {verticalAxis.map(axis => <span key={axis}>{axis}</span>)}
                 </div>
                 <div className={styles['chess-board']}>
-                    <Pieces />
+                    <Pieces initialPosition={initialPosition} />
                 </div>
             </div>
             <div className={styles.horizontal}>

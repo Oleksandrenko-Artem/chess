@@ -1,0 +1,33 @@
+.header {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    .header-logo {
+        display: flex;
+        a {
+            color: black;
+            font-size: 1.8em;
+            font-weight: 700;
+            img {
+                width: 40px;
+            }
+        }
+    }
+    .header-nav {
+        ul {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            padding: 0;
+            .active {
+                background-color: rgb(190, 190, 190);
+            }
+            a {
+                color: white;
+                text-transform: capitalize;
+                background-color: rgb(160, 160, 160);
+                padding: 10px;
+            }
+        }
+    }
+}

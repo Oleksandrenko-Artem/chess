@@ -25,6 +25,10 @@
     width: 40px;
     background-image: url('../../assets/images/white_soldier.png');
 }
+.piece.white_elephant {background-image: url('../../assets/images/white_elephant.png');}
+.piece.white_firzan {background-image: url('../../assets/images/white_firzan.png');}
+.piece.black_elephant {background-image: url('../../assets/images/black_elephant.png');}
+.piece.black_firzan {background-image: url('../../assets/images/black_firzan.png');}
 .dragging {
     opacity: 0;
 }
