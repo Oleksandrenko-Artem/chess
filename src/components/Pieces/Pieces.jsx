@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import styles from './../ChessBoard/ChessBoard.module.scss';
-import Piece from './Piece';
 import { copyPosition } from '../../helpers';
+import { useAppContext } from '../../contexts/Context';
+import { makeNewMove } from '../../reducers/actions/move';
+import Piece from './Piece';
 import black_king from '../../assets/images/icons/black_king.png';
 import black_ferz from '../../assets/images/icons/black_ferz.png';
 import black_rook from '../../assets/images/icons/black_rook.png';
@@ -18,6 +19,7 @@ import white_bishop from '../../assets/images/icons/white_bishop.png';
 import white_soldier from '../../assets/images/icons/white_soldier.png';
 import white_elephant from '../../assets/images/icons/white_elephant.png';
 import white_firzan from '../../assets/images/icons/white_firzan.png';
+import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
     black_king,
@@ -42,10 +44,9 @@ const getPieceImageSrc = (pieceName) => {
     return imageMap[pieceName] || '';
 };
 
-const Pieces = (props) => {
-    const { initialPosition } = props;
+const Pieces = () => {
     const ref = useRef(null);
-    const [state, setState] = useState(initialPosition);
+    const { appState, dispatch } = useAppContext();
     const [imagesLoaded, setImagesLoaded] = useState(false);
     useEffect(() => {
         const loadImage = src => new Promise((resolve, reject) => {
@@ -68,7 +69,10 @@ const Pieces = (props) => {
 
         loadAllImages();
     }, []);
-
+    if (!appState || !appState.position) {
+        return null; 
+    }
+    const currentPosition = appState.position[appState.position.length - 1];
     const calculateCoords = e => {
         if (!ref.current) return { x: -1, y: -1 };
         const { width, left, top } = ref.current.getBoundingClientRect();
@@ -80,7 +84,7 @@ const Pieces = (props) => {
     
     const onDrop = e => {
         e.preventDefault();
-        const newPosition = copyPosition(state);
+        const newPosition = copyPosition(currentPosition);
         const coords = calculateCoords(e);
         if (coords.x === -1 || coords.y === -1) return;
 
@@ -90,7 +94,7 @@ const Pieces = (props) => {
 
         newPosition[rank][file] = '';
         newPosition[coords.x][coords.y] = p;
-        setState(newPosition);
+        dispatch(makeNewMove({ newPosition }));
     }
     const onDragOver = e => e.preventDefault();
 
@@ -100,7 +104,7 @@ const Pieces = (props) => {
 
     return (
         <div ref={ref} className={styles['chess-board']} onDrop={onDrop} onDragOver={onDragOver}>
-            {state.map((r, rank) =>
+            {currentPosition.map((r, rank) =>
                 r.map((f, file) => {
                     const number = rank + file + 2;
                     const tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
@@ -109,12 +113,12 @@ const Pieces = (props) => {
                             key={rank + '-' + file}
                             className={tileClass}
                         >
-                            {state[rank][file] 
+                            {currentPosition[rank][file] 
                                 ? <Piece 
                                     rank={rank} 
                                     file={file} 
-                                    piece={state[rank][file]} 
-                                    imageSrc={getPieceImageSrc(state[rank][file])} 
+                                    piece={currentPosition[rank][file]} 
+                                    imageSrc={getPieceImageSrc(currentPosition[rank][file])} 
                                   /> 
                                 : null
                             }

@@ -3,7 +3,7 @@ import styles from './Header.module.scss';
 import { Link, NavLink } from 'react-router-dom';
 
 const Header = (props) => {
-    const { handlePlayChess, handlePlayShatranj } = props;
+    const { onPlayChess, onPlayShatranj } = props;
     return (
         <header className={styles.header}>
             <div className={styles['header-logo']}>
@@ -14,10 +14,10 @@ const Header = (props) => {
                 <nav>
                     <ul>
                         <li>
-                            <NavLink to='/play-chess' onClick={handlePlayChess} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play chess</NavLink>
+                            <NavLink to='/play-chess' onClick={onPlayChess} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play chess</NavLink>
                         </li>
                         <li>
-                            <NavLink to='/play-shatranj' onClick={handlePlayShatranj} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play shatranj</NavLink>
+                            <NavLink to='/play-shatranj' onClick={onPlayShatranj} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play shatranj</NavLink>
                         </li>
                     </ul>
                 </nav>
