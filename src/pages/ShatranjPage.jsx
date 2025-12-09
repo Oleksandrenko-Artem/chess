@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useAppContext } from '../contexts/Context';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
+import { Navigate, useNavigate } from 'react-router-dom';
 
-const ShatranjPage = (props) => {
-    const { initialPosition } = props;
+const ShatranjPage = () => {
+    const navigate = useNavigate();
+    const { appState } = useAppContext(); 
+    useEffect(() => {
+        if (!appState || !appState.position) {
+            navigate('/');
+        }
+    }, [appState, navigate]);
     return (
         <div>
-            <ChessBoard initialPosition={initialPosition} />
+            <ChessBoard />
         </div>
     );
 };
