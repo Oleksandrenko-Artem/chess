@@ -145,3 +145,39 @@ export const getFirzanMoves = ({ position, piece, rank, file }) => {
     });
     return moves;
 };
+export const getPawnMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const targetRank = rank + direction;
+    if (!position[targetRank][file]) {
+        moves.push([targetRank, file]);
+    }
+    if (rank % 5 === 1) {
+        if (position?.[targetRank]?.[file] === '' && position?.[targetRank + direction]?.[file] === '') {
+            moves.push([targetRank + direction, file]);
+        }
+    }
+    return moves;
+};
+export const getSoldierMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const targetRank = rank + direction;
+    if (!position[targetRank][file]) {
+        moves.push([targetRank, file]);
+    }
+    return moves;
+};
+export const getPawnCaptures = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const enemy = piece.startsWith('white') ? 'black' : 'white';
+    const targetRank = rank + direction;
+    if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
+        moves.push([targetRank, file - 1]);
+    }
+    if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
+        moves.push([targetRank, file + 1]);
+    }
+    return moves;
+};
