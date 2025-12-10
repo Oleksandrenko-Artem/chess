@@ -1,7 +1,10 @@
-import { getHorseMoves, getRookMoves } from "./getMoves"
+import { getElephantMoves, getHorseMoves, getRookMoves } from "./getMoves"
 
 const arbiter = {
     getRegularMoves: function ({ position, piece, rank, file }) {
+        if (piece.endsWith('elephant')) {
+            return getElephantMoves({ position, rank, file });
+        }
         if (piece.endsWith('horse')) {
             return getHorseMoves({ position, rank, file });
         }
