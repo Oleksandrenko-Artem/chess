@@ -98,3 +98,10 @@ export const getBishopMoves = ({ position, piece, rank, file }) => {
     });
     return moves;
 };
+export const getFerzMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getRookMoves({ position, piece, rank, file }),
+        ...getBishopMoves({ position, piece, rank, file })
+    ];
+    return moves;
+};
