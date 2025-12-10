@@ -11,6 +11,11 @@
 .piece.black_rook {background-image: url('../../assets/images/black_rook.png');}
 .piece.black_bishop {background-image: url('../../assets/images/black_bishop.png');}
 .piece.black_horse {background-image: url('../../assets/images/black_horse.png');}
+.piece.black_pawn {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/black_pawn.png');
+}
 .piece.black_soldier {
     margin-top: 5px;
     width: 40px;
@@ -21,6 +26,11 @@
 .piece.white_rook {background-image: url('../../assets/images/white_rook.png');}
 .piece.white_bishop {background-image: url('../../assets/images/white_bishop.png');}
 .piece.white_horse {background-image: url('../../assets/images/white_horse.png');}
+.piece.white_pawn {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/white_pawn.png');
+}
 .piece.white_soldier {
     margin-top: 5px;
     width: 40px;

@@ -1,10 +1,10 @@
 export const getCharacter = file => String.fromCharCode(file + 97);
 export const createPosition = () => {
     const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    // for(let i = 0; i< 8; i++) {
-    //     position[6][i] = 'white_soldier';
-    //     position[1][i] = 'black_soldier';
-    // }
+    for(let i = 0; i< 8; i++) {
+        position[6][i] = 'white_pawn';
+        position[1][i] = 'black_pawn';
+    }
     position[7][0] = 'white_rook';
     position[7][1] = 'white_horse';
     position[7][2] = 'white_bishop';
