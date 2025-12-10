@@ -20,6 +20,7 @@ import white_soldier from '../../assets/images/icons/white_soldier.png';
 import white_elephant from '../../assets/images/icons/white_elephant.png';
 import white_firzan from '../../assets/images/icons/white_firzan.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
+import actionTypes from '../../reducers/actionTypes';
 
 const imageMap = {
     black_king,
@@ -84,30 +85,47 @@ const Pieces = () => {
     
     const onDrop = e => {
         e.preventDefault();
-        const newPosition = copyPosition(currentPosition);
         const coords = calculateCoords(e);
         if (coords.x === -1 || coords.y === -1) return;
 
         const [p, rankStr, fileStr] = e.dataTransfer.getData('text').split(',');
         const rank = parseInt(rankStr, 10);
         const file = parseInt(fileStr, 10);
-
+        const targetRank = coords.x;
+        const targetFile = coords.y;
+        const isValidMove = appState.validMoves?.find(
+            move => move[0] === targetRank && move[1] === targetFile
+        );
+        if (!isValidMove) {
+            dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+            return; 
+        }
+        const newPosition = copyPosition(currentPosition);
         newPosition[rank][file] = '';
-        newPosition[coords.x][coords.y] = p;
+        newPosition[targetRank][targetFile] = p;
         dispatch(makeNewMove({ newPosition }));
+        dispatch({type: actionTypes.CLEAR_VALID_MOVES});
     }
     const onDragOver = e => e.preventDefault();
 
     if (!imagesLoaded) {
         return <div>Загрузка фигур...</div>;
     }
+    const position = appState.position[appState.position.length - 1]
 
     return (
         <div ref={ref} className={styles['chess-board']} onDrop={onDrop} onDragOver={onDragOver}>
             {currentPosition.map((r, rank) =>
                 r.map((f, file) => {
                     const number = rank + file + 2;
-                    const tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                    let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                    if (appState.validMoves?.find(m => m[0] === rank && m[1] === file)) {
+                        if (position[rank][file]) {
+                            tileClass += ` ${styles['attacking']}`
+                        } else {
+                            tileClass += ` ${styles['highlight']}`
+                        }
+                    }
                     return (
                         <div
                             key={rank + '-' + file}

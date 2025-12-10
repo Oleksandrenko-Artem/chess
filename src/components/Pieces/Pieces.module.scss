@@ -4,6 +4,7 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    z-index: 2;
 }
 .piece.black_king {background-image: url('../../assets/images/black_king.png');}
 .piece.black_ferz {background-image: url('../../assets/images/black_ferz.png');}
