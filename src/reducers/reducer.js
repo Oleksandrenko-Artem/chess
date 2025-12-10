@@ -15,6 +15,18 @@ export const reducer = (state, action) => {
                 position
             };
         };
+        case actionTypes.GENERATE_VALID_MOVES: {
+            return {
+                ...state,
+                validMoves: action.payload.validMoves,
+            };
+        };
+        case actionTypes.CLEAR_VALID_MOVES: {
+            return {
+                ...state,
+                validMoves: [],
+            };
+        }
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };
