@@ -1,7 +1,10 @@
-import { getBishopMoves, getElephantMoves, getFerzMoves, getHorseMoves, getKingMoves, getRookMoves } from "./getMoves"
+import { getBishopMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getKingMoves, getRookMoves } from "./getMoves"
 
 const arbiter = {
     getRegularMoves: function ({ position, piece, rank, file }) {
+        if (piece.endsWith('firzan')) {
+            return getFirzanMoves({ position, piece, rank, file });
+        }
         if (piece.endsWith('elephant')) {
             return getElephantMoves({ position, rank, file });
         }
