@@ -1,4 +1,4 @@
-import { getBishopMoves, getElephantMoves, getFerzMoves, getHorseMoves, getRookMoves } from "./getMoves"
+import { getBishopMoves, getElephantMoves, getFerzMoves, getHorseMoves, getKingMoves, getRookMoves } from "./getMoves"
 
 const arbiter = {
     getRegularMoves: function ({ position, piece, rank, file }) {
@@ -10,6 +10,9 @@ const arbiter = {
         }
         if (piece.endsWith('bishop')) {
             return getBishopMoves({ position, piece, rank, file });
+        }
+        if (piece.endsWith('king')) {
+            return getKingMoves({ position, piece, rank, file });
         }
         if (piece.endsWith('rook')) {
             return getRookMoves({ position, piece, rank, file });
