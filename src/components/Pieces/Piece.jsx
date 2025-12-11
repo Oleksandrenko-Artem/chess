@@ -20,7 +20,9 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
         e.dataTransfer.setData('text/plain', `${piece},${rank},${file}`);
         const img = new Image();
         img.src = imageSrc;
-        e.dataTransfer.setDragImage(img, 25, 25);
+        img.onload = () => {
+            e.dataTransfer.setDragImage(img, 25, 25);
+        };
         setTimeout(() => {
             e.target.classList.add(styles.dragging);
         }, 0);
