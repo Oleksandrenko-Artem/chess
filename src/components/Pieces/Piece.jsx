@@ -13,7 +13,8 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     const { appState, dispatch } = useAppContext();
     const { playerTurn, position } = appState;
     const currentPosition = position[position.length - 1];
-
+    
+    const prevBoard = position.length > 1 ? position[position.length - 2] : null;
     const onDragStart = e => {
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', `${piece},${rank},${file}`);
@@ -24,8 +25,10 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
             e.target.classList.add(styles.dragging);
         }, 0);
         if (piece.startsWith(playerTurn)) {
-            const validMoves = arbiter.getRegularMoves({ position: currentPosition, piece, rank, file });
-            dispatch(generateValidMoves({ validMoves }));
+            const validMoves = arbiter.getRegularMoves({
+                position: currentPosition, prevPosition: prevBoard, piece, rank, file
+            });
+            dispatch(generateValidMoves({ validMoves, selected: { from: [rank, file], piece } }));
         }
     };
     const onDragEnd = e => e.target.classList.remove(styles.dragging);

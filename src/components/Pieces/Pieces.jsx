@@ -101,6 +101,9 @@ const Pieces = () => {
             return; 
         }
         const newPosition = copyPosition(currentPosition);
+        if (p.endsWith('pawn') && !newPosition[targetRank][targetFile] && targetFile !== file) {
+            newPosition[rank][targetFile] = '';
+        }
         newPosition[rank][file] = '';
         newPosition[targetRank][targetFile] = p;
         dispatch(makeNewMove({ newPosition }));
@@ -120,7 +123,15 @@ const Pieces = () => {
                     const number = rank + file + 2;
                     let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
                     if (appState.validMoves?.find(m => m[0] === rank && m[1] === file)) {
-                        if (position[rank][file]) {
+                        const selected = appState.selected;
+                        let isAttack = !!position[rank][file];
+                        if (!isAttack && selected && selected.piece && selected.piece.endsWith('pawn')) {
+                            const fromFile = selected.from?.[1];
+                            if (fromFile !== undefined && fromFile !== file) {
+                                isAttack = true;
+                            }
+                        }
+                        if (isAttack) {
                             tileClass += ` ${styles['attacking']}`
                         } else {
                             tileClass += ` ${styles['highlight']}`

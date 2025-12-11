@@ -7,9 +7,9 @@ export const makeNewMove = ({ newPosition }) => {
     };
 };
 
-export const generateValidMoves = ({ validMoves }) => {
+export const generateValidMoves = ({ validMoves, selected }) => {
     return {
         type: actionTypes.GENERATE_VALID_MOVES,
-        payload: { validMoves }
+        payload: { validMoves, selected }
     };
 };
