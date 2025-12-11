@@ -19,12 +19,14 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 validMoves: action.payload.validMoves,
+                selected: action.payload.selected || null,
             };
         };
         case actionTypes.CLEAR_VALID_MOVES: {
             return {
                 ...state,
                 validMoves: [],
+                selected: null,
             };
         }
         case actionTypes.RESET_GAME: {

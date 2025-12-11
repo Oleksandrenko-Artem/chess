@@ -168,7 +168,44 @@ export const getSoldierMoves = ({ position, piece, rank, file }) => {
     }
     return moves;
 };
-export const getPawnCaptures = ({ position, piece, rank, file }) => {
+export const getPawnCaptures = ({ position, prevPosition, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const enemy = piece.startsWith('white') ? 'black' : 'white';
+    const targetRank = rank + direction;
+    if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
+        moves.push([targetRank, file - 1]);
+    }
+    if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
+        moves.push([targetRank, file + 1]);
+    }
+    if (prevPosition) {
+        let from = null;
+        let to = null;
+        for (let r = 0; r < 8; r++) {
+            for (let f = 0; f < 8; f++) {
+                const before = prevPosition[r][f];
+                const after = position[r][f];
+                if (before !== after) {
+                    if (before && !after) from = [r, f];
+                    if (!before && after) to = [r, f];
+                }
+            }
+        }
+        if (from && to) {
+            const movedPiece = position[to[0]][to[1]] || prevPosition[from[0]][from[1]];
+            if (movedPiece && movedPiece.endsWith('pawn') && position[to[0]][to[1]].startsWith(enemy)) {
+                if (Math.abs(to[0] - from[0]) === 2) {
+                    if (to[0] === rank && Math.abs(to[1] - file) === 1) {
+                        moves.push([targetRank, to[1]]);
+                    }
+                }
+            }
+        }
+    }
+    return moves;
+};
+export const getSoldierCaptures = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const enemy = piece.startsWith('white') ? 'black' : 'white';

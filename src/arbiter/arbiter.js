@@ -1,17 +1,17 @@
-import { getBishopMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierMoves } from "./getMoves"
+import { getBishopMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves } from "./getMoves"
 
 const arbiter = {
-    getRegularMoves: function ({ position, piece, rank, file }) {
+    getRegularMoves: function ({ position, prevPosition, piece, rank, file }) {
         if (piece.endsWith('pawn')) {
             return [
                 ...getPawnMoves({ position, piece, rank, file }),
-                ...getPawnCaptures({ position, piece, rank, file }),
+                ...getPawnCaptures({ position, prevPosition, piece, rank, file }),
             ];
         }
         if (piece.endsWith('soldier')) {
             return [
                 ...getSoldierMoves({ position, piece, rank, file }),
-                ...getPawnCaptures({ position, piece, rank, file }),
+                ...getSoldierCaptures({ position, piece, rank, file }),
             ];
         }
         if (piece.endsWith('firzan')) {
