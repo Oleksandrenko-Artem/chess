@@ -1,5 +1,6 @@
 export const getCharacter = file => String.fromCharCode(file + 97);
 export const createPosition = () => {
+    // eslint-disable-next-line no-unused-vars
     const position = new Array(8).fill('').map(x => new Array(8).fill(''));
     for(let i = 0; i< 8; i++) {
         position[6][i] = 'white_pawn';
@@ -24,6 +25,7 @@ export const createPosition = () => {
     return position;
 }
 export const createOldPosition = () => {
+    // eslint-disable-next-line no-unused-vars
     const position = new Array(8).fill('').map(x => new Array(8).fill(''));
     for(let i = 0; i< 8; i++) {
         position[6][i] = 'white_soldier';
@@ -48,6 +50,7 @@ export const createOldPosition = () => {
     return position;
 }
 export const copyPosition = position => {
+    // eslint-disable-next-line no-unused-vars
     const newPosition = new Array(8).fill('').map(x => new Array(8).fill(''));
     for (let rank = 0; rank < 8; rank++) {
         for (let file = 0; file < 8; file++) {
