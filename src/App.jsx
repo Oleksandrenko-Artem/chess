@@ -1,3 +1,4 @@
+import React from 'react';
 import { useReducer } from 'react';
 import { BrowserRouter, Routes, Route  } from 'react-router-dom';
 import { reducer } from './reducers/Reducer';
