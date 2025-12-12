@@ -6,3 +6,10 @@ export const makeNewMove = ({ newPosition }) => {
         payload: { newPosition }
     };
 };
+
+export const generateValidMoves = ({ validMoves, selected }) => {
+    return {
+        type: actionTypes.GENERATE_VALID_MOVES,
+        payload: { validMoves, selected }
+    };
+};

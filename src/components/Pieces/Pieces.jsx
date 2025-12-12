@@ -8,18 +8,23 @@ import black_ferz from '../../assets/images/icons/black_ferz.png';
 import black_rook from '../../assets/images/icons/black_rook.png';
 import black_horse from '../../assets/images/icons/black_horse.png';
 import black_bishop from '../../assets/images/icons/black_bishop.png';
+import black_pawn from '../../assets/images/icons/black_soldier.png';
 import black_soldier from '../../assets/images/icons/black_soldier.png';
 import black_elephant from '../../assets/images/icons/black_elephant.png';
 import black_firzan from '../../assets/images/icons/black_firzan.png';
+import black_dinozavr from '../../assets/images/icons/black_dinozavr.png';
 import white_king from '../../assets/images/icons/white_king.png';
 import white_ferz from '../../assets/images/icons/white_ferz.png';
 import white_rook from '../../assets/images/icons/white_rook.png';
 import white_horse from '../../assets/images/icons/white_horse.png';
 import white_bishop from '../../assets/images/icons/white_bishop.png';
+import white_pawn from '../../assets/images/icons/white_soldier.png';
 import white_soldier from '../../assets/images/icons/white_soldier.png';
 import white_elephant from '../../assets/images/icons/white_elephant.png';
 import white_firzan from '../../assets/images/icons/white_firzan.png';
+import white_dinozavr from '../../assets/images/icons/white_dinozavr.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
+import actionTypes from '../../reducers/actionTypes';
 
 const imageMap = {
     black_king,
@@ -28,16 +33,20 @@ const imageMap = {
     black_horse,
     black_bishop,
     black_soldier,
+    black_pawn,
     black_elephant,
     black_firzan,
+    black_dinozavr,
     white_king,
     white_ferz,
     white_rook,
     white_horse,
     white_bishop,
+    white_pawn,
     white_soldier,
     white_elephant,
     white_firzan,
+    white_dinozavr,
 };
 
 const getPieceImageSrc = (pieceName) => {
@@ -84,30 +93,58 @@ const Pieces = () => {
     
     const onDrop = e => {
         e.preventDefault();
-        const newPosition = copyPosition(currentPosition);
         const coords = calculateCoords(e);
         if (coords.x === -1 || coords.y === -1) return;
 
         const [p, rankStr, fileStr] = e.dataTransfer.getData('text').split(',');
         const rank = parseInt(rankStr, 10);
         const file = parseInt(fileStr, 10);
-
+        const targetRank = coords.x;
+        const targetFile = coords.y;
+        const isValidMove = appState.validMoves?.find(
+            move => move[0] === targetRank && move[1] === targetFile
+        );
+        if (!isValidMove) {
+            dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+            return; 
+        }
+        const newPosition = copyPosition(currentPosition);
+        if (p.endsWith('pawn') && !newPosition[targetRank][targetFile] && targetFile !== file) {
+            newPosition[rank][targetFile] = '';
+        }
         newPosition[rank][file] = '';
-        newPosition[coords.x][coords.y] = p;
+        newPosition[targetRank][targetFile] = p;
         dispatch(makeNewMove({ newPosition }));
+        dispatch({type: actionTypes.CLEAR_VALID_MOVES});
     }
     const onDragOver = e => e.preventDefault();
 
     if (!imagesLoaded) {
         return <div>Загрузка фигур...</div>;
     }
+    const position = appState.position[appState.position.length - 1]
 
     return (
         <div ref={ref} className={styles['chess-board']} onDrop={onDrop} onDragOver={onDragOver}>
             {currentPosition.map((r, rank) =>
                 r.map((f, file) => {
                     const number = rank + file + 2;
-                    const tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                    let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                    if (appState.validMoves?.find(m => m[0] === rank && m[1] === file)) {
+                        const selected = appState.selected;
+                        let isAttack = !!position[rank][file];
+                        if (!isAttack && selected && selected.piece && selected.piece.endsWith('pawn')) {
+                            const fromFile = selected.from?.[1];
+                            if (fromFile !== undefined && fromFile !== file) {
+                                isAttack = true;
+                            }
+                        }
+                        if (isAttack) {
+                            tileClass += ` ${styles['attacking']}`
+                        } else {
+                            tileClass += ` ${styles['highlight']}`
+                        }
+                    }
                     return (
                         <div
                             key={rank + '-' + file}

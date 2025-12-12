@@ -4,12 +4,18 @@
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+    z-index: 2;
 }
 .piece.black_king {background-image: url('../../assets/images/black_king.png');}
 .piece.black_ferz {background-image: url('../../assets/images/black_ferz.png');}
 .piece.black_rook {background-image: url('../../assets/images/black_rook.png');}
 .piece.black_bishop {background-image: url('../../assets/images/black_bishop.png');}
 .piece.black_horse {background-image: url('../../assets/images/black_horse.png');}
+.piece.black_pawn {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/black_pawn.png');
+}
 .piece.black_soldier {
     margin-top: 5px;
     width: 40px;
@@ -20,6 +26,11 @@
 .piece.white_rook {background-image: url('../../assets/images/white_rook.png');}
 .piece.white_bishop {background-image: url('../../assets/images/white_bishop.png');}
 .piece.white_horse {background-image: url('../../assets/images/white_horse.png');}
+.piece.white_pawn {
+    margin-top: 5px;
+    width: 40px;
+    background-image: url('../../assets/images/white_pawn.png');
+}
 .piece.white_soldier {
     margin-top: 5px;
     width: 40px;
@@ -29,6 +40,8 @@
 .piece.white_firzan {background-image: url('../../assets/images/white_firzan.png');}
 .piece.black_elephant {background-image: url('../../assets/images/black_elephant.png');}
 .piece.black_firzan {background-image: url('../../assets/images/black_firzan.png');}
+.piece.black_dinozavr {background-image: url('../../assets/images/black_dinozavr.png');}
+.piece.white_dinozavr {background-image: url('../../assets/images/white_dinozavr.png');}
 .dragging {
     opacity: 0;
 }
