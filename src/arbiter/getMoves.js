@@ -101,7 +101,7 @@ export const getBishopMoves = ({ position, piece, rank, file }) => {
 export const getFerzMoves = ({ position, piece, rank, file }) => {
     const moves = [
         ...getRookMoves({ position, piece, rank, file }),
-        ...getBishopMoves({ position, piece, rank, file })
+        ...getBishopMoves({ position, piece, rank, file }),
     ];
     return moves;
 };
@@ -216,5 +216,39 @@ export const getSoldierCaptures = ({ position, piece, rank, file }) => {
     if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
         moves.push([targetRank, file + 1]);
     }
+    return moves;
+};
+export const getDinozavrMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getFerzMoves({ position, piece, rank, file }),
+    ];
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const LShapedDirections = [
+        [-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1],
+        [-3, -2], [-3, 2], [-2, -3], [-2, 3], [2, -3], [2, 3], [3, -2], [3, 2],
+        [-4, -2], [-4, 2], [-2, -4], [-2, 4], [2, -4], [2, 4], [4, -2], [4, 2],
+        [-5, -3], [-5, 3], [-3, -5], [-3, 5], [3, -5], [3, 5], [5, -3], [5, 3],
+        [-6, -3], [-6, 3], [-3, -6], [-3, 6], [3, -6], [3, 6], [6, -3], [6, 3],
+        [-7, -4], [-7, 4], [-4, -7], [-4, 7], [4, -7], [4, 7], [7, -4], [7, 4],
+    ];
+    LShapedDirections.forEach(dir => {
+        const destX = rank + dir[0];
+        const destY = file + dir[1];
+        if (position?.[destX]?.[destY] === undefined || position[destX][destY].startsWith(us)) {
+            return;
+        }
+        let blocked = false;
+        for (let i = 1; i < Math.abs(dir[0]); i++) {
+            const midX = rank + (i * Math.sign(dir[0]));
+            if (position[midX][file] !== '') blocked = true;
+        }
+        for (let i = 1; i < Math.abs(dir[1]); i++) {
+            const midY = file + (i * Math.sign(dir[1]));
+            if (position[rank][midY] !== '') blocked = true;
+        }
+        if (!blocked) {
+            moves.push([destX, destY]);
+        }
+    });
     return moves;
 };

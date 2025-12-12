@@ -12,6 +12,7 @@ import black_pawn from '../../assets/images/icons/black_soldier.png';
 import black_soldier from '../../assets/images/icons/black_soldier.png';
 import black_elephant from '../../assets/images/icons/black_elephant.png';
 import black_firzan from '../../assets/images/icons/black_firzan.png';
+import black_dinozavr from '../../assets/images/icons/black_dinozavr.png';
 import white_king from '../../assets/images/icons/white_king.png';
 import white_ferz from '../../assets/images/icons/white_ferz.png';
 import white_rook from '../../assets/images/icons/white_rook.png';
@@ -21,6 +22,7 @@ import white_pawn from '../../assets/images/icons/white_soldier.png';
 import white_soldier from '../../assets/images/icons/white_soldier.png';
 import white_elephant from '../../assets/images/icons/white_elephant.png';
 import white_firzan from '../../assets/images/icons/white_firzan.png';
+import white_dinozavr from '../../assets/images/icons/white_dinozavr.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 import actionTypes from '../../reducers/actionTypes';
 
@@ -34,6 +36,7 @@ const imageMap = {
     black_pawn,
     black_elephant,
     black_firzan,
+    black_dinozavr,
     white_king,
     white_ferz,
     white_rook,
@@ -43,6 +46,7 @@ const imageMap = {
     white_soldier,
     white_elephant,
     white_firzan,
+    white_dinozavr,
 };
 
 const getPieceImageSrc = (pieceName) => {
