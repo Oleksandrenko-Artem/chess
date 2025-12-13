@@ -1,3 +1,4 @@
+import { status } from "../constants";
 import actionTypes from "./actionTypes";
 
 export const reducer = (state, action) => {
@@ -28,7 +29,23 @@ export const reducer = (state, action) => {
                 validMoves: [],
                 selected: null,
             };
-        }
+        };
+        case actionTypes.PROMOTION_OPEN: {
+            return {
+                ...state,
+                status: status.promotion,
+                promotionSquare: { ...action.payload },
+                selected: null,
+            };
+        };
+        case actionTypes.PROMOTION_CLOSE: {
+            return {
+                ...state,
+                status: status.ongoing,
+                promotionSquare: null,
+                selected: null,
+            };
+        };
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };

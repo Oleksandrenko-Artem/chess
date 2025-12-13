@@ -1,4 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
+import actionTypes from '../../reducers/actionTypes';
+import { openPromotion } from '../../reducers/actions/promotion';
 import { copyPosition } from '../../helpers';
 import { useAppContext } from '../../contexts/Context';
 import { makeNewMove } from '../../reducers/actions/move';
@@ -24,7 +26,6 @@ import white_elephant from '../../assets/images/icons/white_elephant.png';
 import white_firzan from '../../assets/images/icons/white_firzan.png';
 import white_dinozavr from '../../assets/images/icons/white_dinozavr.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
-import actionTypes from '../../reducers/actionTypes';
 
 const imageMap = {
     black_king,
@@ -53,7 +54,7 @@ const getPieceImageSrc = (pieceName) => {
     return imageMap[pieceName] || '';
 };
 
-const Pieces = () => {
+const Pieces = ({ flipped = false }) => {
     const ref = useRef(null);
     const { appState, dispatch } = useAppContext();
     const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -86,11 +87,18 @@ const Pieces = () => {
         if (!ref.current) return { x: -1, y: -1 };
         const { width, left, top } = ref.current.getBoundingClientRect();
         const size = width / 8;
-        const y = Math.floor((e.clientX - left) / size);
-        const x = Math.floor((e.clientY - top) / size);
-        return { x, y };
-    }
-    
+        let dispFile = Math.floor((e.clientX - left) / size);
+        let dispRank = Math.floor((e.clientY - top) / size);
+        if (dispFile < 0 || dispFile > 7 || dispRank < 0 || dispRank > 7) return { x: -1, y: -1 };
+        const realFile = flipped ? 7 - dispFile : dispFile;
+        const realRank = flipped ? 7 - dispRank : dispRank;
+        return { x: realRank, y: realFile };
+    };
+    const openPromotionBox = ({ rank, file, targetRank, targetFile }) => {
+        dispatch(openPromotion({
+            rank: Number(rank), file: Number(file), targetRank, targetFile
+        }));
+    };
     const onDrop = e => {
         e.preventDefault();
         const coords = calculateCoords(e);
@@ -104,6 +112,12 @@ const Pieces = () => {
         const isValidMove = appState.validMoves?.find(
             move => move[0] === targetRank && move[1] === targetFile
         );
+        if (isValidMove) {
+            if ((p === 'white_pawn' && targetRank === 0) || (p === 'black_pawn' && targetRank === 7)) {
+                openPromotionBox({ rank, file, targetRank, targetFile });
+                return;
+            }
+        }
         if (!isValidMove) {
             dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
             return; 
@@ -126,43 +140,50 @@ const Pieces = () => {
 
     return (
         <div ref={ref} className={styles['chess-board']} onDrop={onDrop} onDragOver={onDragOver}>
-            {currentPosition.map((r, rank) =>
-                r.map((f, file) => {
-                    const number = rank + file + 2;
-                    let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
-                    if (appState.validMoves?.find(m => m[0] === rank && m[1] === file)) {
-                        const selected = appState.selected;
-                        let isAttack = !!position[rank][file];
-                        if (!isAttack && selected && selected.piece && selected.piece.endsWith('pawn')) {
-                            const fromFile = selected.from?.[1];
-                            if (fromFile !== undefined && fromFile !== file) {
-                                isAttack = true;
+            {[...Array(8)].map((_, dispRank) => {
+                return (
+                    <React.Fragment key={dispRank}>
+                        {[...Array(8)].map((__, dispFile) => {
+                            const realRank = flipped ? 7 - dispRank : dispRank;
+                            const realFile = flipped ? 7 - dispFile : dispFile;
+                            const f = currentPosition[realRank][realFile];
+                            const number = dispRank + dispFile + 2;
+                            let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                            if (appState.validMoves?.find(m => m[0] === realRank && m[1] === realFile)) {
+                                const selected = appState.selected;
+                                let isAttack = !!position[realRank][realFile];
+                                if (!isAttack && selected && selected.piece && selected.piece.endsWith('pawn')) {
+                                    const fromFile = selected.from?.[1];
+                                    if (fromFile !== undefined && fromFile !== realFile) {
+                                        isAttack = true;
+                                    }
+                                }
+                                if (isAttack) {
+                                    tileClass += ` ${styles['attacking']}`
+                                } else {
+                                    tileClass += ` ${styles['highlight']}`
+                                }
                             }
-                        }
-                        if (isAttack) {
-                            tileClass += ` ${styles['attacking']}`
-                        } else {
-                            tileClass += ` ${styles['highlight']}`
-                        }
-                    }
-                    return (
-                        <div
-                            key={rank + '-' + file}
-                            className={tileClass}
-                        >
-                            {currentPosition[rank][file] 
-                                ? <Piece 
-                                    rank={rank} 
-                                    file={file} 
-                                    piece={currentPosition[rank][file]} 
-                                    imageSrc={getPieceImageSrc(currentPosition[rank][file])} 
-                                  /> 
-                                : null
-                            }
-                        </div>
-                    );
-                })
-            )}
+                            return (
+                                <div
+                                    key={realRank + '-' + realFile}
+                                    className={tileClass}
+                                >
+                                    {f 
+                                        ? <Piece 
+                                            rank={realRank} 
+                                            file={realFile} 
+                                            piece={f} 
+                                            imageSrc={getPieceImageSrc(f)} 
+                                          /> 
+                                        : null
+                                    }
+                                </div>
+                            );
+                        })}
+                    </React.Fragment>
+                );
+            })}
         </div>
     );
 };
