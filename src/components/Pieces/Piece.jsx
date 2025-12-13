@@ -6,9 +6,12 @@ import { generateValidMoves } from '../../reducers/actions/move';
 
 const Piece = ({ rank, file, piece, imageSrc }) => {
     const baseClass = styles.piece;
-    const pieceTypeClass = styles[piece];
-
-    const classNames = `${baseClass} ${pieceTypeClass}`;
+    const classNames = `${baseClass}`;
+    const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
+    if (piece && (piece.endsWith('pawn') || piece.endsWith('soldier'))) {
+        style.marginTop = '5px';
+        style.width = '40px';
+    }
 
     const { appState, dispatch } = useAppContext();
     const { playerTurn, position } = appState;
@@ -35,7 +38,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     };
     const onDragEnd = e => e.target.classList.remove(styles.dragging);
     return (
-        <div className={classNames} draggable={true} onDragStart={onDragStart} onDragEnd={onDragEnd}></div>
+        <div className={classNames} style={style} draggable={true} onDragStart={onDragStart} onDragEnd={onDragEnd}></div>
     );
 };
 

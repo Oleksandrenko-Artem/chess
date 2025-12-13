@@ -1,7 +1,10 @@
 const actionTypes = {
     "GENERATE_VALID_MOVES" : "GENERATE_VALID_MOVES",
+    "CLEAR_VALID_MOVES" : "CLEAR_VALID_MOVES",
     "NEW_MOVE": "NEW_MOVE",
-    "RESET_GAME": "RESET_GAME"
+    "RESET_GAME": "RESET_GAME",
+    "PROMOTION_OPEN": "PROMOTION_OPEN",
+    "PROMOTION_CLOSE": "PROMOTION_CLOSE",
 };
 
 export default actionTypes;
