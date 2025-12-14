@@ -5,6 +5,7 @@ const actionTypes = {
     "RESET_GAME": "RESET_GAME",
     "PROMOTION_OPEN": "PROMOTION_OPEN",
     "PROMOTION_CLOSE": "PROMOTION_CLOSE",
+    "PROMOTION_MOVE": "PROMOTION_MOVE",
 };
 
 export default actionTypes;

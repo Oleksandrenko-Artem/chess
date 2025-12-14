@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAppContext } from '../../contexts/Context';
+import { status } from '../../constants';
 import styles from './Pieces.module.scss';
 import arbiter from '../../arbiter/arbiter';
 import { generateValidMoves } from '../../reducers/actions/move';
@@ -19,6 +20,10 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     
     const prevBoard = position.length > 1 ? position[position.length - 2] : null;
     const onDragStart = e => {
+        if (appState.status !== status.ongoing) {
+            e.preventDefault();
+            return;
+        }
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text/plain', `${piece},${rank},${file}`);
         const img = new Image();

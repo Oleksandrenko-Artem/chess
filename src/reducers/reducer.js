@@ -46,6 +46,23 @@ export const reducer = (state, action) => {
                 selected: null,
             };
         };
+        case actionTypes.PROMOTION_MOVE: {
+            let { playerTurn, position } = state;
+            playerTurn = playerTurn === 'white' ? 'black' : 'white';
+            position = [
+                ...position,
+                action.payload.newPosition
+            ];
+            return {
+                ...state,
+                playerTurn,
+                position,
+                status: status.ongoing,
+                validMoves: [],
+                selected: null,
+                promotionSquare: null,
+            };
+        };
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };

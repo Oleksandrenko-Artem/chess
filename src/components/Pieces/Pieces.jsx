@@ -4,6 +4,7 @@ import { openPromotion } from '../../reducers/actions/promotion';
 import { copyPosition } from '../../helpers';
 import { useAppContext } from '../../contexts/Context';
 import { makeNewMove } from '../../reducers/actions/move';
+import { status } from '../../constants';
 import Piece from './Piece';
 import black_king from '../../assets/images/icons/black_king.png';
 import black_ferz from '../../assets/images/icons/black_ferz.png';
@@ -101,6 +102,9 @@ const Pieces = ({ flipped = false }) => {
     };
     const onDrop = e => {
         e.preventDefault();
+        if (appState.status !== status.ongoing) {
+            return;
+        }
         const coords = calculateCoords(e);
         if (coords.x === -1 || coords.y === -1) return;
 
@@ -114,6 +118,10 @@ const Pieces = ({ flipped = false }) => {
         );
         if (isValidMove) {
             if ((p === 'white_pawn' && targetRank === 0) || (p === 'black_pawn' && targetRank === 7)) {
+                openPromotionBox({ rank, file, targetRank, targetFile });
+                return;
+            }
+            if ((p === 'white_soldier' && targetRank === 0) || (p === 'black_soldier' && targetRank === 7)) {
                 openPromotionBox({ rank, file, targetRank, targetFile });
                 return;
             }

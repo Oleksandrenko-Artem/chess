@@ -14,18 +14,15 @@ const ChessBoard = () => {
     const horizontalAxisSecond = ["h", "g", "f", "e", "d", "c", "b", "a"];
     const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
     const { dispatch } = useAppContext();
-    const [positionClass, setPositionClass] = useState('promotion-div-white');
     const [verticalClass, setVerticalClass] = useState(styles['vertical']);
     const [horizontalClass, setHorizontalClass] = useState('white');
     const [start, setStart] = useState(false);
     const onClickWhite = () => {
-        setPositionClass(styles['promotion-div-white']);
         setVerticalClass(styles['vertical']);
         horizontalAxis.map(axis => <span key={axis}>{axis}</span>)
         setHorizontalClass('white');
     };
     const onClickBlack = () => {
-        setPositionClass(styles['promotion-div-black']);
         setVerticalClass(styles['vertical-second']);
         horizontalAxisSecond.map(axis => <span key={axis}>{axis}</span>);
         setHorizontalClass('black');
@@ -80,7 +77,7 @@ const ChessBoard = () => {
                         )}
                     </div>
                 </div>
-                <div className={positionClass}>
+                <div className={styles['promotion-div']}>
                     <Promotion />
                 </div>
             </div>

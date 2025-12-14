@@ -1,8 +1,7 @@
-import React from 'react';
+import React, { useEffect, useCallback, useRef } from 'react';
 import { useAppContext } from '../../../contexts/Context';
 import { copyPosition } from '../../../helpers';
-import { makeNewMove } from '../../../reducers/actions/move';
-import actionTypes from '../../../reducers/actionTypes';
+import { promoteAndMove } from '../../../reducers/actions/promotion';
 import black_ferz from '../../../assets/images/icons/black_ferz.png';
 import black_rook from '../../../assets/images/icons/black_rook.png';
 import black_bishop from '../../../assets/images/icons/black_bishop.png';
@@ -33,18 +32,41 @@ const PromotionBox = ({ onClosePromotion }) => {
     ];
     const { appState, dispatch } = useAppContext();
     const { promotionSquare } = appState;
-    if (!promotionSquare) {
-        return null;
-    }
-    const color = promotionSquare.targetRank === 0 ? 'white' : 'black';
-    const onClick = option => {
-        onClosePromotion()
+    const variant = typeof window !== 'undefined' ? window.localStorage.getItem('chess_variant') : 'chess';
+    const color = promotionSquare?.targetRank === 0 ? 'white' : 'black';
+    const processedPromotionRef = useRef(null);
+    const handlePromotion = useCallback((pieceName) => {
+        if (!promotionSquare) return;
         const newPosition = copyPosition(appState.position[appState.position.length - 1]);
         newPosition[promotionSquare.rank][promotionSquare.file] = '';
-        newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${option}`;
-        dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
-        dispatch(makeNewMove({ newPosition }));
+        newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${pieceName}`;
+        dispatch(promoteAndMove({ newPosition }));
+    }, [promotionSquare, appState.position, dispatch, color]);
+    
+    useEffect(() => {
+        if (promotionSquare && variant === 'shatranj') {
+            const promotionKey = `${promotionSquare.rank}-${promotionSquare.file}-${promotionSquare.targetRank}-${promotionSquare.targetFile}`;
+            if (processedPromotionRef.current === promotionKey) {
+                return;
+            }
+            processedPromotionRef.current = promotionKey;
+            handlePromotion('firzan');
+        }
+    }, [promotionSquare, variant, handlePromotion]);
+    
+    if (!promotionSquare) {
+        processedPromotionRef.current = null;
+        return null;
+    }
+    
+    const onClick = option => {
+        handlePromotion(option);
+        onClosePromotion?.();
     };
+    
+    if (variant === 'shatranj') {
+        return null;
+    }
     return (
         <div className={styles['promotion']}>
             {
@@ -52,7 +74,7 @@ const PromotionBox = ({ onClosePromotion }) => {
                     const keyName = `${color}_${option}`;
                     const imageSrc = promoImageMap[keyName];
                     const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
-                    if (option === 'pawn' || option === 'soldier') {
+                    if (option === 'pawn') {
                         style.marginTop = '5px';
                         style.width = '40px';
                     }

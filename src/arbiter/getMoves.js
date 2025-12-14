@@ -149,11 +149,11 @@ export const getPawnMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
-    if (!position[targetRank][file]) {
+    if (targetRank >= 0 && targetRank <= 7 && !position[targetRank][file]) {
         moves.push([targetRank, file]);
     }
     if (rank % 5 === 1) {
-        if (position?.[targetRank]?.[file] === '' && position?.[targetRank + direction]?.[file] === '') {
+        if (targetRank >= 0 && targetRank <= 7 && position?.[targetRank]?.[file] === '' && position?.[targetRank + direction]?.[file] === '') {
             moves.push([targetRank + direction, file]);
         }
     }
@@ -163,7 +163,7 @@ export const getSoldierMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
-    if (!position[targetRank][file]) {
+    if (targetRank >= 0 && targetRank <= 7 && !position[targetRank][file]) {
         moves.push([targetRank, file]);
     }
     return moves;
@@ -173,11 +173,13 @@ export const getPawnCaptures = ({ position, prevPosition, piece, rank, file }) =
     const direction = piece.startsWith('white') ? -1 : 1;
     const enemy = piece.startsWith('white') ? 'black' : 'white';
     const targetRank = rank + direction;
-    if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
-        moves.push([targetRank, file - 1]);
-    }
-    if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
-        moves.push([targetRank, file + 1]);
+    if (targetRank >= 0 && targetRank <= 7) {
+        if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
+            moves.push([targetRank, file - 1]);
+        }
+        if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
+            moves.push([targetRank, file + 1]);
+        }
     }
     if (prevPosition) {
         let from = null;
@@ -197,7 +199,9 @@ export const getPawnCaptures = ({ position, prevPosition, piece, rank, file }) =
             if (movedPiece && movedPiece.endsWith('pawn') && position[to[0]][to[1]].startsWith(enemy)) {
                 if (Math.abs(to[0] - from[0]) === 2) {
                     if (to[0] === rank && Math.abs(to[1] - file) === 1) {
-                        moves.push([targetRank, to[1]]);
+                        if (targetRank >= 0 && targetRank <= 7) {
+                            moves.push([targetRank, to[1]]);
+                        }
                     }
                 }
             }
@@ -210,11 +214,13 @@ export const getSoldierCaptures = ({ position, piece, rank, file }) => {
     const direction = piece.startsWith('white') ? -1 : 1;
     const enemy = piece.startsWith('white') ? 'black' : 'white';
     const targetRank = rank + direction;
-    if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
-        moves.push([targetRank, file - 1]);
-    }
-    if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
-        moves.push([targetRank, file + 1]);
+    if (targetRank >= 0 && targetRank <= 7) {
+        if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
+            moves.push([targetRank, file - 1]);
+        }
+        if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
+            moves.push([targetRank, file + 1]);
+        }
     }
     return moves;
 };
