@@ -102,15 +102,10 @@
                 }
             }
         }
-    .promotion-div-white {
-        display: flex;
-        align-items: flex-start;
-    }
-    .promotion-div-black {
-        display: flex;
-        align-items: flex-end;
-        padding-bottom: 24px;
-    }
+        .promotion-div {
+            display: flex;
+            align-items: flex-start;
+        }
     }
     .horizontal {
         span {

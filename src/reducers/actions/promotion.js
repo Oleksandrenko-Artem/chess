@@ -11,3 +11,9 @@ export const closePromotion = () => {
         type: actionTypes.PROMOTION_CLOSE,
     }
 };
+export const promoteAndMove = ({ newPosition }) => {
+    return {
+        type: actionTypes.PROMOTION_MOVE,
+        payload: { newPosition }
+    }
+};
