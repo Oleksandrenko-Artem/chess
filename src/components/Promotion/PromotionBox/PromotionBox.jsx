@@ -40,8 +40,19 @@ const PromotionBox = ({ onClosePromotion }) => {
         const newPosition = copyPosition(appState.position[appState.position.length - 1]);
         newPosition[promotionSquare.rank][promotionSquare.file] = '';
         newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${pieceName}`;
-        dispatch(promoteAndMove({ newPosition }));
-    }, [promotionSquare, appState.position, dispatch, color]);
+        const newCastleDirection = { ...appState.castleDirection };
+        const piece = appState.position[appState.position.length - 1][promotionSquare.targetRank]?.[promotionSquare.targetFile];
+        if (piece && piece.endsWith('rook')) {
+            const playerColor = piece.startsWith('white') ? 'white' : 'black';
+            const currentDir = newCastleDirection[playerColor];
+            if (promotionSquare.targetFile === 0) {
+                newCastleDirection[playerColor] = currentDir === 'both' ? 'right' : 'none';
+            } else if (promotionSquare.targetFile === 7) {
+                newCastleDirection[playerColor] = currentDir === 'both' ? 'left' : 'none';
+            }
+        }
+        dispatch(promoteAndMove({ newPosition, castleDirection: newCastleDirection }));
+    }, [promotionSquare, appState.position, appState.castleDirection, dispatch, color]);
     
     useEffect(() => {
         if (promotionSquare && variant === 'shatranj') {

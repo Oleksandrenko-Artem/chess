@@ -4,16 +4,20 @@ import actionTypes from "./actionTypes";
 export const reducer = (state, action) => {
     switch (action.type) {
         case actionTypes.NEW_MOVE: {
-            let { playerTurn, position } = state;
+            let { playerTurn, position, castleDirection } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
                 action.payload.newPosition
             ];
+            if (action.payload.castleDirection) {
+                castleDirection = action.payload.castleDirection;
+            }
             return {
                 ...state,
                 playerTurn,
-                position
+                position,
+                castleDirection
             };
         };
         case actionTypes.GENERATE_VALID_MOVES: {
@@ -47,22 +51,26 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.PROMOTION_MOVE: {
-            let { playerTurn, position } = state;
+            let { playerTurn, position, castleDirection } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
                 action.payload.newPosition
             ];
+            if (action.payload.castleDirection) {
+                castleDirection = action.payload.castleDirection;
+            }
             return {
                 ...state,
                 playerTurn,
                 position,
-                status: status.ongoing,
+                status: 'Ongoing',
                 validMoves: [],
                 selected: null,
                 promotionSquare: null,
+                castleDirection
             };
-        };
+        }
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };

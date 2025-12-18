@@ -1,9 +1,9 @@
 import actionTypes from "../actionTypes";
 
-export const makeNewMove = ({ newPosition }) => {
+export const makeNewMove = ({ newPosition, castleDirection }) => {
     return {
         type: actionTypes.NEW_MOVE,
-        payload: { newPosition }
+        payload: { newPosition, castleDirection }
     };
 };
 

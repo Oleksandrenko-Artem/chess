@@ -105,7 +105,47 @@ export const getFerzMoves = ({ position, piece, rank, file }) => {
     ];
     return moves;
 };
-export const getKingMoves = ({ position, piece, rank, file }) => {
+export const getKingMoves = ({ position, piece, castleDirection, rank, file }) => {
+    const moves = [];
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const direction = [
+        [1, -1],
+        [1, 0],
+        [1, 1],
+        [0, -1],
+        [0, 1],
+        [-1, -1],
+        [-1, 0],
+        [-1, 1],
+    ];
+    direction.forEach(dir => {
+        const x = rank + dir[0];
+        const y = file + dir[1];
+        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us)) {
+            moves.push([x, y]);
+        }
+    });
+    if (file !== 4 || rank % 7 !== 0 || castleDirection === 'none') {
+        return moves;
+    }
+    if (piece.startsWith('white')) {
+        if (['left', 'both'].includes(castleDirection) && !position[7][3] && !position[7][2] && !position[7][1] && position[7][0] === 'white_rook') {
+            moves.push([7, 2]);
+        }
+        if (['right', 'both'].includes(castleDirection) && !position[7][5] && !position[7][6] && position[7][7] === 'white_rook') {
+            moves.push([7, 6]);
+        }
+    } else {
+        if (['left', 'both'].includes(castleDirection) && !position[0][3] && !position[0][2] && !position[0][1] && position[0][0] === 'black_rook') {
+            moves.push([0, 2]);
+        }
+        if (['right', 'both'].includes(castleDirection) && !position[0][5] && !position[0][6] && position[0][7] === 'black_rook') {
+            moves.push([0, 6]);
+        }
+    }
+    return moves;
+};
+export const getImperatorMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const us = piece.startsWith('white') ? 'white' : 'black';
     const direction = [

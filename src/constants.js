@@ -12,6 +12,10 @@ export const initialGameState = {
     validMoves: [],
     status: status.ongoing,
     promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
 };
 export const initialOldGameState = {
     position: [createOldPosition()],
@@ -19,4 +23,8 @@ export const initialOldGameState = {
     validMoves: [],
     status: status.ongoing,
     promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
 };

@@ -15,7 +15,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     }
 
     const { appState, dispatch } = useAppContext();
-    const { playerTurn, position } = appState;
+    const { playerTurn, castleDirection, position } = appState;
     const currentPosition = position[position.length - 1];
     
     const prevBoard = position.length > 1 ? position[position.length - 2] : null;
@@ -36,7 +36,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
         }, 0);
         if (piece.startsWith(playerTurn)) {
             const validMoves = arbiter.getRegularMoves({
-                position: currentPosition, prevPosition: prevBoard, piece, rank, file
+                position: currentPosition, prevPosition: prevBoard, castleDirection: castleDirection[playerTurn], piece, rank, file
             });
             dispatch(generateValidMoves({ validMoves, selected: { from: [rank, file], piece } }));
         }
