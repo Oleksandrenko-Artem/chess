@@ -6,6 +6,7 @@ import { useAppContext } from '../../contexts/Context';
 import { makeNewMove } from '../../reducers/actions/move';
 import { status } from '../../constants';
 import Piece from './Piece';
+import black_imperator from '../../assets/images/icons/black_king.png';
 import black_king from '../../assets/images/icons/black_king.png';
 import black_ferz from '../../assets/images/icons/black_ferz.png';
 import black_rook from '../../assets/images/icons/black_rook.png';
@@ -16,6 +17,7 @@ import black_soldier from '../../assets/images/icons/black_soldier.png';
 import black_elephant from '../../assets/images/icons/black_elephant.png';
 import black_firzan from '../../assets/images/icons/black_firzan.png';
 import black_dinozavr from '../../assets/images/icons/black_dinozavr.png';
+import white_imperator from '../../assets/images/icons/white_king.png';
 import white_king from '../../assets/images/icons/white_king.png';
 import white_ferz from '../../assets/images/icons/white_ferz.png';
 import white_rook from '../../assets/images/icons/white_rook.png';
@@ -29,6 +31,7 @@ import white_dinozavr from '../../assets/images/icons/white_dinozavr.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
+    black_imperator,
     black_king,
     black_ferz,
     black_rook,
@@ -39,6 +42,7 @@ const imageMap = {
     black_elephant,
     black_firzan,
     black_dinozavr,
+    white_imperator,
     white_king,
     white_ferz,
     white_rook,
@@ -136,7 +140,31 @@ const Pieces = ({ flipped = false }) => {
         }
         newPosition[rank][file] = '';
         newPosition[targetRank][targetFile] = p;
-        dispatch(makeNewMove({ newPosition }));
+        const isCastling = p.endsWith('king') && Math.abs(targetFile - file) === 2;
+        if (isCastling) {
+            if (targetFile === 2) {
+                newPosition[rank][0] = '';
+                newPosition[rank][3] = p.replace('king', 'rook');
+            }
+            else if (targetFile === 6) {
+                newPosition[rank][7] = '';
+                newPosition[rank][5] = p.replace('king', 'rook');
+            }
+        }
+        const newCastleDirection = { ...appState.castleDirection };
+        if (p.endsWith('king')) {
+            newCastleDirection[p.startsWith('white') ? 'white' : 'black'] = 'none';
+        }
+        if (p.endsWith('rook')) {
+            const playerColor = p.startsWith('white') ? 'white' : 'black';
+            const currentDir = newCastleDirection[playerColor];
+            if (file === 0) {
+                newCastleDirection[playerColor] = currentDir === 'both' ? 'right' : 'none';
+            } else if (file === 7) {
+                newCastleDirection[playerColor] = currentDir === 'both' ? 'left' : 'none';
+            }
+        }
+        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection }));
         dispatch({type: actionTypes.CLEAR_VALID_MOVES});
     }
     const onDragOver = e => e.preventDefault();

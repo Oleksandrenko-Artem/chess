@@ -34,7 +34,7 @@ export const createOldPosition = () => {
     position[7][0] = 'white_rook';
     position[7][1] = 'white_horse';
     position[7][2] = 'white_elephant';
-    position[7][3] = 'white_king';
+    position[7][3] = 'white_imperator';
     position[7][4] = 'white_firzan';
     position[7][5] = 'white_elephant';
     position[7][6] = 'white_horse';
@@ -42,7 +42,7 @@ export const createOldPosition = () => {
     position[0][0] = 'black_rook';
     position[0][1] = 'black_horse';
     position[0][2] = 'black_elephant';
-    position[0][3] = 'black_king';
+    position[0][3] = 'black_imperator';
     position[0][4] = 'black_firzan';
     position[0][5] = 'black_elephant';
     position[0][6] = 'black_horse';
