@@ -4,7 +4,7 @@ import actionTypes from "./actionTypes";
 export const reducer = (state, action) => {
     switch (action.type) {
         case actionTypes.NEW_MOVE: {
-            let { playerTurn, position, castleDirection } = state;
+            let { playerTurn, position, castleDirection, status: gameStatus } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -13,11 +13,13 @@ export const reducer = (state, action) => {
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
             }
+            gameStatus = action.payload.gameStatus || status.ongoing;
             return {
                 ...state,
                 playerTurn,
                 position,
-                castleDirection
+                castleDirection,
+                status: gameStatus
             };
         };
         case actionTypes.GENERATE_VALID_MOVES: {
@@ -51,7 +53,7 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.PROMOTION_MOVE: {
-            let { playerTurn, position, castleDirection } = state;
+            let { playerTurn, position, castleDirection, status: gameStatus } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -60,11 +62,12 @@ export const reducer = (state, action) => {
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
             }
+            gameStatus = action.payload.gameStatus || status.ongoing;
             return {
                 ...state,
                 playerTurn,
                 position,
-                status: 'Ongoing',
+                status: gameStatus,
                 validMoves: [],
                 selected: null,
                 promotionSquare: null,

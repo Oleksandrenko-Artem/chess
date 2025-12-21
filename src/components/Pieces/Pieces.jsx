@@ -5,6 +5,8 @@ import { copyPosition } from '../../helpers';
 import { useAppContext } from '../../contexts/Context';
 import { makeNewMove } from '../../reducers/actions/move';
 import { status } from '../../constants';
+import { getKingPosition } from '../../arbiter/getMoves';
+import arbiter from '../../arbiter/arbiter';
 import Piece from './Piece';
 import black_imperator from '../../assets/images/icons/black_king.png';
 import black_king from '../../assets/images/icons/black_king.png';
@@ -164,16 +166,26 @@ const Pieces = ({ flipped = false }) => {
                 newCastleDirection[playerColor] = currentDir === 'both' ? 'left' : 'none';
             }
         }
-        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection }));
+        const nextPlayer = appState.playerTurn === 'white' ? 'black' : 'white';
+        const gameStatus = arbiter.getGameStatus({ 
+            position: newPosition, 
+            playerColor: nextPlayer, 
+            castleDirection: newCastleDirection 
+        });
+        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection, gameStatus }));
         dispatch({type: actionTypes.CLEAR_VALID_MOVES});
     }
     const onDragOver = e => e.preventDefault();
-
     if (!imagesLoaded) {
         return <div>Загрузка фигур...</div>;
     }
     const position = appState.position[appState.position.length - 1]
-
+    const isChecked = (() => {
+        const isInCheck = arbiter.isKingInCheck({ position, playerColor: appState.playerTurn });
+        if (isInCheck) {
+            return getKingPosition({ position, playerColor: appState.playerTurn });
+        }
+    })();
     return (
         <div ref={ref} className={styles['chess-board']} onDrop={onDrop} onDragOver={onDragOver}>
             {[...Array(8)].map((_, dispRank) => {
@@ -184,7 +196,11 @@ const Pieces = ({ flipped = false }) => {
                             const realFile = flipped ? 7 - dispFile : dispFile;
                             const f = currentPosition[realRank][realFile];
                             const number = dispRank + dispFile + 2;
-                            let tileClass = number % 2 === 0 ? styles['white-tile'] : styles['black-tile'];
+                            let tileClass = number % 2 === 0 ? styles['white-tile'] : styles
+                            ['black-tile'];
+                            if (isChecked && isChecked[0] === realRank && isChecked[1] === realFile) {
+                                tileClass += ` ${styles['check']}`;
+                            }
                             if (appState.validMoves?.find(m => m[0] === realRank && m[1] === realFile)) {
                                 const selected = appState.selected;
                                 let isAttack = !!position[realRank][realFile];

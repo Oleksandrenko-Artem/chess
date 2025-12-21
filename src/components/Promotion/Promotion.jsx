@@ -10,6 +10,9 @@ const Promotion = () => {
     if (appState.status === status.ongoing) {
         return null;
     }
+    if (appState.status === status.white || appState.status === status.black) {
+        return null;
+    }
     const onClosePromotion = () => {
         dispatch(closePromotion());
     };

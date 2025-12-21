@@ -46,7 +46,7 @@ export const createOldPosition = () => {
     position[0][4] = 'black_firzan';
     position[0][5] = 'black_elephant';
     position[0][6] = 'black_horse';
-    position[0][7] = 'black_rook';
+    position[0][7] = 'black_dinozavr';
     return position;
 }
 export const copyPosition = position => {

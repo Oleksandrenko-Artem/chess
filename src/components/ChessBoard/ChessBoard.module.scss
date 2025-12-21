@@ -1,7 +1,8 @@
 .wrapper {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
+    justify-content: center;
     h1 {
         text-align: center;
         color: black;
@@ -28,7 +29,10 @@
                     display: inherit;
                     flex-direction: row;
                     img {
-                        padding: 2px;
+                        cursor: pointer;
+                        padding: 5px;
+                        width: 40px;
+                        height: 50px;
                         background-color: rgb(160, 160, 160);
                     }
                     img:hover {
@@ -40,6 +44,7 @@
                 width: 100px;
                 color: white;
                 background-color: rgb(160, 160, 160);
+                border-radius: 5px;
                 border: none;
                 padding: 10px;
                 &:hover {
@@ -139,4 +144,14 @@
     border: 2px solid black;
     background-color: green;
     z-index: 5;
+}
+.check::after {
+    display: block;
+    position: absolute;
+    content: '';
+    width: 58px;
+    height: 58px;
+    border: 2px solid black;
+    background-color: rgb(60, 0, 0);
+    z-index: 1;
 }

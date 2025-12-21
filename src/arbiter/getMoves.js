@@ -1,3 +1,5 @@
+import arbiter from "./arbiter";
+
 export const getRookMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const us = piece.startsWith('white') ? 'white' : 'black';
@@ -105,6 +107,17 @@ export const getFerzMoves = ({ position, piece, rank, file }) => {
     ];
     return moves;
 };
+export const getKingPosition = ({ position, playerColor }) => {
+    let kingPosition
+    position.forEach((rank, x) => {
+        rank.forEach((file, y) => {
+            if (position[x][y].startsWith(playerColor) && position[x][y].endsWith('king') || position[x][y].startsWith(playerColor) && position[x][y].endsWith('imperator')) {
+                kingPosition = [x, y];
+            }
+        })
+    })
+    return kingPosition;
+};
 export const getKingMoves = ({ position, piece, castleDirection, rank, file }) => {
     const moves = [];
     const us = piece.startsWith('white') ? 'white' : 'black';
@@ -129,17 +142,35 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
         return moves;
     }
     if (piece.startsWith('white')) {
-        if (['left', 'both'].includes(castleDirection) && !position[7][3] && !position[7][2] && !position[7][1] && position[7][0] === 'white_rook') {
+        if (arbiter.isKingInCheck({position, playerColor: 'white'})) {
+            return moves;
+        }
+        if (['left', 'both'].includes(castleDirection) && !position[7][3] && !position[7][2] && !position[7][1] && position[7][0] === 'white_rook' && !arbiter.wouldKingPassThroughCheck({
+            position, playerColor: 'white',
+            throughSquares: [[7, 3], [7, 2]]
+        })) {
             moves.push([7, 2]);
         }
-        if (['right', 'both'].includes(castleDirection) && !position[7][5] && !position[7][6] && position[7][7] === 'white_rook') {
+        if (['right', 'both'].includes(castleDirection) && !position[7][5] && !position[7][6] && position[7][7] === 'white_rook' && !arbiter.wouldKingPassThroughCheck({
+            position, playerColor: 'white',
+            throughSquares: [[7, 5], [7, 6]]
+        })) {
             moves.push([7, 6]);
         }
     } else {
-        if (['left', 'both'].includes(castleDirection) && !position[0][3] && !position[0][2] && !position[0][1] && position[0][0] === 'black_rook') {
+        if (arbiter.isKingInCheck({position, playerColor: 'black'})) {
+            return moves;
+        }
+        if (['left', 'both'].includes(castleDirection) && !position[0][3] && !position[0][2] && !position[0][1] && position[0][0] === 'black_rook' && !arbiter.wouldKingPassThroughCheck({
+            position, playerColor: 'black',
+            throughSquares: [[0, 3], [0, 2]]
+        })) {
             moves.push([0, 2]);
         }
-        if (['right', 'both'].includes(castleDirection) && !position[0][5] && !position[0][6] && position[0][7] === 'black_rook') {
+        if (['right', 'both'].includes(castleDirection) && !position[0][5] && !position[0][6] && position[0][7] === 'black_rook' && !arbiter.wouldKingPassThroughCheck({
+            position, playerColor: 'black',
+            throughSquares: [[0, 5], [0, 6]]
+        })) {
             moves.push([0, 6]);
         }
     }
