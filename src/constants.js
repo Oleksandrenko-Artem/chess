@@ -5,6 +5,7 @@ export const status = {
     'promotion': 'Promotion',
     'white': 'White wins',
     'black': 'Black wins',
+    'draw': 'Draw',
 };
 export const initialGameState = {
     position: [createPosition()],

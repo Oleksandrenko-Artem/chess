@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useRef } from 'react';
 import { useAppContext } from '../../../contexts/Context';
 import { copyPosition } from '../../../helpers';
 import { promoteAndMove } from '../../../reducers/actions/promotion';
+import arbiter from '../../../arbiter/arbiter';
 import black_ferz from '../../../assets/images/icons/black_ferz.png';
 import black_rook from '../../../assets/images/icons/black_rook.png';
 import black_bishop from '../../../assets/images/icons/black_bishop.png';
@@ -51,9 +52,14 @@ const PromotionBox = ({ onClosePromotion }) => {
                 newCastleDirection[playerColor] = currentDir === 'both' ? 'left' : 'none';
             }
         }
-        dispatch(promoteAndMove({ newPosition, castleDirection: newCastleDirection }));
+        const nextPlayer = appState.playerTurn === 'white' ? 'black' : 'white';
+        const gameStatus = arbiter.getGameStatus({ 
+            position: newPosition, 
+            playerColor: nextPlayer, 
+            castleDirection: newCastleDirection 
+        });
+        dispatch(promoteAndMove({ newPosition, castleDirection: newCastleDirection, gameStatus }));
     }, [promotionSquare, appState.position, appState.castleDirection, dispatch, color]);
-    
     useEffect(() => {
         if (promotionSquare && variant === 'shatranj') {
             const promotionKey = `${promotionSquare.rank}-${promotionSquare.file}-${promotionSquare.targetRank}-${promotionSquare.targetFile}`;
@@ -69,12 +75,10 @@ const PromotionBox = ({ onClosePromotion }) => {
         processedPromotionRef.current = null;
         return null;
     }
-    
     const onClick = option => {
         handlePromotion(option);
         onClosePromotion?.();
     };
-    
     if (variant === 'shatranj') {
         return null;
     }

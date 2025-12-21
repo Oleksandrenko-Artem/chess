@@ -11,9 +11,9 @@ export const closePromotion = () => {
         type: actionTypes.PROMOTION_CLOSE,
     }
 };
-export const promoteAndMove = ({ newPosition, castleDirection }) => {
+export const promoteAndMove = ({ newPosition, castleDirection, gameStatus = 'ongoing' }) => {
     return {
         type: actionTypes.PROMOTION_MOVE,
-        payload: { newPosition, castleDirection }
+        payload: { newPosition, castleDirection, gameStatus }
     }
 };

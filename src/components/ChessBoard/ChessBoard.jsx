@@ -5,7 +5,6 @@ import styles from './ChessBoard.module.scss';
 import black_king from '../../assets/images/icons/black_king.png';
 import white_king from '../../assets/images/icons/white_king.png';
 import { useAppContext } from '../../contexts/Context';
-import { createPosition } from '../../helpers';
 import actionTypes from '../../reducers/actionTypes';
 import { initialGameState, initialOldGameState } from '../../constants';
     
@@ -43,7 +42,6 @@ const ChessBoard = () => {
     };
     return (
         <article className={styles['wrapper']}>
-            <h1>Chess Board</h1>
             <div className={styles['choose-color']}>
                 {start !== true && <div>
                     <div>
