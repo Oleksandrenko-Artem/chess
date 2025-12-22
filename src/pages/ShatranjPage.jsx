@@ -14,15 +14,27 @@ const ShatranjPage = () => {
         }
     }, [appState, navigate]);
     
-    const gameStatusMessage = appState?.status !== status.ongoing 
-        ? (appState?.status === status.white ? 'White wins!' : 'Black wins!')
-        : `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
-    const drawMessage = appState?.status === status.draw ? 'The game is a draw!' : null;
+    const gameStatusMessage = () => {
+        if (appState?.status === status.white) {
+            return 'White wins!';
+        }
+        if (appState?.status === status.black) {
+            return 'Black wins!';
+        }
+        if (appState?.status === status.draw) {
+            if (appState?.playerTurn === 'white') {
+                return 'Black wins!';
+            } else {
+                return 'White wins!';
+            }
+        }
+        return `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
+    };
     return (
         <div>
             <div className={styles['status-display']}>
                 <h1>Shatranj</h1>
-                <h2>{gameStatusMessage}{drawMessage && <span>{drawMessage}</span>}</h2>
+                <h2>{gameStatusMessage()}</h2>
             </div>
             <ChessBoard />
         </div>

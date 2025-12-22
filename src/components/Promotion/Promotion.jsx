@@ -10,7 +10,7 @@ const Promotion = () => {
     if (appState.status === status.ongoing) {
         return null;
     }
-    if (appState.status === status.white || appState.status === status.black) {
+    if (appState.status === status.white || appState.status === status.black || appState.status === status.draw) {
         return null;
     }
     const onClosePromotion = () => {
