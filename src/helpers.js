@@ -59,3 +59,20 @@ export const copyPosition = position => {
     }
     return newPosition;
 }
+export const areSameColorBishops = (coords1, coords2) => {
+    if (!coords1 || !coords2) {
+        return false;
+    }
+    return (coords1.x + coords1.y) % 2 === (coords2.x + coords2.y) % 2;
+};
+export const findPieceCoords = (position, pieceName) => {
+    let results = [];
+    for (let r = 0; r < 8; r++) {
+        for (let f = 0; f < 8; f++) {
+            if (position[r][f] === pieceName) {
+                results.push({ x: r, y: f });
+            }
+        }
+    }
+    return results;
+};
