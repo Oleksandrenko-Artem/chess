@@ -32,7 +32,7 @@ const ChessPage = () => {
                 <h1>Chess</h1>
                 <h2>{gameStatusMessage()}</h2>
             </div>
-            <ChessBoard />
+            <ChessBoard status={appState?.status} />
         </div>
     );
 };

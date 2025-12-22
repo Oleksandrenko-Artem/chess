@@ -4,11 +4,12 @@ import Promotion from '../Promotion/Promotion';
 import styles from './ChessBoard.module.scss';
 import black_king from '../../assets/images/icons/black_king.png';
 import white_king from '../../assets/images/icons/white_king.png';
-import { useAppContext } from '../../contexts/Context';
 import actionTypes from '../../reducers/actionTypes';
 import { initialGameState, initialOldGameState } from '../../constants';
+import { useAppContext } from '../../contexts/Context';
     
-const ChessBoard = () => {
+const ChessBoard = (props) => {
+    const { status, turn } = props;
     const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const horizontalAxisSecond = ["h", "g", "f", "e", "d", "c", "b", "a"];
     const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
@@ -40,12 +41,41 @@ const ChessBoard = () => {
             dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialOldGameState } });
         }
     };
+    const gameStatusStyle = () => {
+        if (start === false) {
+            return styles['game-status'];
+        } else if (status === 'White wins' || status === 'Black wins' || status === 'Draw') {
+            return styles['game-status'];
+        } else {
+            return styles['hide-game-status'];
+        }
+    }
+    console.log(status)
+    const gameStatusMessage = () => {
+        if (status === 'White wins') {
+            return 'White wins!';
+        }
+        if (status === 'Black wins') {
+            return 'Black wins!';
+        }
+        if (status === 'Draw') {
+            if (window.localStorage.getItem('chess_variant') === 'shatranj') {
+                if (turn === 'white') {
+                    return 'Black wins!';
+                } else {
+                    return 'White wins!';
+                }
+            }
+            return 'The game is a draw!';
+        }
+    };
     return (
         <article className={styles['wrapper']}>
-            <div className={styles['choose-color']}>
+            <div className={gameStatusStyle()}>
                 {start !== true && <div>
                     <div>
                         <span>Choose color</span>
+                        <h2>{gameStatusMessage()}</h2>
                         <div>
                             <img src={black_king} alt="white" onClick={onClickBlack} />
                             <img src={white_king} alt="black" onClick={onClickWhite} />
@@ -55,9 +85,21 @@ const ChessBoard = () => {
                         <button onClick={onClickStart}>Start</button>
                     </div>
                 </div>}
-                {start !== false && <div>
-                    <button onClick={onClickStartNew}>Start again</button>
-                </div>}
+                {status !== status.ongoing && start === true &&
+                    <div className={styles['game-message']}>
+                        <h2>{gameStatusMessage()}</h2>
+                        {status === 'White wins' ?
+                            (<img src={white_king} alt="white" />) :
+                            status === 'Black wins' ?
+                                (<img src={black_king} alt="black" />) : null}
+                        {window.localStorage.getItem('chess_variant') === 'shatranj' && status === 'Draw' && turn === 'white' ? (
+                            <img src={black_king} alt="white" />
+                        ) : window.localStorage.getItem('chess_variant') === 'shatranj' && status === 'Draw' && turn === 'black' ? (
+                            <img src={white_king} alt="black" />
+                        ) : null}
+                        <button onClick={onClickStartNew}>Start again</button>
+                    </div>
+                }
             </div>
             <div className={styles['coordinates']}>
                 <div className={verticalClass}>

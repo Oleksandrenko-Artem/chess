@@ -39,7 +39,7 @@ const ShatranjPage = () => {
                 <h1>Shatranj</h1>
                 <h2>{gameStatusMessage()}</h2>
             </div>
-            <ChessBoard />
+            <ChessBoard status={appState?.status} turn={appState?.playerTurn} />
         </div>
     );
 };
