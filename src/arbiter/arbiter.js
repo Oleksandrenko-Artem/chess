@@ -1,5 +1,6 @@
 import { getBishopMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves } from "./getMoves"
 import { status } from "../constants";
+import { areSameColorBishops, findPieceCoords } from "../helpers";
 
 const arbiter = {
     isSquareAttacked: function ({ position, rank, file, byPlayer }) {
@@ -154,7 +155,6 @@ const arbiter = {
 
         return attacks;
     },
-
     isKingInCheck: function ({ position, playerColor }) {
         const enemy = playerColor === 'white' ? 'black' : 'white';
         for (let r = 0; r < 8; r++) {
@@ -180,7 +180,7 @@ const arbiter = {
     },
     isMoveLegal: function ({ position, piece, fromRank, fromFile, toRank, toFile, castleDirection, playerColor }) {
         const newPosition = position.map(row => [...row]);
-        
+
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
@@ -233,20 +233,19 @@ const arbiter = {
             moves = getDinozavrMoves({ position, piece, rank, file });
         }
         const playerColor = piece.startsWith('white') ? 'white' : 'black';
-        return moves.filter(([toRank, toFile]) => 
-            this.isMoveLegal({ 
-                position, 
-                piece, 
-                fromRank: rank, 
-                fromFile: file, 
-                toRank, 
-                toFile, 
-                castleDirection: castleDirection, 
-                playerColor 
+        return moves.filter(([toRank, toFile]) =>
+            this.isMoveLegal({
+                position,
+                piece,
+                fromRank: rank,
+                fromFile: file,
+                toRank,
+                toFile,
+                castleDirection: castleDirection,
+                playerColor
             })
         );
     },
-
     getGameStatus: function ({ position, playerColor, castleDirection }) {
         try {
             const isInCheck = this.isKingInCheck({ position, playerColor });
@@ -256,8 +255,8 @@ const arbiter = {
                     const piece = position[r][f];
                     if (!piece || piece === '' || !piece.startsWith(playerColor)) continue;
                     try {
-                        const safeCastleDir = castleDirection && typeof castleDirection === 'object' 
-                            ? castleDirection[playerColor] 
+                        const safeCastleDir = castleDirection && typeof castleDirection === 'object'
+                            ? castleDirection[playerColor]
                             : 'both';
                         const validMoves = this.getRegularMoves({
                             position,
@@ -278,14 +277,48 @@ const arbiter = {
                 if (hasLegalMove) break;
             }
             if (isInCheck && !hasLegalMove) {
-                return playerColor === 'white' ? status.black : status.white; 
-            } else if (!isInCheck && !hasLegalMove) {
+                return playerColor === 'white' ? status.black : status.white;
+            } else if ((!isInCheck && !hasLegalMove) || (this.insufficientMaterial({ position }))) {
                 return status.draw;
             }
         } catch (error) {
             console.error(error);
         }
         return status.ongoing;
+    },
+    insufficientMaterial: function ({ position }) {
+        const pieces = [];
+        const pieceCounts = {};
+        for (let r = 0; r < 8; r++) {
+            for (let f = 0; f < 8; f++) {
+                const piece = position[r][f];
+                if (piece && piece !== '') {
+                    pieces.push(piece);
+                    pieceCounts[piece] = (pieceCounts[piece] || 0) + 1;
+                }
+            }
+        }
+        if (pieces.length === 2) {
+            return true;
+        }
+        if (pieces.length === 3) {
+            return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse'));
+        }
+        if (pieces.length === 4) {
+            const whiteHorse = pieceCounts['white_horse'] || 0;
+            const blackHorse = pieceCounts['black_horse'] || 0;
+            if (whiteHorse === 1 && blackHorse === 1) {
+                return true;
+            }
+            const whiteBishop = findPieceCoords(position, 'white_bishop');
+            const blackBishop = findPieceCoords(position, 'black_bishop');
+            if (whiteBishop.length === 1 && blackBishop.length === 1) {
+                if (areSameColorBishops(whiteBishop[0], blackBishop[0])) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 };
 

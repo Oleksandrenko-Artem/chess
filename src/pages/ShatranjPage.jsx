@@ -28,6 +28,9 @@ const ShatranjPage = () => {
                 return 'White wins!';
             }
         }
+        if (appState.status === status.white && arbiter.isBareKing(appState.position, 'black')) {
+            return 'White wins by Baring the King!';
+        }
         return `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
     };
     return (
