@@ -3,14 +3,14 @@ import { useAppContext } from '../../../contexts/Context';
 import { copyPosition } from '../../../helpers';
 import { promoteAndMove } from '../../../reducers/actions/promotion';
 import arbiter from '../../../arbiter/arbiter';
-import black_ferz from '../../../assets/images/icons/black_ferz.png';
-import black_rook from '../../../assets/images/icons/black_rook.png';
-import black_bishop from '../../../assets/images/icons/black_bishop.png';
-import black_horse from '../../../assets/images/icons/black_horse.png';
-import white_ferz from '../../../assets/images/icons/white_ferz.png';
-import white_rook from '../../../assets/images/icons/white_rook.png';
-import white_bishop from '../../../assets/images/icons/white_bishop.png';
-import white_horse from '../../../assets/images/icons/white_horse.png';
+import black_ferz from '../../../assets/icons/black_ferz.png';
+import black_rook from '../../../assets/icons/black_rook.png';
+import black_bishop from '../../../assets/icons/black_bishop.png';
+import black_horse from '../../../assets/icons/black_horse.png';
+import white_ferz from '../../../assets/icons/white_ferz.png';
+import white_rook from '../../../assets/icons/white_rook.png';
+import white_bishop from '../../../assets/icons/white_bishop.png';
+import white_horse from '../../../assets/icons/white_horse.png';
 import styles from '../../Pieces/Pieces.module.scss';
 
 const promoImageMap = {
