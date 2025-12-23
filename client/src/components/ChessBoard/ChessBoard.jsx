@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import Pieces from '../Pieces/Pieces';
 import Promotion from '../Promotion/Promotion';
 import styles from './ChessBoard.module.scss';
-import black_king from '../../assets/images/icons/black_king.png';
-import white_king from '../../assets/images/icons/white_king.png';
+import black_king from '../../assets/icons/black_king.png';
+import white_king from '../../assets/icons/white_king.png';
 import actionTypes from '../../reducers/actionTypes';
 import { initialGameState, initialOldGameState } from '../../constants';
 import { useAppContext } from '../../contexts/Context';
@@ -50,7 +50,6 @@ const ChessBoard = (props) => {
             return styles['hide-game-status'];
         }
     }
-    console.log(status)
     const gameStatusMessage = () => {
         if (status === 'White wins') {
             return 'White wins!';
