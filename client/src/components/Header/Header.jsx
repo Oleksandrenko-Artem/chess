@@ -7,17 +7,23 @@ const Header = (props) => {
     return (
         <header className={styles.header}>
             <div className={styles['header-logo']}>
-                <NavLink to='/'><img src="/src/assets/images/icons/black_horse.png" alt="logo" /></NavLink>
-                <NavLink to='/'>Chess</NavLink>
+                <div>
+                    <NavLink to='/'><img src="/src/assets/icons/black_horse.png" alt="logo" /></NavLink>
+                    <NavLink to='/'>Chess</NavLink>
+                </div>
+                <div className={styles.sign}>
+                    <NavLink to='/login' className={({ isActive }) => (isActive ? styles['active-link'] : undefined)}>Login</NavLink>{' '}
+                    <NavLink to='/register' className={({ isActive }) => (isActive ? styles['active-link'] : undefined)}>Register</NavLink>
+                </div>
             </div>
             <div className={styles['header-nav']}>
                 <nav>
                     <ul>
                         <li>
-                            <NavLink to='/play-chess' onClick={onPlayChess} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play chess</NavLink>
+                            <NavLink to='/play-chess' onClick={onPlayChess} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Play chess</NavLink>
                         </li>
                         <li>
-                            <NavLink to='/play-shatranj' onClick={onPlayShatranj} className={({ isActive }) => (isActive ? styles.active : undefined)}>Play shatranj</NavLink>
+                            <NavLink to='/play-shatranj' onClick={onPlayShatranj} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Play shatranj</NavLink>
                         </li>
                     </ul>
                 </nav>

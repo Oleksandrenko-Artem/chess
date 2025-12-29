@@ -4,12 +4,27 @@
     margin: 10px;
     .header-logo {
         display: flex;
+        align-items: center;
+        justify-content: space-between;
         a {
             color: black;
             font-size: 1.8em;
             font-weight: 700;
             img {
                 width: 40px;
+            }
+        }
+        .sign {
+            .active-link {
+                background-color: rgb(190, 190, 190);
+            }
+            a {
+                font-size: 1.05em;
+                font-weight: 600;
+                color: white;
+                background-color: grey;
+                border-radius: 10px;
+                padding: 8px;
             }
         }
     }
@@ -19,15 +34,16 @@
             flex-direction: row;
             gap: 20px;
             padding: 0;
-            .active {
+            .active-nav {
                 background-color: rgb(190, 190, 190);
             }
             a {
+                font-size: 1.05em;
+                font-weight: 600;
                 color: white;
-                text-transform: capitalize;
-                background-color: rgb(160, 160, 160);
-                border-radius: 5px;
-                padding: 10px;
+                background-color: grey;
+                border-radius: 10px;
+                padding: 8px;
             }
         }
     }

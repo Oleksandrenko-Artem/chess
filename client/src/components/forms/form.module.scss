@@ -1,0 +1,43 @@
+.form {
+    width: 520px;
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    h2 {
+        text-align: center;
+    }
+    label {
+        position: relative;
+        input {
+            width: 400px;
+            height: 35px;
+            font-size: 1.05em;
+            border-radius: 10px;
+            border: 1px solid lightgray;
+            padding-left: 10px;
+        }
+        .show-password {
+            display: flex;
+            position: absolute;
+            right: 0;
+            bottom: 0.9vh;
+            margin: 0px 15px;
+        }
+        .error {
+            color: red;
+        }
+    }
+    button {
+        width: 414px;
+        height: 39px;
+        font-size: 1.05em;
+        font-size: 1.05em;
+        font-weight: 600;
+        color: white;
+        background-color: grey;
+        border: none;
+        border-radius: 10px;
+    }
+}
