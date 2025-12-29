@@ -19,6 +19,8 @@ import black_soldier from '../../assets/icons/black_soldier.png';
 import black_elephant from '../../assets/icons/black_elephant.png';
 import black_firzan from '../../assets/icons/black_firzan.png';
 import black_dinozavr from '../../assets/icons/black_dinozavr.png';
+import black_tank from '../../assets/icons/black_tank.png';
+import black_camel from '../../assets/icons/black_camel.png';
 import white_imperator from '../../assets/icons/white_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import white_ferz from '../../assets/icons/white_ferz.png';
@@ -30,6 +32,8 @@ import white_soldier from '../../assets/icons/white_soldier.png';
 import white_elephant from '../../assets/icons/white_elephant.png';
 import white_firzan from '../../assets/icons/white_firzan.png';
 import white_dinozavr from '../../assets/icons/white_dinozavr.png';
+import white_tank from '../../assets/icons/white_tank.png';
+import white_camel from '../../assets/icons/white_camel.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
@@ -44,6 +48,8 @@ const imageMap = {
     black_elephant,
     black_firzan,
     black_dinozavr,
+    black_tank,
+    black_camel,
     white_imperator,
     white_king,
     white_ferz,
@@ -55,6 +61,8 @@ const imageMap = {
     white_elephant,
     white_firzan,
     white_dinozavr,
+    white_tank,
+    white_camel,
 };
 
 const getPieceImageSrc = (pieceName) => {

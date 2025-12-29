@@ -41,7 +41,7 @@ export const getHorseMoves = ({ position, rank, file }) => {
         [1, 2],
         [2, -1],
         [2, 1],
-    ]
+    ];
     valid.forEach(val => {
         const x = rank + val[0];
         const y = file + val[1];
@@ -60,7 +60,49 @@ export const getElephantMoves = ({ position, rank, file }) => {
         [-2, 2],
         [2, -2],
         [2, 2],
-    ]
+    ];
+    valid.forEach(val => {
+        const x = rank + val[0];
+        const y = file + val[1];
+        const cell = position?.[rank + val[0]]?.[file + val[1]];
+        if (cell !== undefined && (cell.startsWith(enemy) || cell === '')) {
+            moves.push([x, y]);
+        }
+    });
+    return moves;
+};
+export const getTankMoves = ({ position, rank, file }) => {
+    const moves = [];
+    const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
+    const valid = [
+        [-2, 0],
+        [2, 0],
+        [0, -2],
+        [0, 2]
+    ];
+    valid.forEach(val => {
+        const x = rank + val[0];
+        const y = file + val[1];
+        const cell = position?.[rank + val[0]]?.[file + val[1]];
+        if (cell !== undefined && (cell.startsWith(enemy) || cell === '')) {
+            moves.push([x, y]);
+        }
+    });
+    return moves;
+};
+export const getCamelMoves = ({ position, rank, file }) => {
+    const moves = [];
+    const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
+    const valid = [
+        [-3, -1],
+        [-3, 1],
+        [-1, -3],
+        [-1, 3],
+        [1, -3],
+        [1, 3],
+        [3, -1],
+        [3, 1],
+    ];
     valid.forEach(val => {
         const x = rank + val[0];
         const y = file + val[1];

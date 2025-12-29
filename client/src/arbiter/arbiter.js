@@ -1,4 +1,4 @@
-import { getBishopMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -85,6 +85,22 @@ const arbiter = {
                 [-2, -1], [-2, 1], [-1, -2], [-1, 2],
                 [1, -2], [1, 2], [2, -1], [2, 1],
             ];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('tank')) {
+            const jumps = [[-2, 0], [2, 0], [0, -2], [0, 2]];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('camel')) {
+            const jumps = [[-3, -1], [-3, 1], [-1, -3], [-1, 3], [1, -3], [1, 3], [3, -1], [3, 1]];
             jumps.forEach(([dr, df]) => {
                 const [r, f] = [rank + dr, file + df];
                 if (position?.[r]?.[f] !== undefined) {
@@ -217,6 +233,10 @@ const arbiter = {
             moves = getFirzanMoves({ position, piece, rank, file });
         } else if (piece.endsWith('elephant')) {
             moves = getElephantMoves({ position, rank, file });
+        } else if (piece.endsWith('tank')) {
+            moves = getTankMoves({ position, rank, file });
+        } else if (piece.endsWith('camel')) {
+            moves = getCamelMoves({ position, rank, file });
         } else if (piece.endsWith('horse')) {
             moves = getHorseMoves({ position, rank, file });
         } else if (piece.endsWith('bishop')) {
