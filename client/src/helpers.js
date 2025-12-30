@@ -49,6 +49,31 @@ export const createOldPosition = () => {
     position[0][7] = 'black_rook';
     return position;
 }
+export const createSpecialPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    for(let i = 0; i< 8; i++) {
+        position[6][i] = '';
+        position[1][i] = '';
+    }
+    position[7][0] = '';
+    position[7][1] = '';
+    position[7][2] = '';
+    position[7][3] = '';
+    position[7][4] = '';
+    position[7][5] = '';
+    position[7][6] = '';
+    position[7][7] = '';
+    position[0][0] = '';
+    position[0][1] = '';
+    position[0][2] = '';
+    position[0][3] = '';
+    position[0][4] = '';
+    position[0][5] = '';
+    position[0][6] = '';
+    position[0][7] = '';
+    return position;
+}
 export const copyPosition = position => {
     // eslint-disable-next-line no-unused-vars
     const newPosition = new Array(8).fill('').map(x => new Array(8).fill(''));

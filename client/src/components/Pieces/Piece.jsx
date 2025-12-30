@@ -10,7 +10,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     const classNames = `${baseClass}`;
     const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
     if (piece && (piece.endsWith('pawn') || piece.endsWith('soldier'))) {
-        style.marginTop = '5px';
+        style.marginTop = '11px';
         style.width = '40px';
     }
 

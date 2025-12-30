@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
-import { useAppContext } from '../contexts/Context';
-import ChessBoard from '../components/ChessBoard/ChessBoard';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../contexts/Context';
 import { status } from '../constants';
+import ChessBoard from '../components/ChessBoard/ChessBoard';
 import styles from './Pages.module.scss';
+import CreatePosition from '../components/CreatePosition/CreatePosition';
 
-const ChessPage = () => {
+const CreatePositionPage = () => {
     const navigate = useNavigate();
     const { appState } = useAppContext();
     useEffect(() => {
@@ -28,12 +29,12 @@ const ChessPage = () => {
     return (
         <div>
             <div className={styles['status-display']}>
-                <h1>Chess</h1>
+                <h1>Custom Position</h1>
                 <h2>{gameStatusMessage()}</h2>
             </div>
-            <ChessBoard status={appState?.status} />
+            <ChessBoard status={appState?.status} turn={appState?.playerTurn} />
         </div>
     );
-};
+}
 
-export default ChessPage;
+export default CreatePositionPage;

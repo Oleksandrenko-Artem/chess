@@ -74,6 +74,15 @@ export const reducer = (state, action) => {
                 castleDirection
             };
         }
+        case actionTypes.SET_POSITION: {
+            return {
+                ...state,
+                position: [
+                    ...state.position.slice(0, -1),
+                    action.payload.newPosition
+                ]
+            };
+        };
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };

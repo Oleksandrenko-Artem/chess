@@ -5,8 +5,9 @@ import styles from './ChessBoard.module.scss';
 import black_king from '../../assets/icons/black_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import actionTypes from '../../reducers/actionTypes';
-import { initialGameState, initialOldGameState } from '../../constants';
+import { initialGameState, initialOldGameState, initialSpecialGameState } from '../../constants';
 import { useAppContext } from '../../contexts/Context';
+import CreatePosition from '../CreatePosition/CreatePosition';
     
 const ChessBoard = (props) => {
     const { status, turn } = props;
@@ -40,6 +41,19 @@ const ChessBoard = (props) => {
             window.localStorage.setItem('chess_variant', 'shatranj');
             dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialOldGameState } });
         }
+        if (window.localStorage.getItem('chess_variant') === 'special') {
+            window.localStorage.setItem('chess_variant', 'special');
+            dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialSpecialGameState } });
+        }
+    };
+    const toggleOrientation = () => {
+        if (horizontalClass === 'white') {
+            setVerticalClass(styles['vertical-second']);
+            setHorizontalClass('black');
+        } else {
+            setVerticalClass(styles['vertical']);
+            setHorizontalClass('white');
+        }
     };
     const gameStatusStyle = () => {
         if (start === false) {
@@ -70,7 +84,7 @@ const ChessBoard = (props) => {
     };
     return (
         <article className={styles['wrapper']}>
-            <div className={gameStatusStyle()}>
+            {window.localStorage.getItem('chess_variant') !== 'special' && <div className={gameStatusStyle()}>
                 {start !== true && <div>
                     <div>
                         <span>Choose color</span>
@@ -99,7 +113,7 @@ const ChessBoard = (props) => {
                         <button onClick={onClickStartNew}>Start again</button>
                     </div>
                 }
-            </div>
+            </div>}
             <div className={styles['coordinates']}>
                 <div className={verticalClass}>
                     {verticalAxis.map(axis => <span key={axis}>{axis}</span>)}
@@ -119,6 +133,9 @@ const ChessBoard = (props) => {
                 <div className={styles['promotion-div']}>
                     <Promotion />
                 </div>
+                {window.localStorage.getItem('chess_variant') === 'special' && <div>
+                    <CreatePosition toggleOrientation={toggleOrientation} />
+                </div>}
             </div>
         </article>
     );

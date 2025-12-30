@@ -87,7 +87,7 @@ const Pieces = ({ flipped = false }) => {
                 await Promise.all(promises);
                 setImagesLoaded(true);
             } catch (error) {
-                console.error("Ошибка загрузки изображений:", error);
+                console.error(error);
                 setImagesLoaded(true); 
             }
         };
@@ -127,6 +127,22 @@ const Pieces = ({ flipped = false }) => {
         const file = parseInt(fileStr, 10);
         const targetRank = coords.x;
         const targetFile = coords.y;
+        if (rankStr === 'isNew') {
+            const newPosition = copyPosition(currentPosition);
+            if (p.endsWith('king')) {
+                const kingExists = currentPosition.some(row => row.includes(p));
+                if (kingExists) {
+                    alert("On chessboard can be only one " + (p.startsWith('white') ? "white" : "black") + " king!");
+                    return;
+                }
+            }
+            newPosition[targetRank][targetFile] = p;
+            dispatch({
+                type: actionTypes.SET_POSITION,
+                payload: { newPosition }
+            });
+            return;
+        }
         const isValidMove = appState.validMoves?.find(
             move => move[0] === targetRank && move[1] === targetFile
         );
@@ -185,7 +201,7 @@ const Pieces = ({ flipped = false }) => {
     }
     const onDragOver = e => e.preventDefault();
     if (!imagesLoaded) {
-        return <div>Загрузка фигур...</div>;
+        return <div>Loading pieces...</div>;
     }
     const position = appState.position[appState.position.length - 1]
     const isChecked = (() => {

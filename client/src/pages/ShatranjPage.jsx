@@ -13,7 +13,6 @@ const ShatranjPage = () => {
             navigate('/');
         }
     }, [appState, navigate]);
-    
     const gameStatusMessage = () => {
         if (appState?.status === status.white) {
             return 'White wins!';

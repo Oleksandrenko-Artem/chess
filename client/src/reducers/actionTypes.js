@@ -6,6 +6,7 @@ const actionTypes = {
     "PROMOTION_OPEN": "PROMOTION_OPEN",
     "PROMOTION_CLOSE": "PROMOTION_CLOSE",
     "PROMOTION_MOVE": "PROMOTION_MOVE",
+    "SET_POSITION": 'SET_POSITION',
 };
 
 export default actionTypes;

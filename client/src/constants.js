@@ -1,4 +1,4 @@
-import { createOldPosition, createPosition } from "./helpers";
+import { createOldPosition, createPosition, createSpecialPosition } from "./helpers";
 
 export const status = {
     'ongoing': 'Ongoing',
@@ -20,6 +20,17 @@ export const initialGameState = {
 };
 export const initialOldGameState = {
     position: [createOldPosition()],
+    playerTurn: 'white',
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+};
+export const initialSpecialGameState = {
+    position: [createSpecialPosition()],
     playerTurn: 'white',
     validMoves: [],
     status: status.ongoing,
