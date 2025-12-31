@@ -371,3 +371,49 @@ export const getDinozavrMoves = ({ position, piece, rank, file }) => {
     });
     return moves;
 };
+export const getGiraffeMoves = ({ position, rank, file }) => {
+    const moves = [];
+    const color = position[rank][file].startsWith('white') ? 'white' : 'black';
+    const diagonalDirections = [
+        { dr: 1, df: 1 }, { dr: 1, df: -1 }, { dr: -1, df: 1 }, { dr: -1, df: -1 }
+    ];
+    diagonalDirections.forEach(({ dr, df }) => {
+        const intermediateRank = rank + dr;
+        const intermediateFile = file + df;
+        if (intermediateRank >= 0 && intermediateRank < 8 && intermediateFile >= 0 && intermediateFile < 8) {
+            if (position[intermediateRank][intermediateFile] === '') {
+                const straightDirections = [
+                    { dr: 1, df: 0 }, { dr: -1, df: 0 }, { dr: 0, df: 1 }, { dr: 0, df: -1 }
+                ];
+                straightDirections.forEach(({ dr: sr, df: sf }) => {
+                    for (let steps = 3; steps <= 7; steps++) {
+                        const finalRank = intermediateRank + sr * steps;
+                        const finalFile = intermediateFile + sf * steps;
+                        if (finalRank >= 0 && finalRank < 8 && finalFile >= 0 && finalFile < 8) {
+                            const destinationPiece = position[finalRank][finalFile];
+                            const destinationColor = destinationPiece.startsWith('white') ? 'white' : 'black';
+                            let pathClear = true;
+                            for (let i = 1; i < steps; i++) {
+                                if (position[intermediateRank + sr * i][intermediateFile + sf * i] !== '') {
+                                    pathClear = false;
+                                    break;
+                                }
+                            }
+                            if (pathClear) {
+                                if (destinationPiece === '' || destinationColor !== color) {
+                                    moves.push([finalRank, finalFile]);
+                                }
+                                if (destinationPiece !== '') {
+                                     break; 
+                                }
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+    });
+    return moves;
+};

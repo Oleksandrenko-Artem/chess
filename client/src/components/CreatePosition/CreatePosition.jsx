@@ -13,6 +13,7 @@ import white_elephant from '../../assets/icons/white_elephant.png';
 import white_tank from '../../assets/icons/white_tank.png';
 import white_camel from '../../assets/icons/white_camel.png';
 import white_dinozavr from '../../assets/icons/white_dinozavr.png';
+import white_giraffe from '../../assets/icons/white_giraffe.png';
 import black_pawn from '../../assets/icons/black_soldier.png';
 import black_horse from '../../assets/icons/black_horse.png';
 import black_bishop from '../../assets/icons/black_bishop.png';
@@ -24,6 +25,7 @@ import black_elephant from '../../assets/icons/black_elephant.png';
 import black_tank from '../../assets/icons/black_tank.png';
 import black_camel from '../../assets/icons/black_camel.png';
 import black_dinozavr from '../../assets/icons/black_dinozavr.png';
+import black_giraffe from '../../assets/icons/black_giraffe.png';
 import styles from './CreatePosition.module.scss';
 
 const CreatePosition = (props) => {
@@ -64,6 +66,7 @@ const CreatePosition = (props) => {
                     <img src={white_elephant} alt="white_elephant" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_elephant,isNew`)} />
                     <img src={white_tank} alt="white_tank" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_tank,isNew`)} />
                     <img src={white_camel} alt="white_camel" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_camel,isNew`)} />
+                    <img src={white_giraffe} alt="white_giraffe" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_giraffe,isNew`)} />
                 </div>
                 <div>
                     <h3>Special</h3>
@@ -86,6 +89,7 @@ const CreatePosition = (props) => {
                     <img src={black_elephant} alt="black_elephant" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_elephant,isNew`)} />
                     <img src={black_tank} alt="black_tank" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_tank,isNew`)} />
                     <img src={black_camel} alt="black_camel" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_camel,isNew`)} />
+                    <img src={black_giraffe} alt="black_giraffe" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_giraffe,isNew`)} />
                 </div>
                 <div>
                     <h3>Special</h3>

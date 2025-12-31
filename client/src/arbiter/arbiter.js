@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -167,8 +167,43 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
+        } else if (piece.endsWith('giraffe')) {
+            const color = piece.startsWith('white') ? 'white' : 'black';
+            const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+            diagonalDirections.forEach(([dr1, df1]) => {
+                const intermediateRank = rank + dr1;
+                const intermediateFile = file + df1;
+                if (position?.[intermediateRank]?.[intermediateFile] === undefined) {
+                    return;
+                }
+                if (position[intermediateRank][intermediateFile] !== '') {
+                    return;
+                }
+                const straightDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                straightDirections.forEach(([sr, sf]) => {
+                    for (let i = 1; i <= 7; i++) {
+                        const finalRank = intermediateRank + i * sr;
+                        const finalFile = intermediateFile + i * sf;
+                        if (position?.[finalRank]?.[finalFile] === undefined) {
+                            break;
+                        }
+                        const destinationPiece = position[finalRank][finalFile];
+                        const destinationColor = destinationPiece.startsWith('white') ? 'white' : 'black';
+                        if (destinationPiece !== '' && i < 3) {
+                           break;
+                        }
+                        if (i >= 3) {
+                            if (destinationPiece === '' || destinationColor !== color) {
+                                attacks.push([finalRank, finalFile]);
+                            }
+                        }
+                        if (destinationPiece !== '') {
+                            break;
+                        }
+                    }
+                });
+            });
         }
-
         return attacks;
     },
     isKingInCheck: function ({ position, playerColor }) {
@@ -251,6 +286,8 @@ const arbiter = {
             moves = getFerzMoves({ position, piece, rank, file });
         } else if (piece.endsWith('dinozavr')) {
             moves = getDinozavrMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('giraffe')) {
+            moves = getGiraffeMoves({ position, piece, rank, file });
         }
         const playerColor = piece.startsWith('white') ? 'white' : 'black';
         return moves.filter(([toRank, toFile]) =>
