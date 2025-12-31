@@ -26,7 +26,7 @@ const Header = (props) => {
                             <NavLink to='/play-shatranj' onClick={onPlayShatranj} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Play shatranj</NavLink>
                         </li>
                         <li>
-                            <NavLink to='/create-position' onClick={onPlaySpecial}>Custom position</NavLink>
+                            <NavLink to='/create-position' onClick={onPlaySpecial} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Custom position</NavLink>
                         </li>
                     </ul>
                 </nav>
