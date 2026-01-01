@@ -1,0 +1,8 @@
+PATCH http://localhost:3000/users/69568a9e1ace0fd6b134e55b HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5NTY4YTllMWFjZTBmZDZiMTM0ZTU1YiIsImlhdCI6MTc2NzI3OTMxMiwiZXhwIjoxNzY3ODg0MTEyfQ.lQb3iFlmYPXohZy2amnWFmLJhDQgfX0s6B6scEslTt8
+
+{
+    "name": "user44",
+    "password": "user44@gmail.com"
+}
