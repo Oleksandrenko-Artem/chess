@@ -1,19 +1,27 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { useAppContext } from '../contexts/Context';
 import { status } from '../constants';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
 import styles from './Pages.module.scss';
-import CreatePosition from '../components/CreatePosition/CreatePosition';
+import { findUserAccountThunk } from '../store/usersSlice';
 
 const CreatePositionPage = () => {
+    const dispatch = useDispatch();
     const navigate = useNavigate();
     const { appState } = useAppContext();
+    const { user, error } = useSelector((state) => state.users);
     useEffect(() => {
-        if (!appState || !appState.position) {
+        if (!appState || !appState.position || error) {
             navigate('/');
         }
-    }, [appState, navigate]);
+    }, [appState, error, navigate]);
+    useEffect(() => {
+        if (!user) {
+            dispatch(findUserAccountThunk());  
+        }
+    }, [dispatch, user]);
     const gameStatusMessage = () => {
         if (appState?.status === status.white) {
             return 'White wins!';

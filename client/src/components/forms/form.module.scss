@@ -25,9 +25,6 @@
             bottom: 0.9vh;
             margin: 0px 15px;
         }
-        .error {
-            color: red;
-        }
     }
     button {
         width: 414px;
@@ -39,5 +36,9 @@
         background-color: grey;
         border: none;
         border-radius: 10px;
+    }
+    .error {
+        color: red;
+        text-transform: capitalize;
     }
 }

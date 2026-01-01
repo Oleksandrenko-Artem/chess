@@ -7,6 +7,9 @@ export const status = {
     'black': 'Black wins',
     'draw': 'Draw',
 };
+export const baseUrl = {
+    BASE_URL: 'http://localhost:3000',
+}
 export const initialGameState = {
     position: [createPosition()],
     playerTurn: 'white',

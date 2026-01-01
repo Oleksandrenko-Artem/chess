@@ -1,9 +1,16 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { logoutUserThunk } from '../../store/usersSlice';
 import styles from './Header.module.scss';
-import { Link, NavLink } from 'react-router-dom';
 
 const Header = (props) => {
+    const dispatch = useDispatch();
     const { onPlayChess, onPlayShatranj, onPlaySpecial } = props;
+    const { user } = useSelector((state) => state.users);
+    const logout = () => {
+        dispatch(logoutUserThunk());
+    };
     return (
         <header className={styles.header}>
             <div className={styles['header-logo']}>
@@ -12,8 +19,17 @@ const Header = (props) => {
                     <NavLink to='/'>Chess</NavLink>
                 </div>
                 <div className={styles.sign}>
-                    <NavLink to='/login' className={({ isActive }) => (isActive ? styles['active-link'] : undefined)}>Login</NavLink>{' '}
-                    <NavLink to='/register' className={({ isActive }) => (isActive ? styles['active-link'] : undefined)}>Register</NavLink>
+                    {user ? (
+                        <>
+                            <Link to="/account">Hi, {user?.name}</Link>
+                            <button onClick={logout}>Logout</button>
+                        </>
+                    ) : (
+                            <>
+                                <Link to="/login">Sign in</Link>{' '}
+                                <Link to="/register">Sign up</Link>
+                            </>
+                    )} 
                 </div>
             </div>
             <div className={styles['header-nav']}>
@@ -25,9 +41,9 @@ const Header = (props) => {
                         <li>
                             <NavLink to='/play-shatranj' onClick={onPlayShatranj} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Play shatranj</NavLink>
                         </li>
-                        <li>
+                        {user && <li>
                             <NavLink to='/create-position' onClick={onPlaySpecial} className={({ isActive }) => (isActive ? styles['active-nav'] : undefined)}>Custom position</NavLink>
-                        </li>
+                        </li>}
                     </ul>
                 </nav>
             </div>
