@@ -2,11 +2,14 @@
     background-color: rgb(255, 218, 187);
     border: 4px solid rgb(126, 94, 46);
     padding: 10px;
-    width: 340px;
+    width: 480px;
     height: 452px;
     div {
+        h3 {
+            margin: 10px;
+        }
         img {
-            padding: 5px;
+            padding: 0px 5px;
             background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
@@ -15,6 +18,7 @@
     .btns-div {
         display: flex;
         justify-content: space-between;
+        margin-bottom: 10px;
         button {
             cursor: pointer;
             font-size: 1.05em;
@@ -24,6 +28,51 @@
             border: none;
             border-radius: 10px;
             padding: 8px;
+            flex: 1;
+            margin: 0 5px;
+            &:hover {
+                background-color: rgb(106, 74, 26);
+            }
+        }
+    }
+    .board-colors {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin: 0 0 0 10px;
+        flex-wrap: wrap;
+        label {
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            color: rgb(126, 94, 46);
+        }
+        input[type="color"] {
+            width: 36px;
+            height: 36px;
+            background-color: rgb(126, 94, 46);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            &::-webkit-color-swatch {
+                border: 2px solid black;
+                border-radius: 4px;
+            }
+        }
+        .reset-colors-btn {
+            cursor: pointer;
+            font-size: 1.05em;
+            font-weight: 600;
+            color: rgb(255, 255, 255);
+            background-color: rgb(126, 94, 46);
+            border: none;
+            border-radius: 10px;
+            padding: 8px;
+            flex: 1;
+            margin: 0 5px;
+            &:hover {
+                background-color: rgb(106, 74, 26);
+            }
         }
     }
 }

@@ -97,7 +97,7 @@
                     position: relative;
                     width: 60px;
                     height: 60px;
-                    background-color: rgb(126, 94, 46);
+                    background-color: var(--dark-square-color, #7e5e2e);
                 }
                 .white-tile {
                     display: flex;
@@ -106,7 +106,7 @@
                     position: relative;
                     width: 60px;
                     height: 60px;
-                    background-color: rgb(255, 218, 187);
+                    background-color: var(--light-square-color, #ffdabb);
                 }
                 span {
                     margin-left: 10px;
