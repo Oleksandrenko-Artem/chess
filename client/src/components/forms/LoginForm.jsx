@@ -35,7 +35,7 @@ const LoginForm = () => {
             {() => (
                 <Form className={styles.form}>
                     <h2>Sign in</h2>
-                    {error && error.includes('401') && <p className={styles.error}>Unauthorized</p>}
+                    {error && error.includes('404') && <p className={styles.error}>Unauthorized</p>}
                     <label>
                         <Field name="email" type="email" placeholder="Email" />
                         <ErrorMessage name="email" component="div" className={styles.error} />

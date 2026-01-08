@@ -17,6 +17,7 @@ import RegisterForm from './components/forms/RegisterForm';
 import LoginForm from './components/forms/LoginForm';
 import CreatePositionPage from './pages/CreatePositionPage';
 import ProfilePage from './pages/ProfilePage';
+import { getStoredColor } from './utils/color';
 
 function App() {
   const dispathUser = useDispatch();
@@ -48,6 +49,22 @@ function App() {
   useEffect(() => {
     dispathUser(findUserAccountThunk());
   }, [dispathUser]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const DEFAULT_LIGHT_COLOR = '#ffdabb';
+      const DEFAULT_DARK_COLOR = '#7e5e2e';
+      try {
+        const light = getStoredColor('lightSquareColor', DEFAULT_LIGHT_COLOR);
+        const dark = getStoredColor('darkSquareColor', DEFAULT_DARK_COLOR);
+        document.documentElement.style.setProperty('--light-square-color', light);
+        document.documentElement.style.setProperty('--dark-square-color', dark);
+      } catch (e) {
+        document.documentElement.style.setProperty('--light-square-color', DEFAULT_LIGHT_COLOR);
+        document.documentElement.style.setProperty('--dark-square-color', DEFAULT_DARK_COLOR);
+      }
+    }
+  }, []);
   return (
     <AppContext.Provider value={providerState}>
       <BrowserRouter>

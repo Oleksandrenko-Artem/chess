@@ -36,6 +36,9 @@
         }
     }
     .header-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         ul {
             display: flex;
             flex-direction: row;
@@ -51,6 +54,25 @@
                 background-color: grey;
                 border-radius: 10px;
                 padding: 8px;
+            }
+        }
+        .rook-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background-color: rgb(200, 160, 120);
+            border-radius: 8px;
+            border: 2px solid rgb(126, 94, 46);
+            cursor: default;
+            img {
+                width: 24px;
+                height: 24px;
+            }
+            span {
+                font-size: 0.95em;
+                font-weight: 600;
+                color: white;
             }
         }
     }

@@ -15,9 +15,11 @@ const Homepage = () => {
             <h2>Users List</h2>
             <table className={styles.users}>
                 <thead>
-                    <th>Number</th>
-                    <th>Name</th>
-                    <th>Email</th>
+                    <tr>
+                       <th>Number</th>
+                        <th>Name</th>
+                        <th>Email</th> 
+                    </tr>
                 </thead>
                 <tbody>
                     {users?.map((user, index) => (

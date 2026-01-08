@@ -60,7 +60,7 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('rook')) {
+        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('rukh')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             directions.forEach(([dr, df]) => {
                 for (let i = 1; i < 8; i++) {
@@ -281,7 +281,7 @@ const arbiter = {
             moves = getImperatorMoves({ position, piece, rank, file });
         } else if (piece.endsWith('king')) {
             moves = getKingMoves({ position, piece, castleDirection, rank, file });
-        } else if (piece.endsWith('rook')) {
+        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('rukh')) {
             moves = getRookMoves({ position, piece, rank, file });
         } else if (piece.endsWith('ferz')) {
             moves = getFerzMoves({ position, piece, rank, file });

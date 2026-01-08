@@ -22,6 +22,8 @@ import black_dinozavr from '../../assets/icons/black_dinozavr.png';
 import black_tank from '../../assets/icons/black_tank.png';
 import black_camel from '../../assets/icons/black_camel.png';
 import black_giraffe from '../../assets/icons/black_giraffe.png';
+import black_sailboat from '../../assets/icons/black_sailboat.png';
+import black_rukh from '../../assets/icons/black_rukh.png';
 import white_imperator from '../../assets/icons/white_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import white_ferz from '../../assets/icons/white_ferz.png';
@@ -36,6 +38,8 @@ import white_dinozavr from '../../assets/icons/white_dinozavr.png';
 import white_tank from '../../assets/icons/white_tank.png';
 import white_camel from '../../assets/icons/white_camel.png';
 import white_giraffe from '../../assets/icons/white_giraffe.png';
+import white_sailboat from '../../assets/icons/white_sailboat.png';
+import white_rukh from '../../assets/icons/white_rukh.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
@@ -53,6 +57,8 @@ const imageMap = {
     black_tank,
     black_camel,
     black_giraffe,
+    black_sailboat,
+    black_rukh,
     white_imperator,
     white_king,
     white_ferz,
@@ -67,9 +73,25 @@ const imageMap = {
     white_tank,
     white_camel,
     white_giraffe,
+    white_sailboat,
+    white_rukh,
 };
 
 const getPieceImageSrc = (pieceName) => {
+    if (!pieceName) return '';
+    try {
+        if (pieceName.endsWith('_rook')) {
+            const rep = typeof window !== 'undefined' ? localStorage.getItem('replaceRook') : null;
+            if (rep === 'sailboat') {
+                return imageMap[pieceName.replace('rook', 'sailboat')] || imageMap[pieceName] || '';
+            }
+            if (rep === 'rukh') {
+                return imageMap[pieceName.replace('rook', 'rukh')] || imageMap[pieceName] || '';
+            }
+        }
+    } catch (e) {
+        // ignore and fallback to regular mapping
+    }
     return imageMap[pieceName] || '';
 };
 

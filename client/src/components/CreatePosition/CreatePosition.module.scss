@@ -6,7 +6,12 @@
     height: 452px;
     div {
         h3 {
-            margin: 10px;
+            margin: 0px;
+            text-align: center;
+        }
+        h4 {
+            color: rgb(255, 255, 255);
+            margin: 0px;
         }
         img {
             padding: 0px 5px;
@@ -72,6 +77,37 @@
             margin: 0 5px;
             &:hover {
                 background-color: rgb(106, 74, 26);
+            }
+        }
+    }
+    .replace-pieces {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        div {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            background-color: rgb(106, 74, 26);
+            border-radius: 10px;
+            padding: 3px;
+            .pieces-variants-text {
+                display: inherit;
+                flex-direction: row;
+            }
+            .pieces-variants {
+                display: inherit;
+                flex-direction: row;
+                justify-content: center;
+                border-radius: 10px;
+                padding: 1px;
+                border: 2px solid transparent;
+                transition: border-color 0.2s ease;
+                &.selected {
+                    border: 2px solid #4CAF50;
+                    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+                }
             }
         }
     }

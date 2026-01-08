@@ -11,6 +11,10 @@ import white_ferz from '../../../assets/icons/white_ferz.png';
 import white_rook from '../../../assets/icons/white_rook.png';
 import white_bishop from '../../../assets/icons/white_bishop.png';
 import white_horse from '../../../assets/icons/white_horse.png';
+import white_sailboat from '../../../assets/icons/white_sailboat.png';
+import white_rukh from '../../../assets/icons/white_rukh.png';
+import black_sailboat from '../../../assets/icons/black_sailboat.png';
+import black_rukh from '../../../assets/icons/black_rukh.png';
 import styles from '../../Pieces/Pieces.module.scss';
 
 const promoImageMap = {
@@ -18,10 +22,14 @@ const promoImageMap = {
     black_rook,
     black_bishop,
     black_horse,
+    black_sailboat,
+    black_rukh,
     white_ferz,
     white_rook,
     white_bishop,
     white_horse,
+    white_sailboat,
+    white_rukh,
 };
 
 const PromotionBox = ({ onClosePromotion }) => {
@@ -35,12 +43,21 @@ const PromotionBox = ({ onClosePromotion }) => {
     const { promotionSquare } = appState;
     const variant = typeof window !== 'undefined' ? window.localStorage.getItem('chess_variant') : 'chess';
     const color = promotionSquare?.targetRank === 0 ? 'white' : 'black';
+    const replaceSetting = typeof window !== 'undefined' ? localStorage.getItem('replaceRook') : null;
     const processedPromotionRef = useRef(null);
     const handlePromotion = useCallback((pieceName) => {
         if (!promotionSquare) return;
         const newPosition = copyPosition(appState.position[appState.position.length - 1]);
         newPosition[promotionSquare.rank][promotionSquare.file] = '';
-        newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${pieceName}`;
+        let finalPieceName = pieceName;
+        if (pieceName === 'rook') {
+            try {
+                const rep = typeof window !== 'undefined' ? localStorage.getItem('replaceRook') : null;
+                if (rep === 'sailboat') finalPieceName = 'sailboat';
+                else if (rep === 'rukh') finalPieceName = 'rukh';
+            } catch (e) {}
+        }
+        newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${finalPieceName}`;
         const newCastleDirection = { ...appState.castleDirection };
         const piece = appState.position[appState.position.length - 1][promotionSquare.targetRank]?.[promotionSquare.targetFile];
         if (piece && piece.endsWith('rook')) {
@@ -86,7 +103,8 @@ const PromotionBox = ({ onClosePromotion }) => {
         <div className={styles['promotion']}>
             {
                 options.map(option => {
-                    const keyName = `${color}_${option}`;
+                    const displayOption = option === 'rook' ? (replaceSetting === 'sailboat' ? 'sailboat' : replaceSetting === 'rukh' ? 'rukh' : 'rook') : option;
+                    const keyName = `${color}_${displayOption}`;
                     const imageSrc = promoImageMap[keyName];
                     const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
                     if (option === 'pawn') {
