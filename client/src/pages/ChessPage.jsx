@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import { useAppContext } from '../contexts/Context';
-import ChessBoard from '../components/ChessBoard/ChessBoard';
 import { useNavigate } from 'react-router-dom';
 import { status } from '../constants';
+import ChessBoard from '../components/ChessBoard/ChessBoard';
+import CapturedPieces from '../components/CapturedPieces/CapturedPieces';
 import styles from './Pages.module.scss';
 
 const ChessPage = () => {
@@ -31,7 +32,13 @@ const ChessPage = () => {
                 <h1>Chess</h1>
                 <h2>{gameStatusMessage()}</h2>
             </div>
-            <ChessBoard status={appState?.status} />
+            <div className={styles.wrapper}>
+                <ChessBoard status={appState?.status} />
+                <CapturedPieces 
+                    whiteCaptures={appState?.captured?.white || []} 
+                    blackCaptures={appState?.captured?.black || []} 
+                />
+            </div>
         </div>
     );
 };

@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAppContext } from '../contexts/Context';
 import { status } from '../constants';
+import { findUserAccountThunk } from '../store/usersSlice';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
 import styles from './Pages.module.scss';
-import { findUserAccountThunk } from '../store/usersSlice';
 
 const CreatePositionPage = () => {
     const dispatch = useDispatch();
@@ -40,7 +40,7 @@ const CreatePositionPage = () => {
                 <h1>Custom Position</h1>
                 <h2>{gameStatusMessage()}</h2>
             </div>
-            <ChessBoard status={appState?.status} turn={appState?.playerTurn} />
+            <ChessBoard status={appState?.status} />
         </div>
     );
 }

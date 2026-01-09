@@ -98,6 +98,23 @@ const getPieceImageSrc = (pieceName) => {
     }
     return imageMap[pieceName] || '';
 };
+const getActualPiece = (piece) => {
+    if (!piece) return piece;
+    try {
+        if (piece.endsWith('_rook')) {
+            const rep = typeof window !== 'undefined' ? localStorage.getItem('replaceRook') : null;
+            if (rep === 'sailboat') {
+                return piece.replace('rook', 'sailboat');
+            }
+            if (rep === 'rukh') {
+                return piece.replace('rook', 'rukh');
+            }
+        }
+    } catch (e) {
+        // ignore and return original
+    }
+    return piece;
+};
 
 const Pieces = ({ flipped = false }) => {
     const ref = useRef(null);
@@ -191,12 +208,27 @@ const Pieces = ({ flipped = false }) => {
             return; 
         }
         const newPosition = copyPosition(currentPosition);
+        const newCaptured = JSON.parse(JSON.stringify(appState.captured || { white: [], black: [] }));
+        if (currentPosition[targetRank][targetFile] && currentPosition[targetRank][targetFile] !== '') {
+            let capturedPiece = currentPosition[targetRank][targetFile];
+            capturedPiece = getActualPiece(capturedPiece);
+            const captureColor = capturedPiece.startsWith('white') ? 'white' : 'black';
+            const opponentColor = captureColor === 'white' ? 'black' : 'white';
+            newCaptured[opponentColor].push(capturedPiece);
+        }
         if (p.endsWith('pawn') && !newPosition[targetRank][targetFile] && targetFile !== file) {
             newPosition[rank][targetFile] = '';
         }
         if (p.endsWith('checkers') && Math.abs(targetRank - rank) === 2 && Math.abs(targetFile - file) === 2) {
             const capRank = (rank + targetRank) / 2;
             const capFile = (file + targetFile) / 2;
+            if (newPosition[capRank][capFile] && newPosition[capRank][capFile] !== '') {
+                let capturedPiece = newPosition[capRank][capFile];
+                capturedPiece = getActualPiece(capturedPiece);
+                const captureColor = capturedPiece.startsWith('white') ? 'white' : 'black';
+                const opponentColor = captureColor === 'white' ? 'black' : 'white';
+                newCaptured[opponentColor].push(capturedPiece);
+            }
             newPosition[capRank][capFile] = '';
         }
         newPosition[rank][file] = '';
@@ -231,7 +263,7 @@ const Pieces = ({ flipped = false }) => {
             playerColor: nextPlayer, 
             castleDirection: newCastleDirection 
         });
-        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection, gameStatus }));
+        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection, gameStatus, captured: newCaptured }));
         dispatch({type: actionTypes.CLEAR_VALID_MOVES});
     }
     const onDragOver = e => e.preventDefault();

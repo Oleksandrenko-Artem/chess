@@ -1,9 +1,9 @@
 import actionTypes from "../actionTypes";
 
-export const makeNewMove = ({ newPosition, castleDirection, gameStatus = 'ongoing' }) => {
+export const makeNewMove = ({ newPosition, castleDirection, gameStatus = 'ongoing', captured }) => {
     return {
         type: actionTypes.NEW_MOVE,
-        payload: { newPosition, castleDirection, gameStatus }
+        payload: { newPosition, castleDirection, gameStatus, captured }
     };
 };
 

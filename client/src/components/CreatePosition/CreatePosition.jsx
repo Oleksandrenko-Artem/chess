@@ -38,7 +38,7 @@ import black_checkers from '../../assets/icons/black_checkers.png';
 import styles from './CreatePosition.module.scss';
 
 const CreatePosition = (props) => {
-    const { toggleOrientation } = props;
+    const { toggleOrientation, handleHideCustomPanel } = props;
     const { dispatch } = useAppContext();
     const [color, setColor] = useState('white');
     const [pieceSailBoat, setPieceSailBoat] = useState(() => {
@@ -115,6 +115,7 @@ const CreatePosition = (props) => {
                 <button onClick={handleChangeColor}>Change color</button>
                 <button onClick={toggleOrientation}>Rotate</button>
                 <button onClick={handleResetPosition}>Reset position</button>
+                <button onClick={handleHideCustomPanel}>Hide</button>
             </div>
             <div className={styles['board-colors']}>
                 <label>

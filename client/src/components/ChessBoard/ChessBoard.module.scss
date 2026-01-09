@@ -61,6 +61,8 @@
     }
     .coordinates {
         display: flex;
+        flex-wrap: wrap;
+        justify-content: center;;
         .vertical {
             display: flex;
             text-align: center;

@@ -1,23 +1,26 @@
 import React, { useState } from 'react';
+import { initialGameState, initialOldGameState, initialSpecialGameState } from '../../constants';
+import { useAppContext } from '../../contexts/Context';
 import Pieces from '../Pieces/Pieces';
 import Promotion from '../Promotion/Promotion';
 import styles from './ChessBoard.module.scss';
 import black_king from '../../assets/icons/black_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import actionTypes from '../../reducers/actionTypes';
-import { initialGameState, initialOldGameState, initialSpecialGameState } from '../../constants';
-import { useAppContext } from '../../contexts/Context';
 import CreatePosition from '../CreatePosition/CreatePosition';
+import CapturedPieces from '../CapturedPieces/CapturedPieces';
     
 const ChessBoard = (props) => {
     const { status, turn } = props;
     const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];
     const horizontalAxisSecond = ["h", "g", "f", "e", "d", "c", "b", "a"];
     const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
-    const { dispatch } = useAppContext();
+    const { dispatch, appState } = useAppContext();
     const [verticalClass, setVerticalClass] = useState(styles['vertical']);
     const [horizontalClass, setHorizontalClass] = useState('white');
     const [start, setStart] = useState(false);
+    const [customPanel, setCustomPanel] = useState(true);
+    const [materialPanel, setMaterialPanel] = useState(false);
     const onClickWhite = () => {
         setVerticalClass(styles['vertical']);
         horizontalAxis.map(axis => <span key={axis}>{axis}</span>)
@@ -82,6 +85,10 @@ const ChessBoard = (props) => {
             return 'The game is a draw!';
         }
     };
+    const handleHideCustomPanel = () => {
+        setCustomPanel(!customPanel);
+        setMaterialPanel(!materialPanel);
+    }
     return (
         <article className={styles['wrapper']}>
             {window.localStorage.getItem('chess_variant') !== 'special' && <div className={gameStatusStyle()}>
@@ -133,8 +140,15 @@ const ChessBoard = (props) => {
                 <div className={styles['promotion-div']}>
                     <Promotion />
                 </div>
-                {window.localStorage.getItem('chess_variant') === 'special' && <div>
-                    <CreatePosition toggleOrientation={toggleOrientation} />
+                {materialPanel && <div>
+                    <CapturedPieces 
+                        whiteCaptures={appState?.captured?.white || []}
+                        blackCaptures={appState?.captured?.black || []}
+                        handleHideCustomPanel={handleHideCustomPanel}
+                    />
+                </div>}
+                {window.localStorage.getItem('chess_variant') === 'special' && customPanel && <div>
+                    <CreatePosition toggleOrientation={toggleOrientation} handleHideCustomPanel={handleHideCustomPanel} />
                 </div>}
             </div>
         </article>

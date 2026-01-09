@@ -4,7 +4,7 @@ import actionTypes from "./actionTypes";
 export const reducer = (state, action) => {
     switch (action.type) {
         case actionTypes.NEW_MOVE: {
-            let { playerTurn, position, castleDirection, status: gameStatus } = state;
+            let { playerTurn, position, castleDirection, status: gameStatus, captured } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -13,13 +13,17 @@ export const reducer = (state, action) => {
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
             }
+            if (action.payload.captured) {
+                captured = action.payload.captured;
+            }
             gameStatus = action.payload.gameStatus || status.ongoing;
             return {
                 ...state,
                 playerTurn,
                 position,
                 castleDirection,
-                status: gameStatus
+                status: gameStatus,
+                captured
             };
         };
         case actionTypes.GENERATE_VALID_MOVES: {
@@ -53,7 +57,7 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.PROMOTION_MOVE: {
-            let { playerTurn, position, castleDirection, status: gameStatus } = state;
+            let { playerTurn, position, castleDirection, status: gameStatus, captured } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -61,6 +65,9 @@ export const reducer = (state, action) => {
             ];
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
+            }
+            if (action.payload.captured) {
+                captured = action.payload.captured;
             }
             gameStatus = action.payload.gameStatus || status.ongoing;
             return {
@@ -71,7 +78,8 @@ export const reducer = (state, action) => {
                 validMoves: [],
                 selected: null,
                 promotionSquare: null,
-                castleDirection
+                castleDirection,
+                captured
             };
         }
         case actionTypes.SET_POSITION: {

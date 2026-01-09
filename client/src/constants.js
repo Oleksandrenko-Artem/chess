@@ -7,6 +7,27 @@ export const status = {
     'black': 'Black wins',
     'draw': 'Draw',
 };
+
+export const pieceValues = {
+    pawn: 1,
+    soldier: 1,
+    checkers: 1,
+    horse: 3,
+    elephant: 2,
+    firzan: 2,
+    tank: 2,
+    camel: 4,
+    giraffe: 5,
+    bishop: 3,
+    rook: 5,
+    sailboat: 5,
+    rukh: 6,
+    ferz: 9,
+    dinozavr: 17,
+    imperator: 20,
+    king: 20,
+};
+
 export const baseUrl = {
     BASE_URL: 'http://localhost:3000',
 }
@@ -20,6 +41,10 @@ export const initialGameState = {
         white: 'both',
         black: 'both',
     },
+    captured: {
+        white: [],
+        black: [],
+    },
 };
 export const initialOldGameState = {
     position: [createOldPosition()],
@@ -31,6 +56,10 @@ export const initialOldGameState = {
         white: 'both',
         black: 'both',
     },
+    captured: {
+        white: [],
+        black: [],
+    },
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
@@ -41,5 +70,9 @@ export const initialSpecialGameState = {
     castleDirection: {
         white: 'both',
         black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
     },
 };
