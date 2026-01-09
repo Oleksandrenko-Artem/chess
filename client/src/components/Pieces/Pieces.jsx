@@ -24,6 +24,7 @@ import black_camel from '../../assets/icons/black_camel.png';
 import black_giraffe from '../../assets/icons/black_giraffe.png';
 import black_sailboat from '../../assets/icons/black_sailboat.png';
 import black_rukh from '../../assets/icons/black_rukh.png';
+import black_checkers from '../../assets/icons/black_checkers.png';
 import white_imperator from '../../assets/icons/white_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import white_ferz from '../../assets/icons/white_ferz.png';
@@ -40,6 +41,7 @@ import white_camel from '../../assets/icons/white_camel.png';
 import white_giraffe from '../../assets/icons/white_giraffe.png';
 import white_sailboat from '../../assets/icons/white_sailboat.png';
 import white_rukh from '../../assets/icons/white_rukh.png';
+import white_checkers from '../../assets/icons/white_checkers.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
@@ -59,6 +61,7 @@ const imageMap = {
     black_giraffe,
     black_sailboat,
     black_rukh,
+    black_checkers,
     white_imperator,
     white_king,
     white_ferz,
@@ -75,6 +78,7 @@ const imageMap = {
     white_giraffe,
     white_sailboat,
     white_rukh,
+    white_checkers,
 };
 
 const getPieceImageSrc = (pieceName) => {
@@ -190,6 +194,11 @@ const Pieces = ({ flipped = false }) => {
         if (p.endsWith('pawn') && !newPosition[targetRank][targetFile] && targetFile !== file) {
             newPosition[rank][targetFile] = '';
         }
+        if (p.endsWith('checkers') && Math.abs(targetRank - rank) === 2 && Math.abs(targetFile - file) === 2) {
+            const capRank = (rank + targetRank) / 2;
+            const capFile = (file + targetFile) / 2;
+            newPosition[capRank][capFile] = '';
+        }
         newPosition[rank][file] = '';
         newPosition[targetRank][targetFile] = p;
         const isCastling = p.endsWith('king') && Math.abs(targetFile - file) === 2;
@@ -257,6 +266,14 @@ const Pieces = ({ flipped = false }) => {
                                 if (!isAttack && selected && selected.piece && selected.piece.endsWith('pawn')) {
                                     const fromFile = selected.from?.[1];
                                     if (fromFile !== undefined && fromFile !== realFile) {
+                                        isAttack = true;
+                                    }
+                                }
+                                if (!isAttack && selected && selected.piece && selected.piece.endsWith('checkers')) {
+                                    const fromRank = selected.from?.[0];
+                                    const fromFile = selected.from?.[1];
+                                    if (fromRank !== undefined && fromFile !== undefined &&
+                                        Math.abs(realRank - fromRank) === 2 && Math.abs(realFile - fromFile) === 2) {
                                         isAttack = true;
                                     }
                                 }

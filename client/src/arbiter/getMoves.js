@@ -418,3 +418,116 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
     });
     return moves;
 };
+export const getCheckersMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const targetRank = rank + direction;
+    if (targetRank >= 0 && targetRank <= 7) {
+        if (position?.[targetRank]?.[file - 1] !== undefined && position[targetRank][file - 1] === '') {
+            moves.push([targetRank, file - 1]);
+        }
+        if (position?.[targetRank]?.[file + 1] !== undefined && position[targetRank][file + 1] === '') {
+            moves.push([targetRank, file + 1]);
+        }
+    }
+    return moves;
+};
+export const getCheckersCaptures = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const enemy = piece.startsWith('white') ? 'black' : 'white';
+    const adjRankForward = rank + direction;
+    const landRankForward = rank + 2 * direction;
+    if (landRankForward >= 0 && landRankForward <= 7) {
+        if (position?.[adjRankForward]?.[file - 1] && position[adjRankForward][file - 1].startsWith(enemy)
+            && position?.[landRankForward]?.[file - 2] !== undefined && position[landRankForward][file - 2] === '') {
+            moves.push([landRankForward, file - 2]);
+        }
+        if (position?.[adjRankForward]?.[file + 1] && position[adjRankForward][file + 1].startsWith(enemy)
+            && position?.[landRankForward]?.[file + 2] !== undefined && position[landRankForward][file + 2] === '') {
+            moves.push([landRankForward, file + 2]);
+        }
+    }
+    const adjRankBackward = rank - direction;
+    const landRankBackward = rank - 2 * direction;
+    if (landRankBackward >= 0 && landRankBackward <= 7) {
+        if (position?.[adjRankBackward]?.[file - 1] && position[adjRankBackward][file - 1].startsWith(enemy)
+            && position?.[landRankBackward]?.[file - 2] !== undefined && position[landRankBackward][file - 2] === '') {
+            moves.push([landRankBackward, file - 2]);
+        }
+        if (position?.[adjRankBackward]?.[file + 1] && position[adjRankBackward][file + 1].startsWith(enemy)
+            && position?.[landRankBackward]?.[file + 2] !== undefined && position[landRankBackward][file + 2] === '') {
+            moves.push([landRankBackward, file + 2]);
+        }
+    }
+    
+    return moves;
+};
+export const getCheckersMultipleJumps = ({ position, piece, rank, file, visited = [] }) => {
+    const moves = [];
+    const direction = piece.startsWith('white') ? -1 : 1;
+    const enemy = piece.startsWith('white') ? 'black' : 'white';
+    for (let df of [-1, 1]) {
+        const adjRank = rank + direction;
+        const adjFile = file + df;
+        const landRank = rank + 2 * direction;
+        const landFile = file + 2 * df;
+        if (landRank >= 0 && landRank <= 7 && landFile >= 0 && landFile <= 7 &&
+            position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+            position[landRank][landFile] === '' &&
+            !visited.some(v => v[0] === adjRank && v[1] === adjFile)) {
+            const currentJump = [landRank, landFile];
+            const newVisited = [...visited, [adjRank, adjFile]];
+            const newPosition = position.map(r => [...r]);
+            newPosition[rank][file] = '';
+            newPosition[landRank][landFile] = piece;
+            newPosition[adjRank][adjFile] = '';
+            const furtherJumps = getCheckersMultipleJumps({
+                position: newPosition,
+                piece,
+                rank: landRank,
+                file: landFile,
+                visited: newVisited
+            });
+            if (furtherJumps.length > 0) {
+                furtherJumps.forEach(jump => {
+                    moves.push([currentJump, ...jump]);
+                });
+            } else {
+                moves.push([currentJump]);
+            }
+        }
+    }
+    for (let df of [-1, 1]) {
+        const adjRank = rank - direction;
+        const adjFile = file + df;
+        const landRank = rank - 2 * direction;
+        const landFile = file + 2 * df;
+        if (landRank >= 0 && landRank <= 7 && landFile >= 0 && landFile <= 7 &&
+            position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+            position[landRank][landFile] === '' &&
+            !visited.some(v => v[0] === adjRank && v[1] === adjFile)) {
+            const currentJump = [landRank, landFile];
+            const newVisited = [...visited, [adjRank, adjFile]];
+            const newPosition = position.map(r => [...r]);
+            newPosition[rank][file] = '';
+            newPosition[landRank][landFile] = piece;
+            newPosition[adjRank][adjFile] = '';
+            const furtherJumps = getCheckersMultipleJumps({
+                position: newPosition,
+                piece,
+                rank: landRank,
+                file: landFile,
+                visited: newVisited
+            });
+            if (furtherJumps.length > 0) {
+                furtherJumps.forEach(jump => {
+                    moves.push([currentJump, ...jump]);
+                });
+            } else {
+                moves.push([currentJump]);
+            }
+        }
+    }
+    return moves;
+};

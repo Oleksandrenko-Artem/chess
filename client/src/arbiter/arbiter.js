@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -204,7 +204,36 @@ const arbiter = {
                     }
                 });
             });
-        }
+        } else if (piece.endsWith('checkers')) {
+            const us = piece.startsWith('white') ? 'white' : 'black';
+            const direction = us === 'white' ? -1 : 1;
+            for (let df of [-1, 1]) {
+                const [r, f] = [rank + direction, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            }
+            for (let df of [-1, 1]) {
+                const adjRank = rank + direction;
+                const adjFile = file + df;
+                const landRank = rank + 2 * direction;
+                const landFile = file + 2 * df;
+                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile] !== '' &&
+                    position?.[landRank]?.[landFile] !== undefined) {
+                    attacks.push([landRank, landFile]);
+                }
+            }
+            for (let df of [-1, 1]) {
+                const adjRank = rank - direction;
+                const adjFile = file + df;
+                const landRank = rank - 2 * direction;
+                const landFile = file + 2 * df;
+                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile] !== '' &&
+                    position?.[landRank]?.[landFile] !== undefined) {
+                    attacks.push([landRank, landFile]);
+                }
+            }
+        } 
         return attacks;
     },
     isKingInCheck: function ({ position, playerColor }) {
@@ -236,6 +265,12 @@ const arbiter = {
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
+        if (piece.endsWith('checkers') && Math.abs(toRank - fromRank) === 2 && Math.abs(toFile - fromFile) === 2) {
+            const capRank = (fromRank + toRank) / 2;
+            const capFile = (fromFile + toFile) / 2;
+            newPosition[capRank][capFile] = '';
+        }
+
         if (piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
             if (toFile === 2) {
                 newPosition[fromRank][0] = '';
@@ -253,6 +288,7 @@ const arbiter = {
         }
         return !this.isKingInCheck({ position: newPosition, playerColor });
     },
+
     getRegularMoves: function ({ position, prevPosition, castleDirection, piece, rank, file }) {
         let moves = [];
         if (piece.endsWith('pawn')) {
@@ -289,6 +325,11 @@ const arbiter = {
             moves = getDinozavrMoves({ position, piece, rank, file });
         } else if (piece.endsWith('giraffe')) {
             moves = getGiraffeMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('checkers')) {
+            moves = [
+                ...getCheckersMoves({ position, piece, rank, file }),
+                ...getCheckersCaptures({ position, piece, rank, file }),
+            ];
         }
         const playerColor = piece.startsWith('white') ? 'white' : 'black';
         return moves.filter(([toRank, toFile]) =>

@@ -19,6 +19,7 @@ import white_dinozavr from '../../assets/icons/white_dinozavr.png';
 import white_giraffe from '../../assets/icons/white_giraffe.png';
 import white_sailboat from '../../assets/icons/white_sailboat.png';
 import white_rukh from '../../assets/icons/white_rukh.png';
+import white_checkers from '../../assets/icons/white_checkers.png';
 import black_pawn from '../../assets/icons/black_soldier.png';
 import black_horse from '../../assets/icons/black_horse.png';
 import black_bishop from '../../assets/icons/black_bishop.png';
@@ -33,6 +34,7 @@ import black_dinozavr from '../../assets/icons/black_dinozavr.png';
 import black_giraffe from '../../assets/icons/black_giraffe.png';
 import black_sailboat from '../../assets/icons/black_sailboat.png';
 import black_rukh from '../../assets/icons/black_rukh.png';
+import black_checkers from '../../assets/icons/black_checkers.png';
 import styles from './CreatePosition.module.scss';
 
 const CreatePosition = (props) => {
@@ -149,6 +151,7 @@ const CreatePosition = (props) => {
                 <div>
                     <h3>Special Pieces</h3>
                     <img src={white_dinozavr} alt="white_dinozavr" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_dinozavr,isNew`)} />
+                    <img src={white_checkers} alt="white_checkers" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_checkers,isNew`)} />
                 </div>
                 <div className={styles['replace-pieces']}>
                     <div>
@@ -198,6 +201,7 @@ const CreatePosition = (props) => {
                 <div>
                     <h3>Special Pieces</h3>
                     <img src={black_dinozavr} alt="black_dinozavr" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_dinozavr,isNew`)} />
+                    <img src={black_checkers} alt="black_checkers" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_checkers,isNew`)} />
                 </div>
                 <div className={styles['replace-pieces']}>
                     <div>
