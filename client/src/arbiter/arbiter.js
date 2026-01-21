@@ -169,7 +169,6 @@ const arbiter = {
                 }
             });
         } else if (piece.endsWith('giraffe')) {
-            const color = piece.startsWith('white') ? 'white' : 'black';
             const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
             diagonalDirections.forEach(([dr1, df1]) => {
                 const intermediateRank = rank + dr1;
@@ -188,17 +187,16 @@ const arbiter = {
                         if (position?.[finalRank]?.[finalFile] === undefined) {
                             break;
                         }
+                        const distanceFromOrigin = Math.max(Math.abs(finalRank - rank), Math.abs(finalFile - file));
+                        if (distanceFromOrigin < 2) {
+                            break;
+                        }
+                        
                         const destinationPiece = position[finalRank][finalFile];
-                        const destinationColor = destinationPiece.startsWith('white') ? 'white' : 'black';
-                        if (destinationPiece !== '' && i < 3) {
-                           break;
-                        }
-                        if (i >= 3) {
-                            if (destinationPiece === '' || destinationColor !== color) {
-                                attacks.push([finalRank, finalFile]);
-                            }
-                        }
-                        if (destinationPiece !== '') {
+                        if (destinationPiece === '') {
+                            attacks.push([finalRank, finalFile]);
+                        } else {
+                            attacks.push([finalRank, finalFile]);
                             break;
                         }
                     }
@@ -206,20 +204,26 @@ const arbiter = {
             });
         } else if (piece.endsWith('checkers')) {
             const us = piece.startsWith('white') ? 'white' : 'black';
+            const enemy = us === 'white' ? 'black' : 'white';
             const direction = us === 'white' ? -1 : 1;
-            for (let df of [-1, 1]) {
-                const [r, f] = [rank + direction, file + df];
+            const diagonalSquares = [
+                [rank - 1, file - 1],
+                [rank - 1, file + 1],
+                [rank + 1, file - 1],
+                [rank + 1, file + 1],
+            ];
+            diagonalSquares.forEach(([r, f]) => {
                 if (position?.[r]?.[f] !== undefined) {
                     attacks.push([r, f]);
                 }
-            }
+            });
             for (let df of [-1, 1]) {
                 const adjRank = rank + direction;
                 const adjFile = file + df;
                 const landRank = rank + 2 * direction;
                 const landFile = file + 2 * df;
-                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile] !== '' &&
-                    position?.[landRank]?.[landFile] !== undefined) {
+                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                    position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
                     attacks.push([landRank, landFile]);
                 }
             }
@@ -228,8 +232,8 @@ const arbiter = {
                 const adjFile = file + df;
                 const landRank = rank - 2 * direction;
                 const landFile = file + 2 * df;
-                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile] !== '' &&
-                    position?.[landRank]?.[landFile] !== undefined) {
+                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                    position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
                     attacks.push([landRank, landFile]);
                 }
             }
@@ -259,7 +263,7 @@ const arbiter = {
             }
         }
     },
-    isMoveLegal: function ({ position, piece, fromRank, fromFile, toRank, toFile, castleDirection, playerColor }) {
+    isMoveLegal: function ({ position, piece, fromRank, fromFile, toRank, toFile, playerColor }) {
         const newPosition = position.map(row => [...row]);
 
         newPosition[fromRank][fromFile] = '';

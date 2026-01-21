@@ -375,6 +375,7 @@ export const getDinozavrMoves = ({ position, piece, rank, file }) => {
 export const getGiraffeMoves = ({ position, rank, file }) => {
     const moves = [];
     const color = position[rank][file].startsWith('white') ? 'white' : 'black';
+    const enemy = color === 'white' ? 'black' : 'white';
     const diagonalDirections = [
         { dr: 1, df: 1 }, { dr: 1, df: -1 }, { dr: -1, df: 1 }, { dr: -1, df: -1 }
     ];
@@ -387,26 +388,22 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
                     { dr: 1, df: 0 }, { dr: -1, df: 0 }, { dr: 0, df: 1 }, { dr: 0, df: -1 }
                 ];
                 straightDirections.forEach(({ dr: sr, df: sf }) => {
-                    for (let steps = 3; steps <= 7; steps++) {
-                        const finalRank = intermediateRank + sr * steps;
-                        const finalFile = intermediateFile + sf * steps;
-                        if (finalRank >= 0 && finalRank < 8 && finalFile >= 0 && finalFile < 8) {
-                            const destinationPiece = position[finalRank][finalFile];
-                            const destinationColor = destinationPiece.startsWith('white') ? 'white' : 'black';
-                            let pathClear = true;
-                            for (let i = 1; i < steps; i++) {
-                                if (position[intermediateRank + sr * i][intermediateFile + sf * i] !== '') {
-                                    pathClear = false;
-                                    break;
-                                }
+                    for (let steps = 1; steps <= 7; steps++) {
+                        const checkRank = intermediateRank + sr * steps;
+                        const checkFile = intermediateFile + sf * steps;
+                        if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
+                            const distanceFromOrigin = Math.max(Math.abs(checkRank - rank), Math.abs(checkFile - file));
+                            if (distanceFromOrigin < 2) {
+                                break;
                             }
-                            if (pathClear) {
-                                if (destinationPiece === '' || destinationColor !== color) {
-                                    moves.push([finalRank, finalFile]);
-                                }
-                                if (destinationPiece !== '') {
-                                     break; 
-                                }
+                            const checkPiece = position[checkRank][checkFile];
+                            if (checkPiece === '') {
+                                moves.push([checkRank, checkFile]);
+                            } else if (checkPiece.startsWith(enemy)) {
+                                moves.push([checkRank, checkFile]);
+                                break;
+                            } else {
+                                break;
                             }
                         } else {
                             break;
@@ -461,73 +458,5 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
         }
     }
     
-    return moves;
-};
-export const getCheckersMultipleJumps = ({ position, piece, rank, file, visited = [] }) => {
-    const moves = [];
-    const direction = piece.startsWith('white') ? -1 : 1;
-    const enemy = piece.startsWith('white') ? 'black' : 'white';
-    for (let df of [-1, 1]) {
-        const adjRank = rank + direction;
-        const adjFile = file + df;
-        const landRank = rank + 2 * direction;
-        const landFile = file + 2 * df;
-        if (landRank >= 0 && landRank <= 7 && landFile >= 0 && landFile <= 7 &&
-            position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
-            position[landRank][landFile] === '' &&
-            !visited.some(v => v[0] === adjRank && v[1] === adjFile)) {
-            const currentJump = [landRank, landFile];
-            const newVisited = [...visited, [adjRank, adjFile]];
-            const newPosition = position.map(r => [...r]);
-            newPosition[rank][file] = '';
-            newPosition[landRank][landFile] = piece;
-            newPosition[adjRank][adjFile] = '';
-            const furtherJumps = getCheckersMultipleJumps({
-                position: newPosition,
-                piece,
-                rank: landRank,
-                file: landFile,
-                visited: newVisited
-            });
-            if (furtherJumps.length > 0) {
-                furtherJumps.forEach(jump => {
-                    moves.push([currentJump, ...jump]);
-                });
-            } else {
-                moves.push([currentJump]);
-            }
-        }
-    }
-    for (let df of [-1, 1]) {
-        const adjRank = rank - direction;
-        const adjFile = file + df;
-        const landRank = rank - 2 * direction;
-        const landFile = file + 2 * df;
-        if (landRank >= 0 && landRank <= 7 && landFile >= 0 && landFile <= 7 &&
-            position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
-            position[landRank][landFile] === '' &&
-            !visited.some(v => v[0] === adjRank && v[1] === adjFile)) {
-            const currentJump = [landRank, landFile];
-            const newVisited = [...visited, [adjRank, adjFile]];
-            const newPosition = position.map(r => [...r]);
-            newPosition[rank][file] = '';
-            newPosition[landRank][landFile] = piece;
-            newPosition[adjRank][adjFile] = '';
-            const furtherJumps = getCheckersMultipleJumps({
-                position: newPosition,
-                piece,
-                rank: landRank,
-                file: landFile,
-                visited: newVisited
-            });
-            if (furtherJumps.length > 0) {
-                furtherJumps.forEach(jump => {
-                    moves.push([currentJump, ...jump]);
-                });
-            } else {
-                moves.push([currentJump]);
-            }
-        }
-    }
     return moves;
 };
