@@ -1,0 +1,13 @@
+@mixin border-button($grey100) {
+    border: 1px solid $grey100;
+}
+@mixin link-style($linkWidth, $linkHeight, $linkLineHeight) {
+    width: $linkWidth;
+    height: $linkHeight;
+    line-height: $linkLineHeight;
+}
+@mixin button-style($buttonWidth, $buttonHeight, $buttonPadding) {
+    width: $buttonWidth;
+    height: $buttonHeight;
+    padding: $buttonPadding;
+}

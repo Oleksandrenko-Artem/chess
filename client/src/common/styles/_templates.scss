@@ -1,0 +1,16 @@
+@use '/src/common/styles/colors' as *;
+
+%btn-style {
+    cursor: pointer;
+    font-size: 1.8vh;
+    font-weight: 600;
+    text-align: center;
+    color: $btnColor;
+    background: var(--btn-style-color);
+    border: var(--btn-border);
+    border-radius: var(--btn-radius);
+    transition: 1s;
+    &:hover {
+        background: var(--btn-hover);
+    }
+}

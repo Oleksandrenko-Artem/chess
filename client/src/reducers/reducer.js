@@ -91,6 +91,11 @@ export const reducer = (state, action) => {
                 ]
             };
         };
+        case actionTypes.TOGGLE_ORIENTATION:
+            return {
+                ...state,
+                orientation: state.orientation === 'white' ? 'black' : 'white'
+            };
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };

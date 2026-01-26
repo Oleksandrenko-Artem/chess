@@ -35,10 +35,6 @@ const ShatranjPage = () => {
     };
     return (
         <div>
-            <div className={styles['status-display']}>
-                <h1>Shatranj</h1>
-                <h2>{gameStatusMessage()}</h2>
-            </div>
             <div className={styles.wrapper}>
                 <ChessBoard status={appState?.status} />
                 <CapturedPieces 

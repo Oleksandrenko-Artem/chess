@@ -67,7 +67,6 @@
             display: flex;
             text-align: center;
             flex-direction: column-reverse;
-            color: black;
             width: 30px;
             gap: 37px;
             padding-bottom: 20px;
@@ -76,7 +75,6 @@
             display: flex;
             text-align: center;
             flex-direction: column;
-            color: black;
             width: 30px;
             gap: 37px;
             padding-bottom: 20px;
@@ -122,13 +120,11 @@
     }
     .horizontal {
         span {
-            color: black;
             padding: 26px;
         }
     }
     .horizontal-second {
         span {
-            color: black;
             padding: 26px;
         }
     }

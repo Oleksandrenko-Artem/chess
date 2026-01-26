@@ -18,6 +18,7 @@ import LoginForm from './components/forms/LoginForm';
 import CreatePositionPage from './pages/CreatePositionPage';
 import ProfilePage from './pages/ProfilePage';
 import { getStoredColor } from './utils/color';
+import InfoPage from './pages/InfoPage';
 
 function App() {
   const dispathUser = useDispatch();
@@ -77,7 +78,8 @@ function App() {
           <Route path='/play-chess' element={<ChessPage />} />
           <Route path='/play-shatranj' element={<ShatranjPage />} />
           <Route path='/create-position' element={<CreatePositionPage />} />
-          
+          <Route path='/info' element={<InfoPage />} />
+
           <Route path='*' element={<NotFoundPage />} />
         </Routes>
       <Footer />

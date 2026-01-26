@@ -7,7 +7,6 @@ export const status = {
     'black': 'Black wins',
     'draw': 'Draw',
 };
-
 export const pieceValues = {
     pawn: 1,
     soldier: 1,
@@ -27,7 +26,11 @@ export const pieceValues = {
     imperator: 20,
     king: 20,
 };
-
+export const pieces = {
+    pawn: 'pawn',
+    horse: 'horse',
+    bishop: 'hishop',
+};
 export const baseUrl = {
     BASE_URL: 'http://localhost:3000',
 }
@@ -45,6 +48,7 @@ export const initialGameState = {
         white: [],
         black: [],
     },
+    orientation: 'white',
 };
 export const initialOldGameState = {
     position: [createOldPosition()],

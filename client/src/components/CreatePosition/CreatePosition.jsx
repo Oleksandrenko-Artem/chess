@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../../contexts/Context';
 import { initialSpecialGameState } from '../../constants';
 import { Icon } from '@mdi/react';
@@ -40,7 +41,9 @@ import styles from './CreatePosition.module.scss';
 const CreatePosition = (props) => {
     const { toggleOrientation, handleHideCustomPanel } = props;
     const { dispatch } = useAppContext();
+    const { t } = useTranslation();
     const [color, setColor] = useState('white');
+    const [piecesStyle, setPiecesStyle] = useState('standart');
     const [pieceSailBoat, setPieceSailBoat] = useState(() => {
         try {
             if (typeof window === 'undefined') return false;
@@ -109,127 +112,101 @@ const CreatePosition = (props) => {
             }
         } catch (e) {}
     };
+    const handlePiecesChange = (event) => {
+        setPiecesStyle(event.target.value);
+    };
+    const handleToggle = () => {
+        dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
+    };
     return (
         <div className={styles.wrapper}>
             <div className={styles['btns-div']}>
-                <button onClick={handleChangeColor}>Change color</button>
-                <button onClick={toggleOrientation}>Rotate</button>
-                <button onClick={handleResetPosition}>Reset position</button>
-                <button onClick={handleHideCustomPanel}>Hide</button>
-            </div>
-            <div className={styles['board-colors']}>
-                <label>
-                    Light tiles:
-                </label>
-                <input type="color" value={lightSquareColor} onChange={(e) => setLightSquareColor(e.target.value)} />
-                <label>
-                    Dark tiles:
-                </label>
-                <input type="color" value={darkSquareColor} onChange={(e) => setDarkSquareColor(e.target.value)} />
-                <button onClick={handleResetBoardColors} className={styles['reset-colors-btn']}>
-                    Reset colors
-                </button>
+                <div>
+                    <select value={piecesStyle} onChange={handlePiecesChange}>
+                        <option value="standart">{t('custom_panel.standart_pieces')}</option>
+                        <option value="old">{t('custom_panel.old_pieces')}</option>
+                        <option value="special">{t('custom_panel.special_pieces')}</option>
+                    </select>
+                    <button onClick={handleChangeColor}>{t('custom_panel.change_color')}</button>
+                    <button onClick={handleToggle}>{t('custom_panel.rotate_board')}</button>
+                    <button onClick={handleResetPosition}>{t('custom_panel.reset_position')}</button>
+                    <input type="color" value={lightSquareColor} onChange={(e) => setLightSquareColor(e.target.value)} />
+                    <input type="color" value={darkSquareColor} onChange={(e) => setDarkSquareColor(e.target.value)} />
+                    <button onClick={handleResetBoardColors} className={styles['reset-colors-btn']}>
+                        {t('custom_panel.reset_colors')}
+                    </button>
+                </div>
+                <div className={styles['replace-pieces']}>
+                    <div>
+                        <div onClick={handleReplacePieceSailBoat} className={`${styles['pieces-variants']} ${pieceSailBoat ? styles['selected'] : ''}`}>
+                            {color === 'white' ? <div className={styles['pieces-variants']}>
+                                <img src={white_rook} alt="white_rook" draggable={false} />
+                                <Icon path={mdiArrowRightThin} size={1.5} />
+                                <img src={white_sailboat} alt="white_sailboat" draggable={false} />
+                            </div> : <div className={styles['pieces-variants']}>
+                                <img src={black_rook} alt="black_rook" draggable={false} />
+                                <Icon path={mdiArrowRightThin} size={1.5} />
+                                <img src={black_sailboat} alt="black_sailboat" draggable={false} />
+                            </div>}
+                        </div>
+                    </div>
+                    <div>
+                        <div onClick={handleReplacePieceRukh} className={`${styles['pieces-variants']} ${pieceRukh ? styles['selected'] : ''}`}>
+                            {color === 'white' ? <div className={styles['pieces-variants']}>
+                                <img src={white_rook} alt="white_rook" draggable={false} />
+                                <Icon path={mdiArrowRightThin} size={1.5} />
+                                <img src={white_rukh} alt="white_rukh" draggable={false} />
+                            </div> : <div className={styles['pieces-variants']}>
+                                <img src={black_rook} alt="black_rook" draggable={false} />
+                                <Icon path={mdiArrowRightThin} size={1.5} />
+                                <img src={black_rukh} alt="black_rukh" draggable={false} />
+                            </div>}
+                        </div>
+                    </div>
+                </div>
             </div>
             {color === 'white' && <div>
-                <div>
-                    <h3>Standart Pieces</h3>
-                    <img src={white_pawn} alt="white_pawn" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_pawn,isNew`)} />
+                {piecesStyle === 'standart' && <div>
+                    <img src={white_pawn} alt="white_pawn" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_pawn,isNew`)} className={styles.pawn} />
                     <img src={white_horse} alt="white_horse" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_horse,isNew`)}/>
                     <img src={white_bishop} alt="white_bishop" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_bishop,isNew`)}/>
                     <img src={pieceSailBoat && white_sailboat || pieceRukh && white_rukh || white_rook} alt="white_rook"
                     draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `${pieceSailBoat ? 'white_sailboat' : pieceRukh ? 'white_rukh' : 'white_rook'},isNew`)}/>
                     <img src={white_ferz} alt="white_ferz" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_ferz,isNew`)}/>
                     <img src={white_king} alt="white_king" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_king,isNew`)}/>
-                </div>
-                <div>
-                    <h3>Old Pieces</h3>
+                </div>}
+                {piecesStyle === 'old' && <div>
                     <img src={white_firzan} alt="white_firzan" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_firzan,isNew`)} />
                     <img src={white_elephant} alt="white_elephant" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_elephant,isNew`)} />
                     <img src={white_tank} alt="white_tank" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_tank,isNew`)} />
                     <img src={white_camel} alt="white_camel" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_camel,isNew`)} />
                     <img src={white_giraffe} alt="white_giraffe" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_giraffe,isNew`)} />
-                </div>
-                <div>
-                    <h3>Special Pieces</h3>
+                </div>}
+                {piecesStyle === 'special' && <div>
                     <img src={white_dinozavr} alt="white_dinozavr" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_dinozavr,isNew`)} />
                     <img src={white_checkers} alt="white_checkers" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `white_checkers,isNew`)} />
-                </div>
-                <div className={styles['replace-pieces']}>
-                    <div>
-                        <div className={styles['pieces-variants-text']}>
-                            <h4>Replace rook with sailboat</h4>
-                        </div>
-                        <div onClick={handleReplacePieceSailBoat} className={`${styles['pieces-variants']} ${pieceSailBoat ? styles['selected'] : ''}`}>
-                            <div className={styles['pieces-variants']}>
-                                <img src={white_rook} alt="white_rook" draggable={false} />
-                                <Icon path={mdiArrowRightThin} size={1.5} />
-                                <img src={white_sailboat} alt="white_sailboat" draggable={false} />
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className={styles['pieces-variants-text']}>
-                            <h4>Replace rook with rukh</h4>
-                        </div>
-                        <div onClick={handleReplacePieceRukh} className={`${styles['pieces-variants']} ${pieceRukh ? styles['selected'] : ''}`}>
-                            <div className={styles['pieces-variants']}>
-                                <img src={white_rook} alt="white_rook" draggable={false} />
-                                <Icon path={mdiArrowRightThin} size={1.5} />
-                                <img src={white_rukh} alt="white_rukh" draggable={false} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </div>}
             </div>}
             {color === 'black' && <div>
-                <div>
-                    <h3>Standart Pieces</h3>
-                    <img src={black_pawn} alt="black_pawn" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_pawn,isNew`)} />
+                {piecesStyle === 'standart' && <div>
+                    <img src={black_pawn} alt="black_pawn" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_pawn,isNew`)} className={styles.pawn} />
                     <img src={black_horse} alt="black_horse" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_horse,isNew`)} />
                     <img src={black_bishop} alt="black_bishop" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_bishop,isNew`)} />
                     <img src={pieceSailBoat && black_sailboat || pieceRukh && black_rukh || black_rook} alt="black_rook" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `${pieceSailBoat ? 'black_sailboat' : pieceRukh ? 'black_rukh' : 'black_rook'},isNew`)}/>
                     <img src={black_ferz} alt="black_ferz" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_ferz,isNew`)} />
                     <img src={black_king} alt="black_king" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_king,isNew`)} />
-                </div>
-                <div>
-                    <h3>Old Pieces</h3>
+                </div>}
+                {piecesStyle === 'old' && <div>
                     <img src={black_firzan} alt="black_firzan" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_firzan,isNew`)} />
                     <img src={black_elephant} alt="black_elephant" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_elephant,isNew`)} />
                     <img src={black_tank} alt="black_tank" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_tank,isNew`)} />
                     <img src={black_camel} alt="black_camel" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_camel,isNew`)} />
                     <img src={black_giraffe} alt="black_giraffe" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_giraffe,isNew`)} />
-                </div>
-                <div>
-                    <h3>Special Pieces</h3>
+                </div>}
+                {piecesStyle === 'special' && <div>
                     <img src={black_dinozavr} alt="black_dinozavr" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_dinozavr,isNew`)} />
                     <img src={black_checkers} alt="black_checkers" draggable="true" onDragStart={(e) => e.dataTransfer.setData('text', `black_checkers,isNew`)} />
-                </div>
-                <div className={styles['replace-pieces']}>
-                    <div>
-                        <div className={styles['pieces-variants-text']}>
-                            <h4>Replace rook with sailboat</h4>
-                        </div>
-                        <div onClick={handleReplacePieceSailBoat} className={`${styles['pieces-variants']} ${pieceSailBoat ? styles['selected'] : ''}`}>
-                            <div className={styles['pieces-variants']}>
-                                <img src={black_rook} alt="black_rook" draggable={false} />
-                                <Icon path={mdiArrowRightThin} size={1.5} />
-                                <img src={black_sailboat} alt="black_sailboat" draggable={false} />
-                            </div>
-                        </div>
-                    </div>
-                    <div>
-                        <div className={styles['pieces-variants-text']}>
-                            <h4>Replace rook with rukh</h4>
-                        </div>
-                        <div onClick={handleReplacePieceRukh} className={`${styles['pieces-variants']} ${pieceRukh ? styles['selected'] : ''}`}>
-                            <div className={styles['pieces-variants']}>
-                                <img src={black_rook} alt="black_rook" draggable={false} />
-                                <Icon path={mdiArrowRightThin} size={1.5} />
-                                <img src={black_rukh} alt="black_rukh" draggable={false} />
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                </div>}
             </div>}
         </div>
     );

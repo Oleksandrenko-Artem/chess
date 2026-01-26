@@ -7,6 +7,7 @@ const actionTypes = {
     "PROMOTION_CLOSE": "PROMOTION_CLOSE",
     "PROMOTION_MOVE": "PROMOTION_MOVE",
     "SET_POSITION": 'SET_POSITION',
+    "TOGGLE_ORIENTATION": 'TOGGLE_ORIENTATION',
 };
 
 export default actionTypes;

@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { findAllUsersThunk } from '../store/usersSlice';
 import styles from './Pages.module.scss';
 
 const Homepage = () => {
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const { users } = useSelector((state) => state.users);
     useEffect(() => {
         dispatch(findAllUsersThunk());  
     }, [dispatch]);
     return (
         <div className={styles.home}>
-            <h1>Home</h1>
-            <h2>Users List</h2>
+            <h2>{t('home.home_caption')}</h2>
+            <marquee><h4>{t('home.welcome_message')}</h4></marquee>
             <table className={styles.users}>
                 <thead>
                     <tr>

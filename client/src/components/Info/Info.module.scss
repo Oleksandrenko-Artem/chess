@@ -1,0 +1,30 @@
+.wrapper {
+    padding: 20px;
+    h1 {
+        text-align: center;
+    }
+    div {
+        div {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            div {
+                display: flex;
+                flex-direction: row;
+                gap: 10px;
+            }
+        }
+        .pieces-info {
+            display: flex;
+            justify-content: center;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 10px;
+            img {
+                width: 512px;
+                height: 512px;
+            }
+        }
+    }
+}

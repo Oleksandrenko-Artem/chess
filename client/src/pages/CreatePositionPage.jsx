@@ -6,6 +6,7 @@ import { status } from '../constants';
 import { findUserAccountThunk } from '../store/usersSlice';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
 import styles from './Pages.module.scss';
+import CreatePosition from '../components/CreatePosition/CreatePosition';
 
 const CreatePositionPage = () => {
     const dispatch = useDispatch();
@@ -36,10 +37,7 @@ const CreatePositionPage = () => {
     };
     return (
         <div>
-            <div className={styles['status-display']}>
-                <h1>Custom Position</h1>
-                <h2>{gameStatusMessage()}</h2>
-            </div>
+            <CreatePosition />
             <ChessBoard status={appState?.status} />
         </div>
     );
