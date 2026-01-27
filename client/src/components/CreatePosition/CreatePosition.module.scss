@@ -1,115 +1,55 @@
+@use '/src/common/styles/templates' as *;
+
 .wrapper {
-    background-color: rgb(255, 218, 187);
-    border: 4px solid rgb(126, 94, 46);
-    padding: 10px;
-    width: 480px;
-    height: 452px;
-    div {
-        h3 {
-            margin: 0px;
-            text-align: center;
-        }
-        h4 {
-            color: rgb(255, 255, 255);
-            margin: 0px;
-        }
-        img {
-            padding: 0px 5px;
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-    }
+    width: 100%;
+    height: 15vh;
     .btns-div {
         display: flex;
         justify-content: space-between;
-        margin-bottom: 10px;
-        font-size: 0.8em;
-        button {
-            cursor: pointer;
-            font-size: 1.05em;
-            font-weight: 600;
-            color: rgb(255, 255, 255);
-            background-color: rgb(126, 94, 46);
-            border: none;
-            border-radius: 10px;
-            padding: 8px;
-            flex: 1;
-            margin: 0 5px;
-            &:hover {
-                background-color: rgb(106, 74, 26);
-            }
-        }
-    }
-    .board-colors {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin: 0 0 0 10px;
-        flex-wrap: wrap;
-        label {
+        padding: 5px;
+        div {
             display: flex;
             align-items: center;
-            font-weight: 600;
-            color: rgb(126, 94, 46);
+            gap: 10px;
+        }
+        button, select {
+            @extend %btn-style;
+            height: 5vh;
+        }
+        button {
+            width: 15vh;
+        }
+        select {
+            width: 25vh;
+            option {
+                color: black;
+            }
         }
         input[type="color"] {
-            width: 36px;
-            height: 36px;
-            background-color: rgb(126, 94, 46);
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            &::-webkit-color-swatch {
-                border: 2px solid black;
-                border-radius: 4px;
-            }
-        }
-        .reset-colors-btn {
-            cursor: pointer;
-            font-size: 0.8em;
-            font-weight: 600;
-            color: rgb(255, 255, 255);
-            background-color: rgb(126, 94, 46);
-            border: none;
-            border-radius: 10px;
-            padding: 8px;
-            flex: 1;
-            margin: 0 5px;
-            &:hover {
-                background-color: rgb(106, 74, 26);
-            }
+            width: 5vh;
+            height: 5vh;
+            @extend %btn-style;
         }
     }
     .replace-pieces {
         display: flex;
         flex-direction: row;
-        justify-content: space-around;
-        div {
-            cursor: pointer;
+        .pieces-variants {
+            @extend %btn-style;
             display: flex;
             align-items: center;
-            flex-direction: column;
-            background-color: rgb(106, 74, 26);
-            border-radius: 10px;
-            padding: 3px;
-            .pieces-variants-text {
-                display: inherit;
-                flex-direction: row;
-            }
-            .pieces-variants {
-                display: inherit;
-                flex-direction: row;
-                justify-content: center;
-                border-radius: 10px;
-                padding: 1px;
-                border: 2px solid transparent;
-                transition: border-color 0.2s ease;
-                &.selected {
-                    border: 2px solid #4CAF50;
-                    box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
-                }
+            img {
+                width: 4.5vh;
+                height: 5vh;
             }
         }
+    }
+    img {
+        width: 5vh;
+        height: 5.5vh;
+        padding: 0 5px;
+    }
+    .pawn {
+        height: 4.5vh;
     }
 }

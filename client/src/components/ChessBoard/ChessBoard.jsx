@@ -7,7 +7,6 @@ import styles from './ChessBoard.module.scss';
 import black_king from '../../assets/icons/black_king.png';
 import white_king from '../../assets/icons/white_king.png';
 import actionTypes from '../../reducers/actionTypes';
-import CreatePosition from '../CreatePosition/CreatePosition';
 import CapturedPieces from '../CapturedPieces/CapturedPieces';
     
 const ChessBoard = (props) => {
@@ -16,20 +15,18 @@ const ChessBoard = (props) => {
     const horizontalAxisSecond = ["h", "g", "f", "e", "d", "c", "b", "a"];
     const verticalAxis = ["1", "2", "3", "4", "5", "6", "7", "8"];
     const { dispatch, appState } = useAppContext();
-    const [verticalClass, setVerticalClass] = useState(styles['vertical']);
-    const [horizontalClass, setHorizontalClass] = useState('white');
+    const orientation = appState.orientation;
+    const verticalClass = orientation === 'white' 
+        ? styles['vertical'] 
+        : styles['vertical-second'];
     const [start, setStart] = useState(false);
     const [customPanel, setCustomPanel] = useState(true);
     const [materialPanel, setMaterialPanel] = useState(false);
     const onClickWhite = () => {
-        setVerticalClass(styles['vertical']);
-        horizontalAxis.map(axis => <span key={axis}>{axis}</span>)
-        setHorizontalClass('white');
+        dispatch({ type: actionTypes.SET_ORIENTATION, payload: 'white' });
     };
     const onClickBlack = () => {
-        setVerticalClass(styles['vertical-second']);
-        horizontalAxisSecond.map(axis => <span key={axis}>{axis}</span>);
-        setHorizontalClass('black');
+        dispatch({ type: actionTypes.SET_ORIENTATION, payload: 'black' });
     };
     const onClickStart = () => {
         setStart(true);
@@ -47,15 +44,6 @@ const ChessBoard = (props) => {
         if (window.localStorage.getItem('chess_variant') === 'special') {
             window.localStorage.setItem('chess_variant', 'special');
             dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialSpecialGameState } });
-        }
-    };
-    const toggleOrientation = () => {
-        if (horizontalClass === 'white') {
-            setVerticalClass(styles['vertical-second']);
-            setHorizontalClass('black');
-        } else {
-            setVerticalClass(styles['vertical']);
-            setHorizontalClass('white');
         }
     };
     const gameStatusStyle = () => {
@@ -127,10 +115,10 @@ const ChessBoard = (props) => {
                 </div>
                 <div className={styles['chess-div']}>
                     <div className={styles['chess-board']}>
-                        <Pieces flipped={horizontalClass === 'black'} />
+                        <Pieces flipped={orientation === 'black'} />
                     </div>
                     <div className={styles.horizontal}>
-                        {horizontalClass === 'white' ? (
+                        {orientation === 'white' ? (
                             horizontalAxis.map(axis => <span key={axis}>{axis}</span>)
                         ) : (
                             horizontalAxisSecond.map(axis => <span key={axis}>{axis}</span>)
@@ -146,9 +134,6 @@ const ChessBoard = (props) => {
                         blackCaptures={appState?.captured?.black || []}
                         handleHideCustomPanel={handleHideCustomPanel}
                     />
-                </div>}
-                {window.localStorage.getItem('chess_variant') === 'special' && customPanel && <div>
-                    <CreatePosition toggleOrientation={toggleOrientation} handleHideCustomPanel={handleHideCustomPanel} />
                 </div>}
             </div>
         </article>

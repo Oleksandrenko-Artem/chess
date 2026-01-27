@@ -1,0 +1,62 @@
+{
+  "header": {
+    "chess": "Chess",
+    "shatranj": "Shatranj",
+    "custom_position": "Custom Position",
+    "hi": "Hi,",
+    "info": "Information",
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "custom_panel": {
+    "standart_pieces": "Standard pieces",
+    "old_pieces": "Old pieces",
+    "special_pieces": "Special pieces",
+    "reset_colors": "Reset colors",
+    "change_color": "Change color",
+    "rotate_board": "Rotate board",
+    "reset_position": "Reset position"
+  },
+  "style_panel": {
+    "change_style": "Change style"
+  },
+  "home": {
+    "home_caption": "Home Page",
+    "welcome_message": "Welcome to our chess portal! Explore the world of classical chess and ancient shatranj, create your own positions, and improve your skills. Join us and dive into the exciting world of chess!"
+  },
+  "pieces": {
+    "desc_caption": "Description",
+    "history_caption": "History",
+    "pawn": {
+        "name": "Pawn",
+        "desc": "Moves one square forward. On the first move, it can move two squares forward. Captures diagonally. Can be promoted to any piece (except the king) when reaching the last rank. Has a strength of 1 pawn.",
+        "history": "Appeared in Indian chess (Chaturanga). In Shatranj, it could only be promoted to a firzan (a type of soldier). The pawn always symbolized infantry or soldiers on the battlefield. With the development of chess in Europe, the pawn retained its basic move but gained the ability to promote to any piece upon reaching the last rank, significantly increasing its strategic value in gameplay."
+    },
+    "horse": {
+        "name": "Knight",
+        "desc": "Moves in an L-shape (two squares in one direction and one square perpendicular). Can jump over other pieces. Has limited range but can be very strong in closed positions. Has a strength of 3 pawns.",
+        "history": "Appeared in Indian chess (Chaturanga) and was called 'Ashva', meaning 'horse'. In Arabic Shatranj, this piece was called 'Faras', meaning 'war horse'. The knight always retained its unique move in all versions of chess, as its ability to leap over other pieces made it very valuable in play. In European chess, the knight became one of the most important pieces due to its ability to penetrate the opponent's defense."
+    },
+    "bishop": {
+        "name": "Bishop",
+        "desc": "Moves diagonally any number of squares. Has a strength of 3 pawns.",
+        "history": "Appeared in Indian chess (Chaturanga). Called 'Alfil' (from Arabic 'al-fil'), meaning 'elephant'. Moved one square diagonally, jumping over pieces (similar to the knight), but due to its limited mobility (could reach only 8 squares out of 64 on the board), it was about 2-3 times weaker than the knight. With the development of chess in Europe, the bishop's move was changed to modern (jumping over pieces), allowing it to move any number of squares diagonally, significantly increasing its strength and mobility. However, due to the change in movement, it lost the ability to jump over other pieces."
+    },
+    "rook": {
+        "name": "Rook",
+        "desc": "Moves horizontally and vertically any number of squares. Can participate in castling. Has a strength of 5 pawns.",
+        "history": "Appeared in Indian chess (Chaturanga) and was called 'Ratha', meaning 'chariot'. Later, it was adapted in Arabic chess as 'Rukh', symbolizing the bird Rukh, which was used as a type of military unit. At that time, it was the strongest piece in chess. Later, the piece came to Europe, where it received the modern name 'Rook'. The move of this piece did not change from the time of its appearance; only its name and appearance changed."
+    },
+    "ferz": {
+        "name": "Ferz",
+        "desc": "Moves diagonally and vertically/horizontally any number of squares (combines the moves of the bishop and rook). Has a strength of 9 pawns.",
+        "history": "First appeared in Shatranj, where it was called 'Firzan' (from Persian 'farzin' - advisor or vizier). In Shatranj, it could only move one square diagonally, making it the most useless piece on the board. With the development of chess in Europe, the Ferz's move was significantly expanded to modern, allowing it to move any number of squares diagonally, vertically and horizontally. This made it the strongest piece in chess."
+    },
+    "king": {
+        "name": "King",
+        "desc": "Moves one square in any direction. Has a unique move - castling (a special move with the rook). Does not have a strength in the traditional sense, as its capture means the end of the game. But by move strength, it is equivalent to about 3-4 pawns.",
+        "history": "Appeared in Indian chess (Chaturanga) and was called 'Raja', meaning 'king'. In Arabic chess, this piece received the name 'Shah', meaning 'king'. The king has always been the central piece in chess, as the goal of the game is to protect it. With the development of chess in Europe, the king's move remained unchanged, but castling was added, allowing the king and rook to move simultaneously for better protection."
+    }
+  }
+}
