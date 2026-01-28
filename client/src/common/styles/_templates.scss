@@ -14,3 +14,13 @@
         background: var(--btn-hover);
     }
 }
+%panel-style {
+    font-size: 1.8vh;
+    font-weight: 600;
+    text-align: var(--text-center-panel);
+    color: $btnColor;
+    background: var(--btn-style-color);
+    border: var(--btn-border);
+    border-radius: var(--btn-radius);
+    transition: 1s;
+}

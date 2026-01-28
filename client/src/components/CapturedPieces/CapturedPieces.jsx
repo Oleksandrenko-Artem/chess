@@ -95,7 +95,6 @@ const CapturedPieces = ({ whiteCaptures, blackCaptures, handleHideCustomPanel })
             <div className={styles['side-white']}>
                 <div className={styles['header-button']}>
                     <h3>White Captures</h3>
-                    {window.localStorage.getItem('chess_variant') === 'special' && <button onClick={handleHideCustomPanel}>Return Custom Panel</button>}
                 </div>
                 <div className={styles['captures']}>
                     {whiteCaptures.map((piece, idx) => {

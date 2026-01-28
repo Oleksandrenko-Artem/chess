@@ -18,6 +18,15 @@
     "rotate_board": "Rotate board",
     "reset_position": "Reset position"
   },
+  "info_panel": {
+    "navigation": "Navigation"
+  },
+  "captured_pieces": {
+    "white": "White",
+    "black": "Black",
+    "white_captures": "White captures",
+    "black_captures": "Black captures"
+  },
   "style_panel": {
     "change_style": "Change style"
   },
@@ -40,23 +49,48 @@
     },
     "bishop": {
         "name": "Bishop",
-        "desc": "Moves diagonally any number of squares. Has a strength of 3 pawns.",
-        "history": "Appeared in Indian chess (Chaturanga). Called 'Alfil' (from Arabic 'al-fil'), meaning 'elephant'. Moved one square diagonally, jumping over pieces (similar to the knight), but due to its limited mobility (could reach only 8 squares out of 64 on the board), it was about 2-3 times weaker than the knight. With the development of chess in Europe, the bishop's move was changed to modern (jumping over pieces), allowing it to move any number of squares diagonally, significantly increasing its strength and mobility. However, due to the change in movement, it lost the ability to jump over other pieces."
+        "desc": "Moves diagonally any number of squares. Can't jump over figures. Has a strength of 3 pawns.",
+        "history": "Appeared in Indian chess (Chaturanga). Called 'Alfil' (from Arabic 'al-fil'), meaning 'elephant'. Moved one square diagonally, jumping over pieces (similar to the horse), but due to its limited mobility (could reach only 8 squares out of 64 on the board), it was about 2-3 times weaker than the horse. With the development of chess in Europe, the bishop's move was changed to modern (jumping over pieces), allowing it to move any number of squares diagonally, significantly increasing its strength and mobility. However, due to the change in movement, it lost the ability to jump over other pieces."
     },
     "rook": {
         "name": "Rook",
-        "desc": "Moves horizontally and vertically any number of squares. Can participate in castling. Has a strength of 5 pawns.",
+        "desc": "Moves horizontally and vertically any number of squares. Can't jump over figures. Can participate in castling. Has a strength of 5 pawns.",
         "history": "Appeared in Indian chess (Chaturanga) and was called 'Ratha', meaning 'chariot'. Later, it was adapted in Arabic chess as 'Rukh', symbolizing the bird Rukh, which was used as a type of military unit. At that time, it was the strongest piece in chess. Later, the piece came to Europe, where it received the modern name 'Rook'. The move of this piece did not change from the time of its appearance; only its name and appearance changed."
     },
     "ferz": {
         "name": "Ferz",
-        "desc": "Moves diagonally and vertically/horizontally any number of squares (combines the moves of the bishop and rook). Has a strength of 9 pawns.",
+        "desc": "Moves diagonally and vertically/horizontally any number of squares (combines the moves of the bishop and rook). Can't jump over figures. Has a strength of 9 pawns.",
         "history": "First appeared in Shatranj, where it was called 'Firzan' (from Persian 'farzin' - advisor or vizier). In Shatranj, it could only move one square diagonally, making it the most useless piece on the board. With the development of chess in Europe, the Ferz's move was significantly expanded to modern, allowing it to move any number of squares diagonally, vertically and horizontally. This made it the strongest piece in chess."
     },
     "king": {
         "name": "King",
         "desc": "Moves one square in any direction. Has a unique move - castling (a special move with the rook). Does not have a strength in the traditional sense, as its capture means the end of the game. But by move strength, it is equivalent to about 3-4 pawns.",
         "history": "Appeared in Indian chess (Chaturanga) and was called 'Raja', meaning 'king'. In Arabic chess, this piece received the name 'Shah', meaning 'king'. The king has always been the central piece in chess, as the goal of the game is to protect it. With the development of chess in Europe, the king's move remained unchanged, but castling was added, allowing the king and rook to move simultaneously for better protection."
+    },
+    "tank": {
+        "name": "Tank",
+        "desc": "Moves one square vertically/horizontally. It can jump over pieces like a horse, but has limited mobility (it can only move to 16 of 64 squares). It has the strength of approximately 2 pawns.",
+        "history": "Found in some very early chess variants, such as Tamerlane Chess. In ancient Arabic, this piece's name referred to a type of medieval siege engine designed to provide cover for men digging a pit in enemy fortifications."
+    },
+    "camel": {
+        "name": "Camel",
+        "desc": "The camel's move resembles an extended horse's move: it moves three squares horizontally or vertically, then immediately turns at a right angle and takes another step. Like the horse, it can jump over pieces. Limited mobility, it can move 32 of 64 squares. It has the strength of two pawns.",
+        "history": "It was found in some very early chess variants, such as Tamerlane Chess."
+    },
+    "giraffe": {
+        "name": "Giraffe",
+        "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves multiple squares vertically/horizontally (like a rook). It cannot jump over pieces. It has a strength of 7 pawns.",
+        "history": "It was found in some very early chess variants, such as Tamerlane Chess."
+    },
+    "dinosaur": {
+        "name": "Dinosaur",
+        "desc": "Can move in any direction (not just like a queen, but also like a horse, but with long range). Cannot jump over pieces. This is a very powerful piece, as it controls almost the entire board, giving it the strength of 19 pawns (relatively).",
+        "history": "This is a special piece that does not exist in regular chess or its variants."
+    },
+    "checkers": {
+        "name": "Checker",
+        "desc": "Moves one square diagonally forward, captures by jumping over a piece diagonally in any direction. Cannot jump over pieces when unable to capture. It doesn't exist in chess, but its power can be estimated at 0.5 pawns, as it is very slow and predictable.",
+        "history": "This is a special piece that doesn't exist in regular chess or its variants."
     }
   }
 }

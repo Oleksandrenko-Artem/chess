@@ -1,16 +1,30 @@
 .wrapper {
     padding: 20px;
-    h1 {
+    h1, h2 {
         text-align: center;
+    }
+    nav {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        .more-info {
+            display: flex;
+            flex-direction: row;
+            div {
+                display: flex;
+                flex-direction: column;
+            }
+        }
     }
     div {
         div {
             display: flex;
             flex-direction: column;
-            align-items: center;
             div {
                 display: flex;
                 flex-direction: row;
+                align-items: center;
+                justify-content: center;
                 gap: 10px;
             }
         }
