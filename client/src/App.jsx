@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useReducer } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
@@ -22,16 +22,19 @@ import InfoPage from './pages/InfoPage';
 
 function App() {
   const dispathUser = useDispatch();
+  const [start, setStart] = useState(false);
   const savedVariant = typeof window !== 'undefined' ? localStorage.getItem('chess_variant') : null;
   const initialStateAtLoad = savedVariant === 'shatranj' ? initialOldGameState : savedVariant === 'special' ? initialSpecialGameState : initialGameState;
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
   const handlePlayChess = () => {
+    setStart(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('chess_variant', 'chess');
     };
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialGameState } });
   };
   const handlePlayShatranj = () => {
+    setStart(false);
     if (typeof window !== 'undefined') {
       localStorage.setItem('chess_variant', 'shatranj');
     };
@@ -75,8 +78,8 @@ function App() {
           <Route path='/register' element={<RegisterForm />} />
           <Route path='/login' element={<LoginForm />} />
           <Route path='/account' element={<ProfilePage />} />
-          <Route path='/play-chess' element={<ChessPage />} />
-          <Route path='/play-shatranj' element={<ShatranjPage />} />
+          <Route path='/play-chess' element={<ChessPage start={start} setStart={setStart} />} />
+          <Route path='/play-shatranj' element={<ShatranjPage start={start} setStart={setStart} />} />
           <Route path='/create-position' element={<CreatePositionPage />} />
           <Route path='/info' element={<InfoPage />} />
 

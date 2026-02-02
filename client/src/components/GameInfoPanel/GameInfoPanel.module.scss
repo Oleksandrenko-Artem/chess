@@ -1,0 +1,62 @@
+@use "/src/common/styles/widths" as *;
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/mixins" as *;
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+  .start-panel {
+    @extend %panel-style;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 480px;
+    height: 480px;
+    button {
+      @extend %btn-style;
+      @include button-style($buttonWidth, $buttonHeight, $buttonPadding);
+    }
+    .img-div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      .img-style {
+        @extend %btn-style;
+        border-radius: 0%;
+        padding: 30px;
+      }
+    }
+    .active {
+      --btn-style-color: rgb(230, 230, 230);
+    }
+  }
+  .game-status {
+    @extend %panel-style;
+    text-align: center;
+    z-index: 10;
+    width: 200px;
+    height: 100%;
+    .game-message {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    span {
+      color: black;
+      font-weight: bold;
+    }
+    img {
+      margin: 2px;
+      padding: 5px;
+      width: 40px;
+      height: 50px;
+    }
+    button {
+      @extend %btn-style;
+      @include button-style($buttonWidth, $buttonHeight, $buttonPadding);
+    }
+  }
+}

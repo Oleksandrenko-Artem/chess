@@ -91,47 +91,30 @@ const CapturedPieces = ({ whiteCaptures, blackCaptures, handleHideCustomPanel })
     const blackCaptureScore = calculateScore(blackCaptures);
     const balance = whiteCaptureScore - blackCaptureScore;
     return (
-        <div className={styles['captured-container']}>
-            <div className={styles['side-white']}>
-                <div className={styles['header-button']}>
-                    <h3>White Captures</h3>
+      <div className={styles["captured-container"]}>
+        <div className={styles["side"]}>
+          <div className={styles["captures"]}>
+            {whiteCaptures.map((piece, idx) => {
+              const type = getPieceType(piece);
+              const value = pieceValues[type] || 0;
+              return (
+                <div key={idx} className={styles["captured-piece"]}>
+                  <img src={imageMap[piece]} alt={piece} />
                 </div>
-                <div className={styles['captures']}>
-                    {whiteCaptures.map((piece, idx) => {
-                        const type = getPieceType(piece);
-                        const value = pieceValues[type] || 0;
-                        return (
-                            <div key={idx} className={styles['captured-piece']}>
-                                <img src={imageMap[piece]} alt={piece} title={`${piece} (+${value})`} />
-                                <span className={styles['value']}>+{value}</span>
-                            </div>
-                        );
-                    })}
+              );
+            })}
+            {blackCaptures.map((piece, idx) => {
+              const type = getPieceType(piece);
+              const value = pieceValues[type] || 0;
+              return (
+                <div key={idx} className={styles["captured-piece"]}>
+                  <img src={imageMap[piece]} alt={piece} />
                 </div>
-                <div className={styles['score']}>Score: {whiteCaptureScore}</div>
-            </div>
-            <div className={styles['balance']}>
-                <div className={`${styles['balance-text']} ${balance > 0 ? styles['white-ahead'] : balance < 0 ? styles['black-ahead'] : ''}`}>
-                    {balance > 0 ? `White +${balance}` : balance < 0 ? `Black +${Math.abs(balance)}` : 'Equal'}
-                </div>
-            </div>
-            <div className={styles['side-black']}>
-                <h3>Black Captures</h3>
-                <div className={styles['captures']}>
-                    {blackCaptures.map((piece, idx) => {
-                        const type = getPieceType(piece);
-                        const value = pieceValues[type] || 0;
-                        return (
-                            <div key={idx} className={styles['captured-piece']}>
-                                <img src={imageMap[piece]} alt={piece} title={`${piece} (+${value})`} />
-                                <span className={styles['value']}>+{value}</span>
-                            </div>
-                        );
-                    })}
-                </div>
-                <div className={styles['score']}>Score: {blackCaptureScore}</div>
-            </div>
+              );
+            })}
+          </div>
         </div>
+      </div>
     );
 };
 
