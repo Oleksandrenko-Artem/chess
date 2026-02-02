@@ -1,3 +1,5 @@
+@use '/src/common/styles/templates' as *;
+
 .form {
     width: 520px;
     margin: auto;
@@ -11,11 +13,9 @@
     label {
         position: relative;
         input {
+            @extend %panel-style;
             width: 400px;
             height: 35px;
-            font-size: 1.05em;
-            border-radius: 10px;
-            border: 1px solid lightgray;
             padding-left: 10px;
         }
         .show-password {
@@ -27,18 +27,8 @@
         }
     }
     button {
-        width: 414px;
-        height: 39px;
-        font-size: 1.05em;
-        font-size: 1.05em;
-        font-weight: 600;
-        color: white;
-        background-color: grey;
-        border: none;
-        border-radius: 10px;
-    }
-    .error {
-        color: red;
-        text-transform: capitalize;
+        @extend %btn-style;
+        width: 416px;
+        height: 41px;
     }
 }

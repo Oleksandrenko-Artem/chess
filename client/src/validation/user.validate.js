@@ -1,13 +1,20 @@
 import * as yup from 'yup';
 
-const nameSchema = yup.string().trim().min(5).max(64);
-const emailSchema = yup.string().trim().email();
-const passwordSchema = yup.string().trim().min(8).max(125);
+const nameSchema = yup.string().trim()
+    .min(5, ({ min }) => ({ key: 'validation.name_min', values: { min } }))
+    .max(64, ({ max }) => ({ key: 'validation.name_max', values: { max } }));
+
+const emailSchema = yup.string().trim()
+    .email('validation.email');
+
+const passwordSchema = yup.string().trim()
+    .min(8, ({ min }) => ({ key: 'validation.password_min', values: { min } }))
+    .max(125, ({ max }) => ({ key: 'validation.password_min', values: { max } }));
 
 export const registerSchema = yup.object({
-    name: nameSchema.required(),
-    email: emailSchema.required(),
-    password: passwordSchema.required(),
+    name: nameSchema.required('validation.required'),
+    email: emailSchema.required('validation.required'),
+    password: passwordSchema.required('validation.required'),
 });
 
 export const loginSchema = yup.object({

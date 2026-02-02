@@ -30,6 +30,23 @@
   "style_panel": {
     "change_style": "Change style"
   },
+  "form_panel": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "register": "Register",
+    "login": "Login"
+  },
+  "validation": {
+    "error_email": "Email is already exists",
+    "error_unauthorized": "Unauthorized",
+    "email": "Email must be correct",
+    "name_min": "Name must be at least 5 characters long",
+    "name_max": "Name must be no more than 64 characters long",
+    "password_min": "Password is too short (minimum 8 characters)",
+    "password_max": "Password is too long (maximum 125 characters)",
+    "required": "This field is required."
+  },
   "home": {
     "home_caption": "Home Page",
     "welcome_message": "Welcome to our chess portal! Explore the world of classical chess and ancient shatranj, create your own positions, and improve your skills. Join us and dive into the exciting world of chess!"
