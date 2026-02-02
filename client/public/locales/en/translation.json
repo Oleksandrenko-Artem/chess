@@ -37,6 +37,17 @@
     "register": "Register",
     "login": "Login"
   },
+  "game_info_panel": {
+    "white_wins": "White wins",
+    "black_wins": "Black wins",
+    "white_baring_king": "White wins by baring the king!",
+    "black_baring_king": "Black wins by baring the king!",
+    "draw": "Draw",
+    "turn": "Turn: ",
+    "start": "Start",
+    "start_again": "Start again",
+    "choose_color": "Choose color"
+  },
   "validation": {
     "error_email": "Email is already exists",
     "error_unauthorized": "Unauthorized",

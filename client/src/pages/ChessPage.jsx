@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from "react-i18next";
 import { useAppContext } from '../contexts/Context';
 import { useNavigate } from 'react-router-dom';
-import { status } from '../constants';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
 import CapturedPieces from '../components/CapturedPieces/CapturedPieces';
 import styles from './Pages.module.scss';
@@ -10,24 +10,13 @@ import GameInfoPanel from './../components/GameInfoPanel/GameInfoPanel';
 const ChessPage = (props) => {
   const { start, setStart } = props;
     const navigate = useNavigate();
-    const { appState } = useAppContext();
+  const { appState } = useAppContext();
+  const { t } = useTranslation();
     useEffect(() => {
         if (!appState || !appState.position) {
             navigate('/');
         }
     }, [appState, navigate]);
-    const gameStatusMessage = () => {
-      if (appState?.status === status.white) {
-            return 'White wins!';
-        }
-      if (appState?.status === status.black) {
-            return 'Black wins!';
-        }
-      if (appState?.status === status.draw) {
-            return 'The game is a draw!';
-        }
-        return `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
-  };
     return (
       <div className={styles.wrapper}>
         {
@@ -35,7 +24,6 @@ const ChessPage = (props) => {
                 status={appState?.status}
                 start={start}
                 setStart={setStart}
-                gameStatusMessage={gameStatusMessage}
               />
             }
         {start && (

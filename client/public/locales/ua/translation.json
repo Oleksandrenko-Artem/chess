@@ -23,9 +23,7 @@
   },
   "captured_pieces": {
     "white": "Білі",
-    "black": "Чорні",
-    "white_captures": "Білі забрали",
-    "black_captures": "Чорні забрали"
+    "black": "Чорні"
   },
   "style_panel": {
     "change_style": "Змінити стиль"
@@ -36,6 +34,17 @@
     "password": "Пароль",
     "register": "Реєстрація",
     "login": "Увійти"
+  },
+  "game_info_panel": {
+    "white_wins": "Білі перемогли",
+    "black_wins": "Чорні перемогли",
+    "white_baring_king": "Білі перемагають, оголивши короля!",
+    "black_baring_king": "Чорні перемагають, оголивши короля!",
+    "draw": "Нічия",
+    "turn": "Хід: ",
+    "start": "Старт",
+    "start_again": "Почати знову",
+    "choose_color": "Виберіть колір"
   },
   "validation": {
     "error_email": "Така пошта вже існує",

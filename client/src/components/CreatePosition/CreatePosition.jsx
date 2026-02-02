@@ -38,8 +38,7 @@ import black_rukh from '../../assets/icons/black_rukh.png';
 import black_checkers from '../../assets/icons/black_checkers.png';
 import styles from './CreatePosition.module.scss';
 
-const CreatePosition = (props) => {
-    const { toggleOrientation, handleHideCustomPanel } = props;
+const CreatePosition = () => {
     const { dispatch } = useAppContext();
     const { t } = useTranslation();
     const [color, setColor] = useState('white');

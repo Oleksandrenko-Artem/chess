@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { useAppContext } from '../contexts/Context';
 import { useNavigate } from 'react-router-dom';
-import { status } from '../constants';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
 import CapturedPieces from '../components/CapturedPieces/CapturedPieces';
 import styles from './Pages.module.scss';
@@ -16,25 +15,6 @@ const ShatranjPage = (props) => {
             navigate('/');
         }
     }, [appState, navigate]);
-    const gameStatusMessage = () => {
-        if (appState?.status === status.white) {
-            return 'White wins!';
-        }
-        if (appState?.status === status.black) {
-            return 'Black wins!';
-        }
-        if (appState?.status === status.draw) {
-            if (appState?.playerTurn === 'white') {
-                return 'Black wins!';
-            } else {
-                return 'White wins!';
-            }
-        }
-        if (appState.status === status.white && arbiter.isBareKing(appState.position, 'black')) {
-            return 'White wins by Baring the King!';
-        }
-        return `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
-    };
     return (
       <div className={styles.wrapper}>
         {
@@ -42,7 +22,6 @@ const ShatranjPage = (props) => {
             status={appState?.status}
             start={start}
             setStart={setStart}
-            gameStatusMessage={gameStatusMessage}
           />
         }
         {start && (

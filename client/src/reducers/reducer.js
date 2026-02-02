@@ -91,6 +91,11 @@ export const reducer = (state, action) => {
                 ]
             };
         };
+        case actionTypes.SET_ORIENTATION:
+            return {
+                ...state,
+                orientation: action.payload
+            };
         case actionTypes.TOGGLE_ORIENTATION:
             return {
                 ...state,

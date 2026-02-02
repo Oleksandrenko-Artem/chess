@@ -37,6 +37,17 @@
     "register": "Регистрация",
     "login": "Войти"
   },
+  "game_info_panel": {
+    "white_wins": "Белые победили",
+    "black_wins": "Черные победили",
+    "white_baring_king": "Белые побеждают, оголив короля!",
+    "black_baring_king": "Черные побеждают, оголив короля!",
+    "draw": "Ничья",
+    "turn": "Ход: ",
+    "start": "Старт",
+    "start_again": "Начать заново",
+    "choose_color": "Выберите цвет"
+  },
   "validation": {
     "error_email": "Такая почта уже существует",
     "error_unauthorized": "Неавторизованный",

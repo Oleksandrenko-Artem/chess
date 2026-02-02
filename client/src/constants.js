@@ -64,6 +64,7 @@ export const initialOldGameState = {
         white: [],
         black: [],
     },
+    orientation: 'white',
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
