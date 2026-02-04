@@ -37,6 +37,7 @@ export const baseUrl = {
 export const initialGameState = {
     position: [createPosition()],
     playerTurn: 'white',
+    movesList: [],
     validMoves: [],
     status: status.ongoing,
     promotionSquare: null,
@@ -53,6 +54,7 @@ export const initialGameState = {
 export const initialOldGameState = {
     position: [createOldPosition()],
     playerTurn: 'white',
+    movesList: [],
     validMoves: [],
     status: status.ongoing,
     promotionSquare: null,
@@ -69,6 +71,7 @@ export const initialOldGameState = {
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
     playerTurn: 'white',
+    movesList: [],
     validMoves: [],
     status: status.ongoing,
     promotionSquare: null,
@@ -80,4 +83,5 @@ export const initialSpecialGameState = {
         white: [],
         black: [],
     },
+    orientation: 'white',
 };

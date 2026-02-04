@@ -5,8 +5,10 @@ import { useAppContext } from '../contexts/Context';
 import { status } from '../constants';
 import { findUserAccountThunk } from '../store/usersSlice';
 import ChessBoard from '../components/ChessBoard/ChessBoard';
+import CreatePosition from "../components/CreatePosition/CreatePosition";
+import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
+import MovesList from "../components/MovesList/MovesList";
 import styles from './Pages.module.scss';
-import CreatePosition from '../components/CreatePosition/CreatePosition';
 
 const CreatePositionPage = () => {
     const dispatch = useDispatch();
@@ -36,10 +38,19 @@ const CreatePositionPage = () => {
         return `Current turn: ${appState?.playerTurn === 'white' ? 'White' : 'Black'}`;
     };
     return (
-        <div>
-            <CreatePosition />
-            <ChessBoard status={appState?.status} />
+      <div>
+        <CreatePosition />
+        <div className={styles.wrapper}>
+          <ChessBoard status={appState?.status} />
+          <div className={styles.control}>
+            <CapturedPieces
+              whiteCaptures={appState?.captured?.white || []}
+              blackCaptures={appState?.captured?.black || []}
+            />
+            <MovesList />
+          </div>
         </div>
+      </div>
     );
 }
 

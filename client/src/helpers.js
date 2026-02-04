@@ -74,6 +74,47 @@ export const createSpecialPosition = () => {
     position[0][7] = '';
     return position;
 }
+export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo }) => {
+    if (p[6].toLowerCase() === 'k' && Math.abs(file - targetFile) === 2) {
+        let castling = targetFile > file ? 'O-O' : 'O-O-O';
+        if (isCheckmate) return castling + '#';
+        if (isInCheck) return castling + '+';
+        return castling;
+    }
+    let note = '';
+    const pieceType = p[6].toLowerCase();
+    const isCapture = !!position[targetRank][targetFile];
+    const isSailboat = (pieceType === 's' && localStorage.getItem('replaceRook') === 'sailboat');
+    const isPawnType = pieceType === 'p' || (pieceType === 's' && !isSailboat);
+    if (!isPawnType) {
+        if (pieceType === 'i') {
+            note += 'K'
+        } else if (isSailboat) {
+            note += 'S';
+        } else {
+            note += pieceType.toUpperCase();
+        }
+        if (isCapture) note += 'x';
+    } else {
+        if (file !== targetFile) {
+            note += getCharacter(file) + 'x';
+        }
+    }
+    const displayRank = 8 - targetRank;
+    note += getCharacter(targetFile) + displayRank;
+    if (promotesTo) {
+        note += '=' + promotesTo[0].toUpperCase();
+    }
+    if (isCheckmate) {
+        note += '#';
+    } else if (isInCheck) {
+        note += '+';
+    }
+    if (isStalemate) {
+        return note + '1/2-1/2';
+    }
+    return note;
+};
 export const copyPosition = position => {
     // eslint-disable-next-line no-unused-vars
     const newPosition = new Array(8).fill('').map(x => new Array(8).fill(''));

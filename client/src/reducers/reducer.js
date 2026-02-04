@@ -4,11 +4,15 @@ import actionTypes from "./actionTypes";
 export const reducer = (state, action) => {
     switch (action.type) {
         case actionTypes.NEW_MOVE: {
-            let { playerTurn, position, castleDirection, status: gameStatus, captured } = state;
+            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
                 action.payload.newPosition
+            ];
+            movesList = [
+                ...movesList,
+                action.payload.newMove
             ];
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
@@ -21,6 +25,7 @@ export const reducer = (state, action) => {
                 ...state,
                 playerTurn,
                 position,
+                movesList,
                 castleDirection,
                 status: gameStatus,
                 captured
@@ -57,11 +62,15 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.PROMOTION_MOVE: {
-            let { playerTurn, position, castleDirection, status: gameStatus, captured } = state;
+            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
                 action.payload.newPosition
+            ];
+            movesList = [
+                ...movesList,
+                action.payload.newMove
             ];
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
@@ -74,6 +83,7 @@ export const reducer = (state, action) => {
                 ...state,
                 playerTurn,
                 position,
+                movesList,
                 status: gameStatus,
                 validMoves: [],
                 selected: null,

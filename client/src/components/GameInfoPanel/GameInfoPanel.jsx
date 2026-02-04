@@ -128,7 +128,7 @@ const GameInfoPanel = (props) => {
                   status === "Draw" &&
                   turn === "black" ? (
                   <img src={white_king} alt="black" />
-                ) : null}
+              ) : null}
                 <button onClick={handleToggle}>
                   {t("custom_panel.rotate_board")}
                 </button>

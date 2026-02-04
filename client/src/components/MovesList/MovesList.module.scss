@@ -1,0 +1,19 @@
+@use '/src/common/styles/templates' as *;
+
+.wrapper {
+    @extend %panel-style;
+    width: 100%;
+    height: 75%;
+    padding: 20px;
+}
+.moves-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    font-weight: 800;
+}
+.moves-list div[data-number]:nth-child(odd)::before {
+    content: attr(data-number);
+    font-weight: 600;
+}

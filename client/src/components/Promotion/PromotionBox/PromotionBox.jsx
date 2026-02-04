@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { useAppContext } from '../../../contexts/Context';
-import { copyPosition } from '../../../helpers';
+import { copyPosition, getNewMoveNotation } from '../../../helpers';
 import { promoteAndMove } from '../../../reducers/actions/promotion';
 import arbiter from '../../../arbiter/arbiter';
 import black_ferz from '../../../assets/icons/black_ferz.png';
@@ -75,7 +75,13 @@ const PromotionBox = ({ onClosePromotion }) => {
             playerColor: nextPlayer, 
             castleDirection: newCastleDirection 
         });
-        dispatch(promoteAndMove({ newPosition, castleDirection: newCastleDirection, gameStatus }));
+        const newMove = getNewMoveNotation({
+            ...promotionSquare,
+            p: color + '_pawn',
+            promotesTo: pieceName,
+            position: appState.position[appState.position.length - 1]
+        })
+        dispatch(promoteAndMove({ newPosition, newMove, castleDirection: newCastleDirection, gameStatus }));
     }, [promotionSquare, appState.position, appState.castleDirection, dispatch, color]);
     useEffect(() => {
         if (promotionSquare && variant === 'shatranj') {

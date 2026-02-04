@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import actionTypes from '../../reducers/actionTypes';
 import { openPromotion } from '../../reducers/actions/promotion';
-import { copyPosition } from '../../helpers';
+import { copyPosition, getNewMoveNotation } from '../../helpers';
 import { useAppContext } from '../../contexts/Context';
 import { makeNewMove } from '../../reducers/actions/move';
 import { status } from '../../constants';
@@ -161,111 +161,169 @@ const Pieces = ({ flipped = false }) => {
             rank: Number(rank), file: Number(file), targetRank, targetFile
         }));
     };
-    const onDrop = e => {
-        e.preventDefault();
-        if (appState.status !== status.ongoing) {
-            return;
-        }
-        const coords = calculateCoords(e);
-        if (coords.x === -1 || coords.y === -1) return;
+    const onDrop = (e) => {
+      e.preventDefault();
+      if (appState.status !== status.ongoing) {
+        return;
+      }
+      const coords = calculateCoords(e);
+      if (coords.x === -1 || coords.y === -1) return;
 
-        const [p, rankStr, fileStr] = e.dataTransfer.getData('text').split(',');
-        const rank = parseInt(rankStr, 10);
-        const file = parseInt(fileStr, 10);
-        const targetRank = coords.x;
-        const targetFile = coords.y;
-        if (rankStr === 'isNew') {
-            const newPosition = copyPosition(currentPosition);
-            if (p.endsWith('king')) {
-                const kingExists = currentPosition.some(row => row.includes(p));
-                if (kingExists) {
-                    alert("On chessboard can be only one " + (p.startsWith('white') ? "white" : "black") + " king!");
-                    return;
-                }
-            }
-            newPosition[targetRank][targetFile] = p;
-            dispatch({
-                type: actionTypes.SET_POSITION,
-                payload: { newPosition }
-            });
-            return;
-        }
-        const isValidMove = appState.validMoves?.find(
-            move => move[0] === targetRank && move[1] === targetFile
-        );
-        if (isValidMove) {
-            if ((p === 'white_pawn' && targetRank === 0) || (p === 'black_pawn' && targetRank === 7)) {
-                openPromotionBox({ rank, file, targetRank, targetFile });
-                return;
-            }
-            if ((p === 'white_soldier' && targetRank === 0) || (p === 'black_soldier' && targetRank === 7)) {
-                openPromotionBox({ rank, file, targetRank, targetFile });
-                return;
-            }
-        }
-        if (!isValidMove) {
-            dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
-            return; 
-        }
+      const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
+      const rank = parseInt(rankStr, 10);
+      const file = parseInt(fileStr, 10);
+      const targetRank = coords.x;
+      const targetFile = coords.y;
+      if (rankStr === "isNew") {
         const newPosition = copyPosition(currentPosition);
-        const newCaptured = JSON.parse(JSON.stringify(appState.captured || { white: [], black: [] }));
-        if (currentPosition[targetRank][targetFile] && currentPosition[targetRank][targetFile] !== '') {
-            let capturedPiece = currentPosition[targetRank][targetFile];
-            capturedPiece = getActualPiece(capturedPiece);
-            const captureColor = capturedPiece.startsWith('white') ? 'white' : 'black';
-            const opponentColor = captureColor === 'white' ? 'black' : 'white';
-            newCaptured[opponentColor].push(capturedPiece);
+        if (p.endsWith("king")) {
+          const kingExists = currentPosition.some((row) => row.includes(p));
+          if (kingExists) {
+            alert(
+              "On chessboard can be only one " +
+                (p.startsWith("white") ? "white" : "black") +
+                " king!",
+            );
+            return;
+          }
         }
-        if (p.endsWith('pawn') && !newPosition[targetRank][targetFile] && targetFile !== file) {
-            newPosition[rank][targetFile] = '';
-        }
-        if (p.endsWith('checkers') && Math.abs(targetRank - rank) === 2 && Math.abs(targetFile - file) === 2) {
-            const capRank = (rank + targetRank) / 2;
-            const capFile = (file + targetFile) / 2;
-            if (newPosition[capRank][capFile] && newPosition[capRank][capFile] !== '') {
-                let capturedPiece = newPosition[capRank][capFile];
-                capturedPiece = getActualPiece(capturedPiece);
-                const captureColor = capturedPiece.startsWith('white') ? 'white' : 'black';
-                const opponentColor = captureColor === 'white' ? 'black' : 'white';
-                newCaptured[opponentColor].push(capturedPiece);
-            }
-            newPosition[capRank][capFile] = '';
-        }
-        newPosition[rank][file] = '';
         newPosition[targetRank][targetFile] = p;
-        const isCastling = p.endsWith('king') && Math.abs(targetFile - file) === 2;
-        if (isCastling) {
-            if (targetFile === 2) {
-                newPosition[rank][0] = '';
-                newPosition[rank][3] = p.replace('king', 'rook');
-            }
-            else if (targetFile === 6) {
-                newPosition[rank][7] = '';
-                newPosition[rank][5] = p.replace('king', 'rook');
-            }
-        }
-        const newCastleDirection = { ...appState.castleDirection };
-        if (p.endsWith('king')) {
-            newCastleDirection[p.startsWith('white') ? 'white' : 'black'] = 'none';
-        }
-        if (p.endsWith('rook')) {
-            const playerColor = p.startsWith('white') ? 'white' : 'black';
-            const currentDir = newCastleDirection[playerColor];
-            if (file === 0) {
-                newCastleDirection[playerColor] = currentDir === 'both' ? 'right' : 'none';
-            } else if (file === 7) {
-                newCastleDirection[playerColor] = currentDir === 'both' ? 'left' : 'none';
-            }
-        }
-        const nextPlayer = appState.playerTurn === 'white' ? 'black' : 'white';
-        const gameStatus = arbiter.getGameStatus({ 
-            position: newPosition, 
-            playerColor: nextPlayer, 
-            castleDirection: newCastleDirection 
+        dispatch({
+          type: actionTypes.SET_POSITION,
+          payload: { newPosition },
         });
-        dispatch(makeNewMove({ newPosition, castleDirection: newCastleDirection, gameStatus, captured: newCaptured }));
-        dispatch({type: actionTypes.CLEAR_VALID_MOVES});
-    }
+        return;
+      }
+      const isValidMove = appState.validMoves?.find(
+        (move) => move[0] === targetRank && move[1] === targetFile,
+      );
+      if (isValidMove) {
+        if (
+          (p === "white_pawn" && targetRank === 0) ||
+          (p === "black_pawn" && targetRank === 7)
+        ) {
+          openPromotionBox({ rank, file, targetRank, targetFile });
+          return;
+        }
+        if (
+          (p === "white_soldier" && targetRank === 0) ||
+          (p === "black_soldier" && targetRank === 7)
+        ) {
+          openPromotionBox({ rank, file, targetRank, targetFile });
+          return;
+        }
+      }
+      if (!isValidMove) {
+        dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+        return;
+      }
+      const newPosition = copyPosition(currentPosition);
+      const newCaptured = JSON.parse(
+        JSON.stringify(appState.captured || { white: [], black: [] }),
+      );
+      if (
+        currentPosition[targetRank][targetFile] &&
+        currentPosition[targetRank][targetFile] !== ""
+      ) {
+        let capturedPiece = currentPosition[targetRank][targetFile];
+        capturedPiece = getActualPiece(capturedPiece);
+        const captureColor = capturedPiece.startsWith("white")
+          ? "white"
+          : "black";
+        const opponentColor = captureColor === "white" ? "black" : "white";
+        newCaptured[opponentColor].push(capturedPiece);
+      }
+      if (
+        p.endsWith("pawn") &&
+        !newPosition[targetRank][targetFile] &&
+        targetFile !== file
+      ) {
+        newPosition[rank][targetFile] = "";
+      }
+      if (
+        p.endsWith("checkers") &&
+        Math.abs(targetRank - rank) === 2 &&
+        Math.abs(targetFile - file) === 2
+      ) {
+        const capRank = (rank + targetRank) / 2;
+        const capFile = (file + targetFile) / 2;
+        if (
+          newPosition[capRank][capFile] &&
+          newPosition[capRank][capFile] !== ""
+        ) {
+          let capturedPiece = newPosition[capRank][capFile];
+          capturedPiece = getActualPiece(capturedPiece);
+          const captureColor = capturedPiece.startsWith("white")
+            ? "white"
+            : "black";
+          const opponentColor = captureColor === "white" ? "black" : "white";
+          newCaptured[opponentColor].push(capturedPiece);
+        }
+        newPosition[capRank][capFile] = "";
+      }
+      newPosition[rank][file] = "";
+      newPosition[targetRank][targetFile] = p;
+      const isCastling =
+        p.endsWith("king") && Math.abs(targetFile - file) === 2;
+        if (isCastling) {
+        if (targetFile === 2) {
+          newPosition[rank][0] = "";
+          newPosition[rank][3] = p.replace("king", "rook");
+        } else if (targetFile === 6) {
+          newPosition[rank][7] = "";
+          newPosition[rank][5] = p.replace("king", "rook");
+        }
+      }
+      const newCastleDirection = { ...appState.castleDirection };
+      if (p.endsWith("king")) {
+        newCastleDirection[p.startsWith("white") ? "white" : "black"] = "none";
+      }
+      if (p.endsWith("rook")) {
+        const playerColor = p.startsWith("white") ? "white" : "black";
+        const currentDir = newCastleDirection[playerColor];
+        if (file === 0) {
+          newCastleDirection[playerColor] =
+            currentDir === "both" ? "right" : "none";
+        } else if (file === 7) {
+          newCastleDirection[playerColor] =
+            currentDir === "both" ? "left" : "none";
+        }
+      }
+      const nextPlayer = appState.playerTurn === "white" ? "black" : "white";
+      const gameStatus = arbiter.getGameStatus({
+        position: newPosition,
+        playerColor: nextPlayer,
+        castleDirection: newCastleDirection,
+      });
+      const isWinStatus = gameStatus.includes("wins");
+      const isInCheck = arbiter.isKingInCheck({
+        position: newPosition,
+        playerColor: nextPlayer,
+      });
+        const isCheckmate = isWinStatus && isInCheck;
+        const isStalemate = gameStatus === "Draw";
+      const newMove = getNewMoveNotation({
+        p,
+        rank,
+        file,
+        targetRank,
+        targetFile,
+        position: currentPosition,
+        isInCheck: isInCheck && !isCheckmate,
+        isCheckmate,
+        isStalemate,
+      });
+      dispatch(
+        makeNewMove({
+          newPosition,
+          newMove,
+          castleDirection: newCastleDirection,
+          gameStatus,
+          captured: newCaptured,
+        }),
+      );
+      dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+    };
     const onDragOver = e => e.preventDefault();
     if (!imagesLoaded) {
         return <div>Loading pieces...</div>;
