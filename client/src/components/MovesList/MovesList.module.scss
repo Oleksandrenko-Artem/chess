@@ -3,7 +3,7 @@
 .wrapper {
     @extend %panel-style;
     width: 100%;
-    height: 75%;
+    min-height: 65%;
     padding: 20px;
 }
 .moves-list {

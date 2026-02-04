@@ -74,6 +74,97 @@ export const createSpecialPosition = () => {
     position[0][7] = '';
     return position;
 }
+export const createOldVariantPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    for (let i = 0; i < 8; i++) {
+        position[6][i] = 'white_pawn';
+        position[1][i] = 'black_pawn';
+    }
+    position[7][0] = 'white_tank';
+    position[7][1] = 'white_horse';
+    position[7][2] = 'white_elephant';
+    position[7][3] = 'white_king';
+    position[7][4] = 'white_firzan';
+    position[7][5] = 'white_elephant';
+    position[7][6] = 'white_horse';
+    position[7][7] = 'white_tank';
+    position[0][0] = 'black_tank';
+    position[0][1] = 'black_horse';
+    position[0][2] = 'black_elephant';
+    position[0][3] = 'black_king';
+    position[0][4] = 'black_firzan';
+    position[0][5] = 'black_elephant';
+    position[0][6] = 'black_horse';
+    position[0][7] = 'black_tank';
+    return position;
+}
+export const createDinoPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    for (let i = 0; i < 8; i++) {
+        position[6][i] = 'white_pawn';
+        position[1][i] = 'black_pawn';
+    }
+    position[7][0] = 'white_dinozavr';
+    position[7][1] = 'white_dinozavr';
+    position[7][2] = 'white_dinozavr';
+    position[7][3] = 'white_dinozavr';
+    position[7][4] = 'white_king';
+    position[7][5] = 'white_dinozavr';
+    position[7][6] = 'white_dinozavr';
+    position[7][7] = 'white_dinozavr';
+    position[0][0] = 'black_dinozavr';
+    position[0][1] = 'black_dinozavr';
+    position[0][2] = 'black_dinozavr';
+    position[0][3] = 'black_dinozavr';
+    position[0][4] = 'black_king';
+    position[0][5] = 'black_dinozavr';
+    position[0][6] = 'black_dinozavr';
+    position[0][7] = 'black_dinozavr';
+    return position;
+}
+export const createExtendedPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    for (let i = 0; i < 8; i++) {
+        position[5][i] = 'white_pawn';
+        position[2][i] = 'black_pawn';
+    }
+    position[7][0] = 'white_rook';
+    position[7][1] = 'white_camel';
+    position[7][2] = 'white_bishop';
+    position[7][3] = 'white_king';
+    position[7][4] = 'white_firzan';
+    position[7][5] = 'white_bishop';
+    position[7][6] = 'white_camel';
+    position[7][7] = 'white_rook';
+    position[6][0] = 'white_tank';
+    position[6][1] = 'white_horse';
+    position[6][2] = 'white_elephant';
+    position[6][3] = 'white_giraffe';
+    position[6][4] = 'white_giraffe';
+    position[6][5] = 'white_elephant';
+    position[6][6] = 'white_horse';
+    position[6][7] = 'white_tank';
+    position[1][0] = 'black_tank';
+    position[1][1] = 'black_horse';
+    position[1][2] = 'black_elephant';
+    position[1][3] = 'black_giraffe';
+    position[1][4] = 'black_giraffe';
+    position[1][5] = 'black_elephant';
+    position[1][6] = 'black_horse';
+    position[1][7] = 'black_tank';
+    position[0][0] = 'black_rook';
+    position[0][1] = 'black_camel';
+    position[0][2] = 'black_bishop';
+    position[0][3] = 'black_king';
+    position[0][4] = 'black_firzan';
+    position[0][5] = 'black_bishop';
+    position[0][6] = 'black_camel';
+    position[0][7] = 'black_rook';
+    return position;
+}
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo }) => {
     if (p[6].toLowerCase() === 'k' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';

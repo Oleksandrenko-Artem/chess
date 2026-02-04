@@ -1,4 +1,4 @@
-import { createOldPosition, createPosition, createSpecialPosition } from "./helpers";
+import { createDinoPosition, createExtendedPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition } from "./helpers";
 
 export const status = {
     'ongoing': 'Ongoing',
@@ -70,6 +70,57 @@ export const initialOldGameState = {
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+};
+export const initialOldVariantGameState = {
+    position: [createOldVariantPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+};
+export const initialDinoGameState = {
+    position: [createDinoPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+};
+export const initialExtendedGameState = {
+    position: [createExtendedPosition()],
     playerTurn: 'white',
     movesList: [],
     validMoves: [],

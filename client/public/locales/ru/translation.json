@@ -2,6 +2,10 @@
   "header": {
     "chess": "Шахматы",
     "shatranj": "Шатрандж",
+    "old_chess": "Старые шахматы",
+    "extended_chess": "Розширенные шахматы",
+    "dinozavr_chess": "Эра динозавров",
+    "position": "Позиция",
     "custom_position": "Своя позиция",
     "hi": "Привет,",
     "info": "Информация",

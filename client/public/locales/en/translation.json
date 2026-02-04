@@ -2,6 +2,10 @@
   "header": {
     "chess": "Chess",
     "shatranj": "Shatranj",
+    "old_chess": "Old chess",
+    "extended_chess": "Extended chess",
+    "dinozavr_chess": "Dinozavr chess",
+    "position": "Position",
     "custom_position": "Custom Position",
     "hi": "Hi,",
     "info": "Information",
