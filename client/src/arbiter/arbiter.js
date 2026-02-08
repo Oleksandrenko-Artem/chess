@@ -60,7 +60,7 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('rukh')) {
+        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('chariot')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             directions.forEach(([dr, df]) => {
                 for (let i = 1; i < 8; i++) {
@@ -178,24 +178,32 @@ const arbiter = {
                 if (position[intermediateRank][intermediateFile] !== '') {
                     return;
                 }
-                const straightDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+                const straightDirections = [[dr1, 0], [0, df1]];
                 straightDirections.forEach(([sr, sf]) => {
-                    for (let i = 1; i <= 7; i++) {
+                    for (let i = 3; i <= 7; i++) {
                         const finalRank = intermediateRank + i * sr;
                         const finalFile = intermediateFile + i * sf;
                         if (position?.[finalRank]?.[finalFile] === undefined) {
                             break;
                         }
-                        const distanceFromOrigin = Math.max(Math.abs(finalRank - rank), Math.abs(finalFile - file));
-                        if (distanceFromOrigin < 2) {
+                        // Check path from 1 to i
+                        let pathBlocked = false;
+                        for (let s = 1; s <= i; s++) {
+                            const pathRank = intermediateRank + s * sr;
+                            const pathFile = intermediateFile + s * sf;
+                            const pieceOnPath = position[pathRank][pathFile];
+                            if (s < i) {
+                                if (pieceOnPath !== '') {
+                                    pathBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (pathBlocked) {
                             break;
                         }
-                        
-                        const destinationPiece = position[finalRank][finalFile];
-                        if (destinationPiece === '') {
-                            attacks.push([finalRank, finalFile]);
-                        } else {
-                            attacks.push([finalRank, finalFile]);
+                        attacks.push([finalRank, finalFile]);
+                        if (position[finalRank][finalFile] !== '') {
                             break;
                         }
                     }
@@ -236,7 +244,7 @@ const arbiter = {
                     attacks.push([landRank, landFile]);
                 }
             }
-        } 
+        }
         return attacks;
     },
     isKingInCheck: function ({ position, playerColor }) {
@@ -320,7 +328,7 @@ const arbiter = {
             moves = getImperatorMoves({ position, piece, rank, file });
         } else if (piece.endsWith('king')) {
             moves = getKingMoves({ position, piece, castleDirection, rank, file });
-        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('rukh')) {
+        } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('chariot')) {
             moves = getRookMoves({ position, piece, rank, file });
         } else if (piece.endsWith('ferz')) {
             moves = getFerzMoves({ position, piece, rank, file });

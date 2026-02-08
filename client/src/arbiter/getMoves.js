@@ -184,7 +184,7 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
         return moves;
     }
     if (piece.startsWith('white')) {
-        if (arbiter.isKingInCheck({position, playerColor: 'white'})) {
+        if (arbiter.isKingInCheck({ position, playerColor: 'white' })) {
             return moves;
         }
         if (['left', 'both'].includes(castleDirection) && !position[7][3] && !position[7][2] && !position[7][1] && position[7][0] === 'white_rook' && !arbiter.wouldKingPassThroughCheck({
@@ -200,7 +200,7 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
             moves.push([7, 6]);
         }
     } else {
-        if (arbiter.isKingInCheck({position, playerColor: 'black'})) {
+        if (arbiter.isKingInCheck({ position, playerColor: 'black' })) {
             return moves;
         }
         if (['left', 'both'].includes(castleDirection) && !position[0][3] && !position[0][2] && !position[0][1] && position[0][0] === 'black_rook' && !arbiter.wouldKingPassThroughCheck({
@@ -384,25 +384,36 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
         if (intermediateRank >= 0 && intermediateRank < 8 && intermediateFile >= 0 && intermediateFile < 8) {
             if (position[intermediateRank][intermediateFile] === '') {
                 const straightDirections = [
-                    { dr: 1, df: 0 }, { dr: -1, df: 0 }, { dr: 0, df: 1 }, { dr: 0, df: -1 }
+                    { dr: dr, df: 0 }, { dr: 0, df: df }
                 ];
                 straightDirections.forEach(({ dr: sr, df: sf }) => {
-                    for (let steps = 1; steps <= 7; steps++) {
+                    for (let steps = 3; steps <= 7; steps++) {
                         const checkRank = intermediateRank + sr * steps;
                         const checkFile = intermediateFile + sf * steps;
                         if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
-                            const distanceFromOrigin = Math.max(Math.abs(checkRank - rank), Math.abs(checkFile - file));
-                            if (distanceFromOrigin < 2) {
-                                break;
+                            // Check all cells from intermediate to checkRank are empty
+                            let canMove = true;
+                            for (let s = 1; s <= steps; s++) {
+                                const pathRank = intermediateRank + sr * s;
+                                const pathFile = intermediateFile + sf * s;
+                                const piece = position[pathRank][pathFile];
+                                if (s < steps) {
+                                    if (piece !== '') {
+                                        canMove = false;
+                                        break;
+                                    }
+                                } else {
+                                    if (piece !== '' && !piece.startsWith(enemy)) {
+                                        canMove = false;
+                                        break;
+                                    }
+                                }
                             }
-                            const checkPiece = position[checkRank][checkFile];
-                            if (checkPiece === '') {
+                            if (canMove) {
                                 moves.push([checkRank, checkFile]);
-                            } else if (checkPiece.startsWith(enemy)) {
-                                moves.push([checkRank, checkFile]);
-                                break;
-                            } else {
-                                break;
+                            }
+                            if (!canMove) {
+                                break; // Stop for this direction if blocked
                             }
                         } else {
                             break;
@@ -456,6 +467,6 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
             moves.push([landRankBackward, file + 2]);
         }
     }
-    
+
     return moves;
 };

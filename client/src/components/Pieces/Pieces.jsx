@@ -42,6 +42,8 @@ import white_giraffe from '../../assets/icons/white_giraffe.png';
 import white_sailboat from '../../assets/icons/white_sailboat.png';
 import white_rukh from '../../assets/icons/white_rukh.png';
 import white_checkers from '../../assets/icons/white_checkers.png';
+import white_chariot from '../../assets/icons/white_chariot.png';
+import black_chariot from '../../assets/icons/black_chariot.png';
 import styles from './../ChessBoard/ChessBoard.module.scss';
 
 const imageMap = {
@@ -61,7 +63,8 @@ const imageMap = {
     black_giraffe,
     black_sailboat,
     black_rukh,
-    black_checkers,
+  black_checkers,
+    black_chariot,
     white_imperator,
     white_king,
     white_ferz,
@@ -78,7 +81,8 @@ const imageMap = {
     white_giraffe,
     white_sailboat,
     white_rukh,
-    white_checkers,
+  white_checkers,
+    white_chariot,
 };
 
 const getPieceImageSrc = (pieceName) => {
@@ -89,8 +93,8 @@ const getPieceImageSrc = (pieceName) => {
             if (rep === 'sailboat') {
                 return imageMap[pieceName.replace('rook', 'sailboat')] || imageMap[pieceName] || '';
             }
-            if (rep === 'rukh') {
-                return imageMap[pieceName.replace('rook', 'rukh')] || imageMap[pieceName] || '';
+            if (rep === 'chariot') {
+                return imageMap[pieceName.replace('rook', 'chariot')] || imageMap[pieceName] || '';
             }
         }
     } catch (e) {
@@ -106,8 +110,8 @@ const getActualPiece = (piece) => {
             if (rep === 'sailboat') {
                 return piece.replace('rook', 'sailboat');
             }
-            if (rep === 'rukh') {
-                return piece.replace('rook', 'rukh');
+            if (rep === 'chariot') {
+                return piece.replace('rook', 'chariot');
             }
         }
     } catch (e) {

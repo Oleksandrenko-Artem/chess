@@ -16,6 +16,7 @@ import black_ferz from '../../assets/icons/black_ferz.png';
 import black_king from '../../assets/icons/black_king.png';
 import black_checkers from '../../assets/icons/black_checkers.png';
 import black_giraffe from '../../assets/icons/black_giraffe.png';
+import black_chariot from '../../assets/icons/black_chariot.png';
 import black_dinozavr from '../../assets/icons/black_dinozavr.png';
 import white_pawn from '../../assets/icons/white_soldier.png';
 import white_soldier from '../../assets/icons/white_soldier.png';
@@ -33,6 +34,7 @@ import white_king from '../../assets/icons/white_king.png';
 import white_checkers from '../../assets/icons/white_checkers.png';
 import white_giraffe from '../../assets/icons/white_giraffe.png';
 import white_dinozavr from '../../assets/icons/white_dinozavr.png';
+import white_chariot from "../../assets/icons/white_chariot.png";
 
 const imageMap = {
     black_pawn,
@@ -50,7 +52,8 @@ const imageMap = {
     black_king,
     black_checkers,
     black_giraffe,
-    black_dinozavr,
+  black_dinozavr,
+    black_chariot,
     white_pawn,
     white_soldier,
     white_horse,
@@ -66,14 +69,15 @@ const imageMap = {
     white_king,
     white_checkers,
     white_giraffe,
-    white_dinozavr,
+  white_dinozavr,
+    white_chariot,
 };
 const getPieceType = (pieceName) => {
     if (!pieceName) return null;
     const parts = pieceName.split('_');
     if (parts.length > 1) {
         const type = parts[1];
-        if (type === 'sailboat' || type === 'rukh') {
+        if (type === 'sailboat' || type === 'chariot') {
             return type;
         }
         return type;

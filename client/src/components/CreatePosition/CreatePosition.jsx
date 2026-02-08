@@ -21,6 +21,7 @@ import white_giraffe from '../../assets/icons/white_giraffe.png';
 import white_sailboat from '../../assets/icons/white_sailboat.png';
 import white_rukh from '../../assets/icons/white_rukh.png';
 import white_checkers from '../../assets/icons/white_checkers.png';
+import white_chariot from '../../assets/icons/white_chariot.png';
 import black_pawn from '../../assets/icons/black_soldier.png';
 import black_horse from '../../assets/icons/black_horse.png';
 import black_bishop from '../../assets/icons/black_bishop.png';
@@ -36,6 +37,7 @@ import black_giraffe from '../../assets/icons/black_giraffe.png';
 import black_sailboat from '../../assets/icons/black_sailboat.png';
 import black_rukh from '../../assets/icons/black_rukh.png';
 import black_checkers from '../../assets/icons/black_checkers.png';
+import black_chariot from '../../assets/icons/black_chariot.png';
 import styles from './CreatePosition.module.scss';
 
 const CreatePosition = () => {
@@ -50,10 +52,10 @@ const CreatePosition = () => {
             return localStorage.getItem('replaceRook') === 'sailboat';
         } catch (e) { return false; }
     });
-    const [pieceRukh, setPieceRukh] = useState(() => {
+    const [pieceChariot, setPieceChariot] = useState(() => {
         try {
             if (typeof window === 'undefined') return false;
-            return localStorage.getItem('replaceRook') === 'rukh';
+            return localStorage.getItem('replaceRook') === 'chariot';
         } catch (e) { return false; }
     });
     const DEFAULT_LIGHT_COLOR = '#ffdabb';
@@ -91,7 +93,7 @@ const CreatePosition = () => {
     const handleReplacePieceSailBoat = () => {
         const newVal = !pieceSailBoat;
         setPieceSailBoat(newVal);
-        setPieceRukh(false);
+        setPieceChariot(false);
         try {
             if (typeof window !== 'undefined') {
                 const newReplacement = newVal ? 'sailboat' : 'rook';
@@ -100,13 +102,13 @@ const CreatePosition = () => {
             }
         } catch (e) {}
     };
-    const handleReplacePieceRukh = () => {
-        const newVal = !pieceRukh;
-        setPieceRukh(newVal);
+    const handleReplacePieceChariot = () => {
+        const newVal = !pieceChariot;
+        setPieceChariot(newVal);
         setPieceSailBoat(false);
         try {
             if (typeof window !== 'undefined') {
-                const newReplacement = newVal ? 'rukh' : 'rook';
+                const newReplacement = newVal ? 'chariot' : 'rook';
                 localStorage.setItem('replaceRook', newReplacement);
                 window.dispatchEvent(new CustomEvent('rook-replacement-changed', { detail: { replacement: newReplacement } }));
             }
@@ -212,20 +214,20 @@ const CreatePosition = () => {
             </div>
             <div>
               <div
-                onClick={handleReplacePieceRukh}
-                className={`${styles["pieces-variants"]} ${pieceRukh ? styles["selected"] : ""}`}
+                onClick={handleReplacePieceChariot}
+                className={`${styles["pieces-variants"]} ${pieceChariot ? styles["selected"] : ""}`}
               >
                 {color === "white" ? (
                   <div className={styles["pieces-variants"]}>
                     <img src={white_rook} alt="white_rook" draggable={false} />
                     <Icon path={mdiArrowRightThin} size={1.5} />
-                    <img src={white_rukh} alt="white_rukh" draggable={false} />
+                    <img src={white_chariot} alt="white_chariot" draggable={false} />
                   </div>
                 ) : (
                   <div className={styles["pieces-variants"]}>
                     <img src={black_rook} alt="black_rook" draggable={false} />
                     <Icon path={mdiArrowRightThin} size={1.5} />
-                    <img src={black_rukh} alt="black_rukh" draggable={false} />
+                    <img src={black_chariot} alt="black_chariot" draggable={false} />
                   </div>
                 )}
               </div>
@@ -264,7 +266,7 @@ const CreatePosition = () => {
                 <img
                   src={
                     (pieceSailBoat && white_sailboat) ||
-                    (pieceRukh && white_rukh) ||
+                    (pieceChariot && white_chariot) ||
                     white_rook
                   }
                   alt="white_rook"
@@ -272,7 +274,7 @@ const CreatePosition = () => {
                   onDragStart={(e) =>
                     e.dataTransfer.setData(
                       "text",
-                      `${pieceSailBoat ? "white_sailboat" : pieceRukh ? "white_rukh" : "white_rook"},isNew`,
+                      `${pieceSailBoat ? "white_sailboat" : pieceChariot ? "white_chariot" : "white_rook"},isNew`,
                     )
                   }
                 />
@@ -392,7 +394,7 @@ const CreatePosition = () => {
                 <img
                   src={
                     (pieceSailBoat && black_sailboat) ||
-                    (pieceRukh && black_rukh) ||
+                    (pieceChariot && black_chariot) ||
                     black_rook
                   }
                   alt="black_rook"
@@ -400,7 +402,7 @@ const CreatePosition = () => {
                   onDragStart={(e) =>
                     e.dataTransfer.setData(
                       "text",
-                      `${pieceSailBoat ? "black_sailboat" : pieceRukh ? "black_rukh" : "black_rook"},isNew`,
+                      `${pieceSailBoat ? "black_sailboat" : pieceChariot ? "black_chariot" : "black_rook"},isNew`,
                     )
                   }
                 />

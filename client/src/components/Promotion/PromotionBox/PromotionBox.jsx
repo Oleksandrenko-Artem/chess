@@ -12,9 +12,9 @@ import white_rook from '../../../assets/icons/white_rook.png';
 import white_bishop from '../../../assets/icons/white_bishop.png';
 import white_horse from '../../../assets/icons/white_horse.png';
 import white_sailboat from '../../../assets/icons/white_sailboat.png';
-import white_rukh from '../../../assets/icons/white_rukh.png';
+import white_chariot from '../../../assets/icons/white_rukh.png';
 import black_sailboat from '../../../assets/icons/black_sailboat.png';
-import black_rukh from '../../../assets/icons/black_rukh.png';
+import black_chariot from '../../../assets/icons/black_rukh.png';
 import styles from '../../Pieces/Pieces.module.scss';
 
 const promoImageMap = {
@@ -23,13 +23,13 @@ const promoImageMap = {
     black_bishop,
     black_horse,
     black_sailboat,
-    black_rukh,
+    black_chariot,
     white_ferz,
     white_rook,
     white_bishop,
     white_horse,
     white_sailboat,
-    white_rukh,
+    white_chariot,
 };
 
 const PromotionBox = ({ onClosePromotion }) => {
@@ -54,7 +54,7 @@ const PromotionBox = ({ onClosePromotion }) => {
             try {
                 const rep = typeof window !== 'undefined' ? localStorage.getItem('replaceRook') : null;
                 if (rep === 'sailboat') finalPieceName = 'sailboat';
-                else if (rep === 'rukh') finalPieceName = 'rukh';
+                else if (rep === 'chariot') finalPieceName = 'chariot';
             } catch (e) {}
         }
         newPosition[promotionSquare.targetRank][promotionSquare.targetFile] = `${color}_${finalPieceName}`;
