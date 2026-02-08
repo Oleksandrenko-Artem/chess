@@ -391,7 +391,6 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
                         const checkRank = intermediateRank + sr * steps;
                         const checkFile = intermediateFile + sf * steps;
                         if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
-                            // Check all cells from intermediate to checkRank are empty
                             let canMove = true;
                             for (let s = 1; s <= steps; s++) {
                                 const pathRank = intermediateRank + sr * s;
@@ -413,7 +412,7 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
                                 moves.push([checkRank, checkFile]);
                             }
                             if (!canMove) {
-                                break; // Stop for this direction if blocked
+                                break;
                             }
                         } else {
                             break;
@@ -468,5 +467,72 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
         }
     }
 
+    return moves;
+};
+export const getRukhMoves = ({ position, rank, file }) => {
+    const moves = [];
+    const color = position[rank][file].startsWith('white') ? 'white' : 'black';
+    const enemy = color === 'white' ? 'black' : 'white';
+    const diagonalDirections = [
+        { dr: 1, df: 1 }, { dr: 1, df: -1 }, { dr: -1, df: 1 }, { dr: -1, df: -1 }
+    ];
+    diagonalDirections.forEach(({ dr, df }) => {
+        const intermediateRank = rank + dr;
+        const intermediateFile = file + df;
+        if (intermediateRank >= 0 && intermediateRank < 8 && intermediateFile >= 0 && intermediateFile < 8) {
+            if (position[intermediateRank][intermediateFile] === '') {
+                const straightDirections = [
+                    { dr: dr, df: 0 }, { dr: 0, df: df }
+                ];
+                straightDirections.forEach(({ dr: sr, df: sf }) => {
+                    for (let steps = 1; steps <= 7; steps++) {
+                        const checkRank = intermediateRank + sr * steps;
+                        const checkFile = intermediateFile + sf * steps;
+                        if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
+                            let canMove = true;
+                            for (let s = 1; s <= steps; s++) {
+                                const pathRank = intermediateRank + sr * s;
+                                const pathFile = intermediateFile + sf * s;
+                                const piece = position[pathRank][pathFile];
+                                if (s < steps) {
+                                    if (piece !== '') {
+                                        canMove = false;
+                                        break;
+                                    }
+                                } else {
+                                    if (piece !== '' && !piece.startsWith(enemy)) {
+                                        canMove = false;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (canMove) {
+                                moves.push([checkRank, checkFile]);
+                            }
+                            if (!canMove) {
+                                break;
+                            }
+                        } else {
+                            break;
+                        }
+                    }
+                });
+            }
+        }
+    });
+    const diagonalMoves = [
+        [rank + 1, file + 1],
+        [rank + 1, file - 1],
+        [rank - 1, file + 1],
+        [rank - 1, file - 1]
+    ];
+    diagonalMoves.forEach(([r, f]) => {
+        if (r >= 0 && r < 8 && f >= 0 && f < 8) {
+            const piece = position[r][f];
+            if (piece === '' || piece.startsWith(enemy)) {
+                moves.push([r, f]);
+            }
+        }
+    });
     return moves;
 };

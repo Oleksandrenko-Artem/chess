@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -209,6 +209,58 @@ const arbiter = {
                     }
                 });
             });
+        } else if (piece.endsWith('rukh')) {
+            const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+            diagonalDirections.forEach(([dr1, df1]) => {
+                const intermediateRank = rank + dr1;
+                const intermediateFile = file + df1;
+                if (position?.[intermediateRank]?.[intermediateFile] === undefined) {
+                    return;
+                }
+                if (position[intermediateRank][intermediateFile] !== '') {
+                    return;
+                }
+                const straightDirections = [[dr1, 0], [0, df1]];
+                straightDirections.forEach(([sr, sf]) => {
+                    for (let i = 1; i <= 7; i++) {
+                        const finalRank = intermediateRank + i * sr;
+                        const finalFile = intermediateFile + i * sf;
+                        if (position?.[finalRank]?.[finalFile] === undefined) {
+                            break;
+                        }
+                        let pathBlocked = false;
+                        for (let s = 1; s <= i; s++) {
+                            const pathRank = intermediateRank + s * sr;
+                            const pathFile = intermediateFile + s * sf;
+                            const pieceOnPath = position[pathRank][pathFile];
+                            if (s < i) {
+                                if (pieceOnPath !== '') {
+                                    pathBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (pathBlocked) {
+                            break;
+                        }
+                        attacks.push([finalRank, finalFile]);
+                        if (position[finalRank][finalFile] !== '') {
+                            break;
+                        }
+                    }
+                });
+            });
+            const diagonalAttacks = [
+                [rank + 1, file + 1],
+                [rank + 1, file - 1],
+                [rank - 1, file + 1],
+                [rank - 1, file - 1]
+            ];
+            diagonalAttacks.forEach(([r, f]) => {
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
         } else if (piece.endsWith('checkers')) {
             const us = piece.startsWith('white') ? 'white' : 'black';
             const enemy = us === 'white' ? 'black' : 'white';
@@ -336,6 +388,8 @@ const arbiter = {
             moves = getDinozavrMoves({ position, piece, rank, file });
         } else if (piece.endsWith('giraffe')) {
             moves = getGiraffeMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('rukh')) {
+            moves = getRukhMoves({ position, piece, rank, file });
         } else if (piece.endsWith('checkers')) {
             moves = [
                 ...getCheckersMoves({ position, piece, rank, file }),

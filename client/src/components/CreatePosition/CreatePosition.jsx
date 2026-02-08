@@ -152,7 +152,9 @@ const CreatePosition = () => {
               <option value="chess">{t("header.chess")}</option>
               <option value="shatranj">{t("header.shatranj")}</option>
               <option value="old-chess">{t("header.old_chess")}</option>
-              <option value="extended-chess">{t("header.extended_chess")}</option>
+              <option value="extended-chess">
+                {t("header.extended_chess")}
+              </option>
               <option value="dinozavr-chess">
                 {t("header.dinozavr_chess")}
               </option>
@@ -221,13 +223,21 @@ const CreatePosition = () => {
                   <div className={styles["pieces-variants"]}>
                     <img src={white_rook} alt="white_rook" draggable={false} />
                     <Icon path={mdiArrowRightThin} size={1.5} />
-                    <img src={white_chariot} alt="white_chariot" draggable={false} />
+                    <img
+                      src={white_chariot}
+                      alt="white_chariot"
+                      draggable={false}
+                    />
                   </div>
                 ) : (
                   <div className={styles["pieces-variants"]}>
                     <img src={black_rook} alt="black_rook" draggable={false} />
                     <Icon path={mdiArrowRightThin} size={1.5} />
-                    <img src={black_chariot} alt="black_chariot" draggable={false} />
+                    <img
+                      src={black_chariot}
+                      alt="black_chariot"
+                      draggable={false}
+                    />
                   </div>
                 )}
               </div>
@@ -336,6 +346,14 @@ const CreatePosition = () => {
                   draggable="true"
                   onDragStart={(e) =>
                     e.dataTransfer.setData("text", `white_giraffe,isNew`)
+                  }
+                />
+                <img
+                  src={white_rukh}
+                  alt="white_rukh"
+                  draggable="true"
+                  onDragStart={(e) =>
+                    e.dataTransfer.setData("text", `white_rukh,isNew`)
                   }
                 />
               </div>
@@ -464,6 +482,14 @@ const CreatePosition = () => {
                   draggable="true"
                   onDragStart={(e) =>
                     e.dataTransfer.setData("text", `black_giraffe,isNew`)
+                  }
+                />
+                <img
+                  src={black_rukh}
+                  alt="black_rukh"
+                  draggable="true"
+                  onDragStart={(e) =>
+                    e.dataTransfer.setData("text", `black_rukh,isNew`)
                   }
                 />
               </div>

@@ -20,6 +20,10 @@
         div {
             display: flex;
             flex-direction: column;
+            img {
+                width: 8vh;
+                height: 8vh;
+            }
             div {
                 display: flex;
                 flex-direction: row;

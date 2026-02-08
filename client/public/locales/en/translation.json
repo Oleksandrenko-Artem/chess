@@ -87,7 +87,7 @@
     "rook": {
         "name": "Rook",
         "desc": "Moves horizontally and vertically any number of squares. Can't jump over figures. Can participate in castling. Has a strength of 5 pawns.",
-        "history": "Appeared in Indian chess (Chaturanga) and was called 'Ratha', meaning 'chariot'. Later, it was adapted in Arabic chess as 'Rukh', symbolizing the bird Rukh, which was used as a type of military unit. At that time, it was the strongest piece in chess. Later, the piece came to Europe, where it received the modern name 'Rook'. The move of this piece did not change from the time of its appearance; only its name and appearance changed."
+        "history": "Appeared in Indian chess (Chaturanga) and was called 'Ratha', meaning 'chariot'. At that time, it was the strongest piece in chess. Later, the piece came to Europe, where it received the modern name 'Rook'. The move of this piece did not change from the time of its appearance; only its name and appearance changed."
     },
     "ferz": {
         "name": "Ferz",
@@ -111,8 +111,13 @@
     },
     "giraffe": {
         "name": "Giraffe",
-        "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves multiple squares vertically/horizontally (like a rook). It cannot jump over pieces. It has a strength of 7 pawns.",
+        "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves minimum 3 squares vertically/horizontally. It cannot jump over pieces. It has a strength of 4 pawns.",
         "history": "It was found in some very early chess variants, such as Tamerlane Chess."
+    },
+    "rukh": {
+      "name": "Move",
+      "desc": "Move moves one step diagonally, then a number of squares vertically/horizontally. Cannot jump over pieces. Has a strength of 10 pawns.",
+      "history": "Found in some very early chess variants, such as Grant Acedrex."
     },
     "dinosaur": {
         "name": "Dinosaur",

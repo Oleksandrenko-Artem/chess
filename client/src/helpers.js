@@ -135,7 +135,7 @@ export const createExtendedPosition = () => {
     position[7][1] = 'white_camel';
     position[7][2] = 'white_bishop';
     position[7][3] = 'white_king';
-    position[7][4] = 'white_firzan';
+    position[7][4] = 'white_rukh';
     position[7][5] = 'white_bishop';
     position[7][6] = 'white_camel';
     position[7][7] = 'white_rook';
@@ -159,7 +159,7 @@ export const createExtendedPosition = () => {
     position[0][1] = 'black_camel';
     position[0][2] = 'black_bishop';
     position[0][3] = 'black_king';
-    position[0][4] = 'black_firzan';
+    position[0][4] = 'black_rukh';
     position[0][5] = 'black_bishop';
     position[0][6] = 'black_camel';
     position[0][7] = 'black_rook';
