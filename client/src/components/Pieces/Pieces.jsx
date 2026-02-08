@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import actionTypes from '../../reducers/actionTypes';
 import { openPromotion } from '../../reducers/actions/promotion';
 import { copyPosition, getNewMoveNotation } from '../../helpers';
@@ -123,6 +124,7 @@ const getActualPiece = (piece) => {
 const Pieces = ({ flipped = false }) => {
     const ref = useRef(null);
     const { appState, dispatch } = useAppContext();
+    const user = useSelector(state => state.users.user);
     const [imagesLoaded, setImagesLoaded] = useState(false);
     useEffect(() => {
         const loadImage = src => new Promise((resolve, reject) => {
@@ -316,6 +318,7 @@ const Pieces = ({ flipped = false }) => {
         isInCheck: isInCheck && !isCheckmate,
         isCheckmate,
         isStalemate,
+        rookType: user ? user.rookType : (typeof window !== 'undefined' ? localStorage.getItem('replaceRook') || 'rook' : 'rook'),
       });
       dispatch(
         makeNewMove({

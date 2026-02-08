@@ -16,6 +16,14 @@ const userSchema = mongoose.Schema({
     password: {
         type: String,
         required: true,
+    },
+    boardColor: {
+        light: { type: String, default: '#ffdabb' },
+        dark: { type: String, default: '#7e5e2e' }
+    },
+    rookType: {
+        type: String,
+        default: 'rook', // 'rook', 'sailboat', 'chariot'
     }
 });
 

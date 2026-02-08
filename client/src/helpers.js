@@ -165,7 +165,7 @@ export const createExtendedPosition = () => {
     position[0][7] = 'black_rook';
     return position;
 }
-export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo }) => {
+export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
     if (p[6].toLowerCase() === 'k' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
         if (isCheckmate) return castling + '#';
@@ -175,7 +175,7 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
     let note = '';
     const pieceType = p[6].toLowerCase();
     const isCapture = !!position[targetRank][targetFile];
-    const isSailboat = (pieceType === 's' && localStorage.getItem('replaceRook') === 'sailboat');
+    const isSailboat = (pieceType === 's' && rookType === 'sailboat');
     const isPawnType = pieceType === 'p' || (pieceType === 's' && !isSailboat);
     if (!isPawnType) {
         if (pieceType === 'i') {
