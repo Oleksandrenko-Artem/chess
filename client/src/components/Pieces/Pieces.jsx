@@ -29,6 +29,7 @@ import black_checkers from "../../assets/icons/black_checkers.png";
 import black_chariot from "../../assets/icons/black_chariot.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
+import black_lion from "../../assets/icons/black_lion.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -49,6 +50,7 @@ import white_checkers from "../../assets/icons/white_checkers.png";
 import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
+import white_lion from "../../assets/icons/white_lion.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 
 const imageMap = {
@@ -72,6 +74,7 @@ const imageMap = {
   black_chariot,
   black_wazir,
   black_zebra,
+  black_lion,
   white_imperator,
   white_king,
   white_ferz,
@@ -92,6 +95,7 @@ const imageMap = {
   white_chariot,
   white_wazir,
   white_zebra,
+  white_lion,
 };
 
 const getPieceImageSrc = (pieceName) => {

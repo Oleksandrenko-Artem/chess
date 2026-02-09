@@ -33,6 +33,7 @@ import white_checkers from "../../assets/icons/white_checkers.png";
 import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
+import white_lion from "../../assets/icons/white_lion.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -51,6 +52,7 @@ import black_checkers from "../../assets/icons/black_checkers.png";
 import black_chariot from "../../assets/icons/black_chariot.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
+import black_lion from "../../assets/icons/black_lion.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -492,6 +494,14 @@ const CreatePosition = () => {
                 }
               />
               <img
+                src={white_lion}
+                alt="white_lion"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_lion,isNew`)
+                }
+              />
+              <img
                 src={white_giraffe}
                 alt="white_giraffe"
                 draggable="true"
@@ -641,6 +651,14 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_zebra,isNew`)
+                }
+              />
+              <img
+                src={black_lion}
+                alt="black_lion"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_lion,isNew`)
                 }
               />
               <img

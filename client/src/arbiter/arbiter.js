@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -109,6 +109,14 @@ const arbiter = {
             });
         } else if (piece.endsWith('zebra')) {
             const jumps = [[-3, -2], [-3, 2], [-2, -3], [-2, 3], [2, -3], [2, 3], [3, -2], [3, 2]];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('lion')) {
+            const jumps = [[-3, -1], [-3, 1], [-1, -3], [-1, 3], [1, -3], [1, 3], [3, -1], [3, 1], [-3, 0], [3, 0], [0, -3], [0, 3]];
             jumps.forEach(([dr, df]) => {
                 const [r, f] = [rank + dr, file + df];
                 if (position?.[r]?.[f] !== undefined) {
@@ -389,6 +397,8 @@ const arbiter = {
             moves = getCamelMoves({ position, rank, file });
         } else if (piece.endsWith('zebra')) {
             moves = getZebraMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('lion')) {
+            moves = getLionMoves({ position, piece, rank, file });
         } else if (piece.endsWith('horse')) {
             moves = getHorseMoves({ position, rank, file });
         } else if (piece.endsWith('bishop')) {

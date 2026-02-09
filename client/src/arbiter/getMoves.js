@@ -577,3 +577,30 @@ export const getZebraMoves = ({ position, rank, file }) => {
     });
     return moves;
 };
+export const getLionMoves = ({ position, rank, file }) => {
+    const moves = [];
+    const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
+    const valid = [
+        [-3, -1],
+        [-3, 1],
+        [-1, -3],
+        [-1, 3],
+        [1, -3],
+        [1, 3],
+        [3, -1],
+        [3, 1],
+        [0, -3],
+        [0, 3],
+        [3, 0],
+        [-3, 0],
+    ];
+    valid.forEach(val => {
+        const x = rank + val[0];
+        const y = file + val[1];
+        const cell = position?.[rank + val[0]]?.[file + val[1]];
+        if (cell !== undefined && (cell.startsWith(enemy) || cell === '')) {
+            moves.push([x, y]);
+        }
+    });
+    return moves;
+};

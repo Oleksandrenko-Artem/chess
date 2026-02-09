@@ -1,5 +1,4 @@
 import React from "react";
-import { pieceValues } from "../../constants";
 import styles from "./CapturedPieces.module.scss";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_soldier from "../../assets/icons/black_soldier.png";
@@ -20,6 +19,7 @@ import black_chariot from "../../assets/icons/black_chariot.png";
 import black_dinozavr from "../../assets/icons/black_dinozavr.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
+import black_lion from "../../assets/icons/black_lion.png";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_soldier from "../../assets/icons/white_soldier.png";
 import white_horse from "../../assets/icons/white_horse.png";
@@ -39,6 +39,7 @@ import white_dinozavr from "../../assets/icons/white_dinozavr.png";
 import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
+import white_lion from "../../assets/icons/white_lion.png";
 
 const imageMap = {
   black_pawn,
@@ -60,6 +61,7 @@ const imageMap = {
   black_chariot,
   black_wazir,
   black_zebra,
+  black_lion,
   white_pawn,
   white_soldier,
   white_horse,
@@ -79,6 +81,7 @@ const imageMap = {
   white_chariot,
   white_wazir,
   white_zebra,
+  white_lion,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;
@@ -95,24 +98,13 @@ const getPieceType = (pieceName) => {
 const CapturedPieces = ({
   whiteCaptures,
   blackCaptures,
-  handleHideCustomPanel,
 }) => {
-  const calculateScore = (captures) => {
-    return captures.reduce((sum, piece) => {
-      const type = getPieceType(piece);
-      return sum + (pieceValues[type] || 0);
-    }, 0);
-  };
-  const whiteCaptureScore = calculateScore(whiteCaptures);
-  const blackCaptureScore = calculateScore(blackCaptures);
-  const balance = whiteCaptureScore - blackCaptureScore;
   return (
     <div className={styles["captured-container"]}>
       <div className={styles["side"]}>
         <div className={styles["captures"]}>
           {whiteCaptures.map((piece, idx) => {
             const type = getPieceType(piece);
-            const value = pieceValues[type] || 0;
             return (
               <div key={idx} className={styles["captured-piece"]}>
                 <img src={imageMap[piece]} alt={piece} />
@@ -121,7 +113,6 @@ const CapturedPieces = ({
           })}
           {blackCaptures.map((piece, idx) => {
             const type = getPieceType(piece);
-            const value = pieceValues[type] || 0;
             return (
               <div key={idx} className={styles["captured-piece"]}>
                 <img src={imageMap[piece]} alt={piece} />

@@ -119,6 +119,11 @@
         "desc": "Moves one square vertically or horizontally. Cannot jump over pieces. Has the strength of 1-2 pawns.",
         "history": "Found in some very early chess variants, such as Courier Chess."
     },
+    "lion": {
+        "name": "Lion",
+        "desc": "Moves three squares vertically/horizontally. Also can move like a camel. Like other jumping pieces, it can jump over pieces. It has the strength of 3-4 pawns.",
+        "history": "Found in some very early chess variants, such as Grant Acedrex."
+    },
     "giraffe": {
         "name": "Giraffe",
         "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves minimum 3 squares vertically/horizontally. It cannot jump over pieces. It has a strength of 4 pawns.",
