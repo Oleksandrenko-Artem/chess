@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -123,6 +123,14 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
+        } else if (piece.endsWith('wazir')) {
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            directions.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
         } else if (piece.endsWith('ferz')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
@@ -186,7 +194,6 @@ const arbiter = {
                         if (position?.[finalRank]?.[finalFile] === undefined) {
                             break;
                         }
-                        // Check path from 1 to i
                         let pathBlocked = false;
                         for (let s = 1; s <= i; s++) {
                             const pathRank = intermediateRank + s * sr;
@@ -384,12 +391,14 @@ const arbiter = {
             moves = getRookMoves({ position, piece, rank, file });
         } else if (piece.endsWith('ferz')) {
             moves = getFerzMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('rukh')) {
+            moves = getRukhMoves({ position, piece, rank, file });
         } else if (piece.endsWith('dinozavr')) {
             moves = getDinozavrMoves({ position, piece, rank, file });
         } else if (piece.endsWith('giraffe')) {
             moves = getGiraffeMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('rukh')) {
-            moves = getRukhMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('wazir')) {
+            moves = getWazirMoves({ position, piece, rank, file });
         } else if (piece.endsWith('checkers')) {
             moves = [
                 ...getCheckersMoves({ position, piece, rank, file }),

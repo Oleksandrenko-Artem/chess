@@ -31,6 +31,7 @@ import white_sailboat from "../../assets/icons/white_sailboat.png";
 import white_rukh from "../../assets/icons/white_rukh.png";
 import white_checkers from "../../assets/icons/white_checkers.png";
 import white_chariot from "../../assets/icons/white_chariot.png";
+import white_wazir from "../../assets/icons/white_wazir.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -47,6 +48,7 @@ import black_sailboat from "../../assets/icons/black_sailboat.png";
 import black_rukh from "../../assets/icons/black_rukh.png";
 import black_checkers from "../../assets/icons/black_checkers.png";
 import black_chariot from "../../assets/icons/black_chariot.png";
+import black_wazir from "../../assets/icons/black_wazir.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -136,7 +138,7 @@ const CreatePosition = () => {
         localStorage.setItem("lightSquareColor", lightHex);
         localStorage.setItem("darkSquareColor", darkHex);
       }
-    }, 500); // debounce save 500ms
+    }, 500);
   }, [lightSquareColor, darkSquareColor, user, dispatchRedux]);
   useEffect(() => {
     const initLight =
@@ -448,6 +450,14 @@ const CreatePosition = () => {
                 }
               />
               <img
+                src={white_wazir}
+                alt="white_wazir"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_wazir,isNew`)
+                }
+              />
+              <img
                 src={white_elephant}
                 alt="white_elephant"
                 draggable="true"
@@ -581,6 +591,14 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_firzan,isNew`)
+                }
+              />
+              <img
+                src={black_wazir}
+                alt="black_wazir"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_wazir,isNew`)
                 }
               />
               <img
