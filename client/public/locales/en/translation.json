@@ -109,14 +109,24 @@
         "desc": "The camel's move resembles an extended horse's move: it moves three squares horizontally or vertically, then immediately turns at a right angle and takes another step. Like the horse, it can jump over pieces. Limited mobility, it can move 32 of 64 squares. It has the strength of two pawns.",
         "history": "It was found in some very early chess variants, such as Tamerlane Chess."
     },
+    "zebra": {
+        "name": "Zebra",
+        "desc": "The zebra's move resembles an extended horse's move: it moves three squares horizontally or vertically, then immediately turns at a right angle and takes another step. Like the horse, it can jump over pieces. Limited mobility, it can move 32 of 64 squares. It has the strength of two pawns.",
+        "history": "It was found in some very early chess variants, such as Grant Acedrex."
+    },
+    "wazir": {
+        "name": "Wazir",
+        "desc": "Moves one square vertically or horizontally. Cannot jump over pieces. Has the strength of 1-2 pawns.",
+        "history": "Found in some very early chess variants, such as Courier Chess."
+    },
     "giraffe": {
         "name": "Giraffe",
         "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves minimum 3 squares vertically/horizontally. It cannot jump over pieces. It has a strength of 4 pawns.",
         "history": "It was found in some very early chess variants, such as Tamerlane Chess."
     },
     "rukh": {
-      "name": "Move",
-      "desc": "Move moves one step diagonally, then a number of squares vertically/horizontally. Cannot jump over pieces. Has a strength of 10 pawns.",
+      "name": "Rukh",
+      "desc": "Rukh moves one step diagonally, then a number of squares vertically/horizontally. Cannot jump over pieces. Has a strength of 10 pawns.",
       "history": "Found in some very early chess variants, such as Grant Acedrex."
     },
     "dinosaur": {

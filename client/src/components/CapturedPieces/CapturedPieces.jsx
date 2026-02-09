@@ -19,6 +19,7 @@ import black_giraffe from "../../assets/icons/black_giraffe.png";
 import black_chariot from "../../assets/icons/black_chariot.png";
 import black_dinozavr from "../../assets/icons/black_dinozavr.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
+import black_zebra from "../../assets/icons/black_zebra.png";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_soldier from "../../assets/icons/white_soldier.png";
 import white_horse from "../../assets/icons/white_horse.png";
@@ -37,6 +38,7 @@ import white_giraffe from "../../assets/icons/white_giraffe.png";
 import white_dinozavr from "../../assets/icons/white_dinozavr.png";
 import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
+import white_zebra from "../../assets/icons/white_zebra.png";
 
 const imageMap = {
   black_pawn,
@@ -57,6 +59,7 @@ const imageMap = {
   black_dinozavr,
   black_chariot,
   black_wazir,
+  black_zebra,
   white_pawn,
   white_soldier,
   white_horse,
@@ -75,6 +78,7 @@ const imageMap = {
   white_dinozavr,
   white_chariot,
   white_wazir,
+  white_zebra,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;
