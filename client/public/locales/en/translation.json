@@ -134,6 +134,21 @@
       "desc": "Rukh moves one step diagonally, then a number of squares vertically/horizontally. Cannot jump over pieces. Has a strength of 10 pawns.",
       "history": "Found in some very early chess variants, such as Grant Acedrex."
     },
+    "archbishop": {
+        "name": "Archbishop",
+        "desc": "Can move like a bishop and a knight. Can jump over pieces when moving like a knight. Has the strength of 6 pawns.",
+        "history": "Found in some very early chess variants, such as Courier Chess."
+    },
+    "marshal": {
+        "name": "Marshal",
+        "desc": "Can move like a rook and a knight. Can jump over pieces when moving like a knight. Has the strength of 7-8 pawns.",
+        "history": "Found in some very early chess variants, such as Courier Chess."
+    },
+    "amazon": {
+        "name": "Amazon",
+        "desc": "Can move like a queen and a knight. Can jump over pieces when moving like a knight. Has the strength of 12 pawns.",
+        "history": "Found in some very early chess variants, such as some variants of Four-Player Chess."
+    },
     "dinosaur": {
         "name": "Dinosaur",
         "desc": "Can move in any direction (not just like a queen, but also like a horse, but with long range). Cannot jump over pieces. This is a very powerful piece, as it controls almost the entire board, giving it the strength of 19 pawns (relatively).",

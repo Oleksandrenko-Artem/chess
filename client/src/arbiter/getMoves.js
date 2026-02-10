@@ -578,17 +578,9 @@ export const getZebraMoves = ({ position, rank, file }) => {
     return moves;
 };
 export const getLionMoves = ({ position, rank, file }) => {
-    const moves = [];
+    const moves = getCamelMoves({ position, rank, file });
     const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
     const valid = [
-        [-3, -1],
-        [-3, 1],
-        [-1, -3],
-        [-1, 3],
-        [1, -3],
-        [1, 3],
-        [3, -1],
-        [3, 1],
         [0, -3],
         [0, 3],
         [3, 0],
@@ -602,5 +594,26 @@ export const getLionMoves = ({ position, rank, file }) => {
             moves.push([x, y]);
         }
     });
+    return moves;
+};
+export const getArchbishopMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getBishopMoves({ position, piece, rank, file }),
+        ...getHorseMoves({ position, rank, file }),
+    ];
+    return moves;
+};
+export const getMarshalMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getRookMoves({ position, piece, rank, file }),
+        ...getHorseMoves({ position, rank, file }),
+    ];
+    return moves;
+};
+export const getAmazonMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getFerzMoves({ position, piece, rank, file }),
+        ...getHorseMoves({ position, rank, file }),
+    ];
     return moves;
 };

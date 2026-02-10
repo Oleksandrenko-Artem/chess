@@ -59,6 +59,15 @@ const Info = () => {
                 <li>
                   <a href="#section13">{t("pieces.rukh.name")}</a>
                 </li>
+                <li>
+                  <a href="#section14">{t("pieces.archbishop.name")}</a>
+                </li>
+                <li>
+                  <a href="#section15">{t("pieces.marshal.name")}</a>
+                </li>
+                <li>
+                  <a href="#section16">{t("pieces.amazon.name")}</a>
+                </li>
               </ul>
             </div>
           )}
@@ -67,10 +76,10 @@ const Info = () => {
               <h3>{t("custom_panel.special_pieces")}</h3>
               <ul>
                 <li>
-                  <a href="#section14">{t("pieces.dinozavr.name")}</a>
+                  <a href="#section17">{t("pieces.dinozavr.name")}</a>
                 </li>
                 <li>
-                  <a href="#section15">{t("pieces.checkers.name")}</a>
+                  <a href="#section18">{t("pieces.checkers.name")}</a>
                 </li>
               </ul>
             </div>
@@ -450,6 +459,87 @@ const Info = () => {
               <p>{t("pieces.rukh.history")}</p>
             </div>
             <div id="section14">
+              <h2>{t("pieces.archbishop.name")}</h2>
+              <div>
+                <img
+                  src="/src/assets/icons/white_archbishop.png"
+                  alt="white_archbishop"
+                />
+                <img
+                  src="/src/assets/icons/black_archbishop.png"
+                  alt="black_archbishop"
+                />
+              </div>
+              <h3>{t("pieces.desc_caption")}</h3>
+              <p>{t("pieces.archbishop.desc")}</p>
+              <div className={styles["pieces-info"]}>
+                <img
+                  src="/src/assets/images/archbishop_directions.png"
+                  alt="archbishop_directions"
+                />
+                <img
+                  src="/src/assets/images/archbishop_attacks.png"
+                  alt="archbishop_attacks"
+                />
+              </div>
+              <h3>{t("pieces.history_caption")}</h3>
+              <p>{t("pieces.archbishop.history")}</p>
+            </div>
+            <div id="section15">
+              <h2>{t("pieces.marshal.name")}</h2>
+              <div>
+                <img
+                  src="/src/assets/icons/white_marshal.png"
+                  alt="white_marshal"
+                />
+                <img
+                  src="/src/assets/icons/black_marshal.png"
+                  alt="black_marshal"
+                />
+              </div>
+              <h3>{t("pieces.desc_caption")}</h3>
+              <p>{t("pieces.marshal.desc")}</p>
+              <div className={styles["pieces-info"]}>
+                <img
+                  src="/src/assets/images/marshal_directions.png"
+                  alt="marshal_directions"
+                />
+                <img
+                  src="/src/assets/images/marshal_attacks.png"
+                  alt="marshal_attacks"
+                />
+              </div>
+              <h3>{t("pieces.history_caption")}</h3>
+              <p>{t("pieces.marshal.history")}</p>
+            </div>
+            <div id="section16">
+              <h2>{t("pieces.amazon.name")}</h2>
+              <div>
+                <img
+                  src="/src/assets/icons/white_amazon.png"
+                  alt="white_amazon"
+                />
+                <img
+                  src="/src/assets/icons/black_amazon.png"
+                  alt="black_amazon"
+                />
+              </div>
+              <h3>{t("pieces.desc_caption")}</h3>
+              <p>{t("pieces.amazon.desc")}</p>
+              <div className={styles["pieces-info"]}>
+                <img
+                  src="/src/assets/images/amazon_directions.png"
+                  alt="amazon_directions"
+                />
+                <img
+                  src="/src/assets/images/amazon_attacks.png"
+                  alt="amazon_attacks"
+                />
+              </div>
+              <h3>{t("pieces.history_caption")}</h3>
+              <p>{t("pieces.amazon.history")}</p>
+            </div>
+            <div id="section17">
               <h2>{t("pieces.dinozavr.name")}</h2>
               <div>
                 <img
@@ -480,7 +570,7 @@ const Info = () => {
               <h3>{t("pieces.history_caption")}</h3>
               <p>{t("pieces.dinozavr.history")}</p>
             </div>
-            <div id="section15">
+            <div id="section18">
               <h2>{t("pieces.checkers.name")}</h2>
               <div>
                 <img

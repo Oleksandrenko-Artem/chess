@@ -20,6 +20,9 @@ import black_dinozavr from "../../assets/icons/black_dinozavr.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
 import black_lion from "../../assets/icons/black_lion.png";
+import black_archbishop from "../../assets/icons/black_archbishop.png";
+import black_marshal from "../../assets/icons/black_marshal.png";
+import black_amazon from "../../assets/icons/black_amazon.png";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_soldier from "../../assets/icons/white_soldier.png";
 import white_horse from "../../assets/icons/white_horse.png";
@@ -40,6 +43,9 @@ import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
 import white_lion from "../../assets/icons/white_lion.png";
+import white_archbishop from "../../assets/icons/white_archbishop.png";
+import white_marshal from "../../assets/icons/white_marshal.png";
+import white_amazon from "../../assets/icons/white_amazon.png";
 
 const imageMap = {
   black_pawn,
@@ -62,6 +68,9 @@ const imageMap = {
   black_wazir,
   black_zebra,
   black_lion,
+  black_archbishop,
+  black_marshal,
+  black_amazon,
   white_pawn,
   white_soldier,
   white_horse,
@@ -82,6 +91,9 @@ const imageMap = {
   white_wazir,
   white_zebra,
   white_lion,
+  white_archbishop,
+  white_marshal,
+  white_amazon,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;

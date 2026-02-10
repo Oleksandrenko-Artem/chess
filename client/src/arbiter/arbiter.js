@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -70,6 +70,24 @@ const arbiter = {
                     if (position[r][f] !== '') break;
                 }
             });
+        } else if (piece.endsWith('archbishop')) {
+            const directionsR = [[-1, 1], [1, 1], [-1, -1], [1, -1]];
+            directionsR.forEach(([dr, df]) => {
+                for (let i = 1; i < 8; i++) {
+                    const [r, f] = [rank + i * dr, file + i * df];
+                    if (position?.[r]?.[f] === undefined) break;
+                    attacks.push([r, f]);
+                    if (position[r][f] !== '') break;
+                }
+            });
+            const jumpsA = [
+                [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                [1, -2], [1, 2], [2, -1], [2, 1],
+            ];
+            jumpsA.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) attacks.push([r, f]);
+            });
         } else if (piece.endsWith('bishop')) {
             const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
@@ -90,6 +108,42 @@ const arbiter = {
                 if (position?.[r]?.[f] !== undefined) {
                     attacks.push([r, f]);
                 }
+            });
+        } else if (piece.endsWith('marshal')) {
+            const directionsR = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            directionsR.forEach(([dr, df]) => {
+                for (let i = 1; i < 8; i++) {
+                    const [r, f] = [rank + i * dr, file + i * df];
+                    if (position?.[r]?.[f] === undefined) break;
+                    attacks.push([r, f]);
+                    if (position[r][f] !== '') break;
+                }
+            });
+            const jumpsM = [
+                [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                [1, -2], [1, 2], [2, -1], [2, 1],
+            ];
+            jumpsM.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) attacks.push([r, f]);
+            });
+        } else if (piece.endsWith('amazon')) {
+            const directionsF = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
+            directionsF.forEach(([dr, df]) => {
+                for (let i = 1; i < 8; i++) {
+                    const [r, f] = [rank + i * dr, file + i * df];
+                    if (position?.[r]?.[f] === undefined) break;
+                    attacks.push([r, f]);
+                    if (position[r][f] !== '') break;
+                }
+            });
+            const jumpsAM = [
+                [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                [1, -2], [1, 2], [2, -1], [2, 1],
+            ];
+            jumpsAM.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) attacks.push([r, f]);
             });
         } else if (piece.endsWith('tank')) {
             const jumps = [[-2, 0], [2, 0], [0, -2], [0, 2]];
@@ -401,8 +455,14 @@ const arbiter = {
             moves = getLionMoves({ position, piece, rank, file });
         } else if (piece.endsWith('horse')) {
             moves = getHorseMoves({ position, rank, file });
+        } else if (piece.endsWith('archbishop')) {
+            moves = getArchbishopMoves({ position, piece, rank, file });
         } else if (piece.endsWith('bishop')) {
             moves = getBishopMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('marshal')) {
+            moves = getMarshalMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('amazon')) {
+            moves = getAmazonMoves({ position, piece, rank, file });
         } else if (piece.endsWith('imperator')) {
             moves = getImperatorMoves({ position, piece, rank, file });
         } else if (piece.endsWith('king')) {
@@ -426,7 +486,7 @@ const arbiter = {
             ];
         }
         const playerColor = piece.startsWith('white') ? 'white' : 'black';
-        return moves.filter(([toRank, toFile]) =>
+        const filteredMoves = moves.filter(([toRank, toFile]) =>
             this.isMoveLegal({
                 position,
                 piece,
@@ -438,6 +498,7 @@ const arbiter = {
                 playerColor
             })
         );
+        return filteredMoves;
     },
     getGameStatus: function ({ position, playerColor, castleDirection }) {
         try {

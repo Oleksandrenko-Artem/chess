@@ -34,6 +34,9 @@ import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
 import white_lion from "../../assets/icons/white_lion.png";
+import white_archbishop from "../../assets/icons/white_archbishop.png";
+import white_marshal from "../../assets/icons/white_marshal.png";
+import white_amazon from "../../assets/icons/white_amazon.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -53,6 +56,9 @@ import black_chariot from "../../assets/icons/black_chariot.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
 import black_lion from "../../assets/icons/black_lion.png";
+import black_archbishop from "../../assets/icons/black_archbishop.png";
+import black_marshal from "../../assets/icons/black_marshal.png";
+import black_amazon from "../../assets/icons/black_amazon.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -517,6 +523,30 @@ const CreatePosition = () => {
                   e.dataTransfer.setData("text", `white_rukh,isNew`)
                 }
               />
+              <img
+                src={white_archbishop}
+                alt="white_archbishop"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_archbishop,isNew`)
+                }
+              />
+              <img
+                src={white_marshal}
+                alt="white_marshal"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_marshal,isNew`)
+                }
+              />
+              <img
+                src={white_amazon}
+                alt="white_amazon"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_amazon,isNew`)
+                }
+              />
             </div>
           )}
           {piecesStyle === "special" && (
@@ -675,6 +705,30 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_rukh,isNew`)
+                }
+              />
+              <img
+                src={black_archbishop}
+                alt="black_archbishop"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_archbishop,isNew`)
+                }
+              />
+              <img
+                src={black_marshal}
+                alt="black_marshal"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_marshal,isNew`)
+                }
+              />
+              <img
+                src={black_amazon}
+                alt="black_amazon"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_amazon,isNew`)
                 }
               />
             </div>

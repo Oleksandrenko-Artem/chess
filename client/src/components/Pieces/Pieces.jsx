@@ -30,6 +30,9 @@ import black_chariot from "../../assets/icons/black_chariot.png";
 import black_wazir from "../../assets/icons/black_wazir.png";
 import black_zebra from "../../assets/icons/black_zebra.png";
 import black_lion from "../../assets/icons/black_lion.png";
+import black_archbishop from "../../assets/icons/black_archbishop.png";
+import black_marshal from "../../assets/icons/black_marshal.png";
+import black_amazon from "../../assets/icons/black_amazon.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -51,6 +54,9 @@ import white_chariot from "../../assets/icons/white_chariot.png";
 import white_wazir from "../../assets/icons/white_wazir.png";
 import white_zebra from "../../assets/icons/white_zebra.png";
 import white_lion from "../../assets/icons/white_lion.png";
+import white_archbishop from "../../assets/icons/white_archbishop.png";
+import white_marshal from "../../assets/icons/white_marshal.png";
+import white_amazon from "../../assets/icons/white_amazon.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 
 const imageMap = {
@@ -75,6 +81,9 @@ const imageMap = {
   black_wazir,
   black_zebra,
   black_lion,
+  black_archbishop,
+  black_marshal,
+  black_amazon,
   white_imperator,
   white_king,
   white_ferz,
@@ -96,6 +105,9 @@ const imageMap = {
   white_wazir,
   white_zebra,
   white_lion,
+  white_archbishop,
+  white_marshal,
+  white_amazon,
 };
 
 const getPieceImageSrc = (pieceName) => {
