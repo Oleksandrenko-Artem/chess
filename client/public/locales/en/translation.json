@@ -22,6 +22,14 @@
     "rotate_board": "Rotate board",
     "reset_position": "Reset position"
   },
+  "profile": {
+    "profile": "Profile",
+    "name": "Name",
+    "email": "Email",
+    "upload_photo": "Uploading...",
+    "change_photo": "Change photo",
+    "remove_photo": "Remove photo"
+  },
   "info_panel": {
     "navigation": "Navigation"
   },

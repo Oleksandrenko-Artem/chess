@@ -24,6 +24,10 @@ const userSchema = mongoose.Schema({
     rookType: {
         type: String,
         default: 'rook', // 'rook', 'sailboat', 'chariot'
+    },
+    avatar: {
+        type: String,
+        default: null,
     }
 });
 

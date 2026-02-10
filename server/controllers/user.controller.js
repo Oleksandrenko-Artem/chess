@@ -4,7 +4,7 @@ const createError = require('http-errors');
 const User = require("../models/User");
 const CONSTANTS = require('../constants');
 
-module.exports.registerUser = async (req, res, next) => { 
+module.exports.registerUser = async (req, res, next) => {
     try {
         const { name, email, password } = req.body;
         const exists = await User.findOne({ email });
@@ -18,7 +18,7 @@ module.exports.registerUser = async (req, res, next) => {
         next(error);
     }
 };
-module.exports.loginUser = async (req, res, next) => { 
+module.exports.loginUser = async (req, res, next) => {
     try {
         const { email, password } = req.body;
         const user = await User.findOne({ email });
@@ -57,7 +57,7 @@ module.exports.patchUser = async (req, res, next) => {
             updateData.password = await bcrypt.hash(updateData.password, 10);
         }
         const updateUser = await User.findByIdAndUpdate(req.params.idUser, updateData, { new: true });
-        if(!updateUser){
+        if (!updateUser) {
             throw createError(404, "User not found")
         }
         res.status(200).send({ data: updateUser });

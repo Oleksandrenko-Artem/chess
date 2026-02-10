@@ -21,6 +21,17 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            .user-image {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 30px;
+                img {
+                    width: 26px;
+                    height: 26px;
+                    border-radius: var(--btn-radius);
+                }
+            }
             .active-link {
                 background-color: rgb(190, 190, 190);
             }
@@ -58,22 +69,19 @@
             flex-direction: row;
             gap: 10px;
             .btn {
+                @include button-style(40px, $buttonHeight, $buttonPadding);
+                @extend %btn-style;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                @include button-style(40px, $buttonHeight, $buttonPadding);
-                @extend %btn-style;
                 img {
                     width: 35px;
                     height: 25px;
+                    border-radius: var(--btn-radius);
                 }
             }
             .btn-second {
                 @include button-style(120px, $buttonHeight, $buttonPadding);
-                @extend %btn-style;
-            }
-            .btn-third {
-                @include button-style(60px, $buttonHeight, $buttonPadding);
                 @extend %btn-style;
             }
         }

@@ -49,6 +49,9 @@ const Header = (props) => {
                 <div className={styles.sign}>
                     {user ? (
                         <>
+                            <Link to="/account" className={styles['user-image']}>
+                                <img src={user.avatar || "/src/assets/icons/account.png"} alt="avatar" />
+                            </Link>
                             <Link to="/account">{t('header.hi')} {user?.name}</Link>
                             <button onClick={logout}>{t('header.logout')}</button>
                         </>

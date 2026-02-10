@@ -3,7 +3,9 @@ import actionTypes from "./actionTypes";
 
 export const reducer = (state, action) => {
     switch (action.type) {
-        case actionTypes.NEW_MOVE: {
+        case actionTypes.NEW_MOVE:
+        case actionTypes.PROMOTION_MOVE: {
+            const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
@@ -26,8 +28,12 @@ export const reducer = (state, action) => {
                 playerTurn,
                 position,
                 movesList,
-                castleDirection,
                 status: gameStatus,
+                // clear promotion-related UI state only for promotion moves
+                validMoves: isPromotion ? [] : state.validMoves,
+                selected: isPromotion ? null : state.selected,
+                promotionSquare: isPromotion ? null : state.promotionSquare,
+                castleDirection,
                 captured
             };
         };
@@ -61,37 +67,7 @@ export const reducer = (state, action) => {
                 selected: null,
             };
         };
-        case actionTypes.PROMOTION_MOVE: {
-            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured } = state;
-            playerTurn = playerTurn === 'white' ? 'black' : 'white';
-            position = [
-                ...position,
-                action.payload.newPosition
-            ];
-            movesList = [
-                ...movesList,
-                action.payload.newMove
-            ];
-            if (action.payload.castleDirection) {
-                castleDirection = action.payload.castleDirection;
-            }
-            if (action.payload.captured) {
-                captured = action.payload.captured;
-            }
-            gameStatus = action.payload.gameStatus || status.ongoing;
-            return {
-                ...state,
-                playerTurn,
-                position,
-                movesList,
-                status: gameStatus,
-                validMoves: [],
-                selected: null,
-                promotionSquare: null,
-                castleDirection,
-                captured
-            };
-        }
+
         case actionTypes.SET_POSITION: {
             return {
                 ...state,

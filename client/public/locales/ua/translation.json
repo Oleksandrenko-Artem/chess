@@ -22,6 +22,14 @@
     "rotate_board": "Повернути дошку",
     "reset_position": "Скинути позицію"
   },
+  "profile": {
+    "profile": "Профіль",
+    "name": "І'мя",
+    "email": "Пошта",
+    "upload_photo": "Завантаження...",
+    "change_photo": "Змінити фото",
+    "remove_photo": "Видалити фото"
+  },
   "info_panel": {
     "navigation": "Навігація"
   },
