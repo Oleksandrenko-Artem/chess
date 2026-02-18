@@ -99,6 +99,31 @@ export const createOldVariantPosition = () => {
     position[0][7] = 'black_tank';
     return position;
 }
+export const createNewVariantPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    for (let i = 0; i < 8; i++) {
+        position[6][i] = 'white_pawn';
+        position[1][i] = 'black_pawn';
+    }
+    position[7][0] = 'white_rook';
+    position[7][1] = 'white_knight';
+    position[7][2] = 'white_bishop';
+    position[7][3] = 'white_ferz';
+    position[7][4] = 'white_king';
+    position[7][5] = 'white_bishop';
+    position[7][6] = 'white_knight';
+    position[7][7] = 'white_rook';
+    position[0][0] = 'black_rook';
+    position[0][1] = 'black_knight';
+    position[0][2] = 'black_bishop';
+    position[0][3] = 'black_ferz';
+    position[0][4] = 'black_king';
+    position[0][5] = 'black_bishop';
+    position[0][6] = 'black_knight';
+    position[0][7] = 'black_rook';
+    return position;
+}
 export const createDinoPosition = () => {
     // eslint-disable-next-line no-unused-vars
     const position = new Array(8).fill('').map(x => new Array(8).fill(''));
@@ -166,7 +191,7 @@ export const createExtendedPosition = () => {
     return position;
 }
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
-    if (p[6].toLowerCase() === 'k' && Math.abs(file - targetFile) === 2) {
+    if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
         if (isCheckmate) return castling + '#';
         if (isInCheck) return castling + '+';

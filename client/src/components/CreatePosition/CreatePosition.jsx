@@ -7,6 +7,7 @@ import {
   initialDinoGameState,
   initialExtendedGameState,
   initialGameState,
+  initialNewVariantGameState,
   initialOldGameState,
   initialOldVariantGameState,
   initialSpecialGameState,
@@ -37,6 +38,7 @@ import white_lion from "../../assets/icons/white_lion.png";
 import white_archbishop from "../../assets/icons/white_archbishop.png";
 import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
+import white_knight from "../../assets/icons/white_knight.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -59,6 +61,7 @@ import black_lion from "../../assets/icons/black_lion.png";
 import black_archbishop from "../../assets/icons/black_archbishop.png";
 import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
+import black_knight from "../../assets/icons/black_knight.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -255,6 +258,7 @@ const CreatePosition = () => {
   const presetsMap = {
     chess: initialGameState,
     shatranj: initialOldGameState,
+    "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
     "dinozavr-chess": initialDinoGameState,
@@ -284,6 +288,7 @@ const CreatePosition = () => {
             <option value="custom">{t("header.custom_position")}</option>
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
+            <option value="new-chess">{t("header.new_chess")}</option>
             <option value="old-chess">{t("header.old_chess")}</option>
             <option value="extended-chess">{t("header.extended_chess")}</option>
             <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
@@ -552,6 +557,14 @@ const CreatePosition = () => {
           {piecesStyle === "special" && (
             <div>
               <img
+                src={white_knight}
+                alt="white_knight"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_knight,isNew`)
+                }
+              />
+              <img
                 src={white_dinozavr}
                 alt="white_dinozavr"
                 draggable="true"
@@ -735,6 +748,14 @@ const CreatePosition = () => {
           )}
           {piecesStyle === "special" && (
             <div>
+              <img
+                src={black_knight}
+                alt="black_knight"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_knight,isNew`)
+                }
+              />
               <img
                 src={black_dinozavr}
                 alt="black_dinozavr"

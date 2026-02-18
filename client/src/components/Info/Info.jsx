@@ -76,10 +76,13 @@ const Info = () => {
               <h3>{t("custom_panel.special_pieces")}</h3>
               <ul>
                 <li>
-                  <a href="#section17">{t("pieces.dinozavr.name")}</a>
+                  <a href="#section17">{t("pieces.knight.name")}</a>
                 </li>
                 <li>
-                  <a href="#section18">{t("pieces.checkers.name")}</a>
+                  <a href="#section18">{t("pieces.dinozavr.name")}</a>
+                </li>
+                <li>
+                  <a href="#section19">{t("pieces.checkers.name")}</a>
                 </li>
               </ul>
             </div>
@@ -540,6 +543,33 @@ const Info = () => {
               <p>{t("pieces.amazon.history")}</p>
             </div>
             <div id="section17">
+              <h2>{t("pieces.knight.name")}</h2>
+              <div>
+                <img
+                  src="/src/assets/icons/white_knight.png"
+                  alt="white_knight"
+                />
+                <img
+                  src="/src/assets/icons/black_knight.png"
+                  alt="black_knight"
+                />
+              </div>
+              <h3>{t("pieces.desc_caption")}</h3>
+              <p>{t("pieces.knight.desc")}</p>
+              <div className={styles["pieces-info"]}>
+                <img
+                  src="/src/assets/images/knight_directions.png"
+                  alt="knight_directions"
+                />
+                <img
+                  src="/src/assets/images/knight_attacks.png"
+                  alt="knight_attacks"
+                />
+              </div>
+              <h3>{t("pieces.history_caption")}</h3>
+              <p>{t("pieces.knight.history")}</p>
+            </div>
+            <div id="section18">
               <h2>{t("pieces.dinozavr.name")}</h2>
               <div>
                 <img
@@ -562,15 +592,11 @@ const Info = () => {
                   src="/src/assets/images/dinozavr_attacks.png"
                   alt="dinozavr_attacks"
                 />
-                <img
-                  src="/src/assets/images/dinozavr_block.png"
-                  alt="dinozavr_block"
-                />
               </div>
               <h3>{t("pieces.history_caption")}</h3>
               <p>{t("pieces.dinozavr.history")}</p>
             </div>
-            <div id="section18">
+            <div id="section19">
               <h2>{t("pieces.checkers.name")}</h2>
               <div>
                 <img

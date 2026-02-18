@@ -337,39 +337,40 @@ export const getSoldierCaptures = ({ position, piece, rank, file }) => {
     }
     return moves;
 };
-export const getDinozavrMoves = ({ position, piece, rank, file }) => {
-    const moves = [
-        ...getFerzMoves({ position, piece, rank, file }),
-    ];
+export const getKnightMoves = ({ position, piece, rank, file }) => {
     const us = piece.startsWith('white') ? 'white' : 'black';
-    const LShapedDirections = [
-        [-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1],
-        [-3, -1], [-3, 1], [-1, -3], [-1, 3], [1, -3], [1, 3], [3, -1], [3, 1],
-        [-4, -2], [-4, 2], [-2, -4], [-2, 4], [2, -4], [2, 4], [4, -2], [4, 2],
-        [-5, -3], [-5, 3], [-3, -5], [-3, 5], [3, -5], [3, 5], [5, -3], [5, 3],
-        [-6, -3], [-6, 3], [-3, -6], [-3, 6], [3, -6], [3, 6], [6, -3], [6, 3],
-        [-7, -4], [-7, 4], [-4, -7], [-4, 7], [4, -7], [4, 7], [7, -4], [7, 4],
+    const finalMoves = [];
+    const knightPaths = [
+        { step1: [1, 0], step2: [1, 1] },
+        { step1: [1, 0], step2: [1, -1] },
+        { step1: [-1, 0], step2: [-1, 1] },
+        { step1: [-1, 0], step2: [-1, -1] },
+        { step1: [0, 1], step2: [1, 1] },
+        { step1: [0, 1], step2: [-1, 1] },
+        { step1: [0, -1], step2: [1, -1] },
+        { step1: [0, -1], step2: [-1, -1] },
     ];
-    LShapedDirections.forEach(dir => {
-        const destX = rank + dir[0];
-        const destY = file + dir[1];
-        if (position?.[destX]?.[destY] === undefined || position[destX][destY].startsWith(us)) {
-            return;
-        }
-        let blocked = false;
-        for (let i = 1; i < Math.abs(dir[0]); i++) {
-            const midX = rank + (i * Math.sign(dir[0]));
-            if (position[midX][file] !== '') blocked = true;
-        }
-        for (let i = 1; i < Math.abs(dir[1]); i++) {
-            const midY = file + (i * Math.sign(dir[1]));
-            if (position[rank][midY] !== '') blocked = true;
-        }
-        if (!blocked) {
-            moves.push([destX, destY]);
+    knightPaths.forEach(path => {
+        let currentX = rank;
+        let currentY = file;
+        while (true) {
+            currentX += path.step1[0];
+            currentY += path.step1[1];
+            if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+            let piece1 = position[currentX][currentY];
+            if (piece1.startsWith(us)) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece1 !== '') break;
+            currentX += path.step2[0];
+            currentY += path.step2[1];
+            if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+            let piece2 = position[currentX][currentY];
+            if (piece2.startsWith(us)) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece2 !== '') break;
         }
     });
-    return moves;
+    return finalMoves;
 };
 export const getGiraffeMoves = ({ position, rank, file }) => {
     const moves = [];
@@ -614,6 +615,13 @@ export const getAmazonMoves = ({ position, piece, rank, file }) => {
     const moves = [
         ...getFerzMoves({ position, piece, rank, file }),
         ...getHorseMoves({ position, rank, file }),
+    ];
+    return moves;
+};
+export const getDinozavrMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getFerzMoves({ position, piece, rank, file }),
+        ...getKnightMoves({ position, piece, rank, file }),
     ];
     return moves;
 };

@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -211,6 +211,70 @@ const arbiter = {
                     if (position[r][f] !== '') break;
                 }
             });
+        } else if (piece.endsWith('knight')) {
+            const knightPaths = [
+                { step1: [1, 0], step2: [1, 1] }, { step1: [1, 0], step2: [1, -1] },
+                { step1: [-1, 0], step2: [-1, 1] }, { step1: [-1, 0], step2: [-1, -1] },
+                { step1: [0, 1], step2: [1, 1] }, { step1: [0, 1], step2: [-1, 1] },
+                { step1: [0, -1], step2: [1, -1] }, { step1: [0, -1], step2: [-1, -1] },
+            ];
+            knightPaths.forEach(path => {
+                let currentX = rank;
+                let currentY = file;
+                while (true) {
+                    currentX += path.step1[0];
+                    currentY += path.step1[1];
+                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step2[0];
+                    currentY += path.step2[1];
+                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                }
+            });
+        } else if (piece.endsWith('giraffe')) {
+            const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+            diagonalDirections.forEach(([dr1, df1]) => {
+                const intermediateRank = rank + dr1;
+                const intermediateFile = file + df1;
+                if (position?.[intermediateRank]?.[intermediateFile] === undefined) {
+                    return;
+                }
+                if (position[intermediateRank][intermediateFile] !== '') {
+                    return;
+                }
+                const straightDirections = [[dr1, 0], [0, df1]];
+                straightDirections.forEach(([sr, sf]) => {
+                    for (let i = 3; i <= 7; i++) {
+                        const finalRank = intermediateRank + i * sr;
+                        const finalFile = intermediateFile + i * sf;
+                        if (position?.[finalRank]?.[finalFile] === undefined) {
+                            break;
+                        }
+                        let pathBlocked = false;
+                        for (let s = 1; s <= i; s++) {
+                            const pathRank = intermediateRank + s * sr;
+                            const pathFile = intermediateFile + s * sf;
+                            const pieceOnPath = position[pathRank][pathFile];
+                            if (s < i) {
+                                if (pieceOnPath !== '') {
+                                    pathBlocked = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (pathBlocked) {
+                            break;
+                        }
+                        attacks.push([finalRank, finalFile]);
+                        if (position[finalRank][finalFile] !== '') {
+                            break;
+                        }
+                    }
+                });
+            });
         } else if (piece.endsWith('dinozavr')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
@@ -221,28 +285,26 @@ const arbiter = {
                     if (position[r][f] !== '') break;
                 }
             });
-            const LShapedDirections = [
-                [-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1],
-                [-3, -1], [-3, 1], [-1, -3], [-1, 3], [1, -3], [1, 3], [3, -1], [3, 1],
-                [-4, -2], [-4, 2], [-2, -4], [-2, 4], [2, -4], [2, 4], [4, -2], [4, 2],
-                [-5, -3], [-5, 3], [-3, -5], [-3, 5], [3, -5], [3, 5], [5, -3], [5, 3],
-                [-6, -3], [-6, 3], [-3, -6], [-3, 6], [3, -6], [3, 6], [6, -3], [6, 3],
-                [-7, -4], [-7, 4], [-4, -7], [-4, 7], [4, -7], [4, 7], [7, -4], [7, 4],
+            const knightPaths = [
+                { step1: [1, 0], step2: [1, 1] }, { step1: [1, 0], step2: [1, -1] },
+                { step1: [-1, 0], step2: [-1, 1] }, { step1: [-1, 0], step2: [-1, -1] },
+                { step1: [0, 1], step2: [1, 1] }, { step1: [0, 1], step2: [-1, 1] },
+                { step1: [0, -1], step2: [1, -1] }, { step1: [0, -1], step2: [-1, -1] },
             ];
-            LShapedDirections.forEach(([dr, df]) => {
-                const [r, f] = [rank + dr, file + df];
-                if (position?.[r]?.[f] === undefined) return;
-                let blocked = false;
-                for (let i = 1; i < Math.abs(dr); i++) {
-                    const midX = rank + (i * Math.sign(dr));
-                    if (position[midX] && position[midX][file] !== '') blocked = true;
-                }
-                for (let i = 1; i < Math.abs(df); i++) {
-                    const midY = file + (i * Math.sign(df));
-                    if (position[rank] && position[rank][midY] !== '') blocked = true;
-                }
-                if (!blocked) {
-                    attacks.push([r, f]);
+            knightPaths.forEach(path => {
+                let currentX = rank;
+                let currentY = file;
+                while (true) {
+                    currentX += path.step1[0];
+                    currentY += path.step1[1];
+                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step2[0];
+                    currentY += path.step2[1];
+                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
                 }
             });
         } else if (piece.endsWith('giraffe')) {
@@ -471,6 +533,8 @@ const arbiter = {
             moves = getRookMoves({ position, piece, rank, file });
         } else if (piece.endsWith('ferz')) {
             moves = getFerzMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('knight')) {
+            moves = getKnightMoves({ position, piece, rank, file });
         } else if (piece.endsWith('rukh')) {
             moves = getRukhMoves({ position, piece, rank, file });
         } else if (piece.endsWith('dinozavr')) {

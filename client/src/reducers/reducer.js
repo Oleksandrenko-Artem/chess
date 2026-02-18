@@ -29,7 +29,6 @@ export const reducer = (state, action) => {
                 position,
                 movesList,
                 status: gameStatus,
-                // clear promotion-related UI state only for promotion moves
                 validMoves: isPromotion ? [] : state.validMoves,
                 selected: isPromotion ? null : state.selected,
                 promotionSquare: isPromotion ? null : state.promotionSquare,
