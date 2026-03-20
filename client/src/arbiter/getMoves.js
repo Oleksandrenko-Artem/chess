@@ -625,3 +625,39 @@ export const getDinozavrMoves = ({ position, piece, rank, file }) => {
     ];
     return moves;
 };
+export const getElephantLongRangeMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const enemy = us === 'white' ? 'black' : 'white';
+    const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+
+    directions.forEach(([dr, df]) => {
+        let hasJumped = false;
+
+        for (let i = 1; i < 8; i++) {
+            const r = rank + i * dr;
+            const f = file + i * df;
+
+            if (position?.[r]?.[f] === undefined) break;
+            const target = position[r][f];
+
+            if (target === '') {
+                moves.push([r, f]);
+            } else {
+                if (!hasJumped) {
+                    if (target.startsWith(enemy)) {
+                        moves.push([r, f]);
+                    }
+                    hasJumped = true;
+                    continue;
+                } else {
+                    if (target.startsWith(enemy)) {
+                        moves.push([r, f]);
+                    }
+                    break;
+                }
+            }
+        }
+    });
+    return moves;
+};

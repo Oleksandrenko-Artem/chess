@@ -34,6 +34,7 @@ import black_archbishop from "../../assets/icons/black_archbishop.png";
 import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
+import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -59,6 +60,7 @@ import white_archbishop from "../../assets/icons/white_archbishop.png";
 import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
+import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 
 const imageMap = {
@@ -87,6 +89,7 @@ const imageMap = {
   black_marshal,
   black_amazon,
   black_knight,
+  black_elephant_long_range,
   white_imperator,
   white_king,
   white_ferz,
@@ -112,6 +115,7 @@ const imageMap = {
   white_marshal,
   white_amazon,
   white_knight,
+  white_elephant_long_range,
 };
 
 const getPieceImageSrc = (pieceName) => {

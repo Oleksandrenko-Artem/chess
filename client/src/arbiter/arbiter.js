@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -96,6 +96,32 @@ const arbiter = {
                     if (position?.[r]?.[f] === undefined) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
+                }
+            });
+        } else if (piece.endsWith('elephant_long_range')) {
+            const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+
+            directions.forEach(([dr, df]) => {
+                let hasJumped = false;
+
+                for (let i = 1; i < 8; i++) {
+                    const r = rank + i * dr;
+                    const f = file + i * df;
+
+                    if (position?.[r]?.[f] === undefined) break;
+
+                    const target = position[r][f];
+
+                    attacks.push([r, f]);
+
+                    if (target !== '') {
+                        if (!hasJumped) {
+                            hasJumped = true;
+                            continue;
+                        } else {
+                            break;
+                        }
+                    }
                 }
             });
         } else if (piece.endsWith('horse')) {
@@ -503,6 +529,8 @@ const arbiter = {
                 ...getSoldierMoves({ position, piece, rank, file }),
                 ...getSoldierCaptures({ position, piece, rank, file }),
             ];
+        } else if (piece.endsWith('elephant_long_range')) {
+            moves = getElephantLongRangeMoves({ position, piece, rank, file });
         } else if (piece.endsWith('firzan')) {
             moves = getFirzanMoves({ position, piece, rank, file });
         } else if (piece.endsWith('elephant')) {

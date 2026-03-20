@@ -3,7 +3,6 @@ import { useAppContext } from '../../contexts/Context';
 import Pieces from '../Pieces/Pieces';
 import Promotion from '../Promotion/Promotion';
 import styles from './ChessBoard.module.scss';
-import CapturedPieces from '../CapturedPieces/CapturedPieces';
     
 const ChessBoard = () => {
     const horizontalAxis = ["a", "b", "c", "d", "e", "f", "g", "h"];

@@ -79,10 +79,13 @@ const Info = () => {
                   <a href="#section17">{t("pieces.knight.name")}</a>
                 </li>
                 <li>
-                  <a href="#section18">{t("pieces.dinozavr.name")}</a>
+                  <a href="#section18">{t("pieces.elephant_long_range.name")}</a>
                 </li>
                 <li>
-                  <a href="#section19">{t("pieces.checkers.name")}</a>
+                  <a href="#section19">{t("pieces.dinozavr.name")}</a>
+                </li>
+                <li>
+                  <a href="#section20">{t("pieces.checkers.name")}</a>
                 </li>
               </ul>
             </div>
@@ -570,6 +573,33 @@ const Info = () => {
               <p>{t("pieces.knight.history")}</p>
             </div>
             <div id="section18">
+              <h2>{t("pieces.elephant_long_range.name")}</h2>
+              <div>
+                <img
+                  src="/src/assets/icons/white_elephant_long_range.png"
+                  alt="white_elephant_long_range"
+                />
+                <img
+                  src="/src/assets/icons/black_elephant_long_range.png"
+                  alt="black_elephant_long_range"
+                />
+              </div>
+              <h3>{t("pieces.desc_caption")}</h3>
+              <p>{t("pieces.elephant_long_range.desc")}</p>
+              <div className={styles["pieces-info"]}>
+                <img
+                  src="/src/assets/images/elephant_long_range_directions.png"
+                  alt="elephant_long_range_directions"
+                />
+                <img
+                  src="/src/assets/images/elephant_long_range_attacks.png"
+                  alt="elephant_long_range_attacks"
+                />
+              </div>
+              <h3>{t("pieces.history_caption")}</h3>
+              <p>{t("pieces.elephant_long_range.history")}</p>
+            </div>
+            <div id="section19">
               <h2>{t("pieces.dinozavr.name")}</h2>
               <div>
                 <img
@@ -596,7 +626,7 @@ const Info = () => {
               <h3>{t("pieces.history_caption")}</h3>
               <p>{t("pieces.dinozavr.history")}</p>
             </div>
-            <div id="section19">
+            <div id="section20">
               <h2>{t("pieces.checkers.name")}</h2>
               <div>
                 <img

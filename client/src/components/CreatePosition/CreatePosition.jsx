@@ -39,6 +39,7 @@ import white_archbishop from "../../assets/icons/white_archbishop.png";
 import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
+import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -62,6 +63,7 @@ import black_archbishop from "../../assets/icons/black_archbishop.png";
 import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
+import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -557,6 +559,14 @@ const CreatePosition = () => {
           {piecesStyle === "special" && (
             <div>
               <img
+                src={white_elephant_long_range}
+                alt="white_elephant_long_range"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_elephant_long_range,isNew`)
+                }
+              />
+              <img
                 src={white_knight}
                 alt="white_knight"
                 draggable="true"
@@ -748,6 +758,17 @@ const CreatePosition = () => {
           )}
           {piecesStyle === "special" && (
             <div>
+              <img
+                src={black_elephant_long_range}
+                alt="black_elephant_long_range"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData(
+                    "text",
+                    `black_elephant_long_range,isNew`,
+                  )
+                }
+              />
               <img
                 src={black_knight}
                 alt="black_knight"

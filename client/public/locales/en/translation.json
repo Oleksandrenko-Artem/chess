@@ -158,13 +158,18 @@
       "desc": "Can move like a queen and a knight. Can jump over pieces when moving like a knight. Has the strength of 12 pawns.",
       "history": "Found in some very early chess variants, such as some variants of Four-Player Chess."
     },
+    "elephant_long_range": {
+      "name": "Long-Range Elephant",
+      "desc": "Can move like a regular elephant, but also can jump over pieces. Has the strength of approximately 4-5 pawns.",
+      "history": "This is a special piece that does not exist in regular chess or its variants. It was created for extended chess to provide the elephant with additional mobility and strength, compensating for its limited range in closed positions of standard chess."
+    },
     "knight": {
       "name": "Knight",
       "desc": "Can move like a long-range knight, but also controls intermediate squares (which the knight jumps over). Cannot jump over pieces. Has strength - 6-7 pawns.",
       "history": "This is a special piece that does not exist in regular chess or its variants, but it may appear in the future and replace the knight, as the modern bishop once replaced the alfil."
     },
-    "dinosaur": {
-      "name": "Dinosaur",
+    "dinozavr": {
+      "name": "Dinozavr",
       "desc": "Can move in any direction (not just like a queen, but also like a horse, but with long range). Cannot jump over pieces. This is a very powerful piece, as it controls almost the entire board, giving it the strength of 19 pawns (relatively).",
       "history": "This is a special piece that does not exist in regular chess or its variants."
     },
