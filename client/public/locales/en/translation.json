@@ -5,6 +5,7 @@
     "new_chess": "New chess",
     "old_chess": "Old chess",
     "extended_chess": "Extended chess",
+    "ferz_vs_rukh": "Ferz vs Rukh",
     "dinozavr_chess": "Chess: Age of Dinosaurs",
     "position": "Position",
     "custom_position": "Custom Position",
@@ -72,8 +73,7 @@
     "required": "This field is required."
   },
   "home": {
-    "home_caption": "Home Page",
-    "welcome_message": "Welcome to our chess portal! Explore the world of classical chess and ancient shatranj, create your own positions, and improve your skills. Join us and dive into the exciting world of chess!"
+    "home_caption": "Home Page"
   },
   "pieces": {
     "desc_caption": "Description",

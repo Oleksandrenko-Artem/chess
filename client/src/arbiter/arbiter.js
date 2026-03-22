@@ -3,6 +3,124 @@ import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
 const arbiter = {
+    getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection }) {
+        const allMoves = [];
+        const currentCastleDir = castleDirection?.[playerColor] || 'both';
+        for (let r = 0; r < 8; r++) {
+            for (let f = 0; f < 8; f++) {
+                const piece = position[r][f];
+                if (piece && piece.startsWith(playerColor)) {
+                    const isPawn = piece.endsWith('pawn') || piece.endsWith('soldier');
+
+                    if (piece.endsWith('king')) {
+                        const kingMoves = getKingMoves({
+                            position,
+                            piece,
+                            castleDirection: currentCastleDir,
+                            rank: r,
+                            file: f
+                        });
+                        kingMoves.forEach(([tr, tf]) => {
+                            allMoves.push({
+                                piece,
+                                rank: r,
+                                file: f,
+                                targetRank: tr,
+                                targetFile: tf,
+                                isCastle: Math.abs(tf - f) === 2
+                            });
+                        });
+                    } else if (isPawn) {
+                        const direction = playerColor === 'white' ? -1 : 1;
+
+                        const nextR = r + direction;
+                        if (position[nextR] && position[nextR][f] === '') {
+                            allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: f });
+                            if (localStorage.getItem('chess_variant') === "chess") {
+
+                                const startRank = playerColor === 'white' ? 6 : 1;
+                                const doubleNextR = r + 2 * direction;
+                                if (r === startRank && position[doubleNextR] && position[doubleNextR][f] === '') {
+                                    allMoves.push({ piece, rank: r, file: f, targetRank: doubleNextR, targetFile: f });
+                                }
+                            }
+                        }
+
+                        const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
+                        attacks.forEach(([tr, tf]) => {
+                            const targetPiece = position[tr][tf];
+                            if (targetPiece !== '' && !targetPiece.startsWith(playerColor)) {
+                                allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
+                            }
+                        });
+                        if (prevPosition) {
+                            const direction = playerColor === 'white' ? -1 : 1;
+
+                            [1, -1].forEach(fOffset => {
+                                const targetF = f + fOffset;
+                                const targetR = r + direction;
+
+                                if (playerColor === 'black' && r === 4) {
+                                    const whitePawnStart = 6;
+                                    const whitePawnEnd = 4;
+
+                                    if (position[whitePawnEnd][targetF] === 'white_pawn' &&
+                                        prevPosition[whitePawnStart][targetF] === 'white_pawn' &&
+                                        prevPosition[whitePawnEnd][targetF] === '' &&
+                                        (!position[targetR] || position[targetR][targetF] === '')) {
+
+                                        allMoves.push({
+                                            piece, rank: r, file: f,
+                                            targetRank: targetR, targetFile: targetF,
+                                            isEnPassant: true
+                                        });
+                                    }
+                                }
+
+                                if (playerColor === 'white' && r === 3) {
+                                    const blackPawnStart = 1;
+                                    const blackPawnEnd = 3;
+
+                                    if (position[blackPawnEnd][targetF] === 'black_pawn' &&
+                                        prevPosition[blackPawnStart][targetF] === 'black_pawn' &&
+                                        prevPosition[blackPawnEnd][targetF] === '' &&
+                                        (!position[targetR] || position[targetR][targetF] === '')) {
+
+                                        allMoves.push({
+                                            piece, rank: r, file: f,
+                                            targetRank: targetR, targetFile: targetF,
+                                            isEnPassant: true
+                                        });
+                                    }
+                                }
+                            });
+                        }
+                        const isKing = piece.endsWith('king');
+                        if (isKing) {
+                            const canCastle = castleDirection[playerColor];
+                            if (canCastle) {
+                                if (canCastle === "both" && position[r][f + 1] === '' && position[r][f + 2] === '') {
+                                    allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
+                                }
+                                if (canCastle ===  "left" && position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '') {
+                                    allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
+                                }
+                            }
+                        }
+                    } else {
+                        const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
+                        attacks.forEach(([tr, tf]) => {
+                            const targetPiece = position[tr][tf];
+                            if (!targetPiece || !targetPiece.startsWith(playerColor)) {
+                                allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
+                            }
+                        });
+                    }
+                }
+            }
+        }
+        return allMoves;
+    },
     isSquareAttacked: function ({ position, rank, file, byPlayer }) {
         try {
             for (let r = 0; r < 8; r++) {
@@ -493,6 +611,10 @@ const arbiter = {
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
+        if (piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
+            newPosition[fromRank][toFile] = ''; // Видаляємо пішака, якого взяли на проході
+        }
+
         if (piece.endsWith('checkers') && Math.abs(toRank - fromRank) === 2 && Math.abs(toFile - fromFile) === 2) {
             const capRank = (fromRank + toRank) / 2;
             const capFile = (fromFile + toFile) / 2;
@@ -592,7 +714,7 @@ const arbiter = {
         );
         return filteredMoves;
     },
-    getGameStatus: function ({ position, playerColor, castleDirection }) {
+    getGameStatus: function ({ position, playerColor, castleDirection, prevPosition }) {
         try {
             const isInCheck = this.isKingInCheck({ position, playerColor });
             let hasLegalMove = false;
@@ -606,7 +728,7 @@ const arbiter = {
                             : 'both';
                         const validMoves = this.getRegularMoves({
                             position,
-                            prevPosition: null,
+                            prevPosition,
                             castleDirection: safeCastleDir,
                             piece,
                             rank: r,

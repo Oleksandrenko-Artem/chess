@@ -2,9 +2,10 @@
 
 .wrapper {
     @extend %panel-style;
-    width: 100%;
+    width: 465px;
     min-height: 65%;
     padding: 20px;
+    overflow-y: auto;
 }
 .moves-list {
     display: flex;
@@ -17,3 +18,9 @@
     content: attr(data-number);
     font-weight: 600;
 }
+.moves-List:not([data-number]) {
+      padding-left: 0;
+      &::before {
+        display: none;
+      }
+    }

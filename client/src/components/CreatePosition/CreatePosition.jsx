@@ -6,6 +6,7 @@ import { updateUserThunk } from "../../store/usersSlice";
 import {
   initialDinoGameState,
   initialExtendedGameState,
+  initialFerzVsRukhGameState,
   initialGameState,
   initialNewVariantGameState,
   initialOldGameState,
@@ -72,6 +73,8 @@ const CreatePosition = () => {
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();
+  const [start, setStart] = useState("no");
+  const [selectedColor, setSelectedColor] = useState(null);
   const [color, setColor] = useState("white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
   const [preset, setPreset] = useState("custom");
@@ -193,6 +196,8 @@ const CreatePosition = () => {
     }
   };
   const handleResetPosition = () => {
+    localStorage.setItem("chess_mode", "editor");
+    setStart("no");
     dispatch({
       type: actionTypes.RESET_GAME,
       payload: { initialState: initialSpecialGameState },
@@ -263,15 +268,29 @@ const CreatePosition = () => {
     "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
+    "ferz-vs-rukh": initialFerzVsRukhGameState,
     "dinozavr-chess": initialDinoGameState,
   };
   const handleChangePreset = (e) => {
     const val = e.target.value;
     setPreset(val);
     const initialState = presetsMap[val] || initialSpecialGameState;
+    localStorage.setItem("chess_mode", "editor");
+    setStart("no");
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState } });
   };
-
+  const handleStartVariant = () => {
+    localStorage.setItem("chess_mode", "game");
+    setStart("yes");
+  };
+  const onClickWhite = () => {
+    localStorage.setItem("chess_side", "white");
+    dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "white" });
+  };
+  const onClickBlack = () => {
+    localStorage.setItem("chess_side", "black");
+    dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "black" });
+  };
   const handleToggle = () => {
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
   };
@@ -293,6 +312,7 @@ const CreatePosition = () => {
             <option value="new-chess">{t("header.new_chess")}</option>
             <option value="old-chess">{t("header.old_chess")}</option>
             <option value="extended-chess">{t("header.extended_chess")}</option>
+            <option value="ferz-vs-rukh">{t("header.ferz_vs_rukh")}</option>
             <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
           </select>
           <button onClick={handleChangeColor}>
@@ -301,9 +321,16 @@ const CreatePosition = () => {
           <button onClick={handleToggle}>
             {t("custom_panel.rotate_board")}
           </button>
-          <button onClick={handleResetPosition}>
-            {t("custom_panel.reset_position")}
-          </button>
+          {start === "no" && (
+            <button onClick={handleStartVariant}>
+              {t("game_info_panel.start")}
+            </button>
+          )}
+          {start === "yes" && (
+            <button onClick={handleResetPosition}>
+              {t("custom_panel.reset_position")}
+            </button>
+          )}
           <input
             type="color"
             value={lightSquareColor}
@@ -334,6 +361,28 @@ const CreatePosition = () => {
           >
             {t("custom_panel.reset_colors")}
           </button>
+          <div>
+            <div className={styles["img-div"]}>
+              <img
+                src={black_king}
+                alt="black"
+                className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
+                onClick={() => {
+                  setSelectedColor("black");
+                  onClickBlack();
+                }}
+              />
+              <img
+                src={white_king}
+                alt="white"
+                className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
+                onClick={() => {
+                  setSelectedColor("white");
+                  onClickWhite();
+                }}
+              />
+            </div>
+          </div>
         </div>
         <div className={styles["replace-pieces"]}>
           <div>
@@ -563,7 +612,10 @@ const CreatePosition = () => {
                 alt="white_elephant_long_range"
                 draggable="true"
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `white_elephant_long_range,isNew`)
+                  e.dataTransfer.setData(
+                    "text",
+                    `white_elephant_long_range,isNew`,
+                  )
                 }
               />
               <img

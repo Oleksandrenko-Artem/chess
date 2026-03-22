@@ -12,28 +12,34 @@ const Homepage = () => {
         dispatch(findAllUsersThunk());  
     }, [dispatch]);
     return (
-        <div className={styles.home}>
-            <h2>{t('home.home_caption')}</h2>
-            <marquee><h4>{t('home.welcome_message')}</h4></marquee>
-            <table className={styles.users}>
-                <thead>
-                    <tr>
-                       <th>Number</th>
-                        <th>Name</th>
-                        <th>Email</th> 
-                    </tr>
-                </thead>
-                <tbody>
-                    {users?.map((user, index) => (
-                        <tr key={index}>
-                            <td>{index + 1}.</td>
-                            <td>{user.name}</td>
-                            <td>{user.email}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+      <div className={styles.home}>
+        <h2>{t("home.home_caption")}</h2>
+        <table className={styles.users}>
+          <thead>
+            <tr>
+              <th>Number</th>
+              <th>Photo</th>
+              <th>Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody>
+            {users?.map((user, index) => (
+              <tr key={index}>
+                <td>{index + 1}.</td>
+                <td className={styles["home-page-user-photo"]}>
+                  <img
+                    src={user.avatar || "/src/assets/icons/account.png"}
+                    alt="avatar"
+                  />
+                </td>
+                <td>{user.name}</td>
+                <td>{user.email}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     );
 };
 

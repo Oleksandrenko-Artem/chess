@@ -12,16 +12,20 @@ const GameInfoPanel = (props) => {
   const { dispatch, appState } = useAppContext();
   const { t } = useTranslation();
   const [selectedColor, setSelectedColor] = useState(null);
-    const onClickWhite = () => {
+  const onClickWhite = () => {
+      localStorage.setItem("chess_side", "white");
       dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
     };
-    const onClickBlack = () => {
+  const onClickBlack = () => {
+      localStorage.setItem("chess_side", "black");
       dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
     };
   const onClickStart = () => {
-      setStart(true);
+    localStorage.setItem("chess_mode", "game");
+    setStart(true);
     };
-    const onClickStartNew = () => {
+  const onClickStartNew = () => {
+      localStorage.setItem("chess_mode", "game");
       setStart(false);
       if (window.localStorage.getItem("chess_variant") === "chess") {
         window.localStorage.setItem("chess_variant", "chess");
@@ -75,7 +79,6 @@ const GameInfoPanel = (props) => {
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
-  console.log(status)
     return (
       <div className={styles.wrapper}>
         {!start && (

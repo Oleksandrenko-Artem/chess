@@ -36,6 +36,12 @@ export const reducer = (state, action) => {
                 captured
             };
         };
+        case actionTypes.SET_PLAYER_TURN: {
+            return {
+                ...state,
+                playerTurn: action.payload
+            };
+        }
         case actionTypes.GENERATE_VALID_MOVES: {
             return {
                 ...state,

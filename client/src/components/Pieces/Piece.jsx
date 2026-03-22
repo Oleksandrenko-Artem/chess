@@ -20,7 +20,11 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     
     const prevBoard = position.length > 1 ? position[position.length - 2] : null;
     const onDragStart = e => {
-        if (appState.status !== status.ongoing) {
+        const userSide = localStorage.getItem("chess_side");
+        const isHuman = appState.playerTurn === userSide;
+        const mode = localStorage.getItem("chess_mode");
+        const isEditorMode = mode === "editor";
+        if (appState.status !== status.ongoing || !isHuman || isEditorMode) {
             e.preventDefault();
             return;
         }

@@ -1,4 +1,4 @@
-import { createDinoPosition, createExtendedPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition } from "./helpers";
+import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition } from "./helpers";
 
 export const status = {
     'ongoing': 'Ongoing',
@@ -119,6 +119,23 @@ export const initialDinoGameState = {
 };
 export const initialExtendedGameState = {
     position: [createExtendedPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+};
+export const initialFerzVsRukhGameState = {
+    position: [createFerzVsRukhPosition()],
     playerTurn: 'white',
     movesList: [],
     validMoves: [],

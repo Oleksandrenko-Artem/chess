@@ -39,8 +39,8 @@
             display: flex;
             align-items: center;
             img {
-                width: 5.5vh;
-                height: 5vh;
+                width: 4.5vh;
+                height: 4vh;
             }
         }
     }
@@ -51,5 +51,15 @@
     }
     .pawn {
         height: 4.5vh;
+    }
+    .img-div {
+        img {
+            width: 24px;
+            height: 28.05px;
+            @extend %btn-style;
+        }
+        .active {
+        --btn-style-color: rgb(230, 230, 230);
+        }
     }
 }

@@ -71,13 +71,24 @@
   }
 }
 .users {
-    @extend %btn-style;
+  @extend %btn-style;
   width: 95%;
   padding: 5px;
   th,
   td {
     @extend %btn-style;
-    width: 31.6%;
+    width: 20%;
     text-align: center;
   }
+  .home-page-user-photo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: inherit;
+  img {
+    width: 26px;
+    height: 26px;
+    border-radius: var(--btn-radius);
+  }
+}
 }

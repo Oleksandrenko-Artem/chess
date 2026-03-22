@@ -43,6 +43,8 @@ function App() {
   const handlePlaySpecial = () => {
     if (typeof window !== 'undefined') {
       localStorage.setItem('chess_variant', 'special');
+      localStorage.setItem("chess_mode", "editor");
+      localStorage.setItem("chess_side", "white");
     };
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialSpecialGameState } });
   }

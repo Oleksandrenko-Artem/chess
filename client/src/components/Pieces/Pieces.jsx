@@ -117,6 +117,186 @@ const imageMap = {
   white_knight,
   white_elephant_long_range,
 };
+const PIECE_VALUES = {
+  pawn: 100,
+  soldier: 100,
+  firzan: 200,
+  elephant: 200,
+  horse: 300,
+  bishop: 300,
+  rook: 500,
+  ferz: 900,
+  imperator: 20000,
+  king: 20000,
+  tank: 200,
+  camel: 350,
+  zebra: 200,
+  amazon: 1200,
+  dinozavr: 2200,
+  lion: 400,
+  giraffe: 250,
+  rukh: 1050,
+  wazir: 250,
+  knight: 700,
+  checkers: 50,
+  elephant_long_range: 600,
+  marshal: 900,
+  archbishop: 600,
+};
+const evaluatePosition = (position) => {
+  let totalScore = 0;
+
+  for (let r = 0; r < 8; r++) {
+    for (let f = 0; f < 8; f++) {
+      const p = position[r][f];
+      if (p) {
+        const isWhite = p.startsWith("white");
+        const type = Object.keys(PIECE_VALUES).find((t) => p.endsWith(t));
+        let value = PIECE_VALUES[type] || 100;
+
+        if (r >= 3 && r <= 4 && f >= 3 && f <= 4) {
+          value += 20;
+        }
+
+        totalScore += isWhite ? value : -value;
+      }
+    }
+  }
+
+  for (let r = 0; r < 8; r++) {
+    for (let f = 0; f < 8; f++) {
+      const p = position[r][f];
+      if (p && p.endsWith("king")) {
+        const isWhite = p.startsWith("white");
+        if (f === 6 || f === 2 || f === 1 || f === 7) {
+          totalScore += isWhite ? 80 : -80;
+        }
+      }
+    }
+  }
+
+  if (arbiter.isKingInCheck({ position, playerColor: "white" }))
+    totalScore -= 70;
+  if (arbiter.isKingInCheck({ position, playerColor: "black" }))
+    totalScore += 70;
+
+  return totalScore;
+};
+
+const minimax = (
+  position,
+  depth,
+  isMaximizing,
+  alpha,
+  beta,
+  castleDirection,
+  prevPosition,
+) => {
+  if (depth === 0) return evaluatePosition(position);
+
+  const playerColor = isMaximizing ? "white" : "black";
+  const moves = arbiter.getBoardValidMoves({
+    position,
+    playerColor,
+    castleDirection: castleDirection,
+    prevPosition: prevPosition,
+  });
+  if (moves.length === 0) {
+    const isCheck = arbiter.isKingInCheck({ position, playerColor });
+    if (isCheck) {
+      return isMaximizing ? -1000000 : 1000000;
+    }
+    return 0;
+  }
+
+  if (isMaximizing) {
+    let maxEval = -Infinity;
+    for (const move of moves) {
+      const tempPos = copyPosition(position);
+      const piece = move.piece;
+
+      if (
+        piece.endsWith("pawn") &&
+        move.file !== move.targetFile &&
+        !position[move.targetRank][move.targetFile]
+      ) {
+        tempPos[move.rank][move.targetFile] = "";
+      }
+      if (
+        piece.endsWith("king") &&
+        Math.abs(move.targetFile - move.file) === 2
+      ) {
+        const isShort = move.targetFile > move.file;
+        const rookFile = isShort ? 7 : 0;
+        const newRookFile = isShort ? move.targetFile - 1 : move.targetFile + 1;
+
+        const rook = tempPos[move.rank][rookFile];
+        tempPos[move.rank][rookFile] = "";
+        tempPos[move.rank][newRookFile] = rook;
+      }
+
+      tempPos[move.rank][move.file] = "";
+      tempPos[move.targetRank][move.targetFile] = piece;
+
+      const evalScore = minimax(
+        tempPos,
+        depth - 1,
+        false,
+        alpha,
+        beta,
+        castleDirection,
+        position,
+      );
+      maxEval = Math.max(maxEval, evalScore);
+      alpha = Math.max(alpha, evalScore);
+      if (beta <= alpha) break;
+    }
+    return maxEval;
+  } else {
+    let minEval = Infinity;
+    for (const move of moves) {
+      const tempPos = copyPosition(position);
+      const piece = move.piece;
+
+      if (
+        piece.endsWith("king") &&
+        Math.abs(move.targetFile - move.file) === 2
+      ) {
+        const isShort = move.targetFile > move.file;
+        const rookFile = isShort ? 7 : 0;
+        const newRookFile = isShort ? 5 : 3;
+        const rook = tempPos[move.rank][rookFile];
+        tempPos[move.rank][rookFile] = "";
+        tempPos[move.rank][newRookFile] = rook;
+      }
+
+      if (
+        piece.endsWith("pawn") &&
+        move.file !== move.targetFile &&
+        !tempPos[move.targetRank][move.targetFile]
+      ) {
+        tempPos[move.rank][move.targetFile] = "";
+      }
+
+      tempPos[move.rank][move.file] = "";
+      tempPos[move.targetRank][move.targetFile] = piece;
+
+      const evalScore = minimax(
+        tempPos,
+        depth - 1,
+        true,
+        alpha,
+        beta,
+        castleDirection,
+        position,
+      );
+      minEval = Math.min(minEval, evalScore);
+      beta = Math.min(beta, evalScore);
+      if (beta <= alpha) break;
+    }
+    return minEval;
+  }
+};
 
 const getPieceImageSrc = (pieceName) => {
   if (!pieceName) return "";
@@ -194,6 +374,91 @@ const Pieces = ({ flipped = false }) => {
 
     loadAllImages();
   }, []);
+  const isBotThinking = useRef(false);
+  useEffect(() => {
+    const { playerTurn, status: currentStatus, position } = appState;
+    const userSide = localStorage.getItem("chess_side");
+    const mode = localStorage.getItem("chess_mode");
+    const isGameMode = mode === "game";
+    if (
+      isGameMode &&
+      currentStatus === status.ongoing &&
+      playerTurn !== userSide &&
+      !isBotThinking.current
+    ) {
+      const { playerTurn, status: currentStatus, position } = appState;
+
+      const currentPosition = position[position.length - 1];
+      const prevPosition =
+        position.length > 1 ? position[position.length - 2] : null;
+      
+      const moves = arbiter.getBoardValidMoves({
+        position: currentPosition,
+        prevPosition: prevPosition,
+        playerColor: playerTurn,
+        castleDirection: appState.castleDirection,
+      });
+
+      const legalMoves = moves.filter((move) => {
+        const temp = copyPosition(currentPosition);
+        const piece = temp[move.rank][move.file];
+
+        if (
+          piece.endsWith("pawn") &&
+          move.file !== move.targetFile &&
+          !currentPosition[move.targetRank][move.targetFile]
+        ) {
+          temp[move.rank][move.targetFile] = "";
+        }
+        temp[move.rank][move.file] = "";
+        temp[move.targetRank][move.targetFile] = piece;
+
+        return !arbiter.isKingInCheck({
+          position: temp,
+          playerColor: playerTurn,
+        });
+      });
+      const isItBotTurn =
+        currentStatus === status.ongoing && playerTurn !== userSide;
+      
+      if (isItBotTurn && legalMoves.length > 0) {
+        isBotThinking.current = true;
+        const scoredMoves = legalMoves.map((move) => {
+          const tempPos = copyPosition(currentPosition);
+          const piece = tempPos[move.rank][move.file];
+          tempPos[move.rank][move.file] = "";
+          tempPos[move.targetRank][move.targetFile] = piece;
+
+          const nextIsMaximizing = playerTurn === "white" ? false : true;
+          const score = minimax(
+            tempPos,
+            2,
+            nextIsMaximizing,
+            -Infinity,
+            Infinity,
+            appState.castleDirection,
+            currentPosition,
+          );
+
+          return { ...move, score };
+        });
+
+        scoredMoves.sort((a, b) =>
+          playerTurn === "white" ? b.score - a.score : a.score - b.score,
+        );
+
+        const bestScore = scoredMoves[0].score;
+        const topMoves = scoredMoves.filter((m) => m.score === bestScore);
+        const chosenMove =
+          topMoves[Math.floor(Math.random() * topMoves.length)];
+
+        setTimeout(() => {
+          makeMove({ ...chosenMove, isBot: true });
+          isBotThinking.current = false;
+        }, 600);
+      }
+    }
+  }, [appState.playerTurn, appState.status]);
   if (!appState || !appState.position) {
     return null;
   }
@@ -220,172 +485,172 @@ const Pieces = ({ flipped = false }) => {
       }),
     );
   };
-  const onDrop = (e) => {
-    e.preventDefault();
-    if (appState.status !== status.ongoing) {
-      return;
-    }
-    const coords = calculateCoords(e);
-    if (coords.x === -1 || coords.y === -1) return;
+  const makeMove = (moveData) => {
+    const {
+      piece,
+      rank,
+      file,
+      targetRank,
+      targetFile,
+      isNew = false,
+    } = moveData;
+    const p = piece;
+    const userSide = localStorage.getItem("chess_side");
+    const isHuman = appState.playerTurn === userSide;
 
-    const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
-    const rank = parseInt(rankStr, 10);
-    const file = parseInt(fileStr, 10);
-    const targetRank = coords.x;
-    const targetFile = coords.y;
-    if (rankStr === "isNew") {
-      const newPosition = copyPosition(currentPosition);
-      if (p.endsWith("king")) {
-        const kingExists = currentPosition.some((row) => row.includes(p));
-        if (kingExists) {
-          alert(
-            "On chessboard can be only one " +
-              (p.startsWith("white") ? "white" : "black") +
-              " king!",
-          );
-          return;
-        }
-      }
-      newPosition[targetRank][targetFile] = p;
-      dispatch({
-        type: actionTypes.SET_POSITION,
-        payload: { newPosition },
-      });
+    const { isBot = false } = moveData;
+
+    if (!isHuman && !isBot && !isNew) {
+      console.log("Зараз хід бота, зачекайте");
       return;
     }
-    const isValidMove = appState.validMoves?.find(
-      (move) => move[0] === targetRank && move[1] === targetFile,
-    );
-    if (isValidMove) {
-      if (
-        (p === "white_pawn" && targetRank === 0) ||
-        (p === "black_pawn" && targetRank === 7)
-      ) {
-        openPromotionBox({ rank, file, targetRank, targetFile });
+
+    if (isHuman && !isNew) {
+      const isValidMove = appState.validMoves?.find(
+        (m) => m[0] === targetRank && m[1] === targetFile,
+      );
+      if (!isValidMove) {
+        dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
         return;
       }
+
       if (
-        (p === "white_soldier" && targetRank === 0) ||
-        (p === "black_soldier" && targetRank === 7)
+        (p.endsWith("pawn") || p.endsWith("soldier")) &&
+        (targetRank === 0 || targetRank === 7)
       ) {
         openPromotionBox({ rank, file, targetRank, targetFile });
         return;
       }
     }
-    if (!isValidMove) {
-      dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
-      return;
-    }
+
     const newPosition = copyPosition(currentPosition);
     const newCaptured = JSON.parse(
       JSON.stringify(appState.captured || { white: [], black: [] }),
     );
-    if (
-      currentPosition[targetRank][targetFile] &&
-      currentPosition[targetRank][targetFile] !== ""
-    ) {
-      let capturedPiece = currentPosition[targetRank][targetFile];
-      capturedPiece = getActualPiece(capturedPiece);
-      const captureColor = capturedPiece.startsWith("white")
-        ? "white"
-        : "black";
-      const opponentColor = captureColor === "white" ? "black" : "white";
+
+    if (!isNew && currentPosition[targetRank][targetFile]) {
+      let capturedPiece = getActualPiece(
+        currentPosition[targetRank][targetFile],
+      );
+      const opponentColor = capturedPiece.startsWith("white")
+        ? "black"
+        : "white";
       newCaptured[opponentColor].push(capturedPiece);
     }
+    const mode = localStorage.getItem("chess_mode");
+    const isEditorMode = mode === "editor";
     if (
       p.endsWith("pawn") &&
-      !newPosition[targetRank][targetFile] &&
-      targetFile !== file
+      file !== targetFile &&
+      !currentPosition[targetRank][targetFile] && !isEditorMode
     ) {
       newPosition[rank][targetFile] = "";
+      const enemyColor = p.startsWith("white") ? "black" : "white";
+      newCaptured[enemyColor].push(`${enemyColor}_pawn`);
+
+      newPosition[targetRank][targetFile] = p;
+    }
+
+    if (!isNew && rank !== undefined && file !== undefined) {
+      newPosition[rank][file] = "";
+    }
+
+    if (newPosition[targetRank] !== undefined) {
+      newPosition[targetRank][targetFile] = piece;
     }
     if (
-      p.endsWith("checkers") &&
-      Math.abs(targetRank - rank) === 2 &&
-      Math.abs(targetFile - file) === 2
+      !isHuman &&
+      p.endsWith("pawn") &&
+      (targetRank === 0 || targetRank === 7)
     ) {
-      const capRank = (rank + targetRank) / 2;
-      const capFile = (file + targetFile) / 2;
-      if (
-        newPosition[capRank][capFile] &&
-        newPosition[capRank][capFile] !== ""
-      ) {
-        let capturedPiece = newPosition[capRank][capFile];
-        capturedPiece = getActualPiece(capturedPiece);
-        const captureColor = capturedPiece.startsWith("white")
-          ? "white"
-          : "black";
-        const opponentColor = captureColor === "white" ? "black" : "white";
-        newCaptured[opponentColor].push(capturedPiece);
-      }
-      newPosition[capRank][capFile] = "";
+      newPosition[targetRank][targetFile] = p.split("_")[0] + "_ferz";
+    } else if (
+      !isHuman &&
+      p.endsWith("soldier") &&
+      (targetRank === 0 || targetRank === 7)
+    ) {
+      newPosition[targetRank][targetFile] = p.split("_")[0] + "_firzan";
+    } else {
+      newPosition[targetRank][targetFile] = p;
     }
-    newPosition[rank][file] = "";
-    newPosition[targetRank][targetFile] = p;
-    const isCastling = p.endsWith("king") && Math.abs(targetFile - file) === 2;
-    if (isCastling) {
-      if (targetFile === 2) {
-        newPosition[rank][0] = "";
-        newPosition[rank][3] = p.replace("king", "rook");
-      } else if (targetFile === 6) {
-        newPosition[rank][7] = "";
-        newPosition[rank][5] = p.replace("king", "rook");
+
+    if (p.endsWith("_king")) {
+      if (Math.abs(targetFile - file) === 2) {
+        const isShortCastle = targetFile > file;
+        const rookFile = isShortCastle ? 7 : 0;
+        const newRookFile = isShortCastle ? targetFile - 1 : targetFile + 1;
+        const rook = newPosition[rank][rookFile];
+
+        newPosition[rank][rookFile] = "";
+        newPosition[rank][newRookFile] = rook;
       }
     }
+    const nextPlayer = isEditorMode
+      ? appState.playerTurn
+      : appState.playerTurn === "white"
+        ? "black"
+        : "white";
     const newCastleDirection = { ...appState.castleDirection };
-    if (p.endsWith("king")) {
-      newCastleDirection[p.startsWith("white") ? "white" : "black"] = "none";
+    let gameStatus;
+
+    if (isEditorMode) {
+      gameStatus = status.ongoing;
+    } else {
+      gameStatus = arbiter.getGameStatus({
+        position: newPosition,
+        playerColor: nextPlayer,
+        castleDirection: newCastleDirection,
+        prevPosition: currentPosition,
+      });
     }
-    if (p.endsWith("rook")) {
-      const playerColor = p.startsWith("white") ? "white" : "black";
-      const currentDir = newCastleDirection[playerColor];
-      if (file === 0) {
-        newCastleDirection[playerColor] =
-          currentDir === "both" ? "right" : "none";
-      } else if (file === 7) {
-        newCastleDirection[playerColor] =
-          currentDir === "both" ? "left" : "none";
-      }
-    }
-    const nextPlayer = appState.playerTurn === "white" ? "black" : "white";
-    const gameStatus = arbiter.getGameStatus({
-      position: newPosition,
-      playerColor: nextPlayer,
-      castleDirection: newCastleDirection,
-    });
-    const isWinStatus = gameStatus.includes("wins");
     const isInCheck = arbiter.isKingInCheck({
       position: newPosition,
       playerColor: nextPlayer,
     });
-    const isCheckmate = isWinStatus && isInCheck;
-    const isStalemate = gameStatus === "Draw";
-    const newMove = getNewMoveNotation({
+  let newMove = null;
+
+  if (!isEditorMode) {
+    newMove = getNewMoveNotation({
       p,
       rank,
       file,
       targetRank,
       targetFile,
       position: currentPosition,
-      isInCheck: isInCheck && !isCheckmate,
-      isCheckmate,
-      isStalemate,
-      rookType: user
-        ? user.rookType
-        : typeof window !== "undefined"
-          ? localStorage.getItem("replaceRook") || "rook"
-          : "rook",
+      isInCheck,
+      isCheckmate: gameStatus.includes("wins"),
+      isStalemate: gameStatus === "Draw",
     });
+  }
+
     dispatch(
       makeNewMove({
         newPosition,
         newMove,
         castleDirection: newCastleDirection,
         gameStatus,
-        captured: newCaptured,
+        captured: isEditorMode ? appState.captured : newCaptured,
       }),
     );
     dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+  };
+  const onDrop = (e) => {
+    e.preventDefault();
+    if (appState.status !== status.ongoing) return;
+
+    const coords = calculateCoords(e);
+    if (coords.x === -1 || coords.y === -1) return;
+
+    const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
+
+    makeMove({
+      piece: p,
+      rank: parseInt(rankStr, 10),
+      file: parseInt(fileStr, 10),
+      targetRank: coords.x,
+      targetFile: coords.y,
+      isNew: rankStr === "isNew",
+    });
   };
   const onDragOver = (e) => e.preventDefault();
   if (!imagesLoaded) {
