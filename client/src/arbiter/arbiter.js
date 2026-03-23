@@ -612,7 +612,7 @@ const arbiter = {
         newPosition[toRank][toFile] = piece;
 
         if (piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
-            newPosition[fromRank][toFile] = ''; // Видаляємо пішака, якого взяли на проході
+            newPosition[fromRank][toFile] = '';
         }
 
         if (piece.endsWith('checkers') && Math.abs(toRank - fromRank) === 2 && Math.abs(toFile - fromFile) === 2) {
@@ -744,15 +744,49 @@ const arbiter = {
                 }
                 if (hasLegalMove) break;
             }
+            const isShatranj = localStorage.getItem('chess_variant') === 'shatranj';
+
             if (isInCheck && !hasLegalMove) {
                 return playerColor === 'white' ? status.black : status.white;
-            } else if ((!isInCheck && !hasLegalMove) || (this.insufficientMaterial({ position }))) {
+            }
+
+            else if (!isInCheck && !hasLegalMove) {
+                if (isShatranj) {
+                    return playerColor === 'white' ? status.black : status.white;
+                }
+                return status.draw;
+            }
+
+            if (isShatranj) {
+                const opponentColor = playerColor === 'white' ? 'black' : 'white';
+                const isPlayerBare = this.isBareKing({ position, playerColor });
+                const isOpponentBare = this.isBareKing({ position, playerColor: opponentColor });
+
+                if (isPlayerBare && isOpponentBare) {
+                    return status.draw;
+                } else if (isOpponentBare) {
+                    return playerColor === 'black' ? status.black : status.white;
+                }
+            }
+
+            if (this.insufficientMaterial({ position })) {
                 return status.draw;
             }
         } catch (error) {
             console.error(error);
         }
         return status.ongoing;
+    },
+    isBareKing: function ({ position, playerColor }) {
+        for (let r = 0; r < 8; r++) {
+            for (let f = 0; f < 8; f++) {
+                const piece = position[r][f];
+                if (piece && piece !== '' && piece.startsWith(playerColor) && !piece.endsWith('imperator')) {
+                    return false;
+                }
+            }
+        }
+        return true;
     },
     insufficientMaterial: function ({ position }) {
         const pieces = [];

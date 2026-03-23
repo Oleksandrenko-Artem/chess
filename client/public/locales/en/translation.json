@@ -22,7 +22,12 @@
     "reset_colors": "Reset colors",
     "change_color": "Change color",
     "rotate_board": "Rotate board",
-    "reset_position": "Reset position"
+    "reset_position": "Reset position",
+    "change_promotion": "Change",
+    "king_message": "There is already a",
+    "white": "white",
+    "black": "black",
+    "king": "king"
   },
   "profile": {
     "profile": "Profile",

@@ -6,6 +6,7 @@ import actionTypes from "../../reducers/actionTypes";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import styles from './GameInfoPanel.module.scss';
+import arbiter from '../../arbiter/arbiter';
 
 const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;

@@ -4,6 +4,7 @@
     @extend %panel-style;
     width: 465px;
     min-height: 65%;
+    max-height: 65%;
     padding: 20px;
     overflow-y: auto;
 }

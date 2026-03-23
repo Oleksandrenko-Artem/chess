@@ -6,7 +6,7 @@ export const reducer = (state, action) => {
         case actionTypes.NEW_MOVE:
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
-            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured } = state;
+            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -16,6 +16,9 @@ export const reducer = (state, action) => {
                 ...movesList,
                 action.payload.newMove
             ];
+            if (action.payload.lastMove) {
+                lastMove = action.payload.lastMove;
+            }
             if (action.payload.castleDirection) {
                 castleDirection = action.payload.castleDirection;
             }
@@ -33,7 +36,8 @@ export const reducer = (state, action) => {
                 selected: isPromotion ? null : state.selected,
                 promotionSquare: isPromotion ? null : state.promotionSquare,
                 castleDirection,
-                captured
+                captured,
+                lastMove,
             };
         };
         case actionTypes.SET_PLAYER_TURN: {

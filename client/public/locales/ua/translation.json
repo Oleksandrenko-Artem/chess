@@ -22,7 +22,12 @@
     "reset_colors": "Скинути кольори",
     "change_color": "Змінити колір",
     "rotate_board": "Повернути дошку",
-    "reset_position": "Скинути позицію"
+    "reset_position": "Скинути позицію",
+    "change_promotion": "Змінити",
+    "king_message": "На дошці вже є",
+    "white": "білий",
+    "black": "чорний",
+    "king": "король"
   },
   "profile": {
     "profile": "Профіль",

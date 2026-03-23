@@ -62,4 +62,27 @@
         --btn-style-color: rgb(230, 230, 230);
         }
     }
+    .promotion-div {
+        display: flex;
+        align-items: center;
+    }
+    .promotion-options {
+        display: flex;
+        align-items: center;
+        padding: 5px;
+        gap: 10px;
+        button, select {
+            @extend %btn-style;
+            height: 5vh;
+        }
+        button {
+            width: 15vh;
+        }
+        select {
+            width: 25vh;
+            option {
+                color: black;
+            }
+        }
+}
 }

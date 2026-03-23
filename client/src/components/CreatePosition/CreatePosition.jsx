@@ -12,6 +12,7 @@ import {
   initialOldGameState,
   initialOldVariantGameState,
   initialSpecialGameState,
+  piecesArrayPromotion,
 } from "../../constants";
 import { Icon } from "@mdi/react";
 import { mdiArrowRightThin } from "@mdi/js";
@@ -66,6 +67,7 @@ import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import styles from "./CreatePosition.module.scss";
+import Promotion from "../Promotion/Promotion";
 
 const CreatePosition = () => {
   const { dispatch } = useAppContext();
@@ -74,6 +76,18 @@ const CreatePosition = () => {
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();
   const [start, setStart] = useState("no");
+  const [promotion, setPromotion] = useState(false);
+  const storedOptions = JSON.parse(
+    localStorage.getItem("promotion_options"),
+  ) || ["ferz", "rook", "bishop", "horse"];
+  const [promotionPieceOne, setPromotionPieceOne] = useState(storedOptions[0]);
+  const [promotionPieceTwo, setPromotionPieceTwo] = useState(storedOptions[1]);
+  const [promotionPieceThree, setPromotionPieceThree] = useState(
+    storedOptions[2],
+  );
+  const [promotionPieceFour, setPromotionPieceFour] = useState(
+    storedOptions[3],
+  );
   const [selectedColor, setSelectedColor] = useState(null);
   const [color, setColor] = useState("white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
@@ -294,11 +308,22 @@ const CreatePosition = () => {
   const handleToggle = () => {
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
   };
+  const handleChangePromotion = () => {
+    setPromotion(!promotion);
+    localStorage.setItem(
+      "promotion_options",
+      JSON.stringify([promotionPieceOne, promotionPieceTwo, promotionPieceThree, promotionPieceFour]),
+    );
+  };
   return (
     <div className={styles.wrapper}>
       <div className={styles["btns-div"]}>
         <div>
-          <select value={piecesStyle} onChange={handlePiecesChange}>
+          <select
+            value={piecesStyle}
+            onChange={handlePiecesChange}
+            disabled={promotion}
+          >
             <option value="standart">
               {t("custom_panel.standart_pieces")}
             </option>
@@ -381,6 +406,26 @@ const CreatePosition = () => {
                   onClickWhite();
                 }}
               />
+              {color === "white" && (
+                <img
+                  src={white_ferz}
+                  alt="white"
+                  className={styles["img-style"]}
+                  onClick={() => {
+                    handleChangePromotion();
+                  }}
+                />
+              )}
+              {color === "black" && (
+                <img
+                  src={black_ferz}
+                  alt="black"
+                  className={styles["img-style"]}
+                  onClick={() => {
+                    handleChangePromotion();
+                  }}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -443,7 +488,7 @@ const CreatePosition = () => {
           </div>
         </div>
       </div>
-      {color === "white" && (
+      {color === "white" && !promotion && (
         <div>
           {piecesStyle === "standart" && (
             <div>
@@ -496,12 +541,12 @@ const CreatePosition = () => {
                 }
               />
               <img
-                src={white_king}
-                alt="white_king"
-                draggable="true"
-                onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `white_king,isNew`)
-                }
+                  src={white_king}
+                  alt="white_king"
+                  draggable="true"
+                  onDragStart={(e) =>
+                    e.dataTransfer.setData("text", `white_king,isNew`)
+                  }
               />
             </div>
           )}
@@ -646,7 +691,7 @@ const CreatePosition = () => {
           )}
         </div>
       )}
-      {color === "black" && (
+      {color === "black" && !promotion && (
         <div>
           {piecesStyle === "standart" && (
             <div>
@@ -847,6 +892,53 @@ const CreatePosition = () => {
               />
             </div>
           )}
+        </div>
+      )}
+      {promotion && (
+        <div className={styles["promotion-options"]}>
+          <select
+            value={promotionPieceOne}
+            onChange={(e) => setPromotionPieceOne(e.target.value)}
+          >
+            {piecesArrayPromotion.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <select
+            value={promotionPieceTwo}
+            onChange={(e) => setPromotionPieceTwo(e.target.value)}
+          >
+            {piecesArrayPromotion.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <select
+            value={promotionPieceThree}
+            onChange={(e) => setPromotionPieceThree(e.target.value)}
+          >
+            {piecesArrayPromotion.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <select
+            value={promotionPieceFour}
+            onChange={(e) => setPromotionPieceFour(e.target.value)}
+          >
+            {piecesArrayPromotion.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+          <button onClick={handleChangePromotion}>
+            {t("custom_panel.change_promotion")}
+          </button>
         </div>
       )}
     </div>

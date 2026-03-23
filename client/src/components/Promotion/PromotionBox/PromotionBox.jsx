@@ -7,14 +7,46 @@ import black_ferz from '../../../assets/icons/black_ferz.png';
 import black_rook from '../../../assets/icons/black_rook.png';
 import black_bishop from '../../../assets/icons/black_bishop.png';
 import black_horse from '../../../assets/icons/black_horse.png';
+import black_elephant from "../../../assets/icons/black_elephant.png";
+import black_firzan from "../../../assets/icons/black_firzan.png";
+import black_wazir from "../../../assets/icons/black_wazir.png";
+import black_tank from "../../../assets/icons/black_tank.png";
+import black_camel from "../../../assets/icons/black_camel.png";
+import black_zebra from "../../../assets/icons/black_zebra.png";
+import black_lion from "../../../assets/icons/black_lion.png";
+import black_giraffe from "../../../assets/icons/black_giraffe.png";
+import black_rukh from "../../../assets/icons/black_rukh.png";
+import black_archbishop from "../../../assets/icons/black_archbishop.png";
+import black_marshal from "../../../assets/icons/black_marshal.png";
+import black_amazon from "../../../assets/icons/black_amazon.png";
+import black_elephant_long_range from "../../../assets/icons/black_elephant_long_range.png";
+import black_knight from "../../../assets/icons/black_knight.png";
+import black_dinozavr from "../../../assets/icons/black_dinozavr.png";
+import black_checkers from "../../../assets/icons/black_checkers.png";
+import black_sailboat from '../../../assets/icons/black_sailboat.png';
+import black_chariot from '../../../assets/icons/black_rukh.png';
 import white_ferz from '../../../assets/icons/white_ferz.png';
 import white_rook from '../../../assets/icons/white_rook.png';
 import white_bishop from '../../../assets/icons/white_bishop.png';
 import white_horse from '../../../assets/icons/white_horse.png';
 import white_sailboat from '../../../assets/icons/white_sailboat.png';
 import white_chariot from '../../../assets/icons/white_rukh.png';
-import black_sailboat from '../../../assets/icons/black_sailboat.png';
-import black_chariot from '../../../assets/icons/black_rukh.png';
+import white_elephant from "../../../assets/icons/white_elephant.png";
+import white_firzan from "../../../assets/icons/white_firzan.png";
+import white_wazir from "../../../assets/icons/white_wazir.png";
+import white_tank from "../../../assets/icons/white_tank.png";
+import white_camel from "../../../assets/icons/white_camel.png";
+import white_zebra from "../../../assets/icons/white_zebra.png";
+import white_lion from "../../../assets/icons/white_lion.png";
+import white_giraffe from "../../../assets/icons/white_giraffe.png";
+import white_rukh from "../../../assets/icons/white_rukh.png";
+import white_archbishop from "../../../assets/icons/white_archbishop.png";
+import white_marshal from "../../../assets/icons/white_marshal.png";
+import white_amazon from "../../../assets/icons/white_amazon.png";
+import white_elephant_long_range from "../../../assets/icons/white_elephant_long_range.png";
+import white_knight from "../../../assets/icons/white_knight.png";
+import white_dinozavr from "../../../assets/icons/white_dinozavr.png";
+import white_checkers from "../../../assets/icons/white_checkers.png";
 import styles from '../../Pieces/Pieces.module.scss';
 
 const promoImageMap = {
@@ -22,6 +54,22 @@ const promoImageMap = {
     black_rook,
     black_bishop,
     black_horse,
+    black_elephant,
+    black_firzan,
+    black_wazir,
+    black_tank,
+    black_camel,
+    black_zebra,
+    black_lion,
+    black_giraffe,
+    black_rukh,
+    black_archbishop,
+    black_marshal,
+    black_amazon,
+    black_elephant_long_range,
+    black_knight,
+    black_dinozavr,
+    black_checkers,
     black_sailboat,
     black_chariot,
     white_ferz,
@@ -30,14 +78,35 @@ const promoImageMap = {
     white_horse,
     white_sailboat,
     white_chariot,
+    white_elephant,
+    white_firzan,
+    white_wazir,
+    white_tank,
+    white_camel,
+    white_zebra,
+    white_lion,
+    white_giraffe,
+    white_rukh,
+    white_archbishop,
+    white_marshal,
+    white_amazon,
+    white_elephant_long_range,
+    white_knight,
+    white_dinozavr,
+    white_checkers,
 };
 
 const PromotionBox = ({ onClosePromotion }) => {
-    const options = [
-        'ferz',
-        'rook',
-        'bishop',
-        'horse',
+    const options = localStorage.getItem("chess_variant") === "special" ? JSON.parse(localStorage.getItem("promotion_options")) || [
+      "ferz",
+      "rook",
+      "bishop",
+      "horse",
+    ] : [
+      "ferz",
+      "rook",
+      "bishop",
+      "horse",
     ];
     const { appState, dispatch } = useAppContext();
     const { promotionSquare } = appState;
@@ -81,7 +150,20 @@ const PromotionBox = ({ onClosePromotion }) => {
             promotesTo: pieceName,
             position: appState.position[appState.position.length - 1]
         })
-        dispatch(promoteAndMove({ newPosition, newMove, castleDirection: newCastleDirection, gameStatus }));
+        dispatch(
+          promoteAndMove({
+            newPosition,
+            newMove,
+            castleDirection: newCastleDirection,
+            gameStatus,
+            lastMove: {
+              fromRank: promotionSquare.rank,
+              fromFile: promotionSquare.file,
+              toRank: promotionSquare.targetRank,
+              toFile: promotionSquare.targetFile,
+            },
+          }),
+        );
     }, [promotionSquare, appState.position, appState.castleDirection, dispatch, color]);
     useEffect(() => {
         if (promotionSquare && variant === 'shatranj') {
