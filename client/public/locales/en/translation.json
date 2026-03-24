@@ -138,6 +138,16 @@
       "desc": "Moves three squares vertically/horizontally. Also can move like a camel. Like other jumping pieces, it can jump over pieces. It has the strength of 3-4 pawns.",
       "history": "Found in some very early chess variants, such as Grant Acedrex."
     },
+    "rhino": {
+      "name": "Rhino",
+      "desc": "Initially moves like a knight, then like a bishop in the same direction. Can jump over pieces when moving like a knight. Has the strength of 7 pawns.",
+      "history": "Found in some very early chess variants, such as Grant Acedrex."
+    },
+    "wildebeest": {
+      "name": "Wildebeest",
+      "desc": "Combines horse and camel moves. Like other jumping pieces, it can jump over pieces. It has the strength of 4-5 pawns.",
+      "history": "Found in some chess variants, such as Wildebeest chess."
+    },
     "giraffe": {
       "name": "Giraffe",
       "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves minimum 3 squares vertically/horizontally. It cannot jump over pieces. It has a strength of 4 pawns.",

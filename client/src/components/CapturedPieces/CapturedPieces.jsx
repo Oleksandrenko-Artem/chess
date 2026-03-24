@@ -25,6 +25,8 @@ import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
+import black_rhino from "../../assets/icons/black_rhino.png";
+import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_soldier from "../../assets/icons/white_soldier.png";
 import white_horse from "../../assets/icons/white_horse.png";
@@ -50,6 +52,8 @@ import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
 import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
+import white_rhino from "../../assets/icons/white_rhino.png";
+import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 
 const imageMap = {
   black_pawn,
@@ -77,6 +81,8 @@ const imageMap = {
   black_amazon,
   black_knight,
   black_elephant_long_range,
+  black_rhino,
+  black_wildebeest,
   white_pawn,
   white_soldier,
   white_horse,
@@ -102,6 +108,8 @@ const imageMap = {
   white_amazon,
   white_knight,
   white_elephant_long_range,
+  white_rhino,
+  white_wildebeest,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;

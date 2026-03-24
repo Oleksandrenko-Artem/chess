@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -305,6 +305,14 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
+        } else if (piece.endsWith('wildebeest')) {
+            const jumps = [[-2, -1], [-2, 1], [-1, -2], [-1, 2], [1, -2], [1, 2], [2, -1], [2, 1], [-3, -1], [-3, 1], [-1, -3], [-1, 3], [1, -3], [1, 3], [3, -1], [3, 1]];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
         } else if (piece.endsWith('zebra')) {
             const jumps = [[-3, -2], [-3, 2], [-2, -3], [-2, 3], [2, -3], [2, 3], [3, -2], [3, 2]];
             jumps.forEach(([dr, df]) => {
@@ -491,6 +499,47 @@ const arbiter = {
                         }
                     }
                 });
+            });
+        } else if (piece.endsWith('rhino')) {
+            const knightLeaps = [
+                [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                [1, -2], [1, 2], [2, -1], [2, 1],
+            ];
+
+            knightLeaps.forEach(([kx, ky]) => {
+                let x = rank + kx;
+                let y = file + ky;
+
+                if (position?.[x]?.[y] === undefined) return;
+
+                const firstCell = position[x][y];
+
+                if (firstCell === '' || firstCell.startsWith(enemy)) {
+                    attacks.push([x, y]);
+                }
+
+                if (firstCell === '') {
+                    const dx = Math.sign(kx);
+                    const dy = Math.sign(ky);
+
+                    let sx = x + dx;
+                    let sy = y + dy;
+
+                    while (position?.[sx]?.[sy] !== undefined) {
+                        const cell = position[sx][sy];
+
+                        if (cell === '') {
+                            attacks.push([sx, sy]);
+                        } else {
+                            if (cell.startsWith(enemy)) {
+                                attacks.push([sx, sy]);
+                            }
+                            break;
+                        }
+                        sx += dx;
+                        sy += dy;
+                    }
+                }
             });
         } else if (piece.endsWith('rukh')) {
             const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
@@ -691,6 +740,10 @@ const arbiter = {
             moves = getDinozavrMoves({ position, piece, rank, file });
         } else if (piece.endsWith('giraffe')) {
             moves = getGiraffeMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('rhino')) {
+            moves = getRhinoMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('wildebeest')) {
+            moves = getWildebeestMoves({ position, rank, file });
         } else if (piece.endsWith('wazir')) {
             moves = getWazirMoves({ position, piece, rank, file });
         } else if (piece.endsWith('checkers')) {

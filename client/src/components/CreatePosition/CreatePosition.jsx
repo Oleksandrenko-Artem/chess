@@ -42,6 +42,8 @@ import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
 import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
+import white_rhino from "../../assets/icons/white_rhino.png";
+import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -66,8 +68,9 @@ import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
+import black_rhino from "../../assets/icons/black_rhino.png";
+import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import styles from "./CreatePosition.module.scss";
-import Promotion from "../Promotion/Promotion";
 
 const CreatePosition = () => {
   const { dispatch } = useAppContext();
@@ -541,12 +544,12 @@ const CreatePosition = () => {
                 }
               />
               <img
-                  src={white_king}
-                  alt="white_king"
-                  draggable="true"
-                  onDragStart={(e) =>
-                    e.dataTransfer.setData("text", `white_king,isNew`)
-                  }
+                src={white_king}
+                alt="white_king"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_king,isNew`)
+                }
               />
             </div>
           )}
@@ -606,6 +609,22 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_lion,isNew`)
+                }
+              />
+              <img
+                src={white_rhino}
+                alt="white_rhino"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_rhino,isNew`)
+                }
+              />
+              <img
+                src={white_wildebeest}
+                alt="white_wildebeest"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_wildebeest,isNew`)
                 }
               />
               <img
@@ -809,6 +828,22 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_lion,isNew`)
+                }
+              />
+              <img
+                src={black_rhino}
+                alt="black_rhino"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_rhino,isNew`)
+                }
+              />
+              <img
+                src={black_wildebeest}
+                alt="black_wildebeest"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_wildebeest,isNew`)
                 }
               />
               <img

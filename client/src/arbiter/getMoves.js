@@ -661,3 +661,58 @@ export const getElephantLongRangeMoves = ({ position, piece, rank, file }) => {
     });
     return moves;
 };
+export const getRhinoMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const enemy = us === 'white' ? 'black' : 'white';
+
+    const knightLeaps = [
+        [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+        [1, -2], [1, 2], [2, -1], [2, 1],
+    ];
+
+    knightLeaps.forEach(([kx, ky]) => {
+        let x = rank + kx;
+        let y = file + ky;
+
+        if (position?.[x]?.[y] === undefined) return;
+
+        const firstCell = position[x][y];
+
+        if (firstCell === '' || firstCell.startsWith(enemy)) {
+            moves.push([x, y]);
+        }
+
+        if (firstCell === '') {
+            const dx = Math.sign(kx);
+            const dy = Math.sign(ky);
+
+            let sx = x + dx;
+            let sy = y + dy;
+
+            while (position?.[sx]?.[sy] !== undefined) {
+                const cell = position[sx][sy];
+
+                if (cell === '') {
+                    moves.push([sx, sy]);
+                } else {
+                    if (cell.startsWith(enemy)) {
+                        moves.push([sx, sy]);
+                    }
+                    break;
+                }
+                sx += dx;
+                sy += dy;
+            }
+        }
+    });
+
+    return moves;
+};
+export const getWildebeestMoves = ({ position, rank, file }) => {
+    const moves = [
+        ...getHorseMoves({ position, rank, file }),
+        ...getCamelMoves({ position, rank, file }),
+    ];
+    return moves;
+};
