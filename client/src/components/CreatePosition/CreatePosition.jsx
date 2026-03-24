@@ -44,6 +44,7 @@ import white_knight from "../../assets/icons/white_knight.png";
 import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
+import white_man from "../../assets/icons/white_man.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -70,6 +71,7 @@ import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
+import black_man from "../../assets/icons/black_man.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -91,7 +93,7 @@ const CreatePosition = () => {
   const [promotionPieceFour, setPromotionPieceFour] = useState(
     storedOptions[3],
   );
-  const [selectedColor, setSelectedColor] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(localStorage.getItem("chess_side") || null);
   const [color, setColor] = useState("white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
   const [preset, setPreset] = useState("custom");
@@ -572,6 +574,14 @@ const CreatePosition = () => {
                 }
               />
               <img
+                src={white_man}
+                alt="white_man"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_man,isNew`)
+                }
+              />
+              <img
                 src={white_elephant}
                 alt="white_elephant"
                 draggable="true"
@@ -788,6 +798,14 @@ const CreatePosition = () => {
                 draggable="true"
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_wazir,isNew`)
+                }
+              />
+              <img
+                src={black_man}
+                alt="black_man"
+                draggable="true"
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_man,isNew`)
                 }
               />
               <img

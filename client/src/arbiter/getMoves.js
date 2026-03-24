@@ -716,3 +716,9 @@ export const getWildebeestMoves = ({ position, rank, file }) => {
     ];
     return moves;
 };
+export const getManMoves = ({ position, piece, rank, file }) => {
+    const moves = [
+        ...getImperatorMoves({ position, piece, rank, file }),
+    ];
+    return moves;
+};

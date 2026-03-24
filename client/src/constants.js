@@ -159,6 +159,7 @@ export const piecesArrayPromotion = [
     'elephant',
     'firzan',
     'wazir',
+    'man',
     'tank',
     'camel',
     'zebra',

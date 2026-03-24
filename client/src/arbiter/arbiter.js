@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
@@ -167,6 +167,18 @@ const arbiter = {
                 }
             });
         } else if (piece.endsWith('king') || piece.endsWith('imperator')) {
+            const directions = [
+                [1, -1], [1, 0], [1, 1],
+                [0, -1], [0, 1],
+                [-1, -1], [-1, 0], [-1, 1],
+            ];
+            directions.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('man')) {
             const directions = [
                 [1, -1], [1, 0], [1, 1],
                 [0, -1], [0, 1],
@@ -732,6 +744,8 @@ const arbiter = {
             moves = getRookMoves({ position, piece, rank, file });
         } else if (piece.endsWith('ferz')) {
             moves = getFerzMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('man')) {
+            moves = getManMoves({ position, piece, rank, file });
         } else if (piece.endsWith('knight')) {
             moves = getKnightMoves({ position, piece, rank, file });
         } else if (piece.endsWith('rukh')) {

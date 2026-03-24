@@ -148,6 +148,11 @@
       "desc": "Combines horse and camel moves. Like other jumping pieces, it can jump over pieces. It has the strength of 4-5 pawns.",
       "history": "Found in some chess variants, such as Wildebeest chess."
     },
+    "man": {
+      "name": "Man",
+      "desc": "Moves like a king, but its capture does not result in defeat. Has the strength of approximately 3-4 pawns.",
+      "history": "Found in some very early chess variants, such as Courier Chess."
+    },
     "giraffe": {
       "name": "Giraffe",
       "desc": "The giraffe's move begins with one diagonal step (the giraffe cannot stop at this step), then moves minimum 3 squares vertically/horizontally. It cannot jump over pieces. It has a strength of 4 pawns.",

@@ -37,6 +37,7 @@ import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
+import black_man from "../../assets/icons/black_man.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -65,6 +66,7 @@ import white_knight from "../../assets/icons/white_knight.png";
 import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
+import white_man from "../../assets/icons/white_man.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
 
@@ -97,6 +99,7 @@ const imageMap = {
   black_elephant_long_range,
   black_rhino,
   black_wildebeest,
+  black_man,
   white_imperator,
   white_king,
   white_ferz,
@@ -125,6 +128,7 @@ const imageMap = {
   white_elephant_long_range,
   white_rhino,
   white_wildebeest,
+  white_man,
 };
 const PIECE_VALUES = {
   pawn: 100,
@@ -145,7 +149,8 @@ const PIECE_VALUES = {
   lion: 310,
   giraffe: 190,
   rukh: 1050,
-  wazir: 240,
+  wazir: 220,
+  man: 310,
   knight: 700,
   checkers: 50,
   elephant_long_range: 600,
