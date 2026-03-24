@@ -111,6 +111,7 @@ const CreatePosition = () => {
   const [darkSquareColor, setDarkSquareColor] = useState(() =>
     user ? user.boardColor.dark : DEFAULT_DARK_COLOR,
   );
+  const editorMode = localStorage.getItem("chess_mode") === "editor";
   useEffect(() => {
     if (user) {
       if (user.boardColor.light !== lightSquareColor) {
@@ -500,7 +501,7 @@ const CreatePosition = () => {
               <img
                 src={white_pawn}
                 alt="white_pawn"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_pawn,isNew`)
                 }
@@ -509,7 +510,7 @@ const CreatePosition = () => {
               <img
                 src={white_horse}
                 alt="white_horse"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_horse,isNew`)
                 }
@@ -517,7 +518,7 @@ const CreatePosition = () => {
               <img
                 src={white_bishop}
                 alt="white_bishop"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_bishop,isNew`)
                 }
@@ -529,7 +530,7 @@ const CreatePosition = () => {
                   white_rook
                 }
                 alt="white_rook"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
@@ -540,7 +541,7 @@ const CreatePosition = () => {
               <img
                 src={white_ferz}
                 alt="white_ferz"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_ferz,isNew`)
                 }
@@ -548,7 +549,7 @@ const CreatePosition = () => {
               <img
                 src={white_king}
                 alt="white_king"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_king,isNew`)
                 }
@@ -560,7 +561,7 @@ const CreatePosition = () => {
               <img
                 src={white_firzan}
                 alt="white_firzan"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_firzan,isNew`)
                 }
@@ -568,7 +569,7 @@ const CreatePosition = () => {
               <img
                 src={white_wazir}
                 alt="white_wazir"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_wazir,isNew`)
                 }
@@ -576,7 +577,7 @@ const CreatePosition = () => {
               <img
                 src={white_man}
                 alt="white_man"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_man,isNew`)
                 }
@@ -584,7 +585,7 @@ const CreatePosition = () => {
               <img
                 src={white_elephant}
                 alt="white_elephant"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_elephant,isNew`)
                 }
@@ -592,7 +593,7 @@ const CreatePosition = () => {
               <img
                 src={white_tank}
                 alt="white_tank"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_tank,isNew`)
                 }
@@ -600,7 +601,7 @@ const CreatePosition = () => {
               <img
                 src={white_camel}
                 alt="white_camel"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_camel,isNew`)
                 }
@@ -608,7 +609,7 @@ const CreatePosition = () => {
               <img
                 src={white_zebra}
                 alt="white_zebra"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_zebra,isNew`)
                 }
@@ -616,7 +617,7 @@ const CreatePosition = () => {
               <img
                 src={white_lion}
                 alt="white_lion"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_lion,isNew`)
                 }
@@ -624,7 +625,7 @@ const CreatePosition = () => {
               <img
                 src={white_rhino}
                 alt="white_rhino"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_rhino,isNew`)
                 }
@@ -632,7 +633,7 @@ const CreatePosition = () => {
               <img
                 src={white_wildebeest}
                 alt="white_wildebeest"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_wildebeest,isNew`)
                 }
@@ -640,7 +641,7 @@ const CreatePosition = () => {
               <img
                 src={white_giraffe}
                 alt="white_giraffe"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_giraffe,isNew`)
                 }
@@ -648,7 +649,7 @@ const CreatePosition = () => {
               <img
                 src={white_rukh}
                 alt="white_rukh"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_rukh,isNew`)
                 }
@@ -656,7 +657,7 @@ const CreatePosition = () => {
               <img
                 src={white_archbishop}
                 alt="white_archbishop"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_archbishop,isNew`)
                 }
@@ -664,7 +665,7 @@ const CreatePosition = () => {
               <img
                 src={white_marshal}
                 alt="white_marshal"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_marshal,isNew`)
                 }
@@ -672,7 +673,7 @@ const CreatePosition = () => {
               <img
                 src={white_amazon}
                 alt="white_amazon"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_amazon,isNew`)
                 }
@@ -684,7 +685,7 @@ const CreatePosition = () => {
               <img
                 src={white_elephant_long_range}
                 alt="white_elephant_long_range"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
@@ -695,7 +696,7 @@ const CreatePosition = () => {
               <img
                 src={white_knight}
                 alt="white_knight"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_knight,isNew`)
                 }
@@ -703,7 +704,7 @@ const CreatePosition = () => {
               <img
                 src={white_dinozavr}
                 alt="white_dinozavr"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_dinozavr,isNew`)
                 }
@@ -711,7 +712,7 @@ const CreatePosition = () => {
               <img
                 src={white_checkers}
                 alt="white_checkers"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_checkers,isNew`)
                 }
@@ -727,7 +728,7 @@ const CreatePosition = () => {
               <img
                 src={black_pawn}
                 alt="black_pawn"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_pawn,isNew`)
                 }
@@ -736,7 +737,7 @@ const CreatePosition = () => {
               <img
                 src={black_horse}
                 alt="black_horse"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_horse,isNew`)
                 }
@@ -744,7 +745,7 @@ const CreatePosition = () => {
               <img
                 src={black_bishop}
                 alt="black_bishop"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_bishop,isNew`)
                 }
@@ -756,7 +757,7 @@ const CreatePosition = () => {
                   black_rook
                 }
                 alt="black_rook"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
@@ -767,7 +768,7 @@ const CreatePosition = () => {
               <img
                 src={black_ferz}
                 alt="black_ferz"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_ferz,isNew`)
                 }
@@ -775,7 +776,7 @@ const CreatePosition = () => {
               <img
                 src={black_king}
                 alt="black_king"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_king,isNew`)
                 }
@@ -787,7 +788,7 @@ const CreatePosition = () => {
               <img
                 src={black_firzan}
                 alt="black_firzan"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_firzan,isNew`)
                 }
@@ -795,7 +796,7 @@ const CreatePosition = () => {
               <img
                 src={black_wazir}
                 alt="black_wazir"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_wazir,isNew`)
                 }
@@ -803,7 +804,7 @@ const CreatePosition = () => {
               <img
                 src={black_man}
                 alt="black_man"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_man,isNew`)
                 }
@@ -811,7 +812,7 @@ const CreatePosition = () => {
               <img
                 src={black_elephant}
                 alt="black_elephant"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_elephant,isNew`)
                 }
@@ -819,7 +820,7 @@ const CreatePosition = () => {
               <img
                 src={black_tank}
                 alt="black_tank"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_tank,isNew`)
                 }
@@ -827,7 +828,7 @@ const CreatePosition = () => {
               <img
                 src={black_camel}
                 alt="black_camel"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_camel,isNew`)
                 }
@@ -835,7 +836,7 @@ const CreatePosition = () => {
               <img
                 src={black_zebra}
                 alt="black_zebra"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_zebra,isNew`)
                 }
@@ -843,7 +844,7 @@ const CreatePosition = () => {
               <img
                 src={black_lion}
                 alt="black_lion"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_lion,isNew`)
                 }
@@ -851,7 +852,7 @@ const CreatePosition = () => {
               <img
                 src={black_rhino}
                 alt="black_rhino"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_rhino,isNew`)
                 }
@@ -859,7 +860,7 @@ const CreatePosition = () => {
               <img
                 src={black_wildebeest}
                 alt="black_wildebeest"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_wildebeest,isNew`)
                 }
@@ -867,7 +868,7 @@ const CreatePosition = () => {
               <img
                 src={black_giraffe}
                 alt="black_giraffe"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_giraffe,isNew`)
                 }
@@ -875,7 +876,7 @@ const CreatePosition = () => {
               <img
                 src={black_rukh}
                 alt="black_rukh"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_rukh,isNew`)
                 }
@@ -883,7 +884,7 @@ const CreatePosition = () => {
               <img
                 src={black_archbishop}
                 alt="black_archbishop"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_archbishop,isNew`)
                 }
@@ -891,7 +892,7 @@ const CreatePosition = () => {
               <img
                 src={black_marshal}
                 alt="black_marshal"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_marshal,isNew`)
                 }
@@ -899,7 +900,7 @@ const CreatePosition = () => {
               <img
                 src={black_amazon}
                 alt="black_amazon"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_amazon,isNew`)
                 }
@@ -911,7 +912,7 @@ const CreatePosition = () => {
               <img
                 src={black_elephant_long_range}
                 alt="black_elephant_long_range"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
@@ -922,7 +923,7 @@ const CreatePosition = () => {
               <img
                 src={black_knight}
                 alt="black_knight"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_knight,isNew`)
                 }
@@ -930,7 +931,7 @@ const CreatePosition = () => {
               <img
                 src={black_dinozavr}
                 alt="black_dinozavr"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_dinozavr,isNew`)
                 }
@@ -938,7 +939,7 @@ const CreatePosition = () => {
               <img
                 src={black_checkers}
                 alt="black_checkers"
-                draggable="true"
+                draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_checkers,isNew`)
                 }

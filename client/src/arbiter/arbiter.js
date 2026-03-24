@@ -3,7 +3,7 @@ import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords } from "../helpers";
 
 const arbiter = {
-    getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection }) {
+    getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
         const allMoves = [];
         const currentCastleDir = castleDirection?.[playerColor] || 'both';
         for (let r = 0; r < 8; r++) {
@@ -30,13 +30,23 @@ const arbiter = {
                                 isCastle: Math.abs(tf - f) === 2
                             });
                         });
+                        const canCastle = castleDirection[playerColor];
+                        if (canCastle) {
+                            if (canCastle === "both" && position[r][f + 1] === '' && position[r][f + 2] === '') {
+                                allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
+                            }
+                            if (canCastle === "left" && position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '') {
+                                allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
+                            }
+                        }
                     } else if (isPawn) {
                         const direction = playerColor === 'white' ? -1 : 1;
 
                         const nextR = r + direction;
                         if (position[nextR] && position[nextR][f] === '') {
                             allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: f });
-                            if (localStorage.getItem('chess_variant') === "chess") {
+                            const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : 'chess');
+                            if (variant === "chess") {
 
                                 const startRank = playerColor === 'white' ? 6 : 1;
                                 const doubleNextR = r + 2 * direction;
@@ -94,18 +104,6 @@ const arbiter = {
                                     }
                                 }
                             });
-                        }
-                        const isKing = piece.endsWith('king');
-                        if (isKing) {
-                            const canCastle = castleDirection[playerColor];
-                            if (canCastle) {
-                                if (canCastle === "both" && position[r][f + 1] === '' && position[r][f + 2] === '') {
-                                    allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
-                                }
-                                if (canCastle ===  "left" && position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '') {
-                                    allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
-                                }
-                            }
                         }
                     } else {
                         const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });

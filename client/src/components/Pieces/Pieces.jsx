@@ -5,7 +5,7 @@ import { openPromotion } from "../../reducers/actions/promotion";
 import { copyPosition, getNewMoveNotation } from "../../helpers";
 import { useAppContext } from "../../contexts/Context";
 import { makeNewMove } from "../../reducers/actions/move";
-import { status } from "../../constants";
+import { status, PIECE_VALUES  } from "../../constants";
 import { getKingPosition } from "../../arbiter/getMoves";
 import arbiter from "../../arbiter/arbiter";
 import Piece from "./Piece";
@@ -130,174 +130,6 @@ const imageMap = {
   white_wildebeest,
   white_man,
 };
-const PIECE_VALUES = {
-  pawn: 100,
-  soldier: 100,
-  firzan: 200,
-  elephant: 210,
-  horse: 300,
-  bishop: 350,
-  rook: 500,
-  ferz: 900,
-  imperator: 20000,
-  king: 20000,
-  tank: 220,
-  camel: 250,
-  zebra: 150,
-  amazon: 1200,
-  dinozavr: 2200,
-  lion: 310,
-  giraffe: 190,
-  rukh: 1050,
-  wazir: 220,
-  man: 310,
-  knight: 700,
-  checkers: 50,
-  elephant_long_range: 600,
-  rhino: 700,
-  wildebeest: 550,
-  marshal: 850,
-  archbishop: 600,
-};
-const evaluatePosition = (position) => {
-  let totalScore = 0;
-
-  for (let r = 0; r < 8; r++) {
-    for (let f = 0; f < 8; f++) {
-      const p = position[r][f];
-      if (p) {
-        const isWhite = p.startsWith("white");
-        const type = Object.keys(PIECE_VALUES).find((t) => p.endsWith(t));
-        let value = PIECE_VALUES[type] || 100;
-
-        if (r >= 3 && r <= 4 && f >= 3 && f <= 4) {
-          value += 20;
-        }
-
-        totalScore += isWhite ? value : -value;
-      }
-    }
-  }
-
-  for (let r = 0; r < 8; r++) {
-    for (let f = 0; f < 8; f++) {
-      const p = position[r][f];
-      if (p && p.endsWith("king")) {
-        const isWhite = p.startsWith("white");
-        if (f === 6 || f === 2 || f === 1 || f === 7) {
-          totalScore += isWhite ? 80 : -80;
-        }
-      }
-    }
-  }
-
-  if (arbiter.isKingInCheck({ position, playerColor: "white" }))
-    totalScore -= 70;
-  if (arbiter.isKingInCheck({ position, playerColor: "black" }))
-    totalScore += 70;
-
-  return totalScore;
-};
-
-const makeMoveOnBoard = (position, move) => {
-  const piece = position[move.rank][move.file];
-  const captured = position[move.targetRank][move.targetFile];
-  
-  position[move.targetRank][move.targetFile] = piece;
-  position[move.rank][move.file] = "";
-  
-  return captured;
-};
-
-const unmakeMoveOnBoard = (position, move, piece, captured) => {
-  position[move.rank][move.file] = piece;
-  position[move.targetRank][move.targetFile] = captured;
-};
-
-const minimax = (
-  position,
-  depth,
-  isMaximizing,
-  alpha,
-  beta,
-  castleDirection,
-  prevPosition,
-) => {
-  if (depth === 0) return evaluatePosition(position);
-
-  const playerColor = isMaximizing ? "white" : "black";
-  const moves = arbiter.getBoardValidMoves({
-    position,
-    playerColor,
-    castleDirection,
-    prevPosition,
-  });
-
-  if (moves.length === 0) {
-    if (arbiter.isKingInCheck({ position, playerColor })) {
-      return isMaximizing ? -1000000 : 1000000;
-    }
-    return 0;
-  }
-
-  moves.sort((a, b) => {
-    const scoreA = position[a.targetRank][a.targetFile]
-      ? PIECE_VALUES[position[a.targetRank][a.targetFile].split("_")[1]]
-      : 0;
-    const scoreB = position[b.targetRank][b.targetFile]
-      ? PIECE_VALUES[position[b.targetRank][b.targetFile].split("_")[1]]
-      : 0;
-    return scoreB - scoreA;
-  });
-
-  if (isMaximizing) {
-    let maxEval = -Infinity;
-    for (const move of moves) {
-      const piece = position[move.rank][move.file];
-      const captured = makeMoveOnBoard(position, move);
-
-      const evalScore = minimax(
-        position,
-        depth - 1,
-        false,
-        alpha,
-        beta,
-        castleDirection,
-        position,
-      );
-
-      unmakeMoveOnBoard(position, move, piece, captured);
-
-      maxEval = Math.max(maxEval, evalScore);
-      alpha = Math.max(alpha, evalScore);
-      if (beta <= alpha) break;
-    }
-    return maxEval;
-  } else {
-    let minEval = Infinity;
-    for (const move of moves) {
-      const piece = position[move.rank][move.file];
-      const captured = makeMoveOnBoard(position, move);
-
-      const evalScore = minimax(
-        position,
-        depth - 1,
-        true,
-        alpha,
-        beta,
-        castleDirection,
-        position,
-      );
-
-      unmakeMoveOnBoard(position, move, piece, captured);
-
-      minEval = Math.min(minEval, evalScore);
-      beta = Math.min(beta, evalScore);
-      if (beta <= alpha) break;
-    }
-    return minEval;
-  }
-};
 
 const getPieceImageSrc = (pieceName) => {
   if (!pieceName) return "";
@@ -380,89 +212,63 @@ const Pieces = ({ flipped = false }) => {
   const isBotMove = useRef(false);
 
   useEffect(() => {
-    const { playerTurn, status: currentStatus, position } = appState;
+    const {
+      playerTurn,
+      status: currentStatus,
+      position,
+      castleDirection,
+    } = appState;
     const userSide = localStorage.getItem("chess_side");
     const mode = localStorage.getItem("chess_mode");
     const isGameMode = mode === "game";
+
     if (
       isGameMode &&
       currentStatus === status.ongoing &&
       playerTurn !== userSide &&
       !isBotThinking.current
     ) {
-      const { playerTurn, status: currentStatus, position } = appState;
-
       const currentPosition = position[position.length - 1];
       const prevPosition =
         position.length > 1 ? position[position.length - 2] : null;
+
+      isBotThinking.current = true;
+
+      const worker = new Worker(
+        new URL("./chessWorker.js", import.meta.url),
+        { type: "module" },
+      );
+
+      const gameVariant = localStorage.getItem("chess_variant");
       
-      const moves = arbiter.getBoardValidMoves({
-        position: currentPosition,
-        prevPosition: prevPosition,
-        playerColor: playerTurn,
-        castleDirection: appState.castleDirection,
+      worker.postMessage({
+        currentPosition,
+        prevPosition,
+        playerTurn,
+        castleDirection,
+        depth: gameVariant === "special" ? 3 : 4,
+        gameVariant,
       });
 
-      const legalMoves = moves.filter((move) => {
-        const temp = copyPosition(currentPosition);
-        const piece = temp[move.rank][move.file];
+      worker.onmessage = (e) => {
+        const { chosenMove } = e.data;
 
-        if (
-          piece.endsWith("pawn") &&
-          move.file !== move.targetFile &&
-          !currentPosition[move.targetRank][move.targetFile]
-        ) {
-          temp[move.rank][move.targetFile] = "";
-        }
-        temp[move.rank][move.file] = "";
-        temp[move.targetRank][move.targetFile] = piece;
-
-        return !arbiter.isKingInCheck({
-          position: temp,
-          playerColor: playerTurn,
-        });
-      });
-      const isItBotTurn =
-        currentStatus === status.ongoing && playerTurn !== userSide;
-      
-      if (isItBotTurn && legalMoves.length > 0) {
-        isBotThinking.current = true;
-        const scoredMoves = legalMoves.map((move) => {
-          const tempPos = copyPosition(currentPosition);
-          const piece = tempPos[move.rank][move.file];
-          tempPos[move.rank][move.file] = "";
-          tempPos[move.targetRank][move.targetFile] = piece;
-
-          const nextIsMaximizing = playerTurn === "white" ? false : true;
-          const score = minimax(
-            tempPos,
-            2,
-            nextIsMaximizing,
-            -Infinity,
-            Infinity,
-            appState.castleDirection,
-            currentPosition,
-          );
-
-          return { ...move, score };
-        });
-
-        scoredMoves.sort((a, b) =>
-          playerTurn === "white" ? b.score - a.score : a.score - b.score,
-        );
-
-        const bestScore = scoredMoves[0].score;
-        const topMoves = scoredMoves.filter((m) => m.score === bestScore);
-        const chosenMove =
-          topMoves[Math.floor(Math.random() * topMoves.length)];
-
-        setTimeout(() => {
+        if (chosenMove) {
           makeMove({ ...chosenMove, isBot: true });
-          isBotThinking.current = false;
-        }, 600);
-      }
+        }
+
+        isBotThinking.current = false;
+        worker.terminate();
+      };
+
+      worker.onerror = (err) => {
+        console.error("Worker error:", err);
+        isBotThinking.current = false;
+        worker.terminate();
+      };
     }
   }, [appState.playerTurn, appState.status]);
+
   if (!appState || !appState.position) {
     return null;
   }

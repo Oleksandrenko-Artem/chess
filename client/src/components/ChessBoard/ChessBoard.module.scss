@@ -55,6 +55,7 @@
                     width: 60px;
                     height: 60px;
                     background-color: var(--dark-square-color, #7e5e2e);
+                    border: 2px solid black;
                 }
                 .white-tile {
                     display: flex;
@@ -64,6 +65,7 @@
                     width: 60px;
                     height: 60px;
                     background-color: var(--light-square-color, #ffdabb);
+                    border: 2px solid black;
                 }
                 span {
                     margin-left: 10px;
