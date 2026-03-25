@@ -72,6 +72,7 @@ import black_elephant_long_range from "../../assets/icons/black_elephant_long_ra
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
+import brick from "../../assets/icons/brick.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -717,6 +718,17 @@ const CreatePosition = () => {
                   e.dataTransfer.setData("text", `white_checkers,isNew`)
                 }
               />
+              <img
+                src={brick}
+                alt="brick"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData(
+                    "text",
+                    `brick,isNew`,
+                  )
+                }
+              />
             </div>
           )}
         </div>
@@ -942,6 +954,17 @@ const CreatePosition = () => {
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_checkers,isNew`)
+                }
+              />
+              <img
+                src={brick}
+                alt="brick"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData(
+                    "text",
+                    `brick,isNew`,
+                  )
                 }
               />
             </div>

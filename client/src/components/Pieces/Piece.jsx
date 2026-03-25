@@ -12,8 +12,10 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     if (piece && (piece.endsWith('pawn') || piece.endsWith('soldier'))) {
         style.marginTop = '11px';
         style.width = '40px';
+    } else if (piece && (piece.endsWith('brick'))) {
+        style.width = '64px';
+        style.height = '64px';
     }
-
     const { appState, dispatch } = useAppContext();
     const { playerTurn, castleDirection, position } = appState;
     const currentPosition = position[position.length - 1];

@@ -124,7 +124,7 @@ const arbiter = {
             for (let r = 0; r < 8; r++) {
                 for (let f = 0; f < 8; f++) {
                     const piece = position[r][f];
-                    if (!piece || piece === '' || !piece.startsWith(byPlayer)) continue;
+                    if (!piece || piece === '' || !piece.startsWith(byPlayer) && !piece.endsWith('brick')) continue;
 
                     const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
                     if (attacks && attacks.some(([ar, af]) => ar === rank && af === file)) {

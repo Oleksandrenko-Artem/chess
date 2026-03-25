@@ -45,9 +45,13 @@
         }
     }
     img {
+        cursor: grab;
         width: 6vh;
         height: 6vh;
         padding: 0 5px;
+        &:active {
+            cursor: grabbing;
+        }
     }
     .pawn {
         height: 4.5vh;

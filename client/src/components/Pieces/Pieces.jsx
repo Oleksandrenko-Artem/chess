@@ -67,6 +67,7 @@ import white_elephant_long_range from "../../assets/icons/white_elephant_long_ra
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
+import brick from "../../assets/icons/brick.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
 
@@ -129,6 +130,7 @@ const imageMap = {
   white_rhino,
   white_wildebeest,
   white_man,
+  brick,
 };
 
 const getPieceImageSrc = (pieceName) => {

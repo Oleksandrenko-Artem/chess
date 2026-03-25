@@ -24,6 +24,9 @@ export const getRookMoves = ({ position, piece, rank, file }) => {
             if (position[x][y].startsWith(us)) {
                 break;
             }
+            if (position[x][y].endsWith('brick')) {
+                break;
+            }
             moves.push([x, y]);
         };
     });
@@ -137,6 +140,9 @@ export const getBishopMoves = ({ position, piece, rank, file }) => {
             if (position[x][y].startsWith(us)) {
                 break;
             }
+            if (position[x][y].endsWith('brick')) {
+                break;
+            }
             moves.push([x, y]);
         };
     });
@@ -176,7 +182,7 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
     direction.forEach(dir => {
         const x = rank + dir[0];
         const y = file + dir[1];
-        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us)) {
+        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
             moves.push([x, y]);
         }
     });
@@ -234,7 +240,7 @@ export const getImperatorMoves = ({ position, piece, rank, file }) => {
     direction.forEach(dir => {
         const x = rank + dir[0];
         const y = file + dir[1];
-        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us)) {
+        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
             moves.push([x, y]);
         }
     });
@@ -252,7 +258,7 @@ export const getFirzanMoves = ({ position, piece, rank, file }) => {
     direction.forEach(dir => {
         const x = rank + dir[0];
         const y = file + dir[1];
-        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us)) {
+        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
             moves.push([x, y]);
         }
     });
@@ -358,14 +364,14 @@ export const getKnightMoves = ({ position, piece, rank, file }) => {
             currentY += path.step1[1];
             if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
             let piece1 = position[currentX][currentY];
-            if (piece1.startsWith(us)) break;
+            if (piece1.startsWith(us) || piece1.endsWith('brick')) break;
             finalMoves.push([currentX, currentY]);
             if (piece1 !== '') break;
             currentX += path.step2[0];
             currentY += path.step2[1];
             if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
             let piece2 = position[currentX][currentY];
-            if (piece2.startsWith(us)) break;
+            if (piece2.startsWith(us) || piece2.endsWith('brick')) break;
             finalMoves.push([currentX, currentY]);
             if (piece2 !== '') break;
         }
@@ -549,7 +555,7 @@ export const getWazirMoves = ({ position, piece, rank, file }) => {
     direction.forEach(dir => {
         const x = rank + dir[0];
         const y = file + dir[1];
-        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us)) {
+        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
             moves.push([x, y]);
         }
     });
