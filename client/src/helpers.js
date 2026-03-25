@@ -217,6 +217,64 @@ export const createFerzVsRukhPosition = () => {
     position[0][7] = 'black_rukh';
     return position;
 }
+export const createWallsPosition = () => {
+    // eslint-disable-next-line no-unused-vars
+    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+    position[7][0] = 'white_king';
+    position[7][1] = 'white_zebra';
+    position[7][2] = 'brick';
+    position[7][3] = 'white_camel';
+    position[7][4] = 'brick';
+    position[7][5] = 'brick';
+    position[7][6] = 'brick';
+    position[7][7] = 'brick';
+
+    position[6][0] = 'brick';
+    position[6][1] = 'brick';
+    position[6][2] = 'brick';
+    position[6][3] = 'white_horse';
+    position[6][4] = 'white_elephant';
+    position[6][5] = 'brick';
+    position[6][6] = 'white_tank';
+    position[6][7] = 'brick';
+
+    position[5][2] = 'brick';
+    position[5][4] = 'brick';
+    position[5][5] = 'brick';
+    position[5][6] = 'brick';
+    position[5][7] = 'brick';
+
+    position[4][5] = 'brick';
+    position[4][7] = 'brick';
+
+    position[3][0] = 'brick';
+    position[3][2] = 'brick';
+
+    position[2][0] = 'brick';
+    position[2][1] = 'brick';
+    position[2][2] = 'brick';
+    position[2][3] = 'brick';
+    position[2][5] = 'brick';
+
+    position[1][0] = 'brick';
+    position[1][1] = 'black_tank';
+    position[1][2] = 'brick';
+    position[1][3] = 'black_elephant';
+    position[1][4] = 'black_horse';
+    position[1][5] = 'brick';
+    position[1][6] = 'brick';
+    position[1][7] = 'brick';
+
+    position[0][0] = 'brick';
+    position[0][1] = 'brick';
+    position[0][2] = 'brick';
+    position[0][3] = 'brick';
+    position[0][4] = 'black_camel';
+    position[0][5] = 'brick';
+    position[0][6] = 'black_zebra';
+    position[0][7] = 'black_king';
+    return position;
+}
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
@@ -284,4 +342,13 @@ export const findPieceCoords = (position, pieceName) => {
         }
     }
     return results;
+};
+export const generatePositionHash = (position, playerTurn, castleDirection) => {
+    const boardString = position.map(row => row.join(',')).join('|');
+
+    const turnString = playerTurn;
+
+    const castleString = JSON.stringify(castleDirection);
+
+    return `${boardString}_${turnString}_${castleString}`;
 };

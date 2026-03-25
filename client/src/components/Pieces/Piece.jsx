@@ -6,7 +6,7 @@ import arbiter from '../../arbiter/arbiter';
 import { generateValidMoves } from '../../reducers/actions/move';
 
 const Piece = ({ rank, file, piece, imageSrc }) => {
-    const baseClass = styles.piece;
+    const baseClass = piece !== "brick" ? styles.piece : styles['piece-any'];
     const classNames = `${baseClass}`;
     const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
     if (piece && (piece.endsWith('pawn') || piece.endsWith('soldier'))) {
@@ -26,7 +26,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
         const isHuman = appState.playerTurn === userSide;
         const mode = localStorage.getItem("chess_mode");
         const isEditorMode = mode === "editor";
-        if (appState.status !== status.ongoing || !isHuman || isEditorMode) {
+        if (appState.status !== status.ongoing || !isHuman || isEditorMode || piece === 'brick') {
             e.preventDefault();
             return;
         }

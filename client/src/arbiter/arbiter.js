@@ -1,6 +1,6 @@
 import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves } from "./getMoves"
 import { status } from "../constants";
-import { areSameColorBishops, findPieceCoords } from "../helpers";
+import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 
 const arbiter = {
     getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
@@ -13,33 +13,52 @@ const arbiter = {
                     const isPawn = piece.endsWith('pawn') || piece.endsWith('soldier');
 
                     if (piece.endsWith('king')) {
-                        const kingMoves = getKingMoves({
-                            position,
-                            piece,
-                            castleDirection: currentCastleDir,
-                            rank: r,
-                            file: f
-                        });
+
+                        const kingMoves = getKingMoves({ position, piece, castleDirection: currentCastleDir, rank: r, file: f });
                         kingMoves.forEach(([tr, tf]) => {
-                            allMoves.push({
-                                piece,
-                                rank: r,
-                                file: f,
-                                targetRank: tr,
-                                targetFile: tf,
-                                isCastle: Math.abs(tf - f) === 2
-                            });
+                            allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
+
                         const canCastle = castleDirection[playerColor];
-                        if (canCastle) {
-                            if (canCastle === "both" && position[r][f + 1] === '' && position[r][f + 2] === '') {
-                                allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
+                        const isCheck = arbiter.isKingInCheck({ position, playerColor });
+
+                        if (canCastle && !isCheck) {
+                            const opponentColor = playerColor === 'white' ? 'black' : 'white';
+
+                            if ((canCastle === "both" || canCastle === "right")) {
+                                const pathEmpty = position[r][f + 1] === '' && position[r][f + 2] === '';
+                                const rookExists = position[r][f + 3] === `${playerColor}_rook`;
+
+                                if (pathEmpty && rookExists) {
+                                    const tempPos = JSON.parse(JSON.stringify(position));
+                                    tempPos[r][f + 1] = piece;
+                                    tempPos[r][f] = '';
+                                    const squareSafe = !arbiter.isKingInCheck({ position: tempPos, playerColor });
+
+                                    if (squareSafe) {
+                                        allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
+                                    }
+                                }
                             }
-                            if (canCastle === "left" && position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '') {
-                                allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
+
+                            if ((canCastle === "both" || canCastle === "left")) {
+                                const pathEmpty = position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '';
+                                const rookExists = position[r][f - 4] === `${playerColor}_rook`;
+
+                                if (pathEmpty && rookExists) {
+                                    const tempPos = JSON.parse(JSON.stringify(position));
+                                    tempPos[r][f - 1] = piece;
+                                    tempPos[r][f] = '';
+                                    const squareSafe = !arbiter.isKingInCheck({ position: tempPos, playerColor });
+
+                                    if (squareSafe) {
+                                        allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
+                                    }
+                                }
                             }
                         }
-                    } else if (isPawn) {
+                    }
+                    else if (isPawn) {
                         const direction = playerColor === 'white' ? -1 : 1;
 
                         const nextR = r + direction;
@@ -59,7 +78,7 @@ const arbiter = {
                         const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
                         attacks.forEach(([tr, tf]) => {
                             const targetPiece = position[tr][tf];
-                            if (targetPiece !== '' && !targetPiece.startsWith(playerColor)) {
+                            if (targetPiece !== '' && !targetPiece.startsWith(playerColor) && !targetPiece.endsWith('brick')) {
                                 allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
                             }
                         });
@@ -109,7 +128,7 @@ const arbiter = {
                         const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
                         attacks.forEach(([tr, tf]) => {
                             const targetPiece = position[tr][tf];
-                            if (!targetPiece || !targetPiece.startsWith(playerColor)) {
+                            if (!targetPiece || !targetPiece.startsWith(playerColor) && !targetPiece.endsWith('brick')) {
                                 allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
                             }
                         });
@@ -779,8 +798,15 @@ const arbiter = {
         );
         return filteredMoves;
     },
-    getGameStatus: function ({ position, playerColor, castleDirection, prevPosition }) {
+    getGameStatus: function ({ position, playerColor, castleDirection, prevPosition, positionHistory = [] }) {
         try {
+            const currentHash = generatePositionHash(position, playerColor, castleDirection);
+
+            const repetitions = positionHistory.filter(hash => hash === currentHash).length;
+
+            if (repetitions >= 3) {
+                return status.draw;
+            }
             const isInCheck = this.isKingInCheck({ position, playerColor });
             let hasLegalMove = false;
             for (let r = 0; r < 8; r++) {

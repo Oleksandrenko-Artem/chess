@@ -12,6 +12,7 @@ import {
   initialOldGameState,
   initialOldVariantGameState,
   initialSpecialGameState,
+  initialWallsGameState,
   piecesArrayPromotion,
 } from "../../constants";
 import { Icon } from "@mdi/react";
@@ -289,6 +290,7 @@ const CreatePosition = () => {
     "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
+    "walls": initialWallsGameState,
     "ferz-vs-rukh": initialFerzVsRukhGameState,
     "dinozavr-chess": initialDinoGameState,
   };
@@ -344,6 +346,7 @@ const CreatePosition = () => {
             <option value="new-chess">{t("header.new_chess")}</option>
             <option value="old-chess">{t("header.old_chess")}</option>
             <option value="extended-chess">{t("header.extended_chess")}</option>
+            <option value="walls">{t("header.walls_chess")}</option>
             <option value="ferz-vs-rukh">{t("header.ferz_vs_rukh")}</option>
             <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
           </select>

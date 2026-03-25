@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import actionTypes from "../../reducers/actionTypes";
 import { openPromotion } from "../../reducers/actions/promotion";
-import { copyPosition, getNewMoveNotation } from "../../helpers";
+import { copyPosition, generatePositionHash, getNewMoveNotation } from "../../helpers";
 import { useAppContext } from "../../contexts/Context";
 import { makeNewMove } from "../../reducers/actions/move";
 import { status, PIECE_VALUES  } from "../../constants";
@@ -188,6 +188,8 @@ const Pieces = ({ flipped = false }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [positionHistory, setPositionHistory] = useState([]);
+
   useEffect(() => {
     const loadImage = (src) =>
       new Promise((resolve, reject) => {
@@ -236,13 +238,12 @@ const Pieces = ({ flipped = false }) => {
 
       isBotThinking.current = true;
 
-      const worker = new Worker(
-        new URL("./chessWorker.js", import.meta.url),
-        { type: "module" },
-      );
+      const worker = new Worker(new URL("./chessWorker.js", import.meta.url), {
+        type: "module",
+      });
 
       const gameVariant = localStorage.getItem("chess_variant");
-      
+
       worker.postMessage({
         currentPosition,
         prevPosition,
@@ -420,6 +421,14 @@ const Pieces = ({ flipped = false }) => {
     const newCastleDirection = { ...appState.castleDirection };
     let gameStatus;
 
+    const newHash = generatePositionHash(
+      newPosition,
+      nextPlayer,
+      newCastleDirection,
+    );
+
+    setPositionHistory((prev) => [...prev, newHash]);
+
     if (isEditorMode) {
       gameStatus = status.ongoing;
     } else {
@@ -428,6 +437,7 @@ const Pieces = ({ flipped = false }) => {
         playerColor: nextPlayer,
         castleDirection: newCastleDirection,
         prevPosition: currentPosition,
+        positionHistory: [...positionHistory, newHash],
       });
     }
     const isInCheck = arbiter.isKingInCheck({
@@ -457,50 +467,57 @@ const Pieces = ({ flipped = false }) => {
         castleDirection: newCastleDirection,
         gameStatus,
         captured: isEditorMode ? appState.captured : newCaptured,
-        lastMove: isEditorMode ? null : {
-          fromRank: rank,
-          fromFile: file,
-          toRank: targetRank,
-          toFile: targetFile,
-        },
+        lastMove: isEditorMode
+          ? null
+          : {
+              fromRank: rank,
+              fromFile: file,
+              toRank: targetRank,
+              toFile: targetFile,
+            },
       }),
     );
     dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
   };
   const onDrop = (e) => {
-  e.preventDefault();
-  if (appState.status !== status.ongoing) return;
+    e.preventDefault();
+    if (appState.status !== status.ongoing) return;
 
-  const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
-  const isNew = rankStr === "isNew";
+    const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
+    const isNew = rankStr === "isNew";
 
-  if (isNew && (p.endsWith("king") || p.endsWith("imperator"))) {
-    const color = p.startsWith("white") ? "white" : "black";
-    
-    const hasKingOfThisColor = currentPosition.flat().some(piece => 
-      piece && 
-      piece.startsWith(color) && 
-      (piece.endsWith("king") || piece.endsWith("imperator"))
-    );
+    if (isNew && (p.endsWith("king") || p.endsWith("imperator"))) {
+      const color = p.startsWith("white") ? "white" : "black";
 
-    if (hasKingOfThisColor) {
-      alert(`${t("custom_panel.king_message")} ${color === "white" ? t("custom_panel.white") : t("custom_panel.black")} ${t("custom_panel.king")}!`);
-      return;
+      const hasKingOfThisColor = currentPosition
+        .flat()
+        .some(
+          (piece) =>
+            piece &&
+            piece.startsWith(color) &&
+            (piece.endsWith("king") || piece.endsWith("imperator")),
+        );
+
+      if (hasKingOfThisColor) {
+        alert(
+          `${t("custom_panel.king_message")} ${color === "white" ? t("custom_panel.white") : t("custom_panel.black")} ${t("custom_panel.king")}!`,
+        );
+        return;
+      }
     }
-  }
 
-  const coords = calculateCoords(e);
-  if (coords.x === -1 || coords.y === -1) return;
+    const coords = calculateCoords(e);
+    if (coords.x === -1 || coords.y === -1) return;
 
-  makeMove({
-    piece: p,
-    rank: parseInt(rankStr, 10),
-    file: parseInt(fileStr, 10),
-    targetRank: coords.x,
-    targetFile: coords.y,
-    isNew: isNew,
-  });
-};
+    makeMove({
+      piece: p,
+      rank: parseInt(rankStr, 10),
+      file: parseInt(fileStr, 10),
+      targetRank: coords.x,
+      targetFile: coords.y,
+      isNew: isNew,
+    });
+  };
   const onDragOver = (e) => e.preventDefault();
   if (!imagesLoaded) {
     return <div>Loading pieces...</div>;
@@ -613,6 +630,6 @@ const Pieces = ({ flipped = false }) => {
       })}
     </div>
   );
-};
+};;
 
 export default Pieces;
