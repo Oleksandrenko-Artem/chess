@@ -4,6 +4,7 @@ import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUserThunk } from "../../store/usersSlice";
 import {
+  initialArenaGameState,
   initialDinoGameState,
   initialExtendedGameState,
   initialFerzVsRukhGameState,
@@ -74,6 +75,7 @@ import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
 import brick from "../../assets/icons/brick.png";
+import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = () => {
@@ -291,6 +293,7 @@ const CreatePosition = () => {
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
     "walls": initialWallsGameState,
+    "arena": initialArenaGameState,
     "ferz-vs-rukh": initialFerzVsRukhGameState,
     "dinozavr-chess": initialDinoGameState,
   };
@@ -338,6 +341,7 @@ const CreatePosition = () => {
             </option>
             <option value="old">{t("custom_panel.old_pieces")}</option>
             <option value="special">{t("custom_panel.special_pieces")}</option>
+            <option value="other">{t("custom_panel.other")}</option>
           </select>
           <select value={preset} onChange={handleChangePreset}>
             <option value="custom">{t("header.custom_position")}</option>
@@ -347,6 +351,7 @@ const CreatePosition = () => {
             <option value="old-chess">{t("header.old_chess")}</option>
             <option value="extended-chess">{t("header.extended_chess")}</option>
             <option value="walls">{t("header.walls_chess")}</option>
+            <option value="arena">{t("header.arena")}</option>
             <option value="ferz-vs-rukh">{t("header.ferz_vs_rukh")}</option>
             <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
           </select>
@@ -721,17 +726,6 @@ const CreatePosition = () => {
                   e.dataTransfer.setData("text", `white_checkers,isNew`)
                 }
               />
-              <img
-                src={brick}
-                alt="brick"
-                draggable={editorMode}
-                onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `brick,isNew`,
-                  )
-                }
-              />
             </div>
           )}
         </div>
@@ -959,19 +953,24 @@ const CreatePosition = () => {
                   e.dataTransfer.setData("text", `black_checkers,isNew`)
                 }
               />
-              <img
-                src={brick}
-                alt="brick"
-                draggable={editorMode}
-                onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `brick,isNew`,
-                  )
-                }
-              />
             </div>
           )}
+        </div>
+      )}
+      {piecesStyle === "other" && (
+        <div>
+          <img
+            src={brick}
+            alt="brick"
+            draggable={editorMode}
+            onDragStart={(e) => e.dataTransfer.setData("text", `brick,isNew`)}
+          />
+          <img
+            src={delete_icon}
+            alt="delete"
+            draggable={editorMode}
+            onDragStart={(e) => e.dataTransfer.setData("text", `,isNew`)}
+          />
         </div>
       )}
       {promotion && (
