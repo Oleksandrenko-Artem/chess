@@ -2,10 +2,14 @@ import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import actionTypes from "../../reducers/actionTypes";
 import { openPromotion } from "../../reducers/actions/promotion";
-import { copyPosition, generatePositionHash, getNewMoveNotation } from "../../helpers";
+import {
+  copyPosition,
+  generatePositionHash,
+  getNewMoveNotation,
+} from "../../helpers";
 import { useAppContext } from "../../contexts/Context";
 import { makeNewMove } from "../../reducers/actions/move";
-import { status, PIECE_VALUES  } from "../../constants";
+import { status, PIECE_VALUES } from "../../constants";
 import { getKingPosition } from "../../arbiter/getMoves";
 import arbiter from "../../arbiter/arbiter";
 import Piece from "./Piece";
@@ -214,6 +218,11 @@ const Pieces = ({ flipped = false }) => {
   }, []);
   const isBotThinking = useRef(false);
   const isBotMove = useRef(false);
+  const statusRef = useRef(appState.status);
+
+  useEffect(() => {
+    statusRef.current = appState.status;
+  }, [appState.status]);
 
   useEffect(() => {
     const {
@@ -256,7 +265,7 @@ const Pieces = ({ flipped = false }) => {
       worker.onmessage = (e) => {
         const { chosenMove } = e.data;
 
-        if (chosenMove) {
+        if (chosenMove && statusRef.current === status.ongoing) {
           makeMove({ ...chosenMove, isBot: true });
         }
 
@@ -299,6 +308,8 @@ const Pieces = ({ flipped = false }) => {
     );
   };
   const makeMove = (moveData) => {
+    if (appState.status !== status.ongoing) return;
+
     const {
       piece,
       rank,
@@ -630,6 +641,6 @@ const Pieces = ({ flipped = false }) => {
       })}
     </div>
   );
-};;
+};
 
 export default Pieces;

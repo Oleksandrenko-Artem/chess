@@ -6,7 +6,7 @@ export const reducer = (state, action) => {
         case actionTypes.NEW_MOVE:
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
-            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove } = state;
+            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive } = state;
             playerTurn = playerTurn === 'white' ? 'black' : 'white';
             position = [
                 ...position,
@@ -38,6 +38,7 @@ export const reducer = (state, action) => {
                 castleDirection,
                 captured,
                 lastMove,
+                timerActive: gameStatus === status.ongoing ? true : false,
             };
         };
         case actionTypes.SET_PLAYER_TURN: {
@@ -98,6 +99,33 @@ export const reducer = (state, action) => {
             };
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
+        };
+        case actionTypes.START_TIMER: {
+            return {
+                ...state,
+                timerActive: true,
+            };
+        };
+        case actionTypes.STOP_TIMER: {
+            return {
+                ...state,
+                timerActive: false,
+            };
+        };
+        case actionTypes.UPDATE_TIME: {
+            const { player, time } = action.payload;
+            return {
+                ...state,
+                [player + 'Time']: time,
+            };
+        };
+        case actionTypes.TIME_UP: {
+            const winner = action.payload.player === 'white' ? 'black' : 'white';
+            return {
+                ...state,
+                status: status[winner],
+                timerActive: false,
+            };
         };
         default:
             return state;

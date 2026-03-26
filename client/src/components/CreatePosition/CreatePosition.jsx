@@ -301,7 +301,9 @@ const CreatePosition = () => {
     const val = e.target.value;
     setPreset(val);
     const initialState = presetsMap[val] || initialSpecialGameState;
+    localStorage.setItem("chess_side", "white");
     localStorage.setItem("chess_mode", "editor");
+    setSelectedColor("white");
     setStart("no");
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState } });
   };
@@ -311,10 +313,12 @@ const CreatePosition = () => {
   };
   const onClickWhite = () => {
     localStorage.setItem("chess_side", "white");
+    setSelectedColor("white");
     dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "white" });
   };
   const onClickBlack = () => {
     localStorage.setItem("chess_side", "black");
+    setSelectedColor("black");
     dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "black" });
   };
   const handleToggle = () => {
