@@ -31,6 +31,9 @@ export const initialGameState = {
         black: [],
     },
     orientation: 'white',
+    whiteTime: 600, // 10 minutes in seconds
+    blackTime: 600,
+    timerActive: false,
 };
 export const initialOldGameState = {
     position: [createOldPosition()],
@@ -48,6 +51,9 @@ export const initialOldGameState = {
         black: [],
     },
     orientation: 'white',
+    whiteTime: 600,
+    blackTime: 600,
+    timerActive: false,
 };
 export const initialNewVariantGameState = {
     position: [createNewVariantPosition()],
