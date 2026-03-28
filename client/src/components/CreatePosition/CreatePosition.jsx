@@ -4,11 +4,15 @@ import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUserThunk } from "../../store/usersSlice";
 import {
+  initialAmazonState,
   initialArenaGameState,
   initialDinoGameState,
   initialExtendedGameState,
   initialFerzVsRukhGameState,
   initialGameState,
+  initialGrandAceDrexState,
+  initialGrandChessState,
+  initialGreatChessState,
   initialNewVariantGameState,
   initialOldGameState,
   initialOldVariantGameState,
@@ -77,9 +81,10 @@ import black_man from "../../assets/icons/black_man.png";
 import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
+import { createSpecialPosition } from "../../helpers";
 
 const CreatePosition = () => {
-  const { dispatch } = useAppContext();
+  const { appState, dispatch } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
@@ -97,7 +102,9 @@ const CreatePosition = () => {
   const [promotionPieceFour, setPromotionPieceFour] = useState(
     storedOptions[3],
   );
-  const [selectedColor, setSelectedColor] = useState(localStorage.getItem("chess_side") || null);
+  const [selectedColor, setSelectedColor] = useState(
+    localStorage.getItem("chess_side") || null,
+  );
   const [color, setColor] = useState("white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
   const [preset, setPreset] = useState("custom");
@@ -222,9 +229,14 @@ const CreatePosition = () => {
   const handleResetPosition = () => {
     localStorage.setItem("chess_mode", "editor");
     setStart("no");
+    const resetState = {
+      ...initialSpecialGameState,
+      position: [createSpecialPosition(appState.boardSize)],
+      boardSize: appState.boardSize,
+    };
     dispatch({
       type: actionTypes.RESET_GAME,
-      payload: { initialState: initialSpecialGameState },
+      payload: { initialState: resetState },
     });
   };
   const handleResetBoardColors = () => {
@@ -292,6 +304,10 @@ const CreatePosition = () => {
     "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
+    "grand-ace-drex": initialGrandAceDrexState,
+    "great-chess": initialGreatChessState,
+    "grand-chess": initialGrandChessState,
+    "amazon": initialAmazonState,
     "walls": initialWallsGameState,
     "arena": initialArenaGameState,
     "ferz-vs-rukh": initialFerzVsRukhGameState,
@@ -301,9 +317,14 @@ const CreatePosition = () => {
     const val = e.target.value;
     setPreset(val);
     const initialState = presetsMap[val] || initialSpecialGameState;
-    localStorage.setItem("chess_side", "white");
+    if (val !== "amazon") {
+      localStorage.setItem("chess_side", "white");
+      setSelectedColor("white");
+    } else {
+      localStorage.setItem("chess_side", "black");
+      setSelectedColor("black");
+    }
     localStorage.setItem("chess_mode", "editor");
-    setSelectedColor("white");
     setStart("no");
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState } });
   };
@@ -328,8 +349,20 @@ const CreatePosition = () => {
     setPromotion(!promotion);
     localStorage.setItem(
       "promotion_options",
-      JSON.stringify([promotionPieceOne, promotionPieceTwo, promotionPieceThree, promotionPieceFour]),
+      JSON.stringify([
+        promotionPieceOne,
+        promotionPieceTwo,
+        promotionPieceThree,
+        promotionPieceFour,
+      ]),
     );
+  };
+  const handleChangeBoardSize = (e) => {
+    const newSize = parseInt(e.target.value, 10);
+    dispatch({ type: actionTypes.SET_BOARD_SIZE, payload: newSize });
+    if (typeof window !== "undefined") {
+      localStorage.setItem("boardSize", newSize.toString());
+    }
   };
   return (
     <div className={styles.wrapper}>
@@ -338,7 +371,7 @@ const CreatePosition = () => {
           <select
             value={piecesStyle}
             onChange={handlePiecesChange}
-            disabled={promotion}
+            disabled={promotion || start === "yes"}
           >
             <option value="standart">
               {t("custom_panel.standart_pieces")}
@@ -347,19 +380,38 @@ const CreatePosition = () => {
             <option value="special">{t("custom_panel.special_pieces")}</option>
             <option value="other">{t("custom_panel.other")}</option>
           </select>
-          <select value={preset} onChange={handleChangePreset}>
+          <select
+            value={preset}
+            onChange={handleChangePreset}
+            disabled={start === "yes"}
+          >
             <option value="custom">{t("header.custom_position")}</option>
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
             <option value="new-chess">{t("header.new_chess")}</option>
             <option value="old-chess">{t("header.old_chess")}</option>
             <option value="extended-chess">{t("header.extended_chess")}</option>
+            <option value="grand-ace-drex">{t("header.grand-ace-drex")}</option>
+            <option value="great-chess">{t("header.great-chess")}</option>
+            <option value="grand-chess">{t("header.grand-chess")}</option>
+            <option value="amazon">{t("header.amazon")}</option>
             <option value="walls">{t("header.walls_chess")}</option>
             <option value="arena">{t("header.arena")}</option>
             <option value="ferz-vs-rukh">{t("header.ferz_vs_rukh")}</option>
             <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
           </select>
-          <button onClick={handleChangeColor}>
+          <select
+            value={appState.boardSize}
+            onChange={handleChangeBoardSize}
+            className={styles["board-size-select"]}
+            disabled={start === "yes"}
+          >
+            <option value={8}>8x8</option>
+            <option value={10}>10x10</option>
+            <option value={12}>12x12</option>
+            <option value={14}>14x14</option>
+          </select>
+          <button onClick={handleChangeColor} disabled={start === "yes"}>
             {t("custom_panel.change_color")}
           </button>
           <button onClick={handleToggle}>
@@ -452,7 +504,7 @@ const CreatePosition = () => {
           <div>
             <div
               onClick={handleReplacePieceSailBoat}
-              className={`${styles["pieces-variants"]} ${pieceSailBoat ? styles["selected"] : ""}`}
+              className={`${styles["pieces-variants"]} ${pieceSailBoat ? styles["active"] : ""}`}
             >
               {color === "white" ? (
                 <div className={styles["pieces-variants"]}>
@@ -480,7 +532,7 @@ const CreatePosition = () => {
           <div>
             <div
               onClick={handleReplacePieceChariot}
-              className={`${styles["pieces-variants"]} ${pieceChariot ? styles["selected"] : ""}`}
+              className={`${styles["pieces-variants"]} ${pieceChariot ? styles["active"] : ""}`}
             >
               {color === "white" ? (
                 <div className={styles["pieces-variants"]}>

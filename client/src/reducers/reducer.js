@@ -1,4 +1,5 @@
 import { status } from "../constants";
+import { createSpecialPosition } from "../helpers";
 import actionTypes from "./actionTypes";
 
 export const reducer = (state, action) => {
@@ -91,6 +92,26 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 orientation: action.payload
+            };
+        case actionTypes.SET_BOARD_SIZE:
+            return {
+                ...state,
+                boardSize: action.payload,
+                position: [createSpecialPosition(action.payload)],
+                validMoves: [],
+                selected: null,
+                promotionSquare: null,
+                status: status.ongoing,
+                playerTurn: 'white',
+                movesList: [],
+                castleDirection: {
+                    white: 'both',
+                    black: 'both',
+                },
+                captured: {
+                    white: [],
+                    black: [],
+                },
             };
         case actionTypes.TOGGLE_ORIENTATION:
             return {

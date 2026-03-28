@@ -42,13 +42,15 @@ const CreatePositionPage = () => {
       <div>
         <CreatePosition />
         <div className={styles.wrapper}>
-          <ChessBoard status={appState?.status} />
-          <div className={styles.control}>
-            <CapturedPieces
-              whiteCaptures={appState?.captured?.white || []}
-              blackCaptures={appState?.captured?.black || []}
-            />
-            <MovesList />
+          <div className={styles["chess-wrapper"]}>
+            <ChessBoard status={appState?.status} />
+            <div className={styles.control}>
+              <CapturedPieces
+                whiteCaptures={appState?.captured?.white || []}
+                blackCaptures={appState?.captured?.black || []}
+              />
+              <MovesList />
+            </div>
           </div>
         </div>
       </div>

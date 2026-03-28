@@ -30,6 +30,9 @@
             height: 5vh;
             @extend %btn-style;
         }
+        .board-size-select {
+            width: 10vh;
+        }
     }
     .replace-pieces {
         display: flex;
@@ -39,7 +42,7 @@
             display: flex;
             align-items: center;
             img {
-                width: 4.5vh;
+                width: 3.5vh;
                 height: 4vh;
             }
         }
@@ -61,9 +64,6 @@
             width: 24px;
             height: 28.05px;
             @extend %btn-style;
-        }
-        .active {
-        --btn-style-color: rgb(230, 230, 230);
         }
     }
     .promotion-div {
@@ -88,5 +88,8 @@
                 color: black;
             }
         }
-}
+    }
+    .active {
+        --btn-style-color: rgb(230, 230, 230);
+        }
 }

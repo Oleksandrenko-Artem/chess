@@ -1,7 +1,11 @@
 import arbiter from "./arbiter";
 
+const getBoardSize = (position) => (position?.length || 8);
+const isInBounds = (position, x, y) => x >= 0 && y >= 0 && x < getBoardSize(position) && y < getBoardSize(position);
+
 export const getRookMoves = ({ position, piece, rank, file }) => {
     const moves = [];
+    const boardSize = getBoardSize(position);
     const us = piece.startsWith('white') ? 'white' : 'black';
     const enemy = us === 'white' ? 'black' : 'white';
     const direction = [
@@ -11,10 +15,10 @@ export const getRookMoves = ({ position, piece, rank, file }) => {
         [0, 1],
     ];
     direction.forEach(dir => {
-        for (let i = 1; i < 8; i++) {
+        for (let i = 1; i < boardSize; i++) {
             const x = rank + (i * dir[0]);
             const y = file + (i * dir[1]);
-            if (position?.[x]?.[y] === undefined) {
+            if (!isInBounds(position, x, y)) {
                 break;
             }
             if (position[x][y].startsWith(enemy)) {
@@ -118,6 +122,7 @@ export const getCamelMoves = ({ position, rank, file }) => {
 };
 export const getBishopMoves = ({ position, piece, rank, file }) => {
     const moves = [];
+    const boardSize = getBoardSize(position);
     const us = piece.startsWith('white') ? 'white' : 'black';
     const enemy = us === 'white' ? 'black' : 'white';
     const direction = [
@@ -127,10 +132,10 @@ export const getBishopMoves = ({ position, piece, rank, file }) => {
         [1, 1],
     ];
     direction.forEach(dir => {
-        for (let i = 1; i < 8; i++) {
+        for (let i = 1; i < boardSize; i++) {
             const x = rank + (i * dir[0]);
             const y = file + (i * dir[1]);
-            if (position?.[x]?.[y] === undefined) {
+            if (!isInBounds(position, x, y)) {
                 break;
             }
             if (position[x][y].startsWith(enemy)) {
@@ -168,8 +173,10 @@ export const getKingPosition = ({ position, playerColor }) => {
 };
 export const getKingMoves = ({ position, piece, castleDirection, rank, file }) => {
     const moves = [];
+    const boardSize = getBoardSize(position);
     const us = piece.startsWith('white') ? 'white' : 'black';
-    const direction = [
+    const opponentColor = us === 'white' ? 'black' : 'white';
+    const directions = [
         [1, -1],
         [1, 0],
         [1, 1],
@@ -179,49 +186,68 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
         [-1, 0],
         [-1, 1],
     ];
-    direction.forEach(dir => {
+
+    directions.forEach(dir => {
         const x = rank + dir[0];
         const y = file + dir[1];
-        if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
+        if (isInBounds(position, x, y) && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
             moves.push([x, y]);
         }
     });
-    if (file !== 4 || rank % 7 !== 0 || castleDirection === 'none') {
+
+    const homeRank = us === 'white' ? boardSize - 1 : 0;
+    const kingStartFile = Math.floor(boardSize / 2);
+
+    if (file !== kingStartFile || rank !== homeRank || castleDirection === 'none') {
         return moves;
     }
-    if (piece.startsWith('white')) {
-        if (arbiter.isKingInCheck({ position, playerColor: 'white' })) {
-            return moves;
-        }
-        if (['left', 'both'].includes(castleDirection) && !position[7][3] && !position[7][2] && !position[7][1] && position[7][0] === 'white_rook' && !arbiter.wouldKingPassThroughCheck({
-            position, playerColor: 'white',
-            throughSquares: [[7, 3], [7, 2]]
-        })) {
-            moves.push([7, 2]);
-        }
-        if (['right', 'both'].includes(castleDirection) && !position[7][5] && !position[7][6] && position[7][7] === 'white_rook' && !arbiter.wouldKingPassThroughCheck({
-            position, playerColor: 'white',
-            throughSquares: [[7, 5], [7, 6]]
-        })) {
-            moves.push([7, 6]);
-        }
-    } else {
-        if (arbiter.isKingInCheck({ position, playerColor: 'black' })) {
-            return moves;
-        }
-        if (['left', 'both'].includes(castleDirection) && !position[0][3] && !position[0][2] && !position[0][1] && position[0][0] === 'black_rook' && !arbiter.wouldKingPassThroughCheck({
-            position, playerColor: 'black',
-            throughSquares: [[0, 3], [0, 2]]
-        })) {
-            moves.push([0, 2]);
-        }
-        if (['right', 'both'].includes(castleDirection) && !position[0][5] && !position[0][6] && position[0][7] === 'black_rook' && !arbiter.wouldKingPassThroughCheck({
-            position, playerColor: 'black',
-            throughSquares: [[0, 5], [0, 6]]
-        })) {
-            moves.push([0, 6]);
+
+    if (arbiter.isKingInCheck({ position, playerColor: us })) {
+        return moves;
+    }
+
+    const canCastleLeft = ['left', 'both'].includes(castleDirection);
+    const canCastleRight = ['right', 'both'].includes(castleDirection);
+    const row = position[homeRank];
+
+    if (canCastleLeft) {
+        const leftRookFile = 0;
+        if (position[homeRank][leftRookFile] === `${us}_rook`) {
+            const pathSquares = [];
+            for (let f = kingStartFile - 1; f > leftRookFile; f--) {
+                pathSquares.push([homeRank, f]);
+            }
+            if (pathSquares.every(([r, f]) => position[r][f] === '')) {
+                const throughSquares = [
+                    [homeRank, kingStartFile - 1],
+                    [homeRank, kingStartFile - 2],
+                ];
+                if (throughSquares.every(([r, f]) => !arbiter.isSquareAttacked({ position, rank: r, file: f, byPlayer: opponentColor }))) {
+                    moves.push([homeRank, kingStartFile - 2]);
+                }
+            }
         }
     }
+
+    if (canCastleRight) {
+        const rightRookFile = boardSize - 1;
+        if (position[homeRank][rightRookFile] === `${us}_rook`) {
+            const pathSquares = [];
+            for (let f = kingStartFile + 1; f < rightRookFile; f++) {
+                pathSquares.push([homeRank, f]);
+            }
+            if (pathSquares.every(([r, f]) => position[r][f] === '')) {
+                const throughSquares = [
+                    [homeRank, kingStartFile + 1],
+                    [homeRank, kingStartFile + 2],
+                ];
+                if (throughSquares.every(([r, f]) => !arbiter.isSquareAttacked({ position, rank: r, file: f, byPlayer: opponentColor }))) {
+                    moves.push([homeRank, kingStartFile + 2]);
+                }
+            }
+        }
+    }
+
     return moves;
 };
 export const getImperatorMoves = ({ position, piece, rank, file }) => {
@@ -266,14 +292,23 @@ export const getFirzanMoves = ({ position, piece, rank, file }) => {
 };
 export const getPawnMoves = ({ position, piece, rank, file }) => {
     const moves = [];
+    const boardSize = getBoardSize(position);
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
-    if (targetRank >= 0 && targetRank <= 7 && !position[targetRank][file]) {
+    const startRank = piece.startsWith('white') ? boardSize - 2 : 1;
+
+    if (isInBounds(position, targetRank, file) && !position[targetRank][file]) {
         moves.push([targetRank, file]);
     }
-    if (rank % 5 === 1) {
-        if (targetRank >= 0 && targetRank <= 7 && position?.[targetRank]?.[file] === '' && position?.[targetRank + direction]?.[file] === '') {
-            moves.push([targetRank + direction, file]);
+    if (rank === startRank) {
+        const twoStepRank = rank + 2 * direction;
+        if (
+            isInBounds(position, targetRank, file) &&
+            isInBounds(position, twoStepRank, file) &&
+            position[targetRank][file] === '' &&
+            position[twoStepRank][file] === ''
+        ) {
+            moves.push([twoStepRank, file]);
         }
     }
     return moves;
@@ -282,29 +317,30 @@ export const getSoldierMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
-    if (targetRank >= 0 && targetRank <= 7 && !position[targetRank][file]) {
+    if (isInBounds(position, targetRank, file) && !position[targetRank][file]) {
         moves.push([targetRank, file]);
     }
     return moves;
 };
 export const getPawnCaptures = ({ position, prevPosition, piece, rank, file }) => {
     const moves = [];
+    const boardSize = getBoardSize(position);
     const direction = piece.startsWith('white') ? -1 : 1;
     const enemy = piece.startsWith('white') ? 'black' : 'white';
     const targetRank = rank + direction;
-    if (targetRank >= 0 && targetRank <= 7) {
-        if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
-            moves.push([targetRank, file - 1]);
-        }
-        if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
-            moves.push([targetRank, file + 1]);
-        }
+    if (isInBounds(position, targetRank, file - 1) && position[targetRank][file - 1].startsWith(enemy)) {
+        moves.push([targetRank, file - 1]);
+    }
+    if (isInBounds(position, targetRank, file + 1) && position[targetRank][file + 1].startsWith(enemy)) {
+        moves.push([targetRank, file + 1]);
     }
     if (prevPosition) {
         let from = null;
         let to = null;
-        for (let r = 0; r < 8; r++) {
-            for (let f = 0; f < 8; f++) {
+        const boardSize = getBoardSize(position);
+
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
                 const before = prevPosition[r][f];
                 const after = position[r][f];
                 if (before !== after) {
@@ -318,7 +354,7 @@ export const getPawnCaptures = ({ position, prevPosition, piece, rank, file }) =
             if (movedPiece && movedPiece.endsWith('pawn') && position[to[0]][to[1]].startsWith(enemy)) {
                 if (Math.abs(to[0] - from[0]) === 2) {
                     if (to[0] === rank && Math.abs(to[1] - file) === 1) {
-                        if (targetRank >= 0 && targetRank <= 7) {
+                        if (isInBounds(position, targetRank, to[1])) {
                             moves.push([targetRank, to[1]]);
                         }
                     }
@@ -333,11 +369,11 @@ export const getSoldierCaptures = ({ position, piece, rank, file }) => {
     const direction = piece.startsWith('white') ? -1 : 1;
     const enemy = piece.startsWith('white') ? 'black' : 'white';
     const targetRank = rank + direction;
-    if (targetRank >= 0 && targetRank <= 7) {
-        if (position?.[targetRank]?.[file - 1] && position?.[targetRank]?.[file - 1].startsWith(enemy)) {
+    if (isInBounds(position, targetRank, file)) {
+        if (isInBounds(position, targetRank, file - 1) && position[targetRank][file - 1].startsWith(enemy)) {
             moves.push([targetRank, file - 1]);
         }
-        if (position?.[targetRank]?.[file + 1] && position?.[targetRank]?.[file + 1].startsWith(enemy)) {
+        if (isInBounds(position, targetRank, file + 1) && position[targetRank][file + 1].startsWith(enemy)) {
             moves.push([targetRank, file + 1]);
         }
     }
@@ -345,6 +381,7 @@ export const getSoldierCaptures = ({ position, piece, rank, file }) => {
 };
 export const getKnightMoves = ({ position, piece, rank, file }) => {
     const us = piece.startsWith('white') ? 'white' : 'black';
+    const boardSize = getBoardSize(position);
     const finalMoves = [];
     const knightPaths = [
         { step1: [1, 0], step2: [1, 1] },
@@ -362,14 +399,14 @@ export const getKnightMoves = ({ position, piece, rank, file }) => {
         while (true) {
             currentX += path.step1[0];
             currentY += path.step1[1];
-            if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+            if (!isInBounds(position, currentX, currentY)) break;
             let piece1 = position[currentX][currentY];
             if (piece1.startsWith(us) || piece1.endsWith('brick')) break;
             finalMoves.push([currentX, currentY]);
             if (piece1 !== '') break;
             currentX += path.step2[0];
             currentY += path.step2[1];
-            if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+            if (!isInBounds(position, currentX, currentY)) break;
             let piece2 = position[currentX][currentY];
             if (piece2.startsWith(us) || piece2.endsWith('brick')) break;
             finalMoves.push([currentX, currentY]);
@@ -385,19 +422,20 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
     const diagonalDirections = [
         { dr: 1, df: 1 }, { dr: 1, df: -1 }, { dr: -1, df: 1 }, { dr: -1, df: -1 }
     ];
+    const boardSize = getBoardSize(position);
     diagonalDirections.forEach(({ dr, df }) => {
         const intermediateRank = rank + dr;
         const intermediateFile = file + df;
-        if (intermediateRank >= 0 && intermediateRank < 8 && intermediateFile >= 0 && intermediateFile < 8) {
+        if (isInBounds(position, intermediateRank, intermediateFile)) {
             if (position[intermediateRank][intermediateFile] === '') {
                 const straightDirections = [
                     { dr: dr, df: 0 }, { dr: 0, df: df }
                 ];
                 straightDirections.forEach(({ dr: sr, df: sf }) => {
-                    for (let steps = 3; steps <= 7; steps++) {
+                    for (let steps = 3; steps < boardSize; steps++) {
                         const checkRank = intermediateRank + sr * steps;
                         const checkFile = intermediateFile + sf * steps;
-                        if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
+                        if (isInBounds(position, checkRank, checkFile)) {
                             let canMove = true;
                             for (let s = 1; s <= steps; s++) {
                                 const pathRank = intermediateRank + sr * s;
@@ -435,13 +473,11 @@ export const getCheckersMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
-    if (targetRank >= 0 && targetRank <= 7) {
-        if (position?.[targetRank]?.[file - 1] !== undefined && position[targetRank][file - 1] === '') {
-            moves.push([targetRank, file - 1]);
-        }
-        if (position?.[targetRank]?.[file + 1] !== undefined && position[targetRank][file + 1] === '') {
-            moves.push([targetRank, file + 1]);
-        }
+    if (isInBounds(position, targetRank, file - 1) && position[targetRank][file - 1] === '') {
+        moves.push([targetRank, file - 1]);
+    }
+    if (isInBounds(position, targetRank, file + 1) && position[targetRank][file + 1] === '') {
+        moves.push([targetRank, file + 1]);
     }
     return moves;
 };
@@ -451,25 +487,41 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
     const enemy = piece.startsWith('white') ? 'black' : 'white';
     const adjRankForward = rank + direction;
     const landRankForward = rank + 2 * direction;
-    if (landRankForward >= 0 && landRankForward <= 7) {
-        if (position?.[adjRankForward]?.[file - 1] && position[adjRankForward][file - 1].startsWith(enemy)
-            && position?.[landRankForward]?.[file - 2] !== undefined && position[landRankForward][file - 2] === '') {
+    if (isInBounds(position, landRankForward, file - 2)) {
+        if (
+            isInBounds(position, adjRankForward, file - 1) &&
+            position[adjRankForward][file - 1].startsWith(enemy) &&
+            position[landRankForward][file - 2] === ''
+        ) {
             moves.push([landRankForward, file - 2]);
         }
-        if (position?.[adjRankForward]?.[file + 1] && position[adjRankForward][file + 1].startsWith(enemy)
-            && position?.[landRankForward]?.[file + 2] !== undefined && position[landRankForward][file + 2] === '') {
+    }
+    if (isInBounds(position, landRankForward, file + 2)) {
+        if (
+            isInBounds(position, adjRankForward, file + 1) &&
+            position[adjRankForward][file + 1].startsWith(enemy) &&
+            position[landRankForward][file + 2] === ''
+        ) {
             moves.push([landRankForward, file + 2]);
         }
     }
     const adjRankBackward = rank - direction;
     const landRankBackward = rank - 2 * direction;
-    if (landRankBackward >= 0 && landRankBackward <= 7) {
-        if (position?.[adjRankBackward]?.[file - 1] && position[adjRankBackward][file - 1].startsWith(enemy)
-            && position?.[landRankBackward]?.[file - 2] !== undefined && position[landRankBackward][file - 2] === '') {
+    if (isInBounds(position, landRankBackward, file - 2)) {
+        if (
+            isInBounds(position, adjRankBackward, file - 1) &&
+            position[adjRankBackward][file - 1].startsWith(enemy) &&
+            position[landRankBackward][file - 2] === ''
+        ) {
             moves.push([landRankBackward, file - 2]);
         }
-        if (position?.[adjRankBackward]?.[file + 1] && position[adjRankBackward][file + 1].startsWith(enemy)
-            && position?.[landRankBackward]?.[file + 2] !== undefined && position[landRankBackward][file + 2] === '') {
+    }
+    if (isInBounds(position, landRankBackward, file + 2)) {
+        if (
+            isInBounds(position, adjRankBackward, file + 1) &&
+            position[adjRankBackward][file + 1].startsWith(enemy) &&
+            position[landRankBackward][file + 2] === ''
+        ) {
             moves.push([landRankBackward, file + 2]);
         }
     }
@@ -483,19 +535,20 @@ export const getRukhMoves = ({ position, rank, file }) => {
     const diagonalDirections = [
         { dr: 1, df: 1 }, { dr: 1, df: -1 }, { dr: -1, df: 1 }, { dr: -1, df: -1 }
     ];
+    const boardSize = getBoardSize(position);
     diagonalDirections.forEach(({ dr, df }) => {
         const intermediateRank = rank + dr;
         const intermediateFile = file + df;
-        if (intermediateRank >= 0 && intermediateRank < 8 && intermediateFile >= 0 && intermediateFile < 8) {
+        if (isInBounds(position, intermediateRank, intermediateFile)) {
             if (position[intermediateRank][intermediateFile] === '') {
                 const straightDirections = [
                     { dr: dr, df: 0 }, { dr: 0, df: df }
                 ];
                 straightDirections.forEach(({ dr: sr, df: sf }) => {
-                    for (let steps = 1; steps <= 7; steps++) {
+                    for (let steps = 1; steps < boardSize; steps++) {
                         const checkRank = intermediateRank + sr * steps;
                         const checkFile = intermediateFile + sf * steps;
-                        if (checkRank >= 0 && checkRank < 8 && checkFile >= 0 && checkFile < 8) {
+                        if (isInBounds(position, checkRank, checkFile)) {
                             let canMove = true;
                             for (let s = 1; s <= steps; s++) {
                                 const pathRank = intermediateRank + sr * s;
@@ -534,7 +587,7 @@ export const getRukhMoves = ({ position, rank, file }) => {
         [rank - 1, file - 1]
     ];
     diagonalMoves.forEach(([r, f]) => {
-        if (r >= 0 && r < 8 && f >= 0 && f < 8) {
+        if (isInBounds(position, r, f)) {
             const piece = position[r][f];
             if (piece === '' || piece.startsWith(enemy)) {
                 moves.push([r, f]);
@@ -637,14 +690,16 @@ export const getElephantLongRangeMoves = ({ position, piece, rank, file }) => {
     const enemy = us === 'white' ? 'black' : 'white';
     const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
+    const boardSize = getBoardSize(position);
+
     directions.forEach(([dr, df]) => {
         let hasJumped = false;
 
-        for (let i = 1; i < 8; i++) {
+        for (let i = 1; i < boardSize; i++) {
             const r = rank + i * dr;
             const f = file + i * df;
 
-            if (position?.[r]?.[f] === undefined) break;
+            if (!isInBounds(position, r, f)) break;
             const target = position[r][f];
 
             if (target === '') {
@@ -681,7 +736,7 @@ export const getRhinoMoves = ({ position, piece, rank, file }) => {
         let x = rank + kx;
         let y = file + ky;
 
-        if (position?.[x]?.[y] === undefined) return;
+        if (!isInBounds(position, x, y)) return;
 
         const firstCell = position[x][y];
 
@@ -696,7 +751,7 @@ export const getRhinoMoves = ({ position, piece, rank, file }) => {
             let sx = x + dx;
             let sy = y + dy;
 
-            while (position?.[sx]?.[sy] !== undefined) {
+            while (isInBounds(position, sx, sy)) {
                 const cell = position[sx][sy];
 
                 if (cell === '') {

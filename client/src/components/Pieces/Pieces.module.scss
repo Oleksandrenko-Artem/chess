@@ -1,34 +1,45 @@
 .piece {
-    cursor: grab;
-    width: 50px;
-    height: 50px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: 2;
+  cursor: grab;
+  width: calc(var(--cell-size) * 0.8);
+  height: calc(var(--cell-size) * 0.8);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 2;
 }
 .piece-any {
-    width: 50px;
-    height: 50px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    z-index: 2;
+  width: calc(var(--cell-size) * 0.8);
+  height: calc(var(--cell-size) * 0.8);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 2;
+}
+.piece-pawn {
+  width: calc(var(--cell-size) * 0.6);
+  height: calc(var(--cell-size) * 0.6);
+  margin-top: calc(var(--cell-size) * 0.2);
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.piece-brick {
+  width: calc(var(--cell-size) * 1);
+  height: calc(var(--cell-size) * 1);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
 }
 .piece:active {
-    cursor: grabbing;
+  cursor: grabbing;
 }
 .dragging {
-    opacity: 0;
+  opacity: 0;
 }
 .promotion {
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    gap: 10px;
-    padding: 2.5px;
-}
-.selected:hover {
-    background-color: rgb(38, 180, 38);
-    box-shadow: 0 0 0 2px rgb(126, 94, 46) inset;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  padding: 2.5px;
 }

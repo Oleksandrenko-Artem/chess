@@ -36,9 +36,9 @@
   .game-status {
     @extend %panel-style;
     text-align: center;
-    z-index: 10;
     width: 200px;
     height: 480px;
+    margin: 5px -2px 0 0;
     .game-message {
       display: flex;
       flex-direction: column;

@@ -1,8 +1,12 @@
-export const getCharacter = file => String.fromCharCode(file + 97);
-export const createPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for(let i = 0; i< 8; i++) {
+export const getCharacter = (file) => String.fromCharCode(file + 97);
+
+export const createEmptyPosition = (size = 8) =>
+    Array.from({ length: size }, () => Array.from({ length: size }, () => ""));
+
+export const createPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+    for (let i = 0; i < cols; i++) {
         position[6][i] = 'white_pawn';
         position[1][i] = 'black_pawn';
     }
@@ -22,15 +26,18 @@ export const createPosition = () => {
     position[0][5] = 'black_bishop';
     position[0][6] = 'black_horse';
     position[0][7] = 'black_rook';
+
     return position;
 }
-export const createOldPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for(let i = 0; i< 8; i++) {
+export const createOldPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[6][i] = 'white_soldier';
         position[1][i] = 'black_soldier';
     }
+
     position[7][0] = 'white_rook';
     position[7][1] = 'white_horse';
     position[7][2] = 'white_elephant';
@@ -47,37 +54,18 @@ export const createOldPosition = () => {
     position[0][5] = 'black_elephant';
     position[0][6] = 'black_horse';
     position[0][7] = 'black_rook';
+
     return position;
 }
-export const createSpecialPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for(let i = 0; i< 8; i++) {
-        position[6][i] = '';
-        position[1][i] = '';
-    }
-    position[7][0] = '';
-    position[7][1] = '';
-    position[7][2] = '';
-    position[7][3] = '';
-    position[7][4] = '';
-    position[7][5] = '';
-    position[7][6] = '';
-    position[7][7] = '';
-    position[0][0] = '';
-    position[0][1] = '';
-    position[0][2] = '';
-    position[0][3] = '';
-    position[0][4] = '';
-    position[0][5] = '';
-    position[0][6] = '';
-    position[0][7] = '';
+export const createSpecialPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
     return position;
 }
-export const createOldVariantPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let i = 0; i < 8; i++) {
+export const createOldVariantPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[6][i] = 'white_pawn';
         position[1][i] = 'black_pawn';
     }
@@ -97,12 +85,14 @@ export const createOldVariantPosition = () => {
     position[0][5] = 'black_elephant';
     position[0][6] = 'black_horse';
     position[0][7] = 'black_tank';
+
     return position;
 }
-export const createNewVariantPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let i = 0; i < 8; i++) {
+export const createNewVariantPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[6][i] = 'white_pawn';
         position[1][i] = 'black_pawn';
     }
@@ -122,12 +112,14 @@ export const createNewVariantPosition = () => {
     position[0][5] = 'black_bishop';
     position[0][6] = 'black_knight';
     position[0][7] = 'black_rook';
+
     return position;
 }
-export const createDinoPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let i = 0; i < 8; i++) {
+export const createDinoPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[6][i] = 'white_pawn';
         position[1][i] = 'black_pawn';
     }
@@ -147,12 +139,14 @@ export const createDinoPosition = () => {
     position[0][5] = 'black_dinozavr';
     position[0][6] = 'black_dinozavr';
     position[0][7] = 'black_dinozavr';
+
     return position;
 }
-export const createExtendedPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let i = 0; i < 8; i++) {
+export const createExtendedPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[5][i] = 'white_pawn';
         position[2][i] = 'black_pawn';
     }
@@ -164,6 +158,7 @@ export const createExtendedPosition = () => {
     position[7][5] = 'white_wildebeest';
     position[7][6] = 'white_camel';
     position[7][7] = 'white_rook';
+
     position[6][0] = 'white_tank';
     position[6][1] = 'white_horse';
     position[6][2] = 'white_elephant';
@@ -172,6 +167,7 @@ export const createExtendedPosition = () => {
     position[6][5] = 'white_elephant';
     position[6][6] = 'white_horse';
     position[6][7] = 'white_tank';
+
     position[1][0] = 'black_tank';
     position[1][1] = 'black_horse';
     position[1][2] = 'black_elephant';
@@ -180,6 +176,7 @@ export const createExtendedPosition = () => {
     position[1][5] = 'black_elephant';
     position[1][6] = 'black_horse';
     position[1][7] = 'black_tank';
+
     position[0][0] = 'black_rook';
     position[0][1] = 'black_camel';
     position[0][2] = 'black_wildebeest';
@@ -188,12 +185,14 @@ export const createExtendedPosition = () => {
     position[0][5] = 'black_wildebeest';
     position[0][6] = 'black_camel';
     position[0][7] = 'black_rook';
+
     return position;
 }
-export const createFerzVsRukhPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let i = 0; i < 8; i++) {
+export const createFerzVsRukhPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
         position[5][i] = 'white_ferz';
         position[6][i] = 'white_ferz';
         position[2][i] = 'black_rukh';
@@ -207,6 +206,7 @@ export const createFerzVsRukhPosition = () => {
     position[7][5] = 'white_ferz';
     position[7][6] = 'white_ferz';
     position[7][7] = 'white_ferz';
+
     position[0][0] = 'black_rukh';
     position[0][1] = 'black_rukh';
     position[0][2] = 'black_rukh';
@@ -215,16 +215,22 @@ export const createFerzVsRukhPosition = () => {
     position[0][5] = 'black_rukh';
     position[0][6] = 'black_rukh';
     position[0][7] = 'black_rukh';
+
     return position;
 }
-export const createWallsPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+export const createWallsPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
+        position[1][i] = 'brick';
+    }
+
     position[7][0] = 'white_king';
     position[7][1] = 'white_zebra';
     position[7][2] = 'brick';
     position[7][3] = 'white_camel';
-    position[7][4] = 'brick';
+    position[7][4] = 'white_rhino';
     position[7][5] = 'brick';
     position[7][6] = 'brick';
     position[7][7] = 'brick';
@@ -233,10 +239,10 @@ export const createWallsPosition = () => {
     position[6][1] = 'brick';
     position[6][2] = 'brick';
     position[6][3] = 'white_horse';
-    position[6][4] = 'white_elephant';
+    position[6][4] = 'brick';
     position[6][5] = 'brick';
     position[6][6] = 'white_tank';
-    position[6][7] = 'brick';
+    position[6][7] = 'white_horse';
 
     position[5][2] = 'brick';
     position[5][4] = 'brick';
@@ -248,36 +254,28 @@ export const createWallsPosition = () => {
     position[4][7] = 'brick';
 
     position[3][0] = 'brick';
+    position[3][1] = 'brick';
     position[3][2] = 'brick';
+    position[3][3] = 'brick';
+    position[3][5] = 'brick';
 
     position[2][0] = 'brick';
-    position[2][1] = 'brick';
-    position[2][2] = 'brick';
-    position[2][3] = 'brick';
     position[2][5] = 'brick';
 
-    position[1][0] = 'brick';
-    position[1][1] = 'black_tank';
-    position[1][2] = 'brick';
-    position[1][3] = 'black_elephant';
-    position[1][4] = 'black_horse';
-    position[1][5] = 'brick';
-    position[1][6] = 'brick';
-    position[1][7] = 'brick';
-
-    position[0][0] = 'brick';
-    position[0][1] = 'brick';
-    position[0][2] = 'brick';
-    position[0][3] = 'brick';
-    position[0][4] = 'black_camel';
+    position[0][0] = 'black_zebra';
+    position[0][1] = 'black_horse';
+    position[0][2] = 'black_tank';
+    position[0][3] = 'black_rhino';
+    position[0][4] = 'black_king';
     position[0][5] = 'brick';
-    position[0][6] = 'black_zebra';
-    position[0][7] = 'black_king';
+    position[0][6] = 'black_horse';
+    position[0][7] = 'black_camel';
+
     return position;
 }
-export const createArenaPosition = () => {
-    // eslint-disable-next-line no-unused-vars
-    const position = new Array(8).fill('').map(x => new Array(8).fill(''));
+export const createArenaPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+
     position[7][0] = 'brick';
     position[7][1] = 'white_horse';
     position[7][2] = 'brick';
@@ -329,6 +327,153 @@ export const createArenaPosition = () => {
     position[0][7] = 'brick';
     return position;
 }
+export const createGrandAceDrexPosition = (size = 12) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 12);
+
+    for (let i = 0; i < cols; i++) {
+        position[3][i] = 'black_pawn';
+        position[8][i] = 'white_pawn';
+    }
+
+    position[0][0] = 'black_rook';
+    position[0][1] = 'black_lion';
+    position[0][2] = 'black_rhino';
+    position[0][3] = 'black_zebra';
+    position[0][4] = 'black_bishop';
+    position[0][5] = 'black_rukh';
+    position[0][6] = 'black_king';
+    position[0][7] = 'black_bishop';
+    position[0][8] = 'black_zebra';
+    position[0][9] = 'black_rhino';
+    position[0][10] = 'black_lion';
+    position[0][11] = 'black_rook';
+
+    position[11][0] = 'white_rook';
+    position[11][1] = 'white_lion';
+    position[11][2] = 'white_rhino';
+    position[11][3] = 'white_zebra';
+    position[11][4] = 'white_bishop';
+    position[11][5] = 'white_rukh';
+    position[11][6] = 'white_king';
+    position[11][7] = 'white_bishop';
+    position[11][8] = 'white_zebra';
+    position[11][9] = 'white_rhino';
+    position[11][10] = 'white_lion';
+    position[11][11] = 'white_rook';
+
+    return position;
+}
+export const createAmazonPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
+        position[1][i] = 'black_pawn';
+    }
+
+    position[0][0] = 'black_rook';
+    position[0][1] = 'black_horse';
+    position[0][2] = 'black_bishop';
+    position[0][3] = 'black_ferz';
+    position[0][4] = 'black_king';
+    position[0][5] = 'black_bishop';
+    position[0][6] = 'black_horse';
+    position[0][7] = 'black_rook';
+
+    position[7][3] = 'white_amazon';
+    position[7][4] = 'white_king';
+
+    return position;
+}
+export const createGreatChessPosition = (size = 10) => {
+    const position = createEmptyPosition(size);
+
+    position[9][0] = 'white_rook';
+    position[9][1] = 'white_horse';
+    position[9][2] = 'white_bishop';
+    position[9][3] = 'white_archbishop';
+    position[9][4] = 'white_amazon';
+    position[9][5] = 'white_imperator';
+    position[9][6] = 'white_ferz';
+    position[9][7] = 'white_bishop';
+    position[9][8] = 'white_horse';
+    position[9][9] = 'white_rook';
+
+    position[8][0] = 'white_soldier';
+    position[8][1] = 'white_soldier';
+    position[8][2] = 'white_soldier';
+    position[8][3] = 'white_soldier';
+    position[8][4] = 'white_marshal';
+    position[8][5] = 'white_marshal';
+    position[8][6] = 'white_soldier';
+    position[8][7] = 'white_soldier';
+    position[8][8] = 'white_soldier';
+    position[8][9] = 'white_soldier';
+
+    position[7][4] = 'white_soldier';
+    position[7][5] = 'white_soldier';
+    position[2][4] = 'black_soldier';
+    position[2][5] = 'black_soldier';
+
+    position[1][0] = 'black_soldier';
+    position[1][1] = 'black_soldier';
+    position[1][2] = 'black_soldier';
+    position[1][3] = 'black_soldier';
+    position[1][4] = 'black_marshal';
+    position[1][5] = 'black_marshal';
+    position[1][6] = 'black_soldier';
+    position[1][7] = 'black_soldier';
+    position[1][8] = 'black_soldier';
+    position[1][9] = 'black_soldier';
+
+    position[0][0] = 'black_rook';
+    position[0][1] = 'black_horse';
+    position[0][2] = 'black_bishop';
+    position[0][3] = 'black_ferz';
+    position[0][4] = 'black_imperator';
+    position[0][5] = 'black_amazon';
+    position[0][6] = 'black_archbishop';
+    position[0][7] = 'black_bishop';
+    position[0][8] = 'black_horse';
+    position[0][9] = 'black_rook';
+
+
+    return position;
+}
+export const createGrandChessPosition = (size = 10) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 10);
+
+    for (let i = 0; i < cols; i++) {
+        position[2][i] = 'black_pawn';
+        position[7][i] = 'white_pawn';
+    }
+
+    position[9][0] = 'white_rook';
+    position[8][1] = 'white_horse';
+    position[8][2] = 'white_bishop';
+    position[8][3] = 'white_ferz';
+    position[8][4] = 'white_imperator';
+    position[8][5] = 'white_marshal';
+    position[8][6] = 'white_archbishop';
+    position[8][7] = 'white_bishop';
+    position[8][8] = 'white_horse';
+    position[9][9] = 'white_rook';
+
+    position[0][0] = 'black_rook';
+    position[1][1] = 'black_horse';
+    position[1][2] = 'black_bishop';
+    position[1][3] = 'black_ferz';
+    position[1][4] = 'black_imperator';
+    position[1][5] = 'black_marshal';
+    position[1][6] = 'black_archbishop';
+    position[1][7] = 'black_bishop';
+    position[1][8] = 'black_horse';
+    position[0][9] = 'black_rook';
+
+    return position;
+}
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
@@ -355,7 +500,8 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
             note += getCharacter(file) + 'x';
         }
     }
-    const displayRank = 8 - targetRank;
+    const boardSize = position?.length || 8;
+    const displayRank = boardSize - targetRank;
     note += getCharacter(targetFile) + displayRank;
     if (promotesTo) {
         note += '=' + promotesTo[0].toUpperCase();
@@ -370,16 +516,16 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
     }
     return note;
 };
-export const copyPosition = position => {
-    // eslint-disable-next-line no-unused-vars
-    const newPosition = new Array(8).fill('').map(x => new Array(8).fill(''));
-    for (let rank = 0; rank < 8; rank++) {
-        for (let file = 0; file < 8; file++) {
-            newPosition[rank][file] = position[rank][file]
+export const copyPosition = (position) => {
+    const size = position?.length || 8;
+    const newPosition = createEmptyPosition(size);
+    for (let rank = 0; rank < size; rank++) {
+        for (let file = 0; file < size; file++) {
+            newPosition[rank][file] = position[rank][file];
         }
     }
     return newPosition;
-}
+};
 export const areSameColorBishops = (coords1, coords2) => {
     if (!coords1 || !coords2) {
         return false;
@@ -387,9 +533,10 @@ export const areSameColorBishops = (coords1, coords2) => {
     return (coords1.x + coords1.y) % 2 === (coords2.x + coords2.y) % 2;
 };
 export const findPieceCoords = (position, pieceName) => {
+    const boardSize = position?.length || 8;
     let results = [];
-    for (let r = 0; r < 8; r++) {
-        for (let f = 0; f < 8; f++) {
+    for (let r = 0; r < boardSize; r++) {
+        for (let f = 0; f < boardSize; f++) {
             if (position[r][f] === pieceName) {
                 results.push({ x: r, y: f });
             }

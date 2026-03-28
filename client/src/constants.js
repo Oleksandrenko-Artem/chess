@@ -1,4 +1,4 @@
-import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition } from "./helpers";
+import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition } from "./helpers";
 
 export const status = {
     'ongoing': 'Ongoing',
@@ -31,9 +31,10 @@ export const initialGameState = {
         black: [],
     },
     orientation: 'white',
-    whiteTime: 600, // 10 minutes in seconds
-    blackTime: 600,
+    whiteTime: 1200,
+    blackTime: 1200,
     timerActive: false,
+    boardSize: 8,
 };
 export const initialOldGameState = {
     position: [createOldPosition()],
@@ -51,9 +52,10 @@ export const initialOldGameState = {
         black: [],
     },
     orientation: 'white',
-    whiteTime: 600,
-    blackTime: 600,
+    whiteTime: 1200,
+    blackTime: 1200,
     timerActive: false,
+    boardSize: 8,
 };
 export const initialNewVariantGameState = {
     position: [createNewVariantPosition()],
@@ -71,6 +73,7 @@ export const initialNewVariantGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
@@ -88,6 +91,7 @@ export const initialSpecialGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialOldVariantGameState = {
     position: [createOldVariantPosition()],
@@ -105,6 +109,7 @@ export const initialOldVariantGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialDinoGameState = {
     position: [createDinoPosition()],
@@ -122,6 +127,7 @@ export const initialDinoGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialExtendedGameState = {
     position: [createExtendedPosition()],
@@ -139,6 +145,7 @@ export const initialExtendedGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialFerzVsRukhGameState = {
     position: [createFerzVsRukhPosition()],
@@ -156,6 +163,7 @@ export const initialFerzVsRukhGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialWallsGameState = {
     position: [createWallsPosition()],
@@ -173,6 +181,7 @@ export const initialWallsGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
 };
 export const initialArenaGameState = {
     position: [createArenaPosition()],
@@ -190,6 +199,88 @@ export const initialArenaGameState = {
         black: [],
     },
     orientation: 'white',
+    boardSize: 8,
+};
+export const initialGrandAceDrexState = {
+    position: [createGrandAceDrexPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    boardSize: 12,
+};
+export const initialAmazonState = {
+    position: [createAmazonPosition()],
+    playerTurn: 'black',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'black',
+    whiteTime: 1200,
+    blackTime: 1200,
+    timerActive: false,
+    boardSize: 8,
+};
+export const initialGreatChessState = {
+    position: [createGreatChessPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 1200,
+    blackTime: 1200,
+    timerActive: false,
+    boardSize: 10,
+};
+export const initialGrandChessState = {
+    position: [createGrandChessPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 1200,
+    blackTime: 1200,
+    timerActive: false,
+    boardSize: 10,
 };
 export const piecesArrayPromotion = [
     'horse (standart)',

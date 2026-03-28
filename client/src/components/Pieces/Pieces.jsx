@@ -286,15 +286,22 @@ const Pieces = ({ flipped = false }) => {
   }
   const currentPosition = appState.position[appState.position.length - 1];
   const calculateCoords = (e) => {
-    if (!ref.current) return { x: -1, y: -1 };
+    if (!ref.current || !appState || !appState.boardSize)
+      return { x: -1, y: -1 };
     const { width, left, top } = ref.current.getBoundingClientRect();
-    const size = width / 8;
+    const size = width / appState.boardSize;
     let dispFile = Math.floor((e.clientX - left) / size);
     let dispRank = Math.floor((e.clientY - top) / size);
-    if (dispFile < 0 || dispFile > 7 || dispRank < 0 || dispRank > 7)
+    if (
+      dispFile < 0 ||
+      dispFile >= appState.boardSize ||
+      dispRank < 0 ||
+      dispRank >= appState.boardSize
+    )
       return { x: -1, y: -1 };
-    const realFile = flipped ? 7 - dispFile : dispFile;
-    const realRank = flipped ? 7 - dispRank : dispRank;
+
+    const realFile = flipped ? appState.boardSize - 1 - dispFile : dispFile;
+    const realRank = flipped ? appState.boardSize - 1 - dispRank : dispRank;
     return { x: realRank, y: realFile };
   };
   const openPromotionBox = ({ rank, file, targetRank, targetFile }) => {
@@ -340,7 +347,7 @@ const Pieces = ({ flipped = false }) => {
 
       if (
         (p.endsWith("pawn") || p.endsWith("soldier")) &&
-        (targetRank === 0 || targetRank === 7)
+        (targetRank === 0 || targetRank === appState.boardSize - 1)
       ) {
         openPromotionBox({ rank, file, targetRank, targetFile });
         return;
@@ -390,7 +397,7 @@ const Pieces = ({ flipped = false }) => {
     if (
       !isHuman &&
       (p.endsWith("pawn") || p.endsWith("soldier")) &&
-      (targetRank === 0 || targetRank === 7)
+      (targetRank === 0 || targetRank === appState.boardSize - 1)
     ) {
       let promotionPiece;
 
@@ -533,7 +540,48 @@ const Pieces = ({ flipped = false }) => {
   if (!imagesLoaded) {
     return <div>Loading pieces...</div>;
   }
-  const position = appState.position[appState.position.length - 1];
+
+  const position =
+    appState.position && appState.position.length > 0
+      ? appState.position[appState.position.length - 1]
+      : Array.from({ length: appState.boardSize }, () =>
+          Array.from({ length: appState.boardSize }, () => null),
+        );
+
+  const numberFileByRank = [...Array(appState.boardSize)].map((_, r) => {
+    const direction = appState.orientation === "white" ? 1 : -1;
+    const start = appState.orientation === "white" ? 0 : appState.boardSize - 1;
+    for (let offset = 0; offset < appState.boardSize; offset++) {
+      const file = start + offset * direction;
+      if (
+        file >= 0 &&
+        file < appState.boardSize &&
+        position[r] &&
+        position[r][file] !== "brick"
+      ) {
+        return file;
+      }
+    }
+    return null;
+  });
+
+  const letterRankByFile = [...Array(appState.boardSize)].map((_, f) => {
+    const direction = appState.orientation === "white" ? -1 : 1;
+    const start = appState.orientation === "white" ? appState.boardSize - 1 : 0;
+    for (let offset = 0; offset < appState.boardSize; offset++) {
+      const rank = start + offset * direction;
+      if (
+        rank >= 0 &&
+        rank < appState.boardSize &&
+        position[rank] &&
+        position[rank][f] !== "brick"
+      ) {
+        return rank;
+      }
+    }
+    return null;
+  });
+
   const isChecked = (() => {
     const isInCheck = arbiter.isKingInCheck({
       position,
@@ -550,16 +598,27 @@ const Pieces = ({ flipped = false }) => {
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
-      {[...Array(8)].map((_, dispRank) => {
+      {[...Array(appState.boardSize)].map((_, dispRank) => {
         return (
           <React.Fragment key={dispRank}>
-            {[...Array(8)].map((__, dispFile) => {
-              const realRank = flipped ? 7 - dispRank : dispRank;
-              const realFile = flipped ? 7 - dispFile : dispFile;
-              const f = currentPosition[realRank][realFile];
-              const number = dispRank + dispFile + 2;
+            {[...Array(appState.boardSize)].map((__, dispFile) => {
+              const realRank = flipped
+                ? appState.boardSize - 1 - dispRank
+                : dispRank;
+              const realFile = flipped
+                ? appState.boardSize - 1 - dispFile
+                : dispFile;
+              const f = currentPosition?.[realRank]?.[realFile];
+              const tileColor = (realRank + realFile) % 2;
               let tileClass =
-                number % 2 === 0 ? styles["white-tile"] : styles["black-tile"];
+                tileColor === 0 ? styles["white-tile"] : styles["black-tile"];
+
+              const showNumber =
+                numberFileByRank[realRank] === realFile &&
+                numberFileByRank[realRank] !== null;
+              const showLetter =
+                letterRankByFile[realFile] === realRank &&
+                letterRankByFile[realFile] !== null;
 
               if (
                 isChecked &&
@@ -625,6 +684,36 @@ const Pieces = ({ flipped = false }) => {
               }
               return (
                 <div key={realRank + "-" + realFile} className={tileClass}>
+                  {showNumber && (
+                    <span
+                      className={`${styles["coordinate-number"]} ${
+                        flipped
+                          ? styles["black-orientation"]
+                          : styles["white-orientation"]
+                      } ${
+                        tileColor === 0
+                          ? styles["light-text"]
+                          : styles["dark-text"]
+                      }`}
+                    >
+                      {appState.boardSize - realRank}
+                    </span>
+                  )}
+                  {showLetter && (
+                    <span
+                      className={`${styles["coordinate-letter"]} ${
+                        flipped
+                          ? styles["black-orientation"]
+                          : styles["white-orientation"]
+                      } ${
+                        tileColor === 0
+                          ? styles["light-text"]
+                          : styles["dark-text"]
+                      }`}
+                    >
+                      {String.fromCharCode(97 + realFile)}
+                    </span>
+                  )}
                   {f ? (
                     <Piece
                       rank={realRank}

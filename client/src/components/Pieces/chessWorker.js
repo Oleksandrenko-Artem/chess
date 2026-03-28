@@ -4,8 +4,12 @@ import arbiter from "./../../arbiter/arbiter";
 const evaluatePosition = (position) => {
     let totalScore = 0;
 
-    for (let r = 0; r < 8; r++) {
-        for (let f = 0; f < 8; f++) {
+    const boardSize = position?.length || 8;
+    const centerStart = Math.floor((boardSize - 2) / 2);
+    const centerEnd = Math.ceil((boardSize + 2) / 2) - 1;
+
+    for (let r = 0; r < boardSize; r++) {
+        for (let f = 0; f < boardSize; f++) {
             const p = position[r][f];
             if (!p) continue;
 
@@ -13,9 +17,9 @@ const evaluatePosition = (position) => {
             const type = p.split('_').pop();
             let value = PIECE_VALUES[type] || 100;
 
-            if (r >= 3 && r <= 4 && f >= 3 && f <= 4) value += 20;
+            if (r >= centerStart && r <= centerEnd && f >= centerStart && f <= centerEnd) value += 20;
 
-            if (type === "king" && (f === 6 || f === 2 || f === 1 || f === 7)) {
+            if (type === "king" && (f <= 1 || f >= boardSize - 2)) {
                 value += 80;
             }
 
@@ -66,6 +70,15 @@ const minimax = (
     if (moves.length === 0) {
         if (arbiter.isKingInCheck({ position, playerColor })) {
             return isMaximizing ? -1000000 : 1000000;
+        }
+        const currentEval = evaluatePosition(position);
+        const isWhiteAhead = currentEval > 0;
+        const isBlackAhead = currentEval < 0;
+        if (isMaximizing && isWhiteAhead) {
+            return -50000;
+        }
+        if (!isMaximizing && isBlackAhead) {
+            return 50000;
         }
         return 0;
     }

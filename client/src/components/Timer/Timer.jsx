@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { useAppContext } from "../../contexts/Context";
 import actionTypes from "../../reducers/actionTypes";
 import styles from "./Timer.module.scss";
+import { useTranslation } from "react-i18next";
 
 const Timer = () => {
   const { appState, dispatch } = useAppContext();
@@ -9,6 +10,7 @@ const Timer = () => {
   const currentPlayerRef = useRef(appState.playerTurn);
   const whiteTimeRef = useRef(appState.whiteTime);
   const blackTimeRef = useRef(appState.blackTime);
+  const { t } = useTranslation();
 
   useEffect(() => {
     currentPlayerRef.current = appState.playerTurn;
@@ -69,12 +71,14 @@ const Timer = () => {
       <div
         className={`${styles.time} ${appState.playerTurn === "white" ? styles.active : ""}`}
       >
-        White: {formatTime(appState.whiteTime)}
+        <div>{t("captured_pieces.white")}: </div>
+        <div>{formatTime(appState.whiteTime)}</div>
       </div>
       <div
         className={`${styles.time} ${appState.playerTurn === "black" ? styles.active : ""}`}
       >
-        Black: {formatTime(appState.blackTime)}
+        <div>{t("captured_pieces.black")}: </div>
+        <div>{formatTime(appState.blackTime)}</div>
       </div>
     </div>
   );

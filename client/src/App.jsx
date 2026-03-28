@@ -1,53 +1,121 @@
-import React, { useEffect, useState } from 'react';
-import { useReducer } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
-import { reducer } from './reducers/reducer';
-import { initialGameState, initialOldGameState, initialSpecialGameState } from './constants';
-import { findUserAccountThunk } from './store/usersSlice';
-import actionTypes from './reducers/actionTypes';
-import Header from './components/Header/Header';
-import Homepage from './pages/Homepage';
-import ChessPage from './pages/ChessPage';
-import ShatranjPage from './pages/ShatranjPage';
-import NotFoundPage from './pages/NotFoundPage';
-import Footer from './components/Footer/Footer';
-import AppContext from './contexts/Context';
-import RegisterForm from './components/forms/RegisterForm';
-import LoginForm from './components/forms/LoginForm';
-import CreatePositionPage from './pages/CreatePositionPage';
-import ProfilePage from './pages/ProfilePage';
-import { getStoredColor } from './utils/color';
-import InfoPage from './pages/InfoPage';
+import React, { useEffect, useState } from "react";
+import { useReducer } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { reducer } from "./reducers/reducer";
+import {
+  initialGameState,
+  initialOldGameState,
+  initialSpecialGameState,
+} from "./constants";
+import { findUserAccountThunk } from "./store/usersSlice";
+import actionTypes from "./reducers/actionTypes";
+import Header from "./components/Header/Header";
+import Homepage from "./pages/Homepage";
+import ChessPage from "./pages/ChessPage";
+import ShatranjPage from "./pages/ShatranjPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import Footer from "./components/Footer/Footer";
+import AppContext from "./contexts/Context";
+import RegisterForm from "./components/forms/RegisterForm";
+import LoginForm from "./components/forms/LoginForm";
+import CreatePositionPage from "./pages/CreatePositionPage";
+import ProfilePage from "./pages/ProfilePage";
+import { getStoredColor } from "./utils/color";
+import InfoPage from "./pages/InfoPage";
+import {
+  createPosition,
+  createSpecialPosition,
+  createOldPosition,
+} from "./helpers";
 
 function App() {
   const dispathUser = useDispatch();
   const [start, setStart] = useState(false);
-  const savedVariant = typeof window !== 'undefined' ? localStorage.getItem('chess_variant') : null;
-  const initialStateAtLoad = savedVariant === 'shatranj' ? initialOldGameState : savedVariant === 'special' ? initialSpecialGameState : initialGameState;
+  const savedVariant =
+    typeof window !== "undefined"
+      ? localStorage.getItem("chess_variant")
+      : null;
+  const savedMode =
+    typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+  const savedBoardSize =
+    typeof window !== "undefined"
+      ? parseInt(localStorage.getItem("boardSize") || "8", 10)
+      : 8;
+  let initialStateAtLoad =
+    savedVariant === "shatranj"
+      ? initialOldGameState
+      : savedVariant === "special"
+        ? initialSpecialGameState
+        : initialGameState;
+  
+  if (savedMode === "editor") {
+    initialStateAtLoad = {
+      ...initialStateAtLoad,
+      boardSize: savedBoardSize,
+      position: [createSpecialPosition(savedBoardSize)],
+    };
+  } else {
+    initialStateAtLoad = {
+      ...initialStateAtLoad,
+      boardSize: 8,
+      position:
+        savedVariant === "shatranj"
+          ? [createOldPosition(8)]
+          : savedVariant === "special"
+            ? [createSpecialPosition(8)]
+            : [createPosition(8)],
+    };
+  }
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
   const handlePlayChess = () => {
     setStart(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('chess_variant', 'chess');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "chess");
+      localStorage.removeItem("chess_mode");
+    }
+    const newInitialState = {
+      ...initialGameState,
+      boardSize: 8,
+      position: [createPosition(8)],
     };
-    dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialGameState } });
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
   };
   const handlePlayShatranj = () => {
     setStart(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('chess_variant', 'shatranj');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "shatranj");
+      localStorage.removeItem("chess_mode");
+    }
+    const newInitialState = {
+      ...initialOldGameState,
+      boardSize: 8,
+      position: [createOldPosition(8)],
     };
-    dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialOldGameState } });
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
   };
   const handlePlaySpecial = () => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('chess_variant', 'special');
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "special");
       localStorage.setItem("chess_mode", "editor");
-      localStorage.setItem("chess_side", "white");
+    }
+    const currentBoardSize = appState.boardSize;
+    const newInitialState = {
+      ...initialSpecialGameState,
+      boardSize: currentBoardSize,
+      position: [createSpecialPosition(currentBoardSize)],
     };
-    dispatch({ type: actionTypes.RESET_GAME, payload: { initialState: initialSpecialGameState } });
-  }
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
   const providerState = {
     appState,
     dispatch,
@@ -57,40 +125,59 @@ function App() {
   }, [dispathUser]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const DEFAULT_LIGHT_COLOR = '#ffdabb';
-      const DEFAULT_DARK_COLOR = '#7e5e2e';
+    if (typeof window !== "undefined") {
+      const DEFAULT_LIGHT_COLOR = "#ffdabb";
+      const DEFAULT_DARK_COLOR = "#7e5e2e";
       try {
-        const light = getStoredColor('lightSquareColor', DEFAULT_LIGHT_COLOR);
-        const dark = getStoredColor('darkSquareColor', DEFAULT_DARK_COLOR);
-        document.documentElement.style.setProperty('--light-square-color', light);
-        document.documentElement.style.setProperty('--dark-square-color', dark);
+        const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
+        const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);
+        document.documentElement.style.setProperty(
+          "--light-square-color",
+          light,
+        );
+        document.documentElement.style.setProperty("--dark-square-color", dark);
       } catch (e) {
-        document.documentElement.style.setProperty('--light-square-color', DEFAULT_LIGHT_COLOR);
-        document.documentElement.style.setProperty('--dark-square-color', DEFAULT_DARK_COLOR);
+        document.documentElement.style.setProperty(
+          "--light-square-color",
+          DEFAULT_LIGHT_COLOR,
+        );
+        document.documentElement.style.setProperty(
+          "--dark-square-color",
+          DEFAULT_DARK_COLOR,
+        );
       }
     }
   }, []);
   return (
     <AppContext.Provider value={providerState}>
       <BrowserRouter>
-        <Header onPlayChess={handlePlayChess} onPlayShatranj={handlePlayShatranj} onPlaySpecial={handlePlaySpecial} />
+        <Header
+          onPlayChess={handlePlayChess}
+          onPlayShatranj={handlePlayShatranj}
+          onPlaySpecial={handlePlaySpecial}
+        />
         <Routes>
-          <Route path='/' element={<Homepage />} />
-          <Route path='/register' element={<RegisterForm />} />
-          <Route path='/login' element={<LoginForm />} />
-          <Route path='/account' element={<ProfilePage />} />
-          <Route path='/play-chess' element={<ChessPage start={start} setStart={setStart} />} />
-          <Route path='/play-shatranj' element={<ShatranjPage start={start} setStart={setStart} />} />
-          <Route path='/create-position' element={<CreatePositionPage />} />
-          <Route path='/info' element={<InfoPage />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/account" element={<ProfilePage />} />
+          <Route
+            path="/play-chess"
+            element={<ChessPage start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-shatranj"
+            element={<ShatranjPage start={start} setStart={setStart} />}
+          />
+          <Route path="/create-position" element={<CreatePositionPage />} />
+          <Route path="/info" element={<InfoPage />} />
 
-          <Route path='*' element={<NotFoundPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
-      <Footer />
+        <Footer />
       </BrowserRouter>
     </AppContext.Provider>
   );
-};
+}
 
 export default App;

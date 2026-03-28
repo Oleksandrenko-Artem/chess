@@ -13,6 +13,7 @@ const actionTypes = {
     "STOP_TIMER": "STOP_TIMER",
     "UPDATE_TIME": "UPDATE_TIME",
     "TIME_UP": "TIME_UP",
+    "SET_BOARD_SIZE": "SET_BOARD_SIZE",
 };
 
 export default actionTypes;

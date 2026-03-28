@@ -1,56 +1,76 @@
-import React from 'react';
-import { useAppContext } from '../../contexts/Context';
-import { status } from '../../constants';
-import styles from './Pieces.module.scss';
-import arbiter from '../../arbiter/arbiter';
-import { generateValidMoves } from '../../reducers/actions/move';
+import React from "react";
+import { useAppContext } from "../../contexts/Context";
+import { status } from "../../constants";
+import styles from "./Pieces.module.scss";
+import arbiter from "../../arbiter/arbiter";
+import { generateValidMoves } from "../../reducers/actions/move";
 
 const Piece = ({ rank, file, piece, imageSrc }) => {
-    const baseClass = piece !== "brick" ? styles.piece : styles['piece-any'];
-    const classNames = `${baseClass}`;
-    const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
-    if (piece && (piece.endsWith('pawn') || piece.endsWith('soldier'))) {
-        style.marginTop = '11px';
-        style.width = '40px';
-    } else if (piece && (piece.endsWith('brick'))) {
-        style.width = '64px';
-        style.height = '64px';
+  const baseClass = piece !== "brick" ? styles.piece : styles["piece-any"];
+  const pieceClass =
+    piece && (piece.endsWith("pawn") || piece.endsWith("soldier"))
+      ? styles["piece-pawn"]
+      : piece && piece.endsWith("brick")
+        ? styles["piece-brick"]
+        : "";
+  const classNames = `${baseClass} ${pieceClass}`.trim();
+  const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
+  const { appState, dispatch } = useAppContext();
+  const { playerTurn, castleDirection, position } = appState;
+  const currentPosition = position[position.length - 1];
+
+  const prevBoard = position.length > 1 ? position[position.length - 2] : null;
+  const onDragStart = (e) => {
+    const userSide = localStorage.getItem("chess_side");
+    const isHuman = appState.playerTurn === userSide;
+    const mode = localStorage.getItem("chess_mode");
+    const isEditorMode = mode === "editor";
+    if (
+      appState.status !== status.ongoing ||
+      !isHuman ||
+      isEditorMode ||
+      piece === "brick"
+    ) {
+      e.preventDefault();
+      return;
     }
-    const { appState, dispatch } = useAppContext();
-    const { playerTurn, castleDirection, position } = appState;
-    const currentPosition = position[position.length - 1];
-    
-    const prevBoard = position.length > 1 ? position[position.length - 2] : null;
-    const onDragStart = e => {
-        const userSide = localStorage.getItem("chess_side");
-        const isHuman = appState.playerTurn === userSide;
-        const mode = localStorage.getItem("chess_mode");
-        const isEditorMode = mode === "editor";
-        if (appState.status !== status.ongoing || !isHuman || isEditorMode || piece === 'brick') {
-            e.preventDefault();
-            return;
-        }
-        e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/plain', `${piece},${rank},${file}`);
-        const img = new Image();
-        img.src = imageSrc;
-        img.onload = () => {
-            e.dataTransfer.setDragImage(img, 25, 25);
-        };
-        setTimeout(() => {
-            e.target.classList.add(styles.dragging);
-        }, 0);
-        if (piece.startsWith(playerTurn)) {
-            const validMoves = arbiter.getRegularMoves({
-                position: currentPosition, prevPosition: prevBoard, castleDirection: castleDirection[playerTurn], piece, rank, file
-            });
-            dispatch(generateValidMoves({ validMoves, selected: { from: [rank, file], piece } }));
-        }
+    e.dataTransfer.effectAllowed = "move";
+    e.dataTransfer.setData("text/plain", `${piece},${rank},${file}`);
+    const img = new Image();
+    img.src = imageSrc;
+    img.onload = () => {
+      e.dataTransfer.setDragImage(img, 25, 25);
     };
-    const onDragEnd = e => e.target.classList.remove(styles.dragging);
-    return (
-        <div className={classNames} style={style} draggable={true} onDragStart={onDragStart} onDragEnd={onDragEnd}></div>
-    );
+    setTimeout(() => {
+      e.target.classList.add(styles.dragging);
+    }, 0);
+    if (piece.startsWith(playerTurn)) {
+      const validMoves = arbiter.getRegularMoves({
+        position: currentPosition,
+        prevPosition: prevBoard,
+        castleDirection: castleDirection[playerTurn],
+        piece,
+        rank,
+        file,
+      });
+      dispatch(
+        generateValidMoves({
+          validMoves,
+          selected: { from: [rank, file], piece },
+        }),
+      );
+    }
+  };
+  const onDragEnd = (e) => e.target.classList.remove(styles.dragging);
+  return (
+    <div
+      className={classNames}
+      style={style}
+      draggable={true}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    ></div>
+  );
 };
 
 export default Piece;

@@ -2,74 +2,37 @@ import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, g
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 
+const getBoardSize = (position) => position?.length || 8;
+const isInBounds = (position, x, y) => x >= 0 && y >= 0 && x < getBoardSize(position) && y < getBoardSize(position);
+
 const arbiter = {
     getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
         const allMoves = [];
+        const boardSize = position?.length || 8;
         const currentCastleDir = castleDirection?.[playerColor] || 'both';
-        for (let r = 0; r < 8; r++) {
-            for (let f = 0; f < 8; f++) {
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece.startsWith(playerColor)) {
                     const isPawn = piece.endsWith('pawn') || piece.endsWith('soldier');
 
                     if (piece.endsWith('king')) {
-
                         const kingMoves = getKingMoves({ position, piece, castleDirection: currentCastleDir, rank: r, file: f });
                         kingMoves.forEach(([tr, tf]) => {
                             allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
-
-                        const canCastle = castleDirection[playerColor];
-                        const isCheck = arbiter.isKingInCheck({ position, playerColor });
-
-                        if (canCastle && !isCheck) {
-                            const opponentColor = playerColor === 'white' ? 'black' : 'white';
-
-                            if ((canCastle === "both" || canCastle === "right")) {
-                                const pathEmpty = position[r][f + 1] === '' && position[r][f + 2] === '';
-                                const rookExists = position[r][f + 3] === `${playerColor}_rook`;
-
-                                if (pathEmpty && rookExists) {
-                                    const tempPos = JSON.parse(JSON.stringify(position));
-                                    tempPos[r][f + 1] = piece;
-                                    tempPos[r][f] = '';
-                                    const squareSafe = !arbiter.isKingInCheck({ position: tempPos, playerColor });
-
-                                    if (squareSafe) {
-                                        allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f + 2, isCastle: true });
-                                    }
-                                }
-                            }
-
-                            if ((canCastle === "both" || canCastle === "left")) {
-                                const pathEmpty = position[r][f - 1] === '' && position[r][f - 2] === '' && position[r][f - 3] === '';
-                                const rookExists = position[r][f - 4] === `${playerColor}_rook`;
-
-                                if (pathEmpty && rookExists) {
-                                    const tempPos = JSON.parse(JSON.stringify(position));
-                                    tempPos[r][f - 1] = piece;
-                                    tempPos[r][f] = '';
-                                    const squareSafe = !arbiter.isKingInCheck({ position: tempPos, playerColor });
-
-                                    if (squareSafe) {
-                                        allMoves.push({ piece, rank: r, file: f, targetRank: r, targetFile: f - 2, isCastle: true });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (isPawn) {
+                    } else if (isPawn) {
                         const direction = playerColor === 'white' ? -1 : 1;
+                        const boardSize = getBoardSize(position);
+                        const pawnStartRank = playerColor === 'white' ? boardSize - 2 : 1;
 
                         const nextR = r + direction;
-                        if (position[nextR] && position[nextR][f] === '') {
+                        if (isInBounds(position, nextR, f) && position[nextR][f] === '') {
                             allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: f });
                             const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : 'chess');
                             if (variant === "chess") {
-
-                                const startRank = playerColor === 'white' ? 6 : 1;
                                 const doubleNextR = r + 2 * direction;
-                                if (r === startRank && position[doubleNextR] && position[doubleNextR][f] === '') {
+                                if (r === pawnStartRank && isInBounds(position, doubleNextR, f) && position[doubleNextR][f] === '') {
                                     allMoves.push({ piece, rank: r, file: f, targetRank: doubleNextR, targetFile: f });
                                 }
                             }
@@ -89,10 +52,12 @@ const arbiter = {
                                 const targetF = f + fOffset;
                                 const targetR = r + direction;
 
-                                if (playerColor === 'black' && r === 4) {
-                                    const whitePawnStart = 6;
-                                    const whitePawnEnd = 4;
+                                const whitePawnStart = boardSize - 2;
+                                const whitePawnEnd = boardSize - 4;
+                                const blackPawnStart = 1;
+                                const blackPawnEnd = 3;
 
+                                if (playerColor === 'black' && r === whitePawnEnd) {
                                     if (position[whitePawnEnd][targetF] === 'white_pawn' &&
                                         prevPosition[whitePawnStart][targetF] === 'white_pawn' &&
                                         prevPosition[whitePawnEnd][targetF] === '' &&
@@ -106,7 +71,7 @@ const arbiter = {
                                     }
                                 }
 
-                                if (playerColor === 'white' && r === 3) {
+                                if (playerColor === 'white' && r === blackPawnEnd) {
                                     const blackPawnStart = 1;
                                     const blackPawnEnd = 3;
 
@@ -140,8 +105,9 @@ const arbiter = {
     },
     isSquareAttacked: function ({ position, rank, file, byPlayer }) {
         try {
-            for (let r = 0; r < 8; r++) {
-                for (let f = 0; f < 8; f++) {
+            const boardSize = getBoardSize(position);
+            for (let r = 0; r < boardSize; r++) {
+                for (let f = 0; f < boardSize; f++) {
                     const piece = position[r][f];
                     if (!piece || piece === '' || !piece.startsWith(byPlayer) && !piece.endsWith('brick')) continue;
 
@@ -159,6 +125,7 @@ const arbiter = {
     getAttackSquares: function ({ position, piece, rank, file }) {
         const us = piece.startsWith('white') ? 'white' : 'black';
         const enemy = us === 'white' ? 'black' : 'white';
+        const boardSize = getBoardSize(position);
         const attacks = [];
 
         if (piece.endsWith('pawn')) {
@@ -210,9 +177,9 @@ const arbiter = {
         } else if (piece.endsWith('rook') || piece.endsWith('sailboat') || piece.endsWith('chariot')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             directions.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -220,9 +187,9 @@ const arbiter = {
         } else if (piece.endsWith('archbishop')) {
             const directionsR = [[-1, 1], [1, 1], [-1, -1], [1, -1]];
             directionsR.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -238,9 +205,9 @@ const arbiter = {
         } else if (piece.endsWith('bishop')) {
             const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -251,7 +218,7 @@ const arbiter = {
             directions.forEach(([dr, df]) => {
                 let hasJumped = false;
 
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const r = rank + i * dr;
                     const f = file + i * df;
 
@@ -285,9 +252,9 @@ const arbiter = {
         } else if (piece.endsWith('marshal')) {
             const directionsR = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             directionsR.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -303,9 +270,9 @@ const arbiter = {
         } else if (piece.endsWith('amazon')) {
             const directionsF = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
             directionsF.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -385,9 +352,9 @@ const arbiter = {
         } else if (piece.endsWith('ferz')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -405,12 +372,12 @@ const arbiter = {
                 while (true) {
                     currentX += path.step1[0];
                     currentY += path.step1[1];
-                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    if (!isInBounds(position, currentX, currentY)) break;
                     attacks.push([currentX, currentY]);
                     if (position[currentX][currentY] !== '') break;
                     currentX += path.step2[0];
                     currentY += path.step2[1];
-                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    if (!isInBounds(position, currentX, currentY)) break;
                     attacks.push([currentX, currentY]);
                     if (position[currentX][currentY] !== '') break;
                 }
@@ -444,6 +411,11 @@ const arbiter = {
                                     pathBlocked = true;
                                     break;
                                 }
+                            } else {
+                                if (pieceOnPath !== '' && pieceOnPath.startsWith(us)) {
+                                    pathBlocked = true;
+                                    break;
+                                }
                             }
                         }
                         if (pathBlocked) {
@@ -459,9 +431,9 @@ const arbiter = {
         } else if (piece.endsWith('dinozavr')) {
             const directions = [[-1, 0], [1, 0], [0, -1], [0, 1], [-1, -1], [-1, 1], [1, -1], [1, 1]];
             directions.forEach(([dr, df]) => {
-                for (let i = 1; i < 8; i++) {
+                for (let i = 1; i < boardSize; i++) {
                     const [r, f] = [rank + i * dr, file + i * df];
-                    if (position?.[r]?.[f] === undefined) break;
+                    if (!isInBounds(position, r, f)) break;
                     attacks.push([r, f]);
                     if (position[r][f] !== '') break;
                 }
@@ -478,12 +450,12 @@ const arbiter = {
                 while (true) {
                     currentX += path.step1[0];
                     currentY += path.step1[1];
-                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    if (!isInBounds(position, currentX, currentY)) break;
                     attacks.push([currentX, currentY]);
                     if (position[currentX][currentY] !== '') break;
                     currentX += path.step2[0];
                     currentY += path.step2[1];
-                    if (currentX < 0 || currentX > 7 || currentY < 0 || currentY > 7) break;
+                    if (!isInBounds(position, currentX, currentY)) break;
                     attacks.push([currentX, currentY]);
                     if (position[currentX][currentY] !== '') break;
                 }
@@ -662,8 +634,9 @@ const arbiter = {
     },
     isKingInCheck: function ({ position, playerColor }) {
         const enemy = playerColor === 'white' ? 'black' : 'white';
-        for (let r = 0; r < 8; r++) {
-            for (let f = 0; f < 8; f++) {
+        const boardSize = getBoardSize(position);
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece !== '' && piece.startsWith(playerColor)) {
                     if (piece.endsWith('king') || piece.endsWith('imperator')) {
@@ -809,8 +782,9 @@ const arbiter = {
             }
             const isInCheck = this.isKingInCheck({ position, playerColor });
             let hasLegalMove = false;
-            for (let r = 0; r < 8; r++) {
-                for (let f = 0; f < 8; f++) {
+            const boardSize = getBoardSize(position);
+            for (let r = 0; r < boardSize; r++) {
+                for (let f = 0; f < boardSize; f++) {
                     const piece = position[r][f];
                     if (!piece || piece === '' || !piece.startsWith(playerColor)) continue;
                     try {
@@ -869,8 +843,9 @@ const arbiter = {
         return status.ongoing;
     },
     isBareKing: function ({ position, playerColor }) {
-        for (let r = 0; r < 8; r++) {
-            for (let f = 0; f < 8; f++) {
+        const boardSize = getBoardSize(position);
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece !== '' && piece.startsWith(playerColor) && !piece.endsWith('imperator')) {
                     return false;
@@ -882,8 +857,9 @@ const arbiter = {
     insufficientMaterial: function ({ position }) {
         const pieces = [];
         const pieceCounts = {};
-        for (let r = 0; r < 8; r++) {
-            for (let f = 0; f < 8; f++) {
+        const boardSize = getBoardSize(position);
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece !== '') {
                     pieces.push(piece);
