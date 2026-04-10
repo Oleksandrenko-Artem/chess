@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useReducer } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { io } from "socket.io-client";
 import { reducer } from "./reducers/reducer";
 import {
   initialGameState,
@@ -23,11 +24,13 @@ import CreatePositionPage from "./pages/CreatePositionPage";
 import ProfilePage from "./pages/ProfilePage";
 import { getStoredColor } from "./utils/color";
 import InfoPage from "./pages/InfoPage";
+import GamesListPage from "./pages/GamesListPage";
 import {
   createPosition,
   createSpecialPosition,
   createOldPosition,
 } from "./helpers";
+import SinglePlayerPage from "./pages/SinglePlayerPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -48,7 +51,7 @@ function App() {
       : savedVariant === "special"
         ? initialSpecialGameState
         : initialGameState;
-  
+
   if (savedMode === "editor") {
     initialStateAtLoad = {
       ...initialStateAtLoad,
@@ -68,6 +71,24 @@ function App() {
     };
   }
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
+  const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    const serverUrl =
+      "https://cf6ba8b2621ac2ab-95-47-113-136.serveousercontent.com";
+    const newSocket = io(serverUrl, {
+      transports: ["websocket", "polling"],
+      autoConnect: true,
+    });
+    setSocket(newSocket);
+
+    return () => {
+      if (newSocket) {
+        newSocket.disconnect();
+      }
+    };
+  }, []);
+
   const handlePlayChess = () => {
     setStart(false);
     if (typeof window !== "undefined") {
@@ -116,9 +137,17 @@ function App() {
       payload: { initialState: newInitialState },
     });
   };
+  const handlePlayMultiplayer = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "multiplayer");
+      localStorage.removeItem("chess_mode");
+    }
+  };
   const providerState = {
     appState,
     dispatch,
+    socket,
   };
   useEffect(() => {
     dispathUser(findUserAccountThunk());
@@ -152,15 +181,27 @@ function App() {
     <AppContext.Provider value={providerState}>
       <BrowserRouter>
         <Header
-          onPlayChess={handlePlayChess}
-          onPlayShatranj={handlePlayShatranj}
           onPlaySpecial={handlePlaySpecial}
+          onPlayMultiplayer={handlePlayMultiplayer}
         />
         <Routes>
           <Route path="/" element={<Homepage />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/account" element={<ProfilePage />} />
+          <Route
+            path="/play"
+            element={
+              <SinglePlayerPage
+                onPlayChess={handlePlayChess}
+                onPlayShatranj={handlePlayShatranj}
+              />
+            }
+          />
+          <Route
+            path="/games"
+            element={<GamesListPage start={start} setStart={setStart} />}
+          />
           <Route
             path="/play-chess"
             element={<ChessPage start={start} setStart={setStart} />}

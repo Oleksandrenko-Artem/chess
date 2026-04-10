@@ -188,11 +188,28 @@ const getActualPiece = (piece) => {
 
 const Pieces = ({ flipped = false }) => {
   const ref = useRef(null);
-  const { appState, dispatch } = useAppContext();
+  const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [positionHistory, setPositionHistory] = useState([]);
+  const prevPositionRef = useRef(null);
+
+  useEffect(() => {
+    if (appState.position && appState.position.length > 1) {
+      prevPositionRef.current = appState.position[appState.position.length - 2];
+    } else {
+      prevPositionRef.current = null;
+    }
+  }, [appState.position]);
+  useEffect(() => {
+    if (appState.isVsBot && appState.status === status.ongoing) {
+      const userSide = localStorage.getItem("chess_side");
+      if (appState.playerTurn === userSide) {
+        makeBotMove();
+      }
+    }
+  }, [appState.playerTurn, appState.isVsBot, appState.status]);
 
   useEffect(() => {
     const loadImage = (src) =>
@@ -331,7 +348,12 @@ const Pieces = ({ flipped = false }) => {
 
     const { isBot = false } = moveData;
 
-    if (!isHuman && !isBot && !isNew) {
+    if (appState.isMultiplayer && !isNew) {
+      if (appState.playerTurn !== userSide) {
+        console.log("Не ваш ход в multiplayer режиме");
+        return;
+      }
+    } else if (!isHuman && !isBot && !isNew) {
       console.log("Зараз хід бота, зачекайте");
       return;
     }
@@ -495,8 +517,63 @@ const Pieces = ({ flipped = false }) => {
             },
       }),
     );
+    if (appState.isMultiplayer) {
+      socket.emit("makeMove", {
+        roomId: appState.roomId,
+        move: {
+          newPosition,
+          newMove,
+          castleDirection: newCastleDirection,
+          gameStatus,
+          captured: isEditorMode ? appState.captured : newCaptured,
+          lastMove: isEditorMode
+            ? null
+            : {
+                fromRank: rank,
+                fromFile: file,
+                toRank: targetRank,
+                toFile: targetFile,
+              },
+          isRemote: true,
+        },
+      });
+    }
     dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
   };
+
+  const makeBotMove = () => {
+    if (appState.status !== status.ongoing || !appState.isVsBot) return;
+
+    const botColor = appState.playerTurn;
+    const gameVariant = localStorage.getItem("chess_variant") || "chess";
+
+    const allMoves = arbiter.getBoardValidMoves({
+      position: currentPosition,
+      playerColor: botColor,
+      prevPosition: prevPositionRef.current,
+      castleDirection: appState.castleDirection,
+      gameVariant,
+    });
+
+    if (allMoves.length === 0) return;
+
+    const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
+
+    setTimeout(
+      () => {
+        makeMove({
+          piece: randomMove.piece,
+          rank: randomMove.rank,
+          file: randomMove.file,
+          targetRank: randomMove.targetRank,
+          targetFile: randomMove.targetFile,
+          isBot: true,
+        });
+      },
+      500 + Math.random() * 1000,
+    );
+  };
+
   const onDrop = (e) => {
     e.preventDefault();
     if (appState.status !== status.ongoing) return;
@@ -540,7 +617,6 @@ const Pieces = ({ flipped = false }) => {
   if (!imagesLoaded) {
     return <div>Loading pieces...</div>;
   }
-
   const position =
     appState.position && appState.position.length > 0
       ? appState.position[appState.position.length - 1]
@@ -591,6 +667,25 @@ const Pieces = ({ flipped = false }) => {
       return getKingPosition({ position, playerColor: appState.playerTurn });
     }
   })();
+  const handleSquareClick = (targetRank, targetFile) => {
+    if (appState.selected) {
+      const isValidMove = appState.validMoves?.find(
+        (m) => m[0] === targetRank && m[1] === targetFile,
+      );
+
+      if (isValidMove) {
+        makeMove({
+          piece: appState.selected.piece,
+          rank: appState.selected.from[0],
+          file: appState.selected.from[1],
+          targetRank,
+          targetFile,
+        });
+      } else {
+        dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+      }
+    }
+  };
   return (
     <div
       ref={ref}
@@ -683,7 +778,11 @@ const Pieces = ({ flipped = false }) => {
                 }
               }
               return (
-                <div key={realRank + "-" + realFile} className={tileClass}>
+                <div
+                  key={realRank + "-" + realFile}
+                  className={tileClass}
+                  onClick={() => handleSquareClick(realRank, realFile)}
+                >
                   {showNumber && (
                     <span
                       className={`${styles["coordinate-number"]} ${

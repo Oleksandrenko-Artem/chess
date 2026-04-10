@@ -11,7 +11,7 @@ import Timer from "../Timer/Timer";
 
 const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;
-  const { dispatch, appState } = useAppContext();
+  const { dispatch, appState, socket } = useAppContext();
   const { t } = useTranslation();
   const [selectedColor, setSelectedColor] = useState(null);
   const onClickWhite = () => {
@@ -27,7 +27,34 @@ const GameInfoPanel = (props) => {
     setStart(true);
     dispatch({ type: actionTypes.START_TIMER });
   };
+  const onClickExit = () => {
+    if (appState?.isMultiplayer && socket && appState?.roomId) {
+      dispatch({
+        type: actionTypes.SET_MULTIPLAYER,
+        payload: { isMultiplayer: false, roomId: null },
+      });
+      localStorage.removeItem("roomId");
+    }
+    localStorage.setItem("chess_mode", "game");
+    setStart(false);
+    if (window.localStorage.getItem("chess_variant") === "multiplayer") {
+      window.localStorage.setItem("chess_variant", "multiplayer");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: { initialState: initialGameState },
+      });
+    }
+  }
   const onClickStartNew = () => {
+    if (appState?.isMultiplayer && socket && appState?.roomId) {
+      dispatch({
+        type: actionTypes.SET_MULTIPLAYER,
+        payload: { isMultiplayer: false, roomId: null },
+      });
+      socket.emit("leaveGame", { roomId: appState.roomId });
+      localStorage.removeItem("roomId");
+    }
+
     localStorage.setItem("chess_mode", "game");
     setStart(false);
     if (window.localStorage.getItem("chess_variant") === "chess") {
@@ -42,6 +69,13 @@ const GameInfoPanel = (props) => {
       dispatch({
         type: actionTypes.RESET_GAME,
         payload: { initialState: initialOldGameState },
+      });
+    }
+    if (window.localStorage.getItem("chess_variant") === "multiplayer") {
+      window.localStorage.setItem("chess_variant", "multiplayer");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: { initialState: initialGameState },
       });
     }
   };
@@ -84,7 +118,7 @@ const GameInfoPanel = (props) => {
   };
   return (
     <div className={styles.wrapper}>
-      {!start && (
+      {!start && localStorage.getItem("chess_variant") !== "multiplayer" && (
         <div className={styles["start-panel"]}>
           <h1>{t("game_info_panel.choose_color")}</h1>
           <div className={styles["img-div"]}>
@@ -115,11 +149,11 @@ const GameInfoPanel = (props) => {
         </div>
       )}
       {localStorage.getItem("chess_variant") !== "special" &&
-        status !== status.ongoing &&
+        status !== status?.ongoing &&
         start && (
           <div className={styles["game-status"]}>
-            <div className={styles["game-message"]}>
-              <h2>{gameStatusMessage()}</h2>
+          <div className={styles["game-message"]}>
+            <div><h2>{gameStatusMessage()}</h2>
               {status === "White wins" ? (
                 <img src={white_king} alt="white" />
               ) : status === "Black wins" ? (
@@ -133,14 +167,21 @@ const GameInfoPanel = (props) => {
                 status === "Draw" &&
                 turn === "black" ? (
                 <img src={white_king} alt="black" />
-              ) : null}
+              ) : null}</div>
               <Timer />
+            <div className={styles["buttons-div"]}>
               <button onClick={handleToggle}>
                 {t("custom_panel.rotate_board")}
               </button>
-              <button onClick={onClickStartNew}>
-                {t("game_info_panel.start_again")}
-              </button>
+              {status === "Ongoing" || localStorage.getItem("chess_variant") !== "multiplayer" && status !== "Ongoing" ? (
+                <button onClick={onClickStartNew}>
+                  {t("game_info_panel.start_again")}
+                </button>
+              ) : null}
+              {localStorage.getItem("chess_variant") === "multiplayer" && status !== "Ongoing" && (
+                  <button onClick={onClickExit}>Выйти</button>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -1,6 +1,7 @@
 @use "/src/common/styles/widths" as *;
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/mixins" as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .home {
   display: flex;
@@ -44,32 +45,85 @@
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  flex-wrap: nowrap;
+  width: 100%;
+  gap: 0;
+  margin: 0;
+  padding: 0;
   .chess-wrapper {
-    display: inherit;
+    display: flex;
     flex-direction: row;
-    justify-content: center;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    .control {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      width: clamp(380px, 90vw, 480px);
+      height: clamp(380px, 90vw, 480px);
+      margin: 0;
+    }
   }
-  .control {
-    width: 465px;
+  @media screen and (max-width: $x) {
+    flex-direction: column;
+    flex-wrap: wrap;
+    .chess-wrapper {
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      .control {
+        padding-left: 0;
+        margin: 0;
+      }
+    }
+  }
+}
+.single-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .single-player-options {
+    display: flex;
+    flex-direction: row;
+    div {
+      @extend %panel-style;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+      gap: 20px;
+      width: 300px;
+      height: 300px;
+      padding: 10px;
+      img {
+        width: 8vh;
+        height: 8vh;
+      }
+      a {
+        @include button-style(160px, 40px, 10px);
+        @extend %btn-style;
+      }
+    }
+    @media screen and (max-width: $m) {
+      flex-direction: column;
+    }
+    @media screen and (max-width: $s) {
+      div {
+        width: 200px;
+        height: 200px;
+      }
+    }
   }
 }
 .position-wrapper {
   display: flex;
   flex-direction: column;
   justify-content: center;
-}
-.status-display {
-  text-align: center;
-  padding: 10px;
-  margin: 5px 0;
-  border-radius: 8px;
-  color: black;
-  h2 {
-    margin: 0;
-    font-size: 1.1em;
-    font-weight: 600;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-  }
 }
 .users {
   @extend %btn-style;
@@ -79,17 +133,187 @@
   td {
     @extend %btn-style;
     width: 20%;
+    height: 30px;
     text-align: center;
   }
+  @media screen and (max-width: $m) {
+    td {
+      height: 50px;
+    }
+  }
   .home-page-user-photo {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: inherit;
-  img {
-    width: 26px;
-    height: 26px;
-    border-radius: var(--btn-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: inherit;
+    img {
+      width: 26px;
+      height: 26px;
+      border-radius: var(--btn-radius);
+    }
   }
 }
+
+.games-list-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 2em;
+  }
+}
+.games-list-content {
+  width: 100%;
+}
+.mode-selection {
+  @extend %panel-style;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 5px;
+  h3 {
+    margin: 0 10px 0 5px;
+  }
+  input {
+    @include button-style(156px, 31px, 0px);
+    @extend %panel-style;
+  }
+  select,
+  button {
+    @include button-style(130px, 35px, 0px);
+    @extend %btn-style;
+  }
+}
+.games-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+  max-width: 1200px;
+}
+
+.game-card {
+  @extend %btn-style;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  cursor: pointer;
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  }
+
+  .game-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.3em;
+    }
+
+    .game-type {
+      background-color: var(--light-square-color);
+      color: var(--dark-square-color);
+      padding: 4px 12px;
+      border-radius: 16px;
+      font-size: 0.8em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+  }
+
+  .game-description {
+    margin: 10px 0 15px 0;
+    color: var(--text-secondary, #666);
+    font-size: 0.95em;
+    flex-grow: 1;
+  }
+
+  .game-button {
+    @include button-style(100%, 40px, 10px);
+    @extend %btn-style;
+    align-self: flex-start;
+    width: 100%;
+    margin-top: auto;
+  }
+}
+
+.join-game-section {
+  input {
+    @extend %panel-style;
+  }
+  button {
+    @extend %btn-style;
+  }
+}
+.active-rooms-list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin: 0 auto;
+}
+.no-active-games {
+  text-align: center;
+  color: var(--text-secondary, #666);
+}
+.room-waiting {
+  @extend %panel-style;
+  width: 480px;
+  height: 480px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  p {
+    font-size: 1.5em;
+  }
+  button {
+    @include button-style(150px, 35px, 10px);
+    @extend %btn-style;
+  }
+}
+.room-card {
+  @extend %btn-style;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+  padding: 15px;
+
+  .room-info {
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    flex-grow: 1;
+
+    h4 {
+      margin: 0 0 8px 0;
+      font-size: 1.1em;
+      color: var(--dark-square-color);
+    }
+
+    p {
+      margin: 4px 0;
+      font-size: 0.9em;
+      color: #666;
+    }
+  }
+
+  .join-room-button {
+    @include button-style(120px, 35px, 8px);
+    @extend %btn-style;
+    margin-left: 15px;
+  }
 }

@@ -13,7 +13,6 @@ const ChessBoard = () => {
     <article
       className={styles["wrapper"]}
       style={{
-        "--cell-size": `${480 / boardSize}px`,
         "--board-size": boardSize,
       }}
     >

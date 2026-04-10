@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
@@ -84,8 +85,9 @@ import styles from "./CreatePosition.module.scss";
 import { createSpecialPosition } from "../../helpers";
 
 const CreatePosition = () => {
-  const { appState, dispatch } = useAppContext();
+  const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();
@@ -147,6 +149,10 @@ const CreatePosition = () => {
       if ((user.rookType === "chariot") !== pieceChariot) {
         setPieceChariot(user.rookType === "chariot");
       }
+      if (localStorage.getItem("chess_side") === appState.playerTurn) {
+        const newSide = appState.playerTurn;
+        localStorage.setItem("chess_side", newSide);
+      }
     } else {
       setLightSquareColor(DEFAULT_LIGHT_COLOR);
       setDarkSquareColor(DEFAULT_DARK_COLOR);
@@ -155,6 +161,7 @@ const CreatePosition = () => {
       localStorage.setItem("lightSquareColor", DEFAULT_LIGHT_COLOR);
       localStorage.setItem("darkSquareColor", DEFAULT_DARK_COLOR);
       localStorage.setItem("replaceRook", "rook");
+      localStorage.setItem("chess_side", "white");
       document.documentElement.style.setProperty(
         "--light-square-color",
         DEFAULT_LIGHT_COLOR,
@@ -328,10 +335,57 @@ const CreatePosition = () => {
     setStart("no");
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState } });
   };
+  const isKingPiece = (piece, color) => {
+    if (typeof piece !== "string") return false;
+
+    const cleanPiece = piece.split(",")[0];
+
+    return cleanPiece.startsWith(color) && cleanPiece.endsWith("king");
+  };
+
+  const hasValidKingSetup = () => {
+    const position = appState?.position || [];
+    const flattened = position.flat(Infinity);
+    const hasWhiteKing = flattened.some((piece) => isKingPiece(piece, "white"));
+    const hasBlackKing = flattened.some((piece) => isKingPiece(piece, "black"));
+    return hasWhiteKing && hasBlackKing;
+  };
+
   const handleStartVariant = () => {
     localStorage.setItem("chess_mode", "game");
     setStart("yes");
   };
+  const handlePlayInRoom = () => {
+    const roomId = Math.random().toString(36).substring(7);
+    const gameMode = "custom";
+
+    dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
+
+    dispatch({
+      type: actionTypes.SET_MULTIPLAYER,
+      payload: { isMultiplayer: true, roomId },
+    });
+
+    if (socket) {
+      socket.emit("joinGame", roomId, {
+        gameMode,
+        initialState: {
+          ...appState,
+          isMultiplayer: true,
+          roomId,
+        },
+      });
+    }
+
+    localStorage.setItem("chess_mode", "game");
+    localStorage.setItem("chess_variant", "multiplayer");
+    localStorage.setItem("gameMode", gameMode);
+    localStorage.setItem("roomId", roomId);
+
+    setStart("yes");
+    navigate("/games");
+  };
+
   const onClickWhite = () => {
     localStorage.setItem("chess_side", "white");
     setSelectedColor("white");
@@ -418,9 +472,20 @@ const CreatePosition = () => {
             {t("custom_panel.rotate_board")}
           </button>
           {start === "no" && (
-            <button onClick={handleStartVariant}>
-              {t("game_info_panel.start")}
-            </button>
+            <>
+              <button
+                onClick={handleStartVariant}
+                disabled={!hasValidKingSetup()}
+              >
+                {t("custom_panel.play_vs_bot")}
+              </button>
+              <button
+                onClick={handlePlayInRoom}
+                disabled={!hasValidKingSetup()}
+              >
+                {t("custom_panel.play_in_room")}
+              </button>
+            </>
           )}
           {start === "yes" && (
             <button onClick={handleResetPosition}>

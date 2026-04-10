@@ -1,26 +1,67 @@
-@use '/src/common/styles/colors' as *;
+@use "/src/common/styles/colors" as *;
 
 %btn-style {
-    cursor: pointer;
-    font-size: 1.8vh;
-    font-weight: 600;
-    text-align: center;
-    color: $btnColor;
+  cursor: pointer;
+  font-size: 1.8vh;
+  font-weight: 600;
+  text-align: center;
+  color: $btnColor;
+
+  position: relative;
+  overflow: hidden;
+
+  background-color: transparent;
+  border: var(--btn-border);
+  border-radius: var(--btn-radius);
+
+  transition: all 0.3s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     background: var(--btn-style-color);
-    border: var(--btn-border);
-    border-radius: var(--btn-radius);
-    transition: 1s;
-    &:hover {
-        background: var(--btn-hover);
+    background-size: 400% 400%;
+    animation: gradientFlow 8s ease infinite;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+  }
+
+  &:hover {
+    background-color: var(--btn-hover);
+    &::before {
+      opacity: 0;
     }
+  }
 }
+
 %panel-style {
-    font-size: 1.8vh;
-    font-weight: 600;
-    text-align: var(--text-center-panel);
-    color: $btnColor;
-    background: var(--btn-style-color);
-    border: var(--btn-border);
-    border-radius: var(--btn-radius);
-    transition: 1s;
+  font-size: 1.8vh;
+  font-weight: 600;
+  text-align: var(--text-center-panel);
+  color: $btnColor;
+  background-size: 400% 400%;
+  background: var(--btn-style-color);
+  border: var(--btn-border);
+  border-radius: var(--btn-radius);
+  animation: gradientFlow 8s ease infinite;
+  transition: transform 0.3s;
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }

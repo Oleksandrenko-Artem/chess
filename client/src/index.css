@@ -1,21 +1,20 @@
 html {
   scroll-behavior: smooth;
 }
+*, *::before, *::after {
+  box-sizing: border-box;
+}
 :root {
   --bg-color: rgb(255, 255, 255);
-  --text-color: rgb(30, 30, 30);
+  --text-color: rgb(255, 255, 255);
   --text-center: left;
   --text-center-panel: var(--text-center);
-  --btn-gradient-old: linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(180, 180, 180) 47%, rgb(141, 141, 141) 74%);
-  --btn-style-color: var(--btn-color-new);
-  --btn-color-new: rgb(180, 180, 180);
-  --btn-hover-light-new: rgb(220, 220, 220);
-  --btn-hover-light-old: linear-gradient(160deg, rgb(255, 255, 255) 0%, rgb(221, 221, 221) 47%, rgb(185, 185, 185) 74%);
+  --btn-gradient: linear-gradient(160deg, rgb(143, 205, 255) 0%, rgb(45, 111, 255) 47%, rgb(15, 0, 218) 74%);
+  --btn-style-color: var(--btn-gradient);
+  --btn-hover-light: rgb(70, 170, 252);
   --btn-border: none;
   --btn-radius: 50px;
-  --btn-hover: var(--btn-hover-new);
-  --btn-hover-old: var(--btn-hover-light-old);
-  --btn-hover-new: var(--btn-hover-light-new);
+  --btn-hover: var(--btn-hover-light);
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -33,16 +32,12 @@ li {
 [data-theme='dark'] {
   --bg-color: rgb(30, 30, 30);
   --text-color: rgb(255, 255, 255);
-  --btn-gradient-old: linear-gradient(160deg, rgba(217, 215, 215, 1) 0%, rgba(89, 87, 87, 1) 47%, rgba(56, 55, 55, 1) 74%);
-  --btn-hover-old: var(--btn-hover-dark-old);
-  --btn-hover-new: var(--btn-hover-dark-new);
-  --btn-hover-dark-old: linear-gradient(160deg, rgb(235, 232, 232) 0%, rgb(131, 130, 130) 47%, rgb(102, 102, 102) 74%);
-  --btn-hover-dark-new: rgb(90, 90, 90);
-  --btn-color-new: rgb(50, 50, 50);
+  --btn-gradient: linear-gradient(160deg, rgb(1, 96, 173) 0%, rgb(0, 60, 189) 47%, rgb(8, 0, 116) 74%);
+  --btn-hover-dark: rgb(1, 125, 226);
 }
 [data-style='old'] {
-  --btn-style-color: var(--btn-gradient-old);
-  --btn-hover: var(--btn-hover-old);
+  --btn-style-color: var(--btn-gradient);
+  --btn-hover: var(--btn-hover-light);
   --btn-border: 2px outset black;
   --btn-radius: 0;
   --text-center: center;

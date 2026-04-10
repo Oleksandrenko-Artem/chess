@@ -62,6 +62,31 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     }
   };
   const onDragEnd = (e) => e.target.classList.remove(styles.dragging);
+  const onClick = (e) => {
+    const userSide = localStorage.getItem("chess_side");
+    const isHuman = appState.playerTurn === userSide;
+
+    if (appState.status !== status.ongoing || !isHuman || piece === "brick")
+      return;
+
+    if (piece.startsWith(playerTurn)) {
+      const validMoves = arbiter.getRegularMoves({
+        position: currentPosition,
+        prevPosition: prevBoard,
+        castleDirection: castleDirection[playerTurn],
+        piece,
+        rank,
+        file,
+      });
+
+      dispatch(
+        generateValidMoves({
+          validMoves,
+          selected: { from: [rank, file], piece },
+        }),
+      );
+    }
+  };
   return (
     <div
       className={classNames}
@@ -69,6 +94,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
       draggable={true}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
+      onClick={onClick}
     ></div>
   );
 };

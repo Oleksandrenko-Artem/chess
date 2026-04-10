@@ -1,26 +1,27 @@
-@use '/src/common/styles/templates' as *;
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .wrapper {
-    @extend %panel-style;
-    width: 465px;
-    height: 300px;
-    padding: 20px;
-    overflow-y: auto;
+  @extend %panel-style;
+  width: 100%;
+  height: 70%;
+  padding: 14px;
+  overflow-y: auto;
 }
 .moves-list {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 5px;
-    font-weight: 800;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 5px;
+  font-weight: 800;
 }
 .moves-list div[data-number]:nth-child(odd)::before {
-    content: attr(data-number);
-    font-weight: 600;
+  content: attr(data-number);
+  font-weight: 600;
 }
 .moves-List:not([data-number]) {
-      padding-left: 0;
-      &::before {
-        display: none;
-      }
-    }
+  padding-left: 0;
+  &::before {
+    display: none;
+  }
+}

@@ -1,89 +1,103 @@
-@use '/src/common/styles/widths' as *;
-@use '/src/common/styles/templates' as *;
-@use '/src/common/styles/mixins' as *;
+@use "/src/common/styles/widths" as *;
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/mixins" as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .header {
+  display: flex;
+  flex-direction: column;
+  padding: 5px;
+  .header-logo {
     display: flex;
-    flex-direction: column;
-    padding: 5px;
-    .header-logo {
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 0 10px 0;
+    gap: 5px;
+    a {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: rgb(15, 0, 218);
+      img {
+        width: 40px;
+      }
+    }
+    .logo {
+      display: flex;
+      align-items: end;
+      flex-wrap: nowrap;
+    }
+    .sign {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+      .user-image {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        a {
-            font-size: 1.8em;
-            font-weight: 700;
-            img {
-                width: 40px;
-            }
+        justify-content: center;
+        width: 30px;
+        img {
+          width: 26px;
+          height: 26px;
+          border-radius: var(--btn-radius);
         }
-        .sign {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            .user-image {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                width: 30px;
-                img {
-                    width: 26px;
-                    height: 26px;
-                    border-radius: var(--btn-radius);
-                }
-            }
-            .active-link {
-                background-color: rgb(190, 190, 190);
-            }
-            a, button {
-                @extend %btn-style;
-            }
-            a {
-                @include link-style($linkWidth, $linkHeight, $linkLineHeight);
-            }
-            button {
-                @include button-style($buttonWidth, $buttonHeight, $buttonPadding);
-            }
-        }
+      }
+      a,
+      button {
+        @extend %btn-style;
+      }
+      a {
+        @include link-style($linkWidth, $buttonHeight, $linkLineHeight);
+      }
+      button {
+        @include button-style($buttonWidth, $buttonHeight, $buttonPadding);
+      }
     }
-    .header-nav {
+  }
+  .header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    nav {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 0;
+      .active-nav {
+        --btn-style-color: rgb(100, 185, 255);
+      }
+      a {
+        @extend %btn-style;
+        @include link-style($linkWidth, $buttonHeight, $linkLineHeight);
+      }
+    }
+    .style-panel {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      .btn {
+        @include button-style(40px, $buttonHeight, $buttonPadding);
+        @extend %btn-style;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        nav {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            padding: 0;
-            .active-nav {
-                --text-color: rgb(40, 40, 40);
-                --btn-style-color: rgb(230, 230, 230);
-            }
-            a {
-                @extend %btn-style;
-                @include link-style($linkWidth, $linkHeight, $linkLineHeight);
-            }
+        justify-content: center;
+        img {
+          width: 35px;
+          height: 25px;
+          border-radius: var(--btn-radius);
         }
-        .style-panel {
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            .btn {
-                @include button-style(40px, $buttonHeight, $buttonPadding);
-                @extend %btn-style;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                img {
-                    width: 35px;
-                    height: 25px;
-                    border-radius: var(--btn-radius);
-                }
-            }
-            .btn-second {
-                @include button-style(120px, $buttonHeight, $buttonPadding);
-                @extend %btn-style;
-            }
-        }
+      }
+      .btn-second {
+        @include button-style(120px, $buttonHeight, $buttonPadding);
+        @extend %btn-style;
+      }
     }
+  }
+  @media screen and (max-width: $x) {
+    .style-panel {
+      padding-top: 10px;
+    }
+  }
 }

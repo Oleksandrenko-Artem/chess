@@ -1,9 +1,13 @@
 {
   "header": {
+    "single-player": "Одиночна гра",
+    "single-player-chess": "Динамічна стратегія, розроблена в середньовічній Європі.",
+    "single-player-shatranj": "Давня позиційна гра, шахи в які грали 1000 років назад.",
     "chess": "Шахи",
     "shatranj": "Шатрандж",
     "new_chess": "Нові шахи",
     "old_chess": "Старі шахи",
+    "games_list": "Багатокористувацька гра",
     "extended_chess": "Розширенні шахи",
     "grand-ace-drex": "Грант Аседрекс",
     "great-chess": "Великі шахи",
@@ -19,7 +23,24 @@
     "info": "Інформація",
     "login": "Увійти",
     "register": "Реєстрація",
-    "logout": "Вийти"
+    "logout": "Вийти",
+    "game-room": "Кімната",
+    "game-mode": "Режим:",
+    "game-players": "Гравці:",
+    "game-created-at": "Створено:",
+    "game-player-count": "Кількість гравців:",
+    "game-player-side": "Сторона гравця:",
+    "game-player-white": "Білі",
+    "game-player-black": "Чорні",
+    "game-player-ready": "Гравець готовий",
+    "game-player-waiting": "Очікування другого гравця...",
+    "game-exit": "Вийти з кімнати",
+    "no-active-rooms": "Немає активних ігр на данний момент",
+    "enter-room-id": "Введіть ID кімнати",
+    "choose-mode": "Виберіть режим гри",
+    "create-game": "Створити гру",
+    "join-game": "Приєднатися",
+    "leave_game_alert": "Не можна змінити режим гри під час багатокористувацької партії!"
   },
   "custom_panel": {
     "standart_pieces": "Стандартні фігури",
@@ -29,6 +50,8 @@
     "reset_colors": "Скинути кольори",
     "change_color": "Змінити колір",
     "rotate_board": "Повернути дошку",
+    "play_vs_bot": "Грати проти бота",
+    "play_in_room": "Грати в кімнаті",
     "reset_position": "Скинути позицію",
     "change_promotion": "Змінити",
     "king_message": "На дошці вже є",
@@ -69,7 +92,7 @@
     "draw": "Нічия",
     "turn": "Хід: ",
     "start": "Старт",
-    "start_again": "Почати знову",
+    "start_again": "Здатися",
     "choose_color": "Виберіть колір"
   },
   "validation": {

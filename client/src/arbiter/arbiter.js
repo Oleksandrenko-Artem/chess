@@ -878,6 +878,10 @@ const arbiter = {
             const blackHorse = pieceCounts['black_horse'] || 0;
             if (whiteHorse === 1 && blackHorse === 1) {
                 return true;
+            } else if (whiteHorse === 2 && blackHorse === 0) {
+                return true;
+            } else if (whiteHorse === 0 && blackHorse === 2) {
+                return true;
             }
             const whiteBishop = findPieceCoords(position, 'white_bishop');
             const blackBishop = findPieceCoords(position, 'black_bishop');

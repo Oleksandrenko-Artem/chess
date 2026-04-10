@@ -93,6 +93,12 @@ export const reducer = (state, action) => {
                 ...state,
                 orientation: action.payload
             };
+        case actionTypes.SET_STATUS:
+            return {
+                ...state,
+                status: action.payload,
+                timerActive: false,
+            };
         case actionTypes.SET_BOARD_SIZE:
             return {
                 ...state,
@@ -146,6 +152,13 @@ export const reducer = (state, action) => {
                 ...state,
                 status: status[winner],
                 timerActive: false,
+            };
+        };
+        case actionTypes.SET_MULTIPLAYER: {
+            return {
+                ...state,
+                isMultiplayer: action.payload.isMultiplayer,
+                roomId: action.payload.roomId,
             };
         };
         default:

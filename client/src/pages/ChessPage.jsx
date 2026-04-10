@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../contexts/Context";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +12,7 @@ const ChessPage = (props) => {
   const { start, setStart } = props;
   const navigate = useNavigate();
   const { appState } = useAppContext();
-  const { t } = useTranslation();
+
   useEffect(() => {
     if (!appState || !appState.position) {
       navigate("/");

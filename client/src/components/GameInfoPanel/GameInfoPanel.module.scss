@@ -1,22 +1,29 @@
 @use "/src/common/styles/widths" as *;
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/mixins" as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .wrapper {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0;
+  padding: 0;
   .start-panel {
     @extend %panel-style;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     width: 480px;
-    height: 480px;
+    aspect-ratio: 1 / 1;
+    padding: 12px;
     button {
       @extend %btn-style;
-      @include button-style($buttonWidth, $buttonHeight, $buttonPadding);
+      @include button-style(60px, 30px, 5px);
     }
     .img-div {
       display: flex;
@@ -25,12 +32,23 @@
       justify-content: center;
       .img-style {
         @extend %btn-style;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         border-radius: 0%;
-        padding: 30px;
+        padding: 10px;
+        background: var(--btn-style-color);
+        background-size: 400% 400%;
+        animation: gradientFlow 7s ease infinite;
+
+        &.active {
+          background: var(--btn-hover);
+          animation: none;
+        }
       }
     }
     .active {
-      --btn-style-color: rgb(230, 230, 230);
+      --btn-style-color: rgb(100, 185, 255);
     }
   }
   .game-status {
@@ -38,26 +56,56 @@
     text-align: center;
     width: 200px;
     height: 480px;
-    margin: 5px -2px 0 0;
+    margin: 0;
+    padding: 12px;
     .game-message {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 5px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .buttons-div {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
     }
     span {
       color: black;
       font-weight: bold;
+      font-size: 12px;
     }
     img {
-      margin: 2px;
-      padding: 5px;
-      width: 40px;
-      height: 50px;
+      margin: 1px;
+      padding: 2px;
+      width: 30px;
+      height: 35px;
     }
     button {
       @extend %btn-style;
-      @include button-style(160px, $buttonHeight, $buttonPadding);
+      @include button-style(140px, 25px, 5px);
+    }
+  }
+  @media screen and (max-width: $x) {
+    .game-status {
+      width: clamp(380px, 90vw, 480px);
+      height: 100px;
+      .game-message {
+        justify-content: center;
+        flex-direction: row;
+      }
+    }
+  }
+  @media screen and (max-width: $l) {
+      .start-panel {
+      width: 300px;
+      height: 300px;
+    }
+  }
+  @media screen and (max-width: $s) {
+    .game-status {
+      height: 160px;
     }
   }
 }

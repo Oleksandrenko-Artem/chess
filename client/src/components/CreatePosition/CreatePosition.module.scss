@@ -1,95 +1,140 @@
-@use '/src/common/styles/templates' as *;
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .wrapper {
-    width: 100%;
-    height: 15vh;
-    .btns-div {
-        display: flex;
-        justify-content: space-between;
-        padding: 5px;
-        div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        button, select {
-            @extend %btn-style;
-            height: 5vh;
-        }
-        button {
-            width: 15vh;
-        }
-        select {
-            width: 25vh;
-            option {
-                color: black;
-            }
-        }
-        input[type="color"] {
-            width: 5vh;
-            height: 5vh;
-            @extend %btn-style;
-        }
-        .board-size-select {
-            width: 10vh;
-        }
+  width: 100%;
+  height: 22vh;
+  .btns-div {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    padding: 5px;
+    div {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .replace-pieces {
-        display: flex;
-        flex-direction: row;
-        .pieces-variants {
-            @extend %btn-style;
-            display: flex;
-            align-items: center;
-            img {
-                width: 3.5vh;
-                height: 4vh;
-            }
-        }
+    button,
+    select {
+      @extend %btn-style;
+      height: 5vh;
     }
-    img {
-        cursor: grab;
-        width: 6vh;
-        height: 6vh;
-        padding: 0 5px;
-        &:active {
-            cursor: grabbing;
-        }
+    button {
+      width: 15vh;
     }
-    .pawn {
+    select:disabled, button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+    select {
+      width: 25vh;
+      background: var(--btn-style-color);
+      background-size: 400% 400%;
+      animation: gradientFlow 7s ease-in-out infinite;
+      &:hover {
+        background: var(--btn-hover);
+        animation: none;
+      }
+      option {
+        color: black;
+      }
+    }
+    input[type="color"] {
+      width: 5vh;
+      height: 5vh;
+      @extend %btn-style;
+    }
+    .validation-error {
+      color: #ff6b6b;
+      font-size: 0.95rem;
+      margin-top: 8px;
+      width: 100%;
+      text-align: center;
+    }
+    .board-size-select {
+      width: 10vh;
+    }
+  }
+  .replace-pieces {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    .pieces-variants {
+      @extend %btn-style;
+      display: flex;
+      align-items: center;
+      img {
+        width: 5vh;
         height: 4.5vh;
+      }
     }
-    .img-div {
-        img {
-            width: 24px;
-            height: 28.05px;
-            @extend %btn-style;
-        }
+  }
+  img {
+    cursor: grab;
+    width: 7vh;
+    height: 6vh;
+    padding: 0 5px;
+    &:active {
+      cursor: grabbing;
     }
-    .promotion-div {
-        display: flex;
-        align-items: center;
+  }
+  .pawn {
+    height: 4.5vh;
+  }
+  .img-div {
+    img {
+      width: 34px;
+      height: 28.05px;
+      @extend %btn-style;
+      background: var(--btn-style-color);
+      background-size: 400% 400%;
+      animation: gradientFlow 7s ease-in-out infinite;
+      &:hover {
+        background: var(--btn-hover);
+        animation: none;
+      }
     }
-    .promotion-options {
-        display: flex;
-        align-items: center;
-        padding: 5px;
-        gap: 10px;
-        button, select {
-            @extend %btn-style;
-            height: 5vh;
-        }
-        button {
-            width: 15vh;
-        }
-        select {
-            width: 25vh;
-            option {
-                color: black;
-            }
-        }
+  }
+  .promotion-div {
+    display: flex;
+    align-items: center;
+  }
+  .promotion-options {
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    gap: 10px;
+    button,
+    select {
+      @extend %btn-style;
+      height: 5vh;
     }
-    .active {
-        --btn-style-color: rgb(230, 230, 230);
-        }
+    button {
+      width: 15vh;
+    }
+    select {
+      width: 25vh;
+      background: var(--btn-style-color);
+      background-size: 400% 400%;
+      animation: gradientFlow 7s ease-in-out infinite;
+      &:hover {
+        background: var(--btn-hover);
+        animation: none;
+      }
+      option {
+        color: black;
+      }
+    }
+  }
+  .active {
+    --btn-style-color: rgb(100, 185, 255);
+  }
+  @media screen and (max-width: $x) {
+    height: 30vh;
+  }
+  @media screen and (max-width: $m) {
+    height: 35vh;
+  }
 }

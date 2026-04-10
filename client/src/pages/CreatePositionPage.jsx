@@ -9,7 +9,6 @@ import CreatePosition from "../components/CreatePosition/CreatePosition";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
 import MovesList from "../components/MovesList/MovesList";
 import styles from './Pages.module.scss';
-import GameInfoPanel from '../components/GameInfoPanel/GameInfoPanel';
 
 const CreatePositionPage = () => {
     const dispatch = useDispatch();
