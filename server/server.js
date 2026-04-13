@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://90d9bf75b803cdf4-95-47-113-136.serveousercontent.com",
-            "https://cf6ba8b2621ac2ab-95-47-113-136.serveousercontent.com",
+            "https://d80b06a2c47b9f5b-95-47-113-109.serveousercontent.com",
+            "https://9e15cb2b881cbd66-95-47-113-109.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",

@@ -474,6 +474,94 @@ export const createGrandChessPosition = (size = 10) => {
 
     return position;
 }
+export const createChess960Position = (size = 8) => {
+    const position = createEmptyPosition(size);
+
+    const backRank = Array(8).fill(null);
+
+    const evenSquares = [0, 2, 4, 6];
+    const oddSquares = [1, 3, 5, 7];
+
+    const bishop1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
+    const bishop2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
+
+    backRank[bishop1] = 'bishop';
+    backRank[bishop2] = 'bishop';
+
+    let emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+    const queen = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    backRank[queen] = 'ferz';
+
+    emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+    const knight1 = emptySquares.splice(Math.floor(Math.random() * emptySquares.length), 1)[0];
+    const knight2 = emptySquares.splice(Math.floor(Math.random() * emptySquares.length), 1)[0];
+
+    backRank[knight1] = 'horse';
+    backRank[knight2] = 'horse';
+
+    emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+
+    emptySquares.sort((a, b) => a - b);
+    const [rook1, king, rook2] = emptySquares;
+
+    backRank[rook1] = 'rook';
+    backRank[king] = 'king';
+    backRank[rook2] = 'rook';
+
+    for (let i = 0; i < 8; i++) {
+        position[7][i] = 'white_' + backRank[i];
+        position[6][i] = 'white_pawn';
+
+        position[0][i] = 'black_' + backRank[i];
+        position[1][i] = 'black_pawn';
+    }
+
+    return position;
+};
+export const createShatranj960Position = (size = 8) => {
+    const position = createEmptyPosition(size);
+
+    const backRank = Array(8).fill(null);
+
+    const evenSquares = [0, 2, 4, 6];
+    const oddSquares = [1, 3, 5, 7];
+
+    const bishop1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
+    const bishop2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
+
+    backRank[bishop1] = 'elephant';
+    backRank[bishop2] = 'elephant';
+
+    let emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+    const queen = emptySquares[Math.floor(Math.random() * emptySquares.length)];
+    backRank[queen] = 'firzan';
+
+    emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+    const knight1 = emptySquares.splice(Math.floor(Math.random() * emptySquares.length), 1)[0];
+    const knight2 = emptySquares.splice(Math.floor(Math.random() * emptySquares.length), 1)[0];
+
+    backRank[knight1] = 'horse';
+    backRank[knight2] = 'horse';
+
+    emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
+
+    emptySquares.sort((a, b) => a - b);
+    const [rook1, king, rook2] = emptySquares;
+
+    backRank[rook1] = 'chariot';
+    backRank[king] = 'imperator';
+    backRank[rook2] = 'chariot';
+
+    for (let i = 0; i < 8; i++) {
+        position[7][i] = 'white_' + backRank[i];
+        position[6][i] = 'white_soldier';
+
+        position[0][i] = 'black_' + backRank[i];
+        position[1][i] = 'black_soldier';
+    }
+
+    return position;
+};
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';

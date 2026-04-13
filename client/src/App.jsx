@@ -5,8 +5,10 @@ import { useDispatch } from "react-redux";
 import { io } from "socket.io-client";
 import { reducer } from "./reducers/reducer";
 import {
+  initialChess960State,
   initialGameState,
   initialOldGameState,
+  initialShatranj960State,
   initialSpecialGameState,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
@@ -23,14 +25,17 @@ import LoginForm from "./components/forms/LoginForm";
 import CreatePositionPage from "./pages/CreatePositionPage";
 import ProfilePage from "./pages/ProfilePage";
 import { getStoredColor } from "./utils/color";
-import InfoPage from "./pages/InfoPage";
 import GamesListPage from "./pages/GamesListPage";
 import {
   createPosition,
   createSpecialPosition,
   createOldPosition,
+  createChess960Position,
+  createShatranj960Position,
 } from "./helpers";
 import SinglePlayerPage from "./pages/SinglePlayerPage";
+import Chess960Page from "./pages/Chess960Page";
+import Shatranj960Page from "./pages/Shatranj960Page";
 
 function App() {
   const dispathUser = useDispatch();
@@ -46,11 +51,15 @@ function App() {
       ? parseInt(localStorage.getItem("boardSize") || "8", 10)
       : 8;
   let initialStateAtLoad =
-    savedVariant === "shatranj"
-      ? initialOldGameState
-      : savedVariant === "special"
-        ? initialSpecialGameState
-        : initialGameState;
+  savedVariant === "shatranj"
+    ? initialOldGameState
+    : savedVariant === "special"
+      ? initialSpecialGameState
+      : savedVariant === "chess960"
+        ? initialChess960State
+        : savedVariant === "shatranj960"
+          ? initialShatranj960State
+          : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -67,7 +76,11 @@ function App() {
           ? [createOldPosition(8)]
           : savedVariant === "special"
             ? [createSpecialPosition(8)]
-            : [createPosition(8)],
+            : savedVariant === "chess960"
+              ? [createChess960Position(8)]
+              : savedVariant === "shatranj960"
+                ? [createShatranj960Position(8)]
+                : [createPosition(8)],
     };
   }
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
@@ -75,7 +88,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://cf6ba8b2621ac2ab-95-47-113-136.serveousercontent.com";
+      "https://9e15cb2b881cbd66-95-47-113-109.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -115,6 +128,38 @@ function App() {
       ...initialOldGameState,
       boardSize: 8,
       position: [createOldPosition(8)],
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
+  const handlePlayChess960 = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "chess960");
+      localStorage.removeItem("chess_mode");
+    }
+    const newInitialState = {
+      ...initialChess960State,
+      boardSize: 8,
+      position: [createChess960Position(8)],
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
+  const handlePlayShatranj960 = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "shatranj960");
+      localStorage.removeItem("chess_mode");
+    }
+    const newInitialState = {
+      ...initialShatranj960State,
+      boardSize: 8,
+      position: [createShatranj960Position(8)],
     };
     dispatch({
       type: actionTypes.RESET_GAME,
@@ -195,6 +240,8 @@ function App() {
               <SinglePlayerPage
                 onPlayChess={handlePlayChess}
                 onPlayShatranj={handlePlayShatranj}
+                onPlayChess960={handlePlayChess960}
+                onPlayShatranj960={handlePlayShatranj960}
               />
             }
           />
@@ -210,8 +257,15 @@ function App() {
             path="/play-shatranj"
             element={<ShatranjPage start={start} setStart={setStart} />}
           />
+          <Route
+            path="/play-chess960"
+            element={<Chess960Page start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-shatranj960"
+            element={<Shatranj960Page start={start} setStart={setStart} />}
+          />
           <Route path="/create-position" element={<CreatePositionPage />} />
-          <Route path="/info" element={<InfoPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

@@ -7,7 +7,7 @@ import GameInfoPanel from "./../components/GameInfoPanel/GameInfoPanel";
 import MovesList from "../components/MovesList/MovesList";
 import styles from "./Pages.module.scss";
 
-const ChessPage = (props) => {
+const Chess960Page = (props) => {
   const { start, setStart } = props;
   const navigate = useNavigate();
   const { appState } = useAppContext();
@@ -42,4 +42,4 @@ const ChessPage = (props) => {
   );
 };
 
-export default ChessPage;
+export default Chess960Page;

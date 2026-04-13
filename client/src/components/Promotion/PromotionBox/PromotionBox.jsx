@@ -221,7 +221,7 @@ const PromotionBox = ({ onClosePromotion }) => {
     ],
   );
   useEffect(() => {
-    if (promotionSquare && variant === "shatranj") {
+    if (promotionSquare && (variant === "shatranj" || variant === "shatranj960")) {
       const promotionKey = `${promotionSquare.rank}-${promotionSquare.file}-${promotionSquare.targetRank}-${promotionSquare.targetFile}`;
       if (processedPromotionRef.current === promotionKey) {
         return;
@@ -239,7 +239,7 @@ const PromotionBox = ({ onClosePromotion }) => {
     handlePromotion(option);
     onClosePromotion?.();
   };
-  if (variant === "shatranj") {
+  if (variant === "shatranj" || variant === "shatranj960") {
     return null;
   }
   return (

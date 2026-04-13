@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useAppContext } from "../contexts/Context";
 import actionTypes from "../reducers/actionTypes";
 import {
+  initialChess960State,
   initialGameState,
   initialOldGameState,
+  initialShatranj960State,
   initialSpecialGameState,
   status,
 } from "../constants";
@@ -12,6 +14,8 @@ import {
   createPosition,
   createOldPosition,
   createSpecialPosition,
+  createChess960Position,
+  createShatranj960Position,
 } from "../helpers";
 import styles from "./Pages.module.scss";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
@@ -22,6 +26,8 @@ import MovesList from "../components/MovesList/MovesList";
 const MODE_LABELS = {
   chess: "Chess",
   shatranj: "Shatranj",
+  chess960: "Chess960",
+  shatranj960: "Shatranj960",
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
@@ -30,6 +36,20 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       ...initialOldGameState,
       boardSize: 8,
       position: [createOldPosition(8)],
+    };
+  }
+  if (mode === "chess960") {
+    return {
+      ...initialChess960State,
+      boardSize: 8,
+      position: [createChess960Position(8)],
+    };
+  }
+  if (mode === "shatranj960") {
+    return {
+      ...initialShatranj960State,
+      boardSize: 8,
+      position: [createShatranj960Position(8)],
     };
   }
   if (mode === "custom") {
@@ -337,6 +357,8 @@ const GamesListPage = ({ start, setStart }) => {
             >
               <option value="chess">{MODE_LABELS.chess}</option>
               <option value="shatranj">{MODE_LABELS.shatranj}</option>
+              <option value="chess960">{MODE_LABELS.chess960}</option>
+              <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
             </select>
             <button onClick={handleFindGame}>{t("header.create-game")}</button>
             <input
@@ -348,7 +370,9 @@ const GamesListPage = ({ start, setStart }) => {
             <button onClick={handleJoinGame}>{t("header.join-game")}</button>
           </div>
           {activeRooms.length === 0 ? (
-            <p className={styles['no-active-games']}>{t("header.no-active-rooms")}</p>
+            <p className={styles["no-active-games"]}>
+              {t("header.no-active-rooms")}
+            </p>
           ) : (
             <div className={styles["active-rooms-list"]}>
               {activeRooms.map((room) => (

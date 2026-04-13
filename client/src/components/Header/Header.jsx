@@ -8,8 +8,7 @@ import styles from "./Header.module.scss";
 
 const Header = (props) => {
   const dispatch = useDispatch();
-  const { onPlaySpecial, onPlayMultiplayer } =
-    props;
+  const { onPlaySpecial, onPlayMultiplayer } = props;
   const { user } = useSelector((state) => state.users);
   const { appState } = useAppContext();
   const initialTheme = localStorage.getItem("theme") || "light";
@@ -44,14 +43,8 @@ const Header = (props) => {
   };
 
   const handleNavigation = (e, callback) => {
-    if (appState.isMultiplayer) {
-      e.preventDefault();
-      alert(t("header.leave_game_alert"));
-      return;
-    }
     if (callback) callback();
   };
-
   return (
     <header className={styles.header}>
       <div className={styles["header-logo"]}>
@@ -113,14 +106,6 @@ const Header = (props) => {
               {t("header.custom_position")}
             </NavLink>
           )}
-          <NavLink
-            to="/info"
-            className={({ isActive }) =>
-              isActive ? styles["active-nav"] : undefined
-            }
-          >
-            {t("header.info")}
-          </NavLink>
         </nav>
         <div className={styles["style-panel"]}>
           <button className={styles["btn-second"]} onClick={handleChangeStyle}>
@@ -143,6 +128,6 @@ const Header = (props) => {
       </div>
     </header>
   );
-};
+};;
 
 export default Header;

@@ -1,4 +1,4 @@
-import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition } from "./helpers";
+import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position } from "./helpers";
 
 export const status = {
     'ongoing': 'Ongoing',
@@ -294,6 +294,48 @@ export const initialGrandChessState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 10,
+};
+export const initialChess960State = {
+    position: [createChess960Position()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 3600,
+    blackTime: 3600,
+    timerActive: false,
+    boardSize: 8,
+};
+export const initialShatranj960State = {
+    position: [createShatranj960Position()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 3600,
+    blackTime: 3600,
+    timerActive: false,
+    boardSize: 8,
 };
 export const piecesArrayPromotion = [
     'horse',

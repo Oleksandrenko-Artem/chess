@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
-import { initialGameState, initialOldGameState } from "../../constants";
+import { initialChess960State, initialGameState, initialOldGameState, initialShatranj960State } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
@@ -71,6 +71,20 @@ const GameInfoPanel = (props) => {
         payload: { initialState: initialOldGameState },
       });
     }
+    if (window.localStorage.getItem("chess_variant") === "chess960") {
+      window.localStorage.setItem("chess_variant", "chess960");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: { initialState: initialChess960State },
+      });
+    }
+    if (window.localStorage.getItem("chess_variant") === "shatranj960") {
+      window.localStorage.setItem("chess_variant", "shatranj960");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: { initialState: initialShatranj960State },
+      });
+    }
     if (window.localStorage.getItem("chess_variant") === "multiplayer") {
       window.localStorage.setItem("chess_variant", "multiplayer");
       dispatch({
@@ -94,7 +108,7 @@ const GameInfoPanel = (props) => {
     }
     if (
       status === "Draw" &&
-      localStorage.getItem("chess_variant") === "shatranj"
+      localStorage.getItem("chess_variant") === "shatranj" || localStorage.getItem("chess_variant") === "shatranj960"
     ) {
       if (appState?.playerTurn === "white") {
         return t("game_info_panel.black_wins");

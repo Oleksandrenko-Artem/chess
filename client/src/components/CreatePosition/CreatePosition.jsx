@@ -340,7 +340,7 @@ const CreatePosition = () => {
 
     const cleanPiece = piece.split(",")[0];
 
-    return cleanPiece.startsWith(color) && cleanPiece.endsWith("king");
+    return cleanPiece.startsWith(color) && (cleanPiece.endsWith("king") || cleanPiece.endsWith("imperator"));
   };
 
   const hasValidKingSetup = () => {

@@ -809,7 +809,7 @@ const arbiter = {
                 }
                 if (hasLegalMove) break;
             }
-            const isShatranj = localStorage.getItem('chess_variant') === 'shatranj';
+            const isShatranj = localStorage.getItem('chess_variant') === 'shatranj' || localStorage.getItem('chess_variant') === 'shatranj960';
 
             if (isInCheck && !hasLegalMove) {
                 return playerColor === 'white' ? status.black : status.white;
