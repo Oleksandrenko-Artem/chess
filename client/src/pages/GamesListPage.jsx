@@ -22,12 +22,15 @@ import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
 import GameInfoPanel from "../components/GameInfoPanel/GameInfoPanel";
 import MovesList from "../components/MovesList/MovesList";
+import Pagination from "./../components/Pagination/Pagination";
+import FilterGameMode from "../components/FiltersPanel/FilterGameMode";
 
 const MODE_LABELS = {
   chess: "Chess",
   shatranj: "Shatranj",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
+  custom: "Custom",
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
@@ -70,6 +73,9 @@ const GamesListPage = ({ start, setStart }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
 
+  const [page, setPage] = useState(1);
+  const [amount, setAmount] = useState(1);
+  const [filterMode, setFilterMode] = useState("all");
   const [gameMode, setGameMode] = useState("chess");
   const [activeRooms, setActiveRooms] = useState([]);
   const [inputRoomId, setInputRoomId] = useState("");
@@ -212,8 +218,7 @@ const GamesListPage = ({ start, setStart }) => {
           dispatch({ type: actionTypes.NEW_MOVE, payload: move });
         });
         setGameReady(true);
-      }
-      else {
+      } else {
         setGameReady(false);
       }
     };
@@ -344,30 +349,51 @@ const GamesListPage = ({ start, setStart }) => {
     setPlayersCount(1);
     setGameReady(false);
   };
+  useEffect(() => {
+    setPage(1);
+  }, [activeRooms]);
+  useEffect(() => {
+    setPage(1);
+  }, [filterMode]);
+  const filteredRooms =
+    filterMode === "all"
+      ? activeRooms
+      : activeRooms.filter((room) => room.gameMode === filterMode);
+  const startIndex = (page - 1) * amount;
+  const endIndex = startIndex + amount;
+
+  const currentRooms = filteredRooms.slice(startIndex, endIndex);
 
   return (
     <div className={styles["games-list-container"]}>
       {!start && !appState?.isMultiplayer && (
         <div className={styles["games-list-content"]}>
           <div className={styles["mode-selection"]}>
-            <h3>{t("header.choose-mode")}</h3>
-            <select
-              value={gameMode}
-              onChange={(e) => setGameMode(e.target.value)}
-            >
-              <option value="chess">{MODE_LABELS.chess}</option>
-              <option value="shatranj">{MODE_LABELS.shatranj}</option>
-              <option value="chess960">{MODE_LABELS.chess960}</option>
-              <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
-            </select>
-            <button onClick={handleFindGame}>{t("header.create-game")}</button>
-            <input
-              type="text"
-              placeholder={` ${t("header.enter-room-id")}`}
-              value={inputRoomId}
-              onChange={(e) => setInputRoomId(e.target.value)}
-            />
-            <button onClick={handleJoinGame}>{t("header.join-game")}</button>
+            <div>
+              <h3>{t("header.choose-mode")}</h3>
+              <select
+                value={gameMode}
+                onChange={(e) => setGameMode(e.target.value)}
+              >
+                <option value="chess">{MODE_LABELS.chess}</option>
+                <option value="shatranj">{MODE_LABELS.shatranj}</option>
+                <option value="chess960">{MODE_LABELS.chess960}</option>
+                <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
+              </select>
+              <button onClick={handleFindGame}>
+                {t("header.create-game")}
+              </button>
+              <input
+                type="text"
+                placeholder={` ${t("header.enter-room-id")}`}
+                value={inputRoomId}
+                onChange={(e) => setInputRoomId(e.target.value)}
+              />
+              <button onClick={handleJoinGame}>{t("header.join-game")}</button>
+            </div>
+            <div>
+              <FilterGameMode mode={filterMode} setGameMode={setFilterMode} />
+            </div>
           </div>
           {activeRooms.length === 0 ? (
             <p className={styles["no-active-games"]}>
@@ -375,7 +401,7 @@ const GamesListPage = ({ start, setStart }) => {
             </p>
           ) : (
             <div className={styles["active-rooms-list"]}>
-              {activeRooms.map((room) => (
+              {currentRooms.map((room) => (
                 <div key={room.roomId} className={styles["room-card"]}>
                   <div className={styles["room-info"]}>
                     <h4>
@@ -383,7 +409,7 @@ const GamesListPage = ({ start, setStart }) => {
                     </h4>
                     <p>
                       {t("header.game-mode")}{" "}
-                      {MODE_LABELS[room.gameMode] || MODE_LABELS.chess}
+                      {MODE_LABELS[room.gameMode]}
                     </p>
                     <p>
                       {t("header.game-players")} {room.playersCount}/2
@@ -403,6 +429,13 @@ const GamesListPage = ({ start, setStart }) => {
               ))}
             </div>
           )}
+          <Pagination
+            page={page}
+            setPage={setPage}
+            total={filteredRooms.length}
+            amount={amount}
+            setAmount={setAmount}
+          />
         </div>
       )}
       {!start && appState?.isMultiplayer && (

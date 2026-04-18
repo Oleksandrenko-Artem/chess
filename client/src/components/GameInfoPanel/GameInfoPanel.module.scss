@@ -65,6 +65,12 @@
       flex-wrap: wrap;
       gap: 10px;
     }
+    .game-message-text {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
     .buttons-div {
       display: flex;
       flex-direction: column;
@@ -79,8 +85,8 @@
     img {
       margin: 1px;
       padding: 2px;
-      width: 30px;
-      height: 35px;
+      width: 35px;
+      height: 40px;
     }
     button {
       @extend %btn-style;
@@ -105,7 +111,10 @@
   }
   @media screen and (max-width: $s) {
     .game-status {
-      height: 160px;
+      height: 200px;
+      .game-message-text {
+        flex-direction: row;
+      }
     }
   }
 }

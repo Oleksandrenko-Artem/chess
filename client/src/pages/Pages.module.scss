@@ -90,6 +90,7 @@
   .single-player-options {
     display: flex;
     flex-direction: row;
+    gap: 10px;
     div {
       @extend %panel-style;
       display: flex;
@@ -158,8 +159,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px;
-
   h2 {
     text-align: center;
     margin-bottom: 30px;
@@ -173,20 +172,37 @@
   @extend %panel-style;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
-  gap: 10px;
-  padding: 5px;
-  h3 {
-    margin: 0 10px 0 5px;
+  flex-direction: row;
+  div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 5px 20px;
+    h3 {
+      margin: 0 10px 0 5px;
+    }
+    input {
+      @include button-style(200px, 35px, 0px);
+      @extend %panel-style;
+    }
+    select,
+    button {
+      @include button-style(130px, 35px, 0px);
+      @extend %btn-style;
+    }
+    option {
+      background: var(--btn-style-color);
+      color: black;
+    }
   }
-  input {
-    @include button-style(156px, 31px, 0px);
-    @extend %panel-style;
-  }
-  select,
-  button {
-    @include button-style(130px, 35px, 0px);
-    @extend %btn-style;
+  @media screen and (max-width: $s) {
+    justify-content: center;
+    div {
+      justify-content: center;
+    }
   }
 }
 .games-grid {

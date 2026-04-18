@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://d80b06a2c47b9f5b-95-47-113-109.serveousercontent.com",
-            "https://9e15cb2b881cbd66-95-47-113-109.serveousercontent.com",
+            "https://c56d9fef5ef9b4d8-95-47-113-116.serveousercontent.com",
+            "https://ffc2f4dc6f3fbb3f-95-47-113-116.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -32,7 +32,7 @@ io.on('connection', (socket) => {
             roomId,
             playersCount: rooms[roomId].players.length,
             createdAt: rooms[roomId].createdAt || Date.now(),
-            gameMode: rooms[roomId].gameMode || 'chess'
+            gameMode: rooms[roomId].gameMode,
         })).filter(room => room.playersCount === 1);
 
         socket.emit('activeRooms', activeRooms);
@@ -86,7 +86,7 @@ io.on('connection', (socket) => {
             rooms[roomId] = {
                 players: [],
                 createdAt: Date.now(),
-                gameMode: gameData.gameMode || 'chess',
+                gameMode: gameData.gameMode,
                 initialState: gameData.initialState || null,
                 moves: [],
             };

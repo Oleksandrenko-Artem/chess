@@ -43,6 +43,7 @@
     "no-active-rooms": "No active games at the moment",
     "enter-room-id": "Enter Room ID",
     "choose-mode": "Choose Game Mode",
+    "select-mode": "Game Mode",
     "create-game": "Create Game",
     "join-game": "Join",
     "leave_game_alert": "Cannot change game mode during a multiplayer game!"

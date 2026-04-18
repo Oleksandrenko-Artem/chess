@@ -166,35 +166,40 @@ const GameInfoPanel = (props) => {
         status !== status?.ongoing &&
         start && (
           <div className={styles["game-status"]}>
-          <div className={styles["game-message"]}>
-            <div><h2>{gameStatusMessage()}</h2>
-              {status === "White wins" ? (
-                <img src={white_king} alt="white" />
-              ) : status === "Black wins" ? (
-                <img src={black_king} alt="black" />
-              ) : null}
-              {localStorage.getItem("chess_variant") === "shatranj" &&
-              status === "Draw" &&
-              turn === "white" ? (
-                <img src={black_king} alt="white" />
-              ) : localStorage.getItem("chess_variant") === "shatranj" &&
+            <div className={styles["game-message"]}>
+              <div className={styles["game-message-text"]}>
+                <h2>{gameStatusMessage()}</h2>
+                {status === "White wins" ? (
+                  <img src={white_king} alt="white" />
+                ) : status === "Black wins" ? (
+                  <img src={black_king} alt="black" />
+                ) : null}
+                {localStorage.getItem("chess_variant") === "shatranj" &&
                 status === "Draw" &&
-                turn === "black" ? (
-                <img src={white_king} alt="black" />
-              ) : null}</div>
+                turn === "white" ? (
+                  <img src={black_king} alt="white" />
+                ) : localStorage.getItem("chess_variant") === "shatranj" &&
+                  status === "Draw" &&
+                  turn === "black" ? (
+                  <img src={white_king} alt="black" />
+                ) : null}
+              </div>
               <Timer />
-            <div className={styles["buttons-div"]}>
-              <button onClick={handleToggle}>
-                {t("custom_panel.rotate_board")}
-              </button>
-              {status === "Ongoing" || localStorage.getItem("chess_variant") !== "multiplayer" && status !== "Ongoing" ? (
-                <button onClick={onClickStartNew}>
-                  {t("game_info_panel.start_again")}
+              <div className={styles["buttons-div"]}>
+                <button onClick={handleToggle}>
+                  {t("custom_panel.rotate_board")}
                 </button>
-              ) : null}
-              {localStorage.getItem("chess_variant") === "multiplayer" && status !== "Ongoing" && (
-                  <button onClick={onClickExit}>Выйти</button>
-                )}
+                {status === "Ongoing" ||
+                (localStorage.getItem("chess_variant") !== "multiplayer" &&
+                  status !== "Ongoing") ? (
+                  <button onClick={onClickStartNew}>
+                    {t("game_info_panel.start_again")}
+                  </button>
+                ) : null}
+                {localStorage.getItem("chess_variant") === "multiplayer" &&
+                  status !== "Ongoing" && (
+                    <button onClick={onClickExit}>Выйти</button>
+                  )}
               </div>
             </div>
           </div>

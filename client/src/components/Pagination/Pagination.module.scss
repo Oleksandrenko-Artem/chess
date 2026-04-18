@@ -1,0 +1,21 @@
+@use "/src/common/styles/templates" as *;
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 5px;
+    span {
+        @extend %btn-style;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 50px;
+        height: 40px;
+    }
+    .page {
+        cursor: default;
+        @extend %panel-style;
+        font-size: 1.1em;
+    }
+}

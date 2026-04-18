@@ -1,0 +1,10 @@
+@use "/src/common/styles/templates" as *;
+
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    select {
+        @extend %btn-style;
+    }
+}

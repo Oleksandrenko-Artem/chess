@@ -1,5 +1,12 @@
 import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position } from "./helpers";
 
+export const GAME_MODES = [
+    "chess",
+    "shatranj",
+    "chess960",
+    "shatranj960",
+    "custom",
+];
 export const status = {
     'ongoing': 'Ongoing',
     'promotion': 'Promotion',
