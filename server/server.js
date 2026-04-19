@@ -9,8 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://c56d9fef5ef9b4d8-95-47-113-116.serveousercontent.com",
-            "https://ffc2f4dc6f3fbb3f-95-47-113-116.serveousercontent.com",
+            "https://381004cf1c1718b4-95-47-113-161.serveousercontent.com",
+            "https://a5638d5bd550592b-95-47-113-161.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -30,6 +30,7 @@ io.on('connection', (socket) => {
     socket.on('getActiveRooms', () => {
         const activeRooms = Object.keys(rooms).map(roomId => ({
             roomId,
+            roomName: rooms[roomId].roomName,
             playersCount: rooms[roomId].players.length,
             createdAt: rooms[roomId].createdAt || Date.now(),
             gameMode: rooms[roomId].gameMode,
@@ -89,6 +90,9 @@ io.on('connection', (socket) => {
                 gameMode: gameData.gameMode,
                 initialState: gameData.initialState || null,
                 moves: [],
+                roomName: gameData.roomName && gameData.roomName.trim()
+                    ? gameData.roomName
+                    : null,
             };
         }
 
@@ -108,6 +112,7 @@ io.on('connection', (socket) => {
             side,
             playersCount: rooms[roomId].players.length,
             gameMode: rooms[roomId].gameMode,
+            roomName: rooms[roomId].roomName || null,
         });
 
         if (rooms[roomId].initialState || (rooms[roomId].moves && rooms[roomId].moves.length > 0)) {
@@ -127,6 +132,7 @@ io.on('connection', (socket) => {
                 side: 'both',
                 message: 'Оба игрока присоединились!',
                 gameMode: rooms[roomId].gameMode,
+                roomName: rooms[roomId].roomName,
             });
 
             rooms[roomId].players.forEach((player, index) => {

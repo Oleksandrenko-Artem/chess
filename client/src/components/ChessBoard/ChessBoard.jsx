@@ -21,9 +21,9 @@ const ChessBoard = () => {
           <div className={styles["chess-board"]}>
             <Pieces flipped={orientation === "black"} />
           </div>
-        </div>
-        <div className={styles["promotion-div"]}>
-          <Promotion />
+          <div className={styles["promotion-div"]}>
+            <Promotion />
+          </div>
         </div>
       </div>
     </article>

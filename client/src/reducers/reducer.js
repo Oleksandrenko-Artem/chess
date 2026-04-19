@@ -161,6 +161,11 @@ export const reducer = (state, action) => {
                 roomId: action.payload.roomId,
             };
         };
+        case actionTypes.SET_ROOM_NAME:
+            return {
+                ...state,
+                roomName: action.payload,
+            };
         default:
             return state;
     };

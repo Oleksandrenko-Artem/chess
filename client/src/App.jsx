@@ -88,7 +88,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://ffc2f4dc6f3fbb3f-95-47-113-116.serveousercontent.com";
+      "https://a5638d5bd550592b-95-47-113-161.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -200,8 +200,10 @@ function App() {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      const DEFAULT_LIGHT_COLOR = "#ffdabb";
-      const DEFAULT_DARK_COLOR = "#7e5e2e";
+      const DEFAULT_LIGHT_COLOR =
+        "linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)";
+      const DEFAULT_DARK_COLOR =
+        "linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)";
       try {
         const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
         const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);

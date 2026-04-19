@@ -12,7 +12,7 @@ const FilterGameMode = ({ mode, setGameMode }) => {
     <div className={styles["filter-form"]}>
       <span>{t("header.select-mode")}</span>
       <select value={mode} onChange={handleChangeGameMode}>
-        <option value="all">All</option>
+        <option value="all">all</option>
         {GAME_MODES.map((gameMode) => (
           <option key={gameMode} value={gameMode}>
             {gameMode}

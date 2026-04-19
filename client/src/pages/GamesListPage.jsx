@@ -32,6 +32,13 @@ const MODE_LABELS = {
   shatranj960: "Shatranj960",
   custom: "Custom",
 };
+const MODE_ICONS = {
+  chess: "/src/assets/icons/white_ferz.png",
+  shatranj: "/src/assets/icons/white_elephant.png",
+  chess960: "/src/assets/icons/chess_960.png",
+  shatranj960: "/src/assets/icons/chess_960.png",
+  custom: "/src/assets/icons/custom.png",
+};
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
   if (mode === "shatranj") {
@@ -74,11 +81,12 @@ const GamesListPage = ({ start, setStart }) => {
   const { t } = useTranslation();
 
   const [page, setPage] = useState(1);
-  const [amount, setAmount] = useState(1);
+  const [amount, setAmount] = useState(5);
   const [filterMode, setFilterMode] = useState("all");
   const [gameMode, setGameMode] = useState("chess");
   const [activeRooms, setActiveRooms] = useState([]);
   const [inputRoomId, setInputRoomId] = useState("");
+  const [roomName, setRoomName] = useState("");
   const [playerSide, setPlayerSide] = useState(null);
   const [playersCount, setPlayersCount] = useState(1);
   const [gameReady, setGameReady] = useState(false);
@@ -130,7 +138,12 @@ const GamesListPage = ({ start, setStart }) => {
     const onGameInfo = (info) => {
       setPlayerSide(info.side || null);
       setPlayersCount(info.playersCount || 1);
-
+      if (info.roomName && info.roomName.trim()) {
+        dispatch({
+          type: actionTypes.SET_ROOM_NAME,
+          payload: info.roomName,
+        });
+      }
       if (info.gameMode) {
         setGameMode(info.gameMode);
         localStorage.setItem("gameMode", info.gameMode);
@@ -276,23 +289,40 @@ const GamesListPage = ({ start, setStart }) => {
 
   const handleFindGame = () => {
     const roomId = Math.random().toString(36).substring(7);
+
     const initialState = getInitialStateByMode(
       gameMode,
       appState?.boardSize || 8,
     );
+
+    const finalRoomName = roomName.trim();
+
     setGameState(gameMode);
+
     dispatch({
       type: actionTypes.SET_MULTIPLAYER,
       payload: { isMultiplayer: true, roomId },
     });
+
     dispatch({
       type: actionTypes.SET_VS_BOT,
       payload: false,
     });
+
     localStorage.setItem("roomId", roomId);
     localStorage.setItem("gameMode", gameMode);
     localStorage.setItem("chess_side", "white");
-    socket.emit("joinGame", roomId, { gameMode, initialState });
+
+    dispatch({
+      type: actionTypes.SET_ROOM_NAME,
+      payload: finalRoomName,
+    });
+    
+    socket.emit("joinGame", roomId, {
+      gameMode,
+      initialState,
+      roomName: finalRoomName || null,
+    });
   };
 
   const handleJoinGame = () => {
@@ -380,6 +410,12 @@ const GamesListPage = ({ start, setStart }) => {
                 <option value="chess960">{MODE_LABELS.chess960}</option>
                 <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
               </select>
+              <input
+                type="text"
+                placeholder={` ${t("header.room-name")}`}
+                value={roomName}
+                onChange={(e) => setRoomName(e.target.value)}
+              />
               <button onClick={handleFindGame}>
                 {t("header.create-game")}
               </button>
@@ -402,59 +438,53 @@ const GamesListPage = ({ start, setStart }) => {
           ) : (
             <div className={styles["active-rooms-list"]}>
               {currentRooms.map((room) => (
-                <div key={room.roomId} className={styles["room-card"]}>
+                <div
+                  key={room.roomId}
+                  onClick={() => handleJoinRoomFromList(room.roomId)}
+                  className={styles["room-card"]}
+                >
                   <div className={styles["room-info"]}>
-                    <h4>
-                      {t("header.game-room")} {room.roomId}
-                    </h4>
-                    <p>
-                      {t("header.game-mode")}{" "}
-                      {MODE_LABELS[room.gameMode]}
-                    </p>
-                    <p>
-                      {t("header.game-players")} {room.playersCount}/2
-                    </p>
-                    <p>
-                      {t("header.game-created-at")}{" "}
-                      {new Date(room.createdAt).toLocaleTimeString()}
-                    </p>
+                    <div>
+                      <img
+                        src={MODE_ICONS[room.gameMode]}
+                        alt={room.gameMode}
+                      />
+                      <h4>
+                        {room.roomName && room.roomName.trim()
+                          ? room.roomName
+                          : `${t("header.game-room")} ${room.roomId}`}
+                      </h4>
+                    </div>
+                    <div>
+                      <p>
+                        {t("header.game-mode")} {MODE_LABELS[room.gameMode] || room.gameMode}
+                      </p>
+                      <p>
+                        {t("header.game-players")} {room.playersCount}/2
+                      </p>
+                      <p>
+                        {t("header.game-created-at")}{" "}
+                        {new Date(room.createdAt).toLocaleTimeString()}
+                      </p>
+                    </div>
                   </div>
-                  <button
-                    onClick={() => handleJoinRoomFromList(room.roomId)}
-                    className={styles["join-room-button"]}
-                  >
-                    {t("header.join-game")}
-                  </button>
                 </div>
               ))}
             </div>
           )}
-          <Pagination
-            page={page}
-            setPage={setPage}
-            total={filteredRooms.length}
-            amount={amount}
-            setAmount={setAmount}
-          />
+          {activeRooms.length > 0 && (
+            <Pagination
+              page={page}
+              setPage={setPage}
+              total={filteredRooms.length}
+              amount={amount}
+              setAmount={setAmount}
+            />
+          )}
         </div>
       )}
       {!start && appState?.isMultiplayer && (
         <div className={styles["room-waiting"]}>
-          <h2>
-            {t("header.game-room")} {appState.roomId}
-          </h2>
-          <p>ID: {appState.roomId}</p>
-          <p>
-            {t("header.game-player-count")} {playersCount}/2
-          </p>
-          <p>
-            {t("header.game-player-side")}{" "}
-            {playerSide === "white"
-              ? `${t("header.game-player-white")}`
-              : playerSide === "black"
-                ? `${t("header.game-player-black")}`
-                : "-"}
-          </p>
           <p>
             {playersCount === 2
               ? `${t("header.game-player-ready")}`
@@ -463,7 +493,6 @@ const GamesListPage = ({ start, setStart }) => {
           <button onClick={handleExitGame}>{t("header.game-exit")}</button>
         </div>
       )}
-
       <div className={styles.wrapper}>
         <GameInfoPanel
           status={appState?.status}

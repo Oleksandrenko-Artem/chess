@@ -185,7 +185,7 @@
       margin: 0 10px 0 5px;
     }
     input {
-      @include button-style(200px, 35px, 0px);
+      @include button-style(220px, 35px, 0px);
       @extend %panel-style;
     }
     select,
@@ -286,8 +286,10 @@
 }
 .room-waiting {
   @extend %panel-style;
-  width: 480px;
-  height: 480px;
+  width: clamp(180px, 90vw, 380px);
+  max-width: 100%;
+  height: clamp(100px, 90vw, 200px);
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -310,26 +312,31 @@
 
   .room-info {
     display: flex;
+    align-items: center;
     flex-direction: row;
-    gap: 20px;
+    justify-content: space-between;
     flex-grow: 1;
+    gap: 20px;
+    div {
+      display: flex;
+      align-items: center;
+      flex-direction: row;
+      gap: 20px;
+      img {
+        width: 30px;
+        height: 30px;
+      }
+      h4 {
+        margin: 4px 0;
+        font-size: 1.1em;
+        color: white;
+      }
 
-    h4 {
-      margin: 0 0 8px 0;
-      font-size: 1.1em;
-      color: var(--dark-square-color);
+      p {
+        margin: 4px 0;
+        font-size: 0.9em;
+        color: white;
+      }
     }
-
-    p {
-      margin: 4px 0;
-      font-size: 0.9em;
-      color: #666;
-    }
-  }
-
-  .join-room-button {
-    @include button-style(120px, 35px, 8px);
-    @extend %btn-style;
-    margin-left: 15px;
   }
 }
