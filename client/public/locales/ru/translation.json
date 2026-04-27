@@ -100,7 +100,9 @@
     "turn": "Ход: ",
     "start": "Старт",
     "start_again": "Сдаться",
-    "choose_color": "Выберите цвет"
+    "choose_color": "Выберите цвет",
+    "game_over": "Игра завершена",
+    "close": "Закрыть"
   },
   "validation": {
     "error_email": "Такая почта уже существует",

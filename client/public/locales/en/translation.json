@@ -99,7 +99,9 @@
     "turn": "Turn: ",
     "start": "Start",
     "start_again": "Surrender",
-    "choose_color": "Choose color"
+    "choose_color": "Choose color",
+    "game_over": "Game Over",
+    "close": "Close"
   },
   "validation": {
     "error_email": "Email is already exists",

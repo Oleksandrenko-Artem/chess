@@ -57,6 +57,7 @@ const GameInfoPanel = (props) => {
 
     localStorage.setItem("chess_mode", "game");
     setStart(false);
+    setSelectedColor(null);
     if (window.localStorage.getItem("chess_variant") === "chess") {
       window.localStorage.setItem("chess_variant", "chess");
       dispatch({
@@ -97,36 +98,8 @@ const GameInfoPanel = (props) => {
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
   };
   const gameStatusMessage = () => {
-    if (status === "White wins") {
-      return t("game_info_panel.white_wins");
-    }
-    if (status === "Black wins") {
-      return t("game_info_panel.black_wins");
-    }
-    if (status === "Draw") {
-      return t("game_info_panel.draw");
-    }
-    if (
-      status === "Draw" &&
-      localStorage.getItem("chess_variant") === "shatranj" || localStorage.getItem("chess_variant") === "shatranj960"
-    ) {
-      if (appState?.playerTurn === "white") {
-        return t("game_info_panel.black_wins");
-      } else {
-        return t("game_info_panel.white_wins");
-      }
-    }
-    if (
-      status === "White wins" &&
-      arbiter.isBareKing(appState.position, "black")
-    ) {
-      return t("game_info_panel.white_baring_king");
-    }
-    if (
-      status === "Black wins" &&
-      arbiter.isBareKing(appState.position, "white")
-    ) {
-      return t("game_info_panel.black_baring_king");
+    if (status !== "Ongoing") {
+      return `${t("game_info_panel.game_over")}`;
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
@@ -169,20 +142,6 @@ const GameInfoPanel = (props) => {
             <div className={styles["game-message"]}>
               <div className={styles["game-message-text"]}>
                 <h2>{gameStatusMessage()}</h2>
-                {status === "White wins" ? (
-                  <img src={white_king} alt="white" />
-                ) : status === "Black wins" ? (
-                  <img src={black_king} alt="black" />
-                ) : null}
-                {localStorage.getItem("chess_variant") === "shatranj" &&
-                status === "Draw" &&
-                turn === "white" ? (
-                  <img src={black_king} alt="white" />
-                ) : localStorage.getItem("chess_variant") === "shatranj" &&
-                  status === "Draw" &&
-                  turn === "black" ? (
-                  <img src={white_king} alt="black" />
-                ) : null}
               </div>
               <Timer />
               <div className={styles["buttons-div"]}>

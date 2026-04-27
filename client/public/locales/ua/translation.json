@@ -95,7 +95,9 @@
     "turn": "Хід: ",
     "start": "Старт",
     "start_again": "Здатися",
-    "choose_color": "Виберіть колір"
+    "choose_color": "Виберіть колір",
+    "game_over": "Гру завершено",
+    "close": "Закрити"
   },
   "validation": {
     "error_email": "Така пошта вже існує",
