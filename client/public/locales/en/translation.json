@@ -81,7 +81,19 @@
     "black_captures": "Black captures"
   },
   "style_panel": {
-    "change_style": "Change style"
+    "change_style": "Change style",
+    "standart": "Standard",
+    "classic": "Classic",
+    "violet": "Amethyst",
+    "blue": "Sapphire",
+    "white": "Diamond",
+    "green": "Emerald",
+    "pale": "Chrysoberyl",
+    "yellow": "Topaz",
+    "orange": "Amber",
+    "red": "Ruby",
+    "alexandrite": "Alexandrite",
+    "onix": "Onix"
   },
   "form_panel": {
     "name": "Name",
@@ -101,7 +113,8 @@
     "start_again": "Surrender",
     "choose_color": "Choose color",
     "game_over": "Game Over",
-    "close": "Close"
+    "close": "Close",
+    "exit": "Exit"
   },
   "validation": {
     "error_email": "Email is already exists",

@@ -77,7 +77,19 @@
     "black": "Чорні"
   },
   "style_panel": {
-    "change_style": "Змінити стиль"
+    "change_style": "Змінити стиль",
+    "standart": "Стандарт",
+    "classic": "Класика",
+    "violet": "Аметист",
+    "blue": "Сапфір",
+    "white": "Алмаз",
+    "green": "Смарагд",
+    "pale": "Хризоберіл",
+    "yellow": "Топаз",
+    "orange": "Бурштин",
+    "red": "Рубін",
+    "alexandrite": "Олександрит",
+    "onix": "Онікс"
   },
   "form_panel": {
     "name": "І'мя",
@@ -97,7 +109,8 @@
     "start_again": "Здатися",
     "choose_color": "Виберіть колір",
     "game_over": "Гру завершено",
-    "close": "Закрити"
+    "close": "Закрити",
+    "exit": "Вийти"
   },
   "validation": {
     "error_email": "Така пошта вже існує",

@@ -307,8 +307,8 @@ const CreatePosition = () => {
     setPiecesStyle(event.target.value);
   };
   const presetsMap = {
-    chess: initialGameState,
-    shatranj: initialOldGameState,
+    "chess": initialGameState,
+    "shatranj": initialOldGameState,
     "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,

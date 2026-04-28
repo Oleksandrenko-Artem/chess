@@ -79,6 +79,13 @@
       align-items: center;
       gap: 6px;
     }
+    select {
+      @extend %btn-style;
+      @include button-style(140px, 30px, 5px);
+      option {
+        color: rgb(0, 0, 0);
+      }
+    }
     span {
       color: black;
       font-weight: bold;

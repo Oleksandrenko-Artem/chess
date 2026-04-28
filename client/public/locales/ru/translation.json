@@ -82,7 +82,19 @@
     "black_captures": "Черные забрали:"
   },
   "style_panel": {
-    "change_style": "Изменить стиль"
+    "change_style": "Изменить стиль",
+    "standart": "Стандарт",
+    "classic": "Классика",
+    "violet": "Аметист",
+    "blue": "Сапфир",
+    "white": "Алмаз",
+    "green": "Изумруд",
+    "pale": "Хризоберил",
+    "yellow": "Топаз",
+    "orange": "Янтарь",
+    "red": "Рубин",
+    "alexandrite": "Александрит",
+    "onix": "Оникс"
   },
   "form_panel": {
     "name": "Имя",
@@ -102,7 +114,8 @@
     "start_again": "Сдаться",
     "choose_color": "Выберите цвет",
     "game_over": "Игра завершена",
-    "close": "Закрыть"
+    "close": "Закрыть",
+    "exit": "Выйти"
   },
   "validation": {
     "error_email": "Такая почта уже существует",

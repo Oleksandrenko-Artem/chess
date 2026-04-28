@@ -1,5 +1,59 @@
 import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position } from "./helpers";
 
+export const BOARD_STYLES = {
+    standart: {
+        light: "#F0D8B7",
+        dark: "#7e5539",
+    },
+    classic: {
+        light: "#FFFFFF",
+        dark: "#000000",
+    },
+    shatranj: {
+        light: "#ff5e00",
+        dark: "#ff5e00",
+    },
+    violet: {
+        light: "linear-gradient(160deg, #fa67ff 0%, #df00cc 25%, #800e8f 50%, #df00cc 75%, #fa67ff 100%)",
+        dark: "linear-gradient(160deg, #1d001b 0%, #4b0e3c 25%, #97108c 50%, #4b0e3c 75%, #1d001b 100%)",
+    },
+    blue: {
+        light: "linear-gradient(160deg, #7167ff 0%, #4234ff 25%, #0017c5 50%, #4234ff 75%, #7167ff 100%)",
+        dark: "linear-gradient(160deg, #01001d 0%, #02007e 25%, #002c8b 50%, #02007e 75%, #01001d 100%)",
+    },
+    white: {
+        light: "linear-gradient(160deg, #a2f9ff 0%, #51ceff 25%, #009ec5 50%, #51ceff 75%, #a2f9ff 100%)",
+        dark: "linear-gradient(160deg, #00b5e2 0%, #005d9b 25%, #00415f 50%, #005d9b 75%, #00b5e2 100%)",
+    },
+    pale: {
+        light: "linear-gradient(160deg, #fffc5f 0%, #ff6600 25%, #ddce00 50%, #ff6600 75%, #fffc5f 100%)",
+        dark: "linear-gradient(160deg, #3d3c06 0%, #c0a610 25%, #944e0d 50%, #c0a610 75%, #3d3c06 100%)",
+    },
+    yellow: {
+        light: "linear-gradient(160deg, #f0ec25 0%, #fffeba 25%, #ffee00 50%, #fffeba 75%, #f0ec25 100%)",
+        dark: "linear-gradient(160deg, #a09e23 0%, #7f8d00 25%, #c5bf10 50%, #7f8d00 75%, #a09e23 100%)",
+    },
+    green: {
+        light: "linear-gradient(160deg, #6cff5f 0%, #00ff0d 25%, #227700 50%, #00ff0d 75%, #6cff5f 100%)",
+        dark: "linear-gradient(160deg, #002200 0%, #004400 25%, #128500 50%, #004400 75%, #002200 100%)",
+    },
+    orange: {
+        light: "linear-gradient(160deg, #f07625 0%, #ffb056 25%, #ff7b00 50%, #ffb056 75%, #f07625 100%)",
+        dark: "linear-gradient(160deg, #a05523 0%, #632700 25%, #c25e00 50%, #632700 75%, #a05523 100%)",
+    },
+    red: {
+        light: "linear-gradient(160deg, #ff4646 0%, #ff1919 25%, #9b0000 50%, #ff1919 75%, #ff4646 100%)",
+        dark: "linear-gradient(160deg, #b62525 0%, #6e0000 25%, #2c0000 50%, #6e0000 75%, #b62525 100%)",
+    },
+    alexandrite: {
+        light: "linear-gradient(160deg, #19c203 0%, #59e459 25%, #a301a8 50%, #59e459 75%, #19c203 100%)",
+        dark: "linear-gradient(160deg, #002200 0%, #005c00 25%, #260027 50%, #005c00 75%, #002200 100%)",
+    },
+    onix: {
+        light: "linear-gradient(160deg, #b4b4b4 0%, #ffffff 25%, #8f8f8f 50%, #ffffff 75%, #b4b4b4 100%)",
+        dark: "linear-gradient(160deg, #7a736f 0%, #414141 25%, #000000 50%, #414141 75%, #7a736f 100%)",
+    }
+};
 export const GAME_MODES = [
     "chess",
     "shatranj",

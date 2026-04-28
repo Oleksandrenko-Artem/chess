@@ -73,7 +73,7 @@ const ChessBoard = (props) => {
         <div className={styles["chess-div"]}>
           <div className={styles["chess-board"]}>
             {localStorage.getItem("chess_variant") !== "special" &&
-              status !== "Ongoing" &&
+              (status !== "Ongoing" && status !== "Promotion") &&
               window && (
                 <div className={styles["game-status-text"]}>
                   <h2>{gameStatusMessage()}</h2>

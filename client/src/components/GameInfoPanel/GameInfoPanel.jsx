@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
-import { initialChess960State, initialGameState, initialOldGameState, initialShatranj960State } from "../../constants";
+import { BOARD_STYLES, initialChess960State, initialGameState, initialOldGameState, initialShatranj960State } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
@@ -13,6 +13,9 @@ const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;
   const { dispatch, appState, socket } = useAppContext();
   const { t } = useTranslation();
+  const [boardStyle, setBoardStyle] = useState(
+    localStorage.getItem("boardStyle") || "standart",
+  );
   const [selectedColor, setSelectedColor] = useState(null);
   const onClickWhite = () => {
     localStorage.setItem("chess_side", "white");
@@ -103,6 +106,25 @@ const GameInfoPanel = (props) => {
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
+  const handleBoardStyleChange = (event) => {
+    const style = event.target.value;
+    setBoardStyle(style);
+
+    const selected = BOARD_STYLES[style];
+
+    if (selected) {
+      document.documentElement.style.setProperty(
+        "--light-square-color",
+        selected.light,
+      );
+      document.documentElement.style.setProperty(
+        "--dark-square-color",
+        selected.dark,
+      );
+
+      localStorage.setItem("boardStyle", style);
+    }
+  };
   return (
     <div className={styles.wrapper}>
       {!start && localStorage.getItem("chess_variant") !== "multiplayer" && (
@@ -144,7 +166,22 @@ const GameInfoPanel = (props) => {
                 <h2>{gameStatusMessage()}</h2>
               </div>
               <Timer />
-              <div className={styles["buttons-div"]}>
+            <div className={styles["buttons-div"]}>
+                <select value={boardStyle} onChange={handleBoardStyleChange}>
+                <option value="standart">{t("style_panel.standart")}</option>
+                <option value="classic">{t("style_panel.classic")}</option>
+                <option value="shatranj">{t("header.shatranj")}</option>
+                  <option value="violet">{t("style_panel.violet")}</option>
+                  <option value="blue">{t("style_panel.blue")}</option>
+                  <option value="white">{t("style_panel.white")}</option>
+                  <option value="green">{t("style_panel.green")}</option>
+                  <option value="pale">{t("style_panel.pale")}</option>
+                  <option value="yellow">{t("style_panel.yellow")}</option>
+                  <option value="orange">{t("style_panel.orange")}</option>
+                  <option value="red">{t("style_panel.red")}</option>
+                  <option value="alexandrite">{t("style_panel.alexandrite")}</option>
+                  <option value="onix">{t("style_panel.onix")}</option>
+                </select>
                 <button onClick={handleToggle}>
                   {t("custom_panel.rotate_board")}
                 </button>
@@ -157,7 +194,7 @@ const GameInfoPanel = (props) => {
                 ) : null}
                 {localStorage.getItem("chess_variant") === "multiplayer" &&
                   status !== "Ongoing" && (
-                    <button onClick={onClickExit}>Выйти</button>
+                    <button onClick={onClickExit}>{t("game_info_panel.exit")}</button>
                   )}
               </div>
             </div>

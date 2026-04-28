@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { io } from "socket.io-client";
 import { reducer } from "./reducers/reducer";
 import {
+  BOARD_STYLES,
   initialChess960State,
   initialGameState,
   initialOldGameState,
@@ -197,13 +198,25 @@ function App() {
   useEffect(() => {
     dispathUser(findUserAccountThunk());
   }, [dispathUser]);
-
   useEffect(() => {
     if (typeof window !== "undefined") {
       const DEFAULT_LIGHT_COLOR =
         "linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)";
       const DEFAULT_DARK_COLOR =
         "linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)";
+      const savedStyle = localStorage.getItem("boardStyle");
+      if (savedStyle && BOARD_STYLES[savedStyle]) {
+        const selected = BOARD_STYLES[savedStyle];
+        document.documentElement.style.setProperty(
+          "--light-square-color",
+          selected.light,
+        );
+        document.documentElement.style.setProperty(
+          "--dark-square-color",
+          selected.dark,
+        );
+        return;
+      }
       try {
         const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
         const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);
