@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useReducer } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import { reducer } from "./reducers/reducer";
 import {
@@ -52,15 +52,15 @@ function App() {
       ? parseInt(localStorage.getItem("boardSize") || "8", 10)
       : 8;
   let initialStateAtLoad =
-  savedVariant === "shatranj"
-    ? initialOldGameState
-    : savedVariant === "special"
-      ? initialSpecialGameState
-      : savedVariant === "chess960"
-        ? initialChess960State
-        : savedVariant === "shatranj960"
-          ? initialShatranj960State
-          : initialGameState;
+    savedVariant === "shatranj"
+      ? initialOldGameState
+      : savedVariant === "special"
+        ? initialSpecialGameState
+        : savedVariant === "chess960"
+          ? initialChess960State
+          : savedVariant === "shatranj960"
+            ? initialShatranj960State
+            : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -195,48 +195,64 @@ function App() {
     dispatch,
     socket,
   };
+  const user = useSelector((state) => state.users.user);
   useEffect(() => {
     dispathUser(findUserAccountThunk());
   }, [dispathUser]);
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const DEFAULT_LIGHT_COLOR =
-        "linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)";
-      const DEFAULT_DARK_COLOR =
-        "linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)";
-      const savedStyle = localStorage.getItem("boardStyle");
-      if (savedStyle && BOARD_STYLES[savedStyle]) {
-        const selected = BOARD_STYLES[savedStyle];
-        document.documentElement.style.setProperty(
-          "--light-square-color",
-          selected.light,
-        );
-        document.documentElement.style.setProperty(
-          "--dark-square-color",
-          selected.dark,
-        );
-        return;
-      }
-      try {
-        const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
-        const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);
+    if (typeof window === "undefined") return;
+
+    const DEFAULT_LIGHT_COLOR =
+      "#F0D8B7";
+    const DEFAULT_DARK_COLOR =
+      "#7e5539";
+
+    const savedStyle = localStorage.getItem("boardStyle");
+
+    if (savedStyle === "custom") {
+      if (user) {
+        const light = user.boardColor?.light || DEFAULT_LIGHT_COLOR;
+        const dark = user.boardColor?.dark || DEFAULT_DARK_COLOR;
+
         document.documentElement.style.setProperty(
           "--light-square-color",
           light,
         );
         document.documentElement.style.setProperty("--dark-square-color", dark);
-      } catch (e) {
-        document.documentElement.style.setProperty(
-          "--light-square-color",
-          DEFAULT_LIGHT_COLOR,
-        );
-        document.documentElement.style.setProperty(
-          "--dark-square-color",
-          DEFAULT_DARK_COLOR,
-        );
       }
+      return;
     }
-  }, []);
+
+    if (savedStyle && BOARD_STYLES[savedStyle]) {
+      const selected = BOARD_STYLES[savedStyle];
+      document.documentElement.style.setProperty(
+        "--light-square-color",
+        selected.light,
+      );
+      document.documentElement.style.setProperty(
+        "--dark-square-color",
+        selected.dark,
+      );
+      return;
+    }
+
+    try {
+      const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
+      const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);
+
+      document.documentElement.style.setProperty("--light-square-color", light);
+      document.documentElement.style.setProperty("--dark-square-color", dark);
+    } catch {
+      document.documentElement.style.setProperty(
+        "--light-square-color",
+        DEFAULT_LIGHT_COLOR,
+      );
+      document.documentElement.style.setProperty(
+        "--dark-square-color",
+        DEFAULT_DARK_COLOR,
+      );
+    }
+  }, [user]);
   return (
     <AppContext.Provider value={providerState}>
       <BrowserRouter>

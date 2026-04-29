@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
-import { BOARD_STYLES, initialChess960State, initialGameState, initialOldGameState, initialShatranj960State } from "../../constants";
+import {
+  BOARD_STYLES,
+  initialChess960State,
+  initialGameState,
+  initialOldGameState,
+  initialShatranj960State,
+} from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
@@ -47,7 +53,7 @@ const GameInfoPanel = (props) => {
         payload: { initialState: initialGameState },
       });
     }
-  }
+  };
   const onClickStartNew = () => {
     if (appState?.isMultiplayer && socket && appState?.roomId) {
       dispatch({
@@ -166,11 +172,11 @@ const GameInfoPanel = (props) => {
                 <h2>{gameStatusMessage()}</h2>
               </div>
               <Timer />
-            <div className={styles["buttons-div"]}>
+              <div className={styles["buttons-div"]}>
                 <select value={boardStyle} onChange={handleBoardStyleChange}>
-                <option value="standart">{t("style_panel.standart")}</option>
-                <option value="classic">{t("style_panel.classic")}</option>
-                <option value="shatranj">{t("header.shatranj")}</option>
+                  <option value="standart">{t("style_panel.standart")}</option>
+                  <option value="classic">{t("style_panel.classic")}</option>
+                  <option value="shatranj">{t("header.shatranj")}</option>
                   <option value="violet">{t("style_panel.violet")}</option>
                   <option value="blue">{t("style_panel.blue")}</option>
                   <option value="white">{t("style_panel.white")}</option>
@@ -179,7 +185,9 @@ const GameInfoPanel = (props) => {
                   <option value="yellow">{t("style_panel.yellow")}</option>
                   <option value="orange">{t("style_panel.orange")}</option>
                   <option value="red">{t("style_panel.red")}</option>
-                  <option value="alexandrite">{t("style_panel.alexandrite")}</option>
+                  <option value="alexandrite">
+                    {t("style_panel.alexandrite")}
+                  </option>
                   <option value="onix">{t("style_panel.onix")}</option>
                 </select>
                 <button onClick={handleToggle}>
@@ -194,7 +202,9 @@ const GameInfoPanel = (props) => {
                 ) : null}
                 {localStorage.getItem("chess_variant") === "multiplayer" &&
                   status !== "Ongoing" && (
-                    <button onClick={onClickExit}>{t("game_info_panel.exit")}</button>
+                    <button onClick={onClickExit}>
+                      {t("game_info_panel.exit")}
+                    </button>
                   )}
               </div>
             </div>

@@ -5,6 +5,7 @@ import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUserThunk } from "../../store/usersSlice";
 import {
+  BOARD_STYLES,
   initialAmazonState,
   initialArenaGameState,
   initialDinoGameState,
@@ -116,19 +117,31 @@ const CreatePosition = () => {
   const [pieceChariot, setPieceChariot] = useState(() =>
     user ? user.rookType === "chariot" : false,
   );
-  const DEFAULT_LIGHT_COLOR = "linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)";
-  const DEFAULT_DARK_COLOR =
-    "linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)";
+  const DEFAULT_LIGHT_COLOR = "#F0D8B7";
+  const DEFAULT_DARK_COLOR = "#7e5539";
   const [lightSquareColor, setLightSquareColor] = useState(() =>
     user ? user.boardColor.light : DEFAULT_LIGHT_COLOR,
   );
   const [darkSquareColor, setDarkSquareColor] = useState(() =>
     user ? user.boardColor.dark : DEFAULT_DARK_COLOR,
   );
+  const savedStyle = localStorage.getItem("board_style");
   const editorMode = localStorage.getItem("chess_mode") === "editor";
   useEffect(() => {
     if (user) {
-      if (user.boardColor.light !== lightSquareColor) {
+      if (savedStyle && BOARD_STYLES[savedStyle]) {
+        const selected = BOARD_STYLES[savedStyle];
+        document.documentElement.style.setProperty(
+          "--light-square-color",
+          selected.light,
+        );
+        document.documentElement.style.setProperty(
+          "--dark-square-color",
+          selected.dark,
+        );
+        return;
+      } else {
+        if (user.boardColor.light !== lightSquareColor) {
         const newLight = user.boardColor.light || DEFAULT_LIGHT_COLOR;
         setLightSquareColor(newLight);
         document.documentElement.style.setProperty(
@@ -144,6 +157,7 @@ const CreatePosition = () => {
           newDark,
         );
       }
+    }
       if ((user.rookType === "sailboat") !== pieceSailBoat) {
         setPieceSailBoat(user.rookType === "sailboat");
       }
@@ -197,21 +211,6 @@ const CreatePosition = () => {
       }
     }, 500);
   }, [lightSquareColor, darkSquareColor, user, dispatchRedux]);
-  useEffect(() => {
-    const initLight =
-      lightSquareColor && lightSquareColor.trim().startsWith("rgb")
-        ? rgbStringToHex(lightSquareColor)
-        : lightSquareColor;
-    const initDark =
-      darkSquareColor && darkSquareColor.trim().startsWith("rgb")
-        ? rgbStringToHex(darkSquareColor)
-        : darkSquareColor;
-    document.documentElement.style.setProperty(
-      "--light-square-color",
-      initLight,
-    );
-    document.documentElement.style.setProperty("--dark-square-color", initDark);
-  }, []);
   useEffect(() => {
     const initLight =
       lightSquareColor && lightSquareColor.trim().startsWith("rgb")
@@ -307,17 +306,17 @@ const CreatePosition = () => {
     setPiecesStyle(event.target.value);
   };
   const presetsMap = {
-    "chess": initialGameState,
-    "shatranj": initialOldGameState,
+    chess: initialGameState,
+    shatranj: initialOldGameState,
     "new-chess": initialNewVariantGameState,
     "old-chess": initialOldVariantGameState,
     "extended-chess": initialExtendedGameState,
     "grand-ace-drex": initialGrandAceDrexState,
     "great-chess": initialGreatChessState,
     "grand-chess": initialGrandChessState,
-    "amazon": initialAmazonState,
-    "walls": initialWallsGameState,
-    "arena": initialArenaGameState,
+    amazon: initialAmazonState,
+    walls: initialWallsGameState,
+    arena: initialArenaGameState,
     "ferz-vs-rukh": initialFerzVsRukhGameState,
     "dinozavr-chess": initialDinoGameState,
   };
@@ -341,7 +340,10 @@ const CreatePosition = () => {
 
     const cleanPiece = piece.split(",")[0];
 
-    return cleanPiece.startsWith(color) && (cleanPiece.endsWith("king") || cleanPiece.endsWith("imperator"));
+    return (
+      cleanPiece.startsWith(color) &&
+      (cleanPiece.endsWith("king") || cleanPiece.endsWith("imperator"))
+    );
   };
 
   const hasValidKingSetup = () => {
@@ -503,6 +505,7 @@ const CreatePosition = () => {
                 "--light-square-color",
                 val,
               );
+              localStorage.setItem("boardStyle", "custom");
             }}
           />
           <input
@@ -515,6 +518,7 @@ const CreatePosition = () => {
                 "--dark-square-color",
                 val,
               );
+              localStorage.setItem("boardStyle", "custom");
             }}
           />
           <button
