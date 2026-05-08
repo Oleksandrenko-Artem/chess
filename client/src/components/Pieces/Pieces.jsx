@@ -459,6 +459,59 @@ const Pieces = ({ flipped = false }) => {
         ? "black"
         : "white";
     const newCastleDirection = { ...appState.castleDirection };
+    const currentPlayer = appState.playerTurn;
+    const boardSize = appState.boardSize;
+    const homeRank = currentPlayer === "white" ? boardSize - 1 : 0;
+
+    const removeCastleSide = (direction, side) => {
+      if (direction === "none") return "none";
+      if (direction === "both") return side === "left" ? "right" : "left";
+      if (direction === side) return "none";
+      return direction;
+    };
+
+    if (!isEditorMode) {
+      if (p.endsWith("_king")) {
+        newCastleDirection[currentPlayer] = "none";
+      }
+
+      if (p.endsWith("_rook")) {
+        if (rank === homeRank && file === 0) {
+          newCastleDirection[currentPlayer] = removeCastleSide(
+            newCastleDirection[currentPlayer],
+            "left",
+          );
+        }
+        if (rank === homeRank && file === boardSize - 1) {
+          newCastleDirection[currentPlayer] = removeCastleSide(
+            newCastleDirection[currentPlayer],
+            "right",
+          );
+        }
+      }
+
+      const capturedPiece = currentPosition[targetRank]?.[targetFile];
+      if (capturedPiece?.endsWith("_rook")) {
+        const capturedColor = capturedPiece.startsWith("white")
+          ? "white"
+          : "black";
+        const capturedHomeRank = capturedColor === "white" ? boardSize - 1 : 0;
+
+        if (targetRank === capturedHomeRank && targetFile === 0) {
+          newCastleDirection[capturedColor] = removeCastleSide(
+            newCastleDirection[capturedColor],
+            "left",
+          );
+        }
+        if (targetRank === capturedHomeRank && targetFile === boardSize - 1) {
+          newCastleDirection[capturedColor] = removeCastleSide(
+            newCastleDirection[capturedColor],
+            "right",
+          );
+        }
+      }
+    }
+
     let gameStatus;
 
     const newHash = generatePositionHash(

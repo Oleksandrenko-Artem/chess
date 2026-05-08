@@ -197,11 +197,9 @@ export const getKingMoves = ({ position, piece, castleDirection, rank, file }) =
 
     const homeRank = us === 'white' ? boardSize - 1 : 0;
     const kingStartFile = Math.floor(boardSize / 2);
-
     if (file !== kingStartFile || rank !== homeRank || castleDirection === 'none') {
         return moves;
     }
-
     if (arbiter.isKingInCheck({ position, playerColor: us })) {
         return moves;
     }
