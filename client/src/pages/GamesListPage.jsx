@@ -148,7 +148,11 @@ const GamesListPage = ({ start, setStart }) => {
         setGameMode(info.gameMode);
         localStorage.setItem("gameMode", info.gameMode);
 
-        if (info.gameMode !== "custom") {
+        if (
+          info.gameMode !== "custom" &&
+          info.gameMode !== "chess960" &&
+          info.gameMode !== "shatranj960"
+        ) {
           const state = getInitialStateByMode(
             info.gameMode,
             appState?.boardSize || 8,
@@ -219,7 +223,15 @@ const GamesListPage = ({ start, setStart }) => {
       if (data?.initialState) {
         dispatch({
           type: actionTypes.RESET_GAME,
-          payload: { initialState: data.initialState },
+          payload: {
+            initialState: {
+              ...data.initialState,
+              isMultiplayer: true,
+              roomId: appState?.roomId || localStorage.getItem("roomId"),
+              roomName: appState?.roomName,
+              isVsBot: false,
+            },
+          },
         });
       }
       dispatch({
@@ -317,7 +329,7 @@ const GamesListPage = ({ start, setStart }) => {
       type: actionTypes.SET_ROOM_NAME,
       payload: finalRoomName,
     });
-    
+
     socket.emit("joinGame", roomId, {
       gameMode,
       initialState,
@@ -457,7 +469,8 @@ const GamesListPage = ({ start, setStart }) => {
                     </div>
                     <div>
                       <p>
-                        {t("header.game-mode")} {MODE_LABELS[room.gameMode] || room.gameMode}
+                        {t("header.game-mode")}{" "}
+                        {MODE_LABELS[room.gameMode] || room.gameMode}
                       </p>
                       <p>
                         {t("header.game-players")} {room.playersCount}/2

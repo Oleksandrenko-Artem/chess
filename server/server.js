@@ -2,6 +2,7 @@ const http = require('http');
 const app = require('./app');
 const connectDB = require('./config/db');
 const { Server } = require('socket.io');
+const { getInitialStateByMode } = require('./helpers');
 
 connectDB();
 
@@ -9,8 +10,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://381004cf1c1718b4-95-47-113-161.serveousercontent.com",
-            "https://a5638d5bd550592b-95-47-113-161.serveousercontent.com",
+            "https://02359e72ba213ee0-95-47-113-184.serveousercontent.com",
+            "https://976599be718a101d-95-47-113-184.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -84,11 +85,17 @@ io.on('connection', (socket) => {
         socket.join(roomId);
 
         if (!rooms[roomId]) {
+            let initialState = null;
+            if (gameData.initialState) {
+                initialState = gameData.initialState;
+            } else if (gameData.gameMode === 'chess960' || gameData.gameMode === 'shatranj960') {
+                initialState = getInitialStateByMode(gameData.gameMode, 8);
+            }
             rooms[roomId] = {
                 players: [],
                 createdAt: Date.now(),
                 gameMode: gameData.gameMode,
-                initialState: gameData.initialState || null,
+                initialState,
                 moves: [],
                 roomName: gameData.roomName && gameData.roomName.trim()
                     ? gameData.roomName
