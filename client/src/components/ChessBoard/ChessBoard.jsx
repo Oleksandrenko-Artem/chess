@@ -73,7 +73,8 @@ const ChessBoard = (props) => {
         <div className={styles["chess-div"]}>
           <div className={styles["chess-board"]}>
             {localStorage.getItem("chess_variant") !== "special" &&
-              (status !== "Ongoing" && status !== "Promotion") &&
+              status !== "Ongoing" &&
+              status !== "Promotion" &&
               window && (
                 <div className={styles["game-status-text"]}>
                   <h2>{gameStatusMessage()}</h2>
@@ -84,11 +85,11 @@ const ChessBoard = (props) => {
                   ) : null}
                   {localStorage.getItem("chess_variant") === "shatranj" &&
                   status === "Draw" &&
-                  turn === "white" ? (
+                  appState.playerTurn === "white" ? (
                     <img src={black_king} alt="white" />
                   ) : localStorage.getItem("chess_variant") === "shatranj" &&
                     status === "Draw" &&
-                    turn === "black" ? (
+                    appState.playerTurn === "black" ? (
                     <img src={white_king} alt="black" />
                   ) : null}
                   <button onClick={onClickStartNew}>

@@ -85,7 +85,7 @@ import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
 import { createSpecialPosition } from "../../helpers";
 
-const CreatePosition = () => {
+const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -359,36 +359,11 @@ const CreatePosition = () => {
     setStart("yes");
   };
   const handlePlayInRoom = () => {
-    const roomId = Math.random().toString(36).substring(7);
-    const gameMode = "custom";
-
-    dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
-
-    dispatch({
-      type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: true, roomId },
-    });
-
-    if (socket) {
-      socket.emit("joinGame", roomId, {
-        gameMode,
-        initialState: {
-          ...appState,
-          isMultiplayer: true,
-          roomId,
-        },
-      });
-    }
-
-    localStorage.setItem("chess_mode", "game");
-    localStorage.setItem("chess_variant", "multiplayer");
-    localStorage.setItem("gameMode", gameMode);
-    localStorage.setItem("roomId", roomId);
-
-    setStart("yes");
-    navigate("/games");
+    setRoomWindow(true);
   };
-
+  const handleCloseRoom = () => {
+    setRoomWindow(false);
+  };
   const onClickWhite = () => {
     localStorage.setItem("chess_side", "white");
     setSelectedColor("white");
@@ -482,12 +457,19 @@ const CreatePosition = () => {
               >
                 {t("custom_panel.play_vs_bot")}
               </button>
-              <button
+              {!roomWindow && <button
                 onClick={handlePlayInRoom}
                 disabled={!hasValidKingSetup()}
               >
                 {t("custom_panel.play_in_room")}
-              </button>
+              </button>}
+              {roomWindow && (
+                <button
+                  onClick={handleCloseRoom}
+                >
+                  {t("header.close_room")}
+                </button>
+              )}
             </>
           )}
           {start === "yes" && (

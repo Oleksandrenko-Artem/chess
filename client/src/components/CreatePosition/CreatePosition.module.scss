@@ -37,9 +37,6 @@
         background: var(--btn-hover);
         animation: none;
       }
-      option {
-        color: black;
-      }
     }
     input[type="color"] {
       width: 5vh;
@@ -122,9 +119,6 @@
       &:hover {
         background: var(--btn-hover);
         animation: none;
-      }
-      option {
-        color: black;
       }
     }
   }

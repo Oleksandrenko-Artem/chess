@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useAppContext } from '../contexts/Context';
@@ -9,12 +9,14 @@ import CreatePosition from "../components/CreatePosition/CreatePosition";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
 import MovesList from "../components/MovesList/MovesList";
 import styles from './Pages.module.scss';
+import CreateRoomWindow from '../components/CreateRoomWindow/CreateRoomWindow';
 
 const CreatePositionPage = () => {
     const dispatch = useDispatch();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
     const { appState } = useAppContext();
-    const { user, error } = useSelector((state) => state.users);
+  const { user, error } = useSelector((state) => state.users);
+  const [roomWindow, setRoomWindow] = useState(false);
     useEffect(() => {
         if (!appState || !appState.position || error) {
             navigate('/');
@@ -39,9 +41,10 @@ const CreatePositionPage = () => {
     };
     return (
       <div>
-        <CreatePosition />
+        <CreatePosition roomWindow={roomWindow} setRoomWindow={setRoomWindow} />
         <div className={styles.wrapper}>
-          <div className={styles["chess-wrapper"]}>
+          {roomWindow && <CreateRoomWindow setRoomWindow={setRoomWindow} />}
+          {!roomWindow && <div className={styles["chess-wrapper"]}>
             <ChessBoard status={appState?.status} />
             <div className={styles.control}>
               <CapturedPieces
@@ -50,7 +53,7 @@ const CreatePositionPage = () => {
               />
               <MovesList />
             </div>
-          </div>
+          </div>}
         </div>
       </div>
     );

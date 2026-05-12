@@ -24,6 +24,7 @@ import GameInfoPanel from "../components/GameInfoPanel/GameInfoPanel";
 import MovesList from "../components/MovesList/MovesList";
 import Pagination from "./../components/Pagination/Pagination";
 import FilterGameMode from "../components/FiltersPanel/FilterGameMode";
+import CreateRoomWindow from "../components/CreateRoomWindow/CreateRoomWindow";
 
 const MODE_LABELS = {
   chess: "Chess",
@@ -83,9 +84,13 @@ const GamesListPage = ({ start, setStart }) => {
   const [page, setPage] = useState(1);
   const [amount, setAmount] = useState(5);
   const [filterMode, setFilterMode] = useState("all");
-  const [gameMode, setGameMode] = useState("chess");
+  const [gameMode, setGameMode] = useState(
+    localStorage.getItem("game_mode") || "chess",
+  );
+  const [roomWindow, setRoomWindow] = useState(false);
   const [activeRooms, setActiveRooms] = useState([]);
   const [inputRoomId, setInputRoomId] = useState("");
+  const [joinPassword, setJoinPassword] = useState("");
   const [roomName, setRoomName] = useState("");
   const [playerSide, setPlayerSide] = useState(null);
   const [playersCount, setPlayersCount] = useState(1);
@@ -300,80 +305,69 @@ const GamesListPage = ({ start, setStart }) => {
   };
 
   const handleFindGame = () => {
-    const roomId = Math.random().toString(36).substring(7);
-
-    const initialState = getInitialStateByMode(
-      gameMode,
-      appState?.boardSize || 8,
-    );
-
-    const finalRoomName = roomName.trim();
-
-    setGameState(gameMode);
-
-    dispatch({
-      type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: true, roomId },
-    });
-
-    dispatch({
-      type: actionTypes.SET_VS_BOT,
-      payload: false,
-    });
-
-    localStorage.setItem("roomId", roomId);
-    localStorage.setItem("gameMode", gameMode);
-    localStorage.setItem("chess_side", "white");
-
-    dispatch({
-      type: actionTypes.SET_ROOM_NAME,
-      payload: finalRoomName,
-    });
-
-    socket.emit("joinGame", roomId, {
-      gameMode,
-      initialState,
-      roomName: finalRoomName || null,
-    });
+    setRoomWindow(true);
   };
-
-  const handleJoinGame = () => {
-    const roomId = inputRoomId.trim();
-    if (!roomId || !socket) return;
-    const initialState = getInitialStateByMode(
-      gameMode,
-      appState?.boardSize || 8,
-    );
-    setGameState(gameMode);
-    dispatch({
-      type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: true, roomId },
-    });
-    dispatch({
-      type: actionTypes.SET_VS_BOT,
-      payload: false,
-    });
-    localStorage.setItem("roomId", roomId);
-    localStorage.setItem("gameMode", gameMode);
-    localStorage.setItem("chess_side", "black");
-    socket.emit("joinGame", roomId, { gameMode, initialState });
-    setInputRoomId("");
+  const handleCloseRoom = () => {
+    setRoomWindow(false);
   };
-
-  const handleJoinRoomFromList = (roomId) => {
+  const handleJoinRoomFromList = (room) => {
     if (!socket) return;
+    let password =
+      joinPassword && joinPassword.trim() ? joinPassword.trim() : null;
+    if (room.hasPassword && !password) {
+      const enteredPassword = window.prompt("Введите пароль комнаты");
+      if (!enteredPassword) return;
+      password = enteredPassword.trim();
+    }
     const initialState = getInitialStateByMode(
-      gameMode,
+      room.gameMode,
       appState?.boardSize || 8,
     );
-    setGameState(gameMode);
-    dispatch({
-      type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: true, roomId },
-    });
-    localStorage.setItem("roomId", roomId);
-    localStorage.setItem("chess_side", "black");
-    socket.emit("joinGame", roomId, { gameMode, initialState });
+
+    socket.emit(
+      "joinGame",
+      room.roomId,
+      {
+        gameMode: room.gameMode,
+        password,
+        initialState,
+      },
+      (response) => {
+        if (!response?.success) {
+          alert(response?.error || "Не удалось войти в комнату");
+          return;
+        }
+
+        if (response?.initialState) {
+          dispatch({
+            type: actionTypes.RESET_GAME,
+            payload: {
+              initialState: {
+                ...response.initialState,
+                isMultiplayer: true,
+                roomId: room.roomId,
+                isVsBot: false,
+              },
+            },
+          });
+        } else {
+          setGameState(room.gameMode);
+        }
+        if (Array.isArray(response?.moves) && response.moves.length > 0) {
+          response.moves.forEach((move) => {
+            dispatch({ type: actionTypes.NEW_MOVE, payload: move });
+          });
+        }
+
+        setRoomWindow(false);
+        dispatch({
+          type: actionTypes.SET_MULTIPLAYER,
+          payload: { isMultiplayer: true, roomId: room.roomId },
+        });
+        localStorage.setItem("roomId", room.roomId);
+        localStorage.setItem("chess_side", "black");
+      },
+    );
   };
 
   const handleExitGame = () => {
@@ -397,10 +391,20 @@ const GamesListPage = ({ start, setStart }) => {
   useEffect(() => {
     setPage(1);
   }, [filterMode]);
-  const filteredRooms =
-    filterMode === "all"
-      ? activeRooms
-      : activeRooms.filter((room) => room.gameMode === filterMode);
+  useEffect(() => {
+    setPage(1);
+  }, [inputRoomId]);
+
+  const filteredRooms = activeRooms
+    .filter((room) => filterMode === "all" || room.gameMode === filterMode)
+    .filter((room) => {
+      if (!inputRoomId.trim()) return true;
+      const searchTerm = inputRoomId.trim().toLowerCase();
+      return (
+        room.roomId.toLowerCase().includes(searchTerm) ||
+        (room.roomName && room.roomName.toLowerCase().includes(searchTerm))
+      );
+    });
   const startIndex = (page - 1) * amount;
   const endIndex = startIndex + amount;
 
@@ -412,47 +416,45 @@ const GamesListPage = ({ start, setStart }) => {
         <div className={styles["games-list-content"]}>
           <div className={styles["mode-selection"]}>
             <div>
-              <h3>{t("header.choose-mode")}</h3>
-              <select
-                value={gameMode}
-                onChange={(e) => setGameMode(e.target.value)}
-              >
-                <option value="chess">{MODE_LABELS.chess}</option>
-                <option value="shatranj">{MODE_LABELS.shatranj}</option>
-                <option value="chess960">{MODE_LABELS.chess960}</option>
-                <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
-              </select>
               <input
                 type="text"
-                placeholder={` ${t("header.room-name")}`}
-                value={roomName}
-                onChange={(e) => setRoomName(e.target.value)}
-              />
-              <button onClick={handleFindGame}>
-                {t("header.create-game")}
-              </button>
-              <input
-                type="text"
-                placeholder={` ${t("header.enter-room-id")}`}
+                name="join-room-id"
+                autoComplete="off"
+                placeholder={` ${t("header.search-room")}`}
                 value={inputRoomId}
                 onChange={(e) => setInputRoomId(e.target.value)}
               />
-              <button onClick={handleJoinGame}>{t("header.join-game")}</button>
+              {!roomWindow && (
+                <button onClick={handleFindGame}>
+                  {t("header.create-game")}
+                </button>
+              )}
+              {roomWindow && (
+                <button onClick={handleCloseRoom}>
+                  {t("header.close_room")}
+                </button>
+              )}
             </div>
             <div>
               <FilterGameMode mode={filterMode} setGameMode={setFilterMode} />
             </div>
           </div>
-          {activeRooms.length === 0 ? (
+          {roomWindow ? (
+            <div className={styles["create-room-window"]}>
+              <CreateRoomWindow setRoomWindow={setRoomWindow} />
+            </div>
+          ) : currentRooms.length === 0 ? (
             <p className={styles["no-active-games"]}>
-              {t("header.no-active-rooms")}
+              {inputRoomId.trim()
+                ? t("header.no-rooms-found")
+                : t("header.no-active-rooms")}
             </p>
           ) : (
             <div className={styles["active-rooms-list"]}>
               {currentRooms.map((room) => (
                 <div
                   key={room.roomId}
-                  onClick={() => handleJoinRoomFromList(room.roomId)}
+                  onClick={() => handleJoinRoomFromList(room)}
                   className={styles["room-card"]}
                 >
                   <div className={styles["room-info"]}>
@@ -465,6 +467,7 @@ const GamesListPage = ({ start, setStart }) => {
                         {room.roomName && room.roomName.trim()
                           ? room.roomName
                           : `${t("header.game-room")} ${room.roomId}`}
+                        {room.hasPassword ? " 🔒" : ""}
                       </h4>
                     </div>
                     <div>
@@ -483,16 +486,16 @@ const GamesListPage = ({ start, setStart }) => {
                   </div>
                 </div>
               ))}
+              {activeRooms.length > 0 && (
+                <Pagination
+                  page={page}
+                  setPage={setPage}
+                  total={filteredRooms.length}
+                  amount={amount}
+                  setAmount={setAmount}
+                />
+              )}
             </div>
-          )}
-          {activeRooms.length > 0 && (
-            <Pagination
-              page={page}
-              setPage={setPage}
-              total={filteredRooms.length}
-              amount={amount}
-              setAmount={setAmount}
-            />
           )}
         </div>
       )}

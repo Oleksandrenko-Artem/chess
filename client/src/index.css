@@ -47,3 +47,6 @@ body {
   color: var(--text-color);
   transition: all 0.3s ease;
 }
+option {
+  color: black;
+}

@@ -193,10 +193,6 @@
       @include button-style(130px, 35px, 0px);
       @extend %btn-style;
     }
-    option {
-      background: var(--btn-style-color);
-      color: black;
-    }
   }
   @media screen and (max-width: $s) {
     justify-content: center;
@@ -279,6 +275,11 @@
   flex-direction: column;
   width: 100%;
   margin: 0 auto;
+}
+.create-room-window {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 .no-active-games {
   text-align: center;

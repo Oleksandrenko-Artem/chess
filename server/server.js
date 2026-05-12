@@ -10,8 +10,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://402e2e84b7943b16-95-47-113-184.serveousercontent.com",
-            "https://976599be718a101d-95-47-113-184.serveousercontent.com",
+            "https://7cee786d90f3167a-95-47-113-32.serveousercontent.com",
+            "https://3c7bc3553016f860-95-47-113-32.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -35,10 +35,38 @@ io.on('connection', (socket) => {
             playersCount: rooms[roomId].players.length,
             createdAt: rooms[roomId].createdAt || Date.now(),
             gameMode: rooms[roomId].gameMode,
+            hasPassword: !!rooms[roomId].password,
         })).filter(room => room.playersCount === 1);
 
         socket.emit('activeRooms', activeRooms);
     });
+
+    socket.on('findRoomByName', (roomName) => {
+        const trimmedRoomName = roomName && roomName.trim() ? roomName.trim() : null;
+        if (!trimmedRoomName) {
+            socket.emit('findRoomByNameResponse', { success: false });
+            return;
+        }
+
+        let foundRoomId = Object.keys(rooms).find((roomId) => {
+            const room = rooms[roomId];
+            return room.roomName && room.roomName.trim() === trimmedRoomName;
+        });
+
+        if (!foundRoomId) {
+            foundRoomId = Object.keys(rooms).find((roomId) => roomId === trimmedRoomName);
+        }
+
+        if (foundRoomId) {
+            socket.emit('findRoomByNameResponse', {
+                success: true,
+                roomId: foundRoomId,
+            });
+        } else {
+            socket.emit('findRoomByNameResponse', { success: false });
+        }
+    });
+
     socket.on("reconnectGame", ({ roomId }) => {
         const room = rooms[roomId];
         if (!room) return;
@@ -81,9 +109,7 @@ io.on('connection', (socket) => {
             }
         }
     });
-    socket.on('joinGame', (roomId, gameData = {}) => {
-        socket.join(roomId);
-
+    socket.on('joinGame', (roomId, gameData = {}, callback) => {
         if (!rooms[roomId]) {
             let initialState = null;
             if (gameData.initialState) {
@@ -91,17 +117,33 @@ io.on('connection', (socket) => {
             } else if (gameData.gameMode === 'chess960' || gameData.gameMode === 'shatranj960') {
                 initialState = getInitialStateByMode(gameData.gameMode, 8);
             }
+            const roomName = gameData.roomName && gameData.roomName.trim()
+                ? gameData.roomName.trim()
+                : gameData.initialState?.roomName && gameData.initialState.roomName.trim()
+                    ? gameData.initialState.roomName.trim()
+                    : null;
             rooms[roomId] = {
                 players: [],
                 createdAt: Date.now(),
                 gameMode: gameData.gameMode,
                 initialState,
                 moves: [],
-                roomName: gameData.roomName && gameData.roomName.trim()
-                    ? gameData.roomName
+                roomName,
+                password: gameData.password && gameData.password.trim()
+                    ? gameData.password.trim()
                     : null,
             };
         }
+
+        const room = rooms[roomId];
+        if (room.password && room.password !== (gameData.password && gameData.password.trim())) {
+            if (callback) {
+                callback({ success: false, error: 'Неверный пароль для комнаты' });
+            }
+            return;
+        }
+
+        socket.join(roomId);
 
         if (!rooms[roomId].initialState && gameData.initialState) {
             rooms[roomId].initialState = gameData.initialState;
@@ -122,10 +164,12 @@ io.on('connection', (socket) => {
             roomName: rooms[roomId].roomName || null,
         });
 
-        if (rooms[roomId].initialState || (rooms[roomId].moves && rooms[roomId].moves.length > 0)) {
-            socket.emit('syncGameState', {
-                initialState: rooms[roomId].initialState,
-                moves: rooms[roomId].moves,
+        if (callback) {
+            callback({
+                success: true,
+                roomId,
+                initialState: rooms[roomId].initialState || null,
+                moves: rooms[roomId].moves || [],
             });
         }
 
