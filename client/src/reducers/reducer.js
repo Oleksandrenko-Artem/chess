@@ -154,11 +154,24 @@ export const reducer = (state, action) => {
                 timerActive: false,
             };
         };
+        case actionTypes.SET_VS_BOT: {
+            return {
+                ...state,
+                isVsBot: action.payload.isVsBot,
+                botDifficulty: action.payload.botDifficulty || state.botDifficulty || 'easy',
+            };
+        };
         case actionTypes.SET_MULTIPLAYER: {
             return {
                 ...state,
                 isMultiplayer: action.payload.isMultiplayer,
                 roomId: action.payload.roomId,
+            };
+        };
+        case actionTypes.SET_OPPONENT: {
+            return {
+                ...state,
+                opponent: action.payload.opponent,
             };
         };
         case actionTypes.SET_ROOM_NAME:

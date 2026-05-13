@@ -142,22 +142,22 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         return;
       } else {
         if (user.boardColor.light !== lightSquareColor) {
-        const newLight = user.boardColor.light || DEFAULT_LIGHT_COLOR;
-        setLightSquareColor(newLight);
-        document.documentElement.style.setProperty(
-          "--light-square-color",
-          newLight,
-        );
+          const newLight = user.boardColor.light || DEFAULT_LIGHT_COLOR;
+          setLightSquareColor(newLight);
+          document.documentElement.style.setProperty(
+            "--light-square-color",
+            newLight,
+          );
+        }
+        if (user.boardColor.dark !== darkSquareColor) {
+          const newDark = user.boardColor.dark || DEFAULT_DARK_COLOR;
+          setDarkSquareColor(newDark);
+          document.documentElement.style.setProperty(
+            "--dark-square-color",
+            newDark,
+          );
+        }
       }
-      if (user.boardColor.dark !== darkSquareColor) {
-        const newDark = user.boardColor.dark || DEFAULT_DARK_COLOR;
-        setDarkSquareColor(newDark);
-        document.documentElement.style.setProperty(
-          "--dark-square-color",
-          newDark,
-        );
-      }
-    }
       if ((user.rookType === "sailboat") !== pieceSailBoat) {
         setPieceSailBoat(user.rookType === "sailboat");
       }
@@ -357,6 +357,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const handleStartVariant = () => {
     localStorage.setItem("chess_mode", "game");
     setStart("yes");
+    dispatch({ type: actionTypes.SET_VS_BOT, payload: { isVsBot: true } });
   };
   const handlePlayInRoom = () => {
     setRoomWindow(true);
@@ -457,16 +458,16 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
               >
                 {t("custom_panel.play_vs_bot")}
               </button>
-              {!roomWindow && <button
-                onClick={handlePlayInRoom}
-                disabled={!hasValidKingSetup()}
-              >
-                {t("custom_panel.play_in_room")}
-              </button>}
-              {roomWindow && (
+              {!roomWindow && (
                 <button
-                  onClick={handleCloseRoom}
+                  onClick={handlePlayInRoom}
+                  disabled={!hasValidKingSetup()}
                 >
+                  {t("custom_panel.play_in_room")}
+                </button>
+              )}
+              {roomWindow && (
+                <button onClick={handleCloseRoom}>
                   {t("header.close_room")}
                 </button>
               )}

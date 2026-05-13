@@ -71,35 +71,64 @@ const GameInfoPanel = (props) => {
       window.localStorage.setItem("chess_variant", "chess");
       dispatch({
         type: actionTypes.RESET_GAME,
-        payload: { initialState: initialGameState },
+        payload: {
+          initialState: {
+            ...initialGameState,
+            isVsBot: appState.isVsBot,
+            opponent: appState.opponent,
+          },
+        },
       });
     }
     if (window.localStorage.getItem("chess_variant") === "shatranj") {
       window.localStorage.setItem("chess_variant", "shatranj");
       dispatch({
         type: actionTypes.RESET_GAME,
-        payload: { initialState: initialOldGameState },
+        payload: {
+          initialState: {
+            ...initialOldGameState,
+            isVsBot: appState.isVsBot,
+            opponent: appState.opponent,
+          },
+        },
       });
     }
     if (window.localStorage.getItem("chess_variant") === "chess960") {
       window.localStorage.setItem("chess_variant", "chess960");
       dispatch({
         type: actionTypes.RESET_GAME,
-        payload: { initialState: initialChess960State },
+        payload: {
+          initialState: {
+            ...initialChess960State,
+            isVsBot: appState.isVsBot,
+            opponent: appState.opponent,
+          },
+        },
       });
     }
     if (window.localStorage.getItem("chess_variant") === "shatranj960") {
       window.localStorage.setItem("chess_variant", "shatranj960");
       dispatch({
         type: actionTypes.RESET_GAME,
-        payload: { initialState: initialShatranj960State },
+        payload: {
+          initialState: {
+            ...initialShatranj960State,
+            isVsBot: appState.isVsBot,
+          },
+        },
       });
     }
     if (window.localStorage.getItem("chess_variant") === "multiplayer") {
       window.localStorage.setItem("chess_variant", "multiplayer");
       dispatch({
         type: actionTypes.RESET_GAME,
-        payload: { initialState: initialGameState },
+        payload: {
+          initialState: {
+            ...initialGameState,
+            isVsBot: appState.isVsBot,
+            opponent: appState.opponent,
+          },
+        },
       });
     }
   };

@@ -121,6 +121,8 @@ export const initialOldGameState = {
     blackTime: 3600,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialNewVariantGameState = {
     position: [createNewVariantPosition()],
@@ -142,6 +144,8 @@ export const initialNewVariantGameState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
@@ -163,6 +167,8 @@ export const initialSpecialGameState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialOldVariantGameState = {
     position: [createOldVariantPosition()],
@@ -184,6 +190,8 @@ export const initialOldVariantGameState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialDinoGameState = {
     position: [createDinoPosition()],
@@ -202,6 +210,8 @@ export const initialDinoGameState = {
     },
     orientation: 'white',
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialExtendedGameState = {
     position: [createExtendedPosition()],
@@ -220,6 +230,8 @@ export const initialExtendedGameState = {
     },
     orientation: 'white',
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialFerzVsRukhGameState = {
     position: [createFerzVsRukhPosition()],
@@ -238,6 +250,8 @@ export const initialFerzVsRukhGameState = {
     },
     orientation: 'white',
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialWallsGameState = {
     position: [createWallsPosition()],
@@ -256,6 +270,8 @@ export const initialWallsGameState = {
     },
     orientation: 'white',
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialArenaGameState = {
     position: [createArenaPosition()],
@@ -274,6 +290,8 @@ export const initialArenaGameState = {
     },
     orientation: 'white',
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialGrandAceDrexState = {
     position: [createGrandAceDrexPosition()],
@@ -292,6 +310,8 @@ export const initialGrandAceDrexState = {
     },
     orientation: 'white',
     boardSize: 12,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialAmazonState = {
     position: [createAmazonPosition()],
@@ -313,6 +333,8 @@ export const initialAmazonState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialGreatChessState = {
     position: [createGreatChessPosition()],
@@ -334,6 +356,8 @@ export const initialGreatChessState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 10,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialGrandChessState = {
     position: [createGrandChessPosition()],
@@ -355,6 +379,8 @@ export const initialGrandChessState = {
     blackTime: 1200,
     timerActive: false,
     boardSize: 10,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialChess960State = {
     position: [createChess960Position()],
@@ -376,6 +402,8 @@ export const initialChess960State = {
     blackTime: 3600,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const initialShatranj960State = {
     position: [createShatranj960Position()],
@@ -397,6 +425,8 @@ export const initialShatranj960State = {
     blackTime: 3600,
     timerActive: false,
     boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
 };
 export const piecesArrayPromotion = [
     'horse',

@@ -6,7 +6,7 @@ html {
 }
 :root {
   --bg-color: rgb(255, 255, 255);
-  --text-color: rgb(255, 255, 255);
+  --text-color: rgb(0, 0, 0);
   --text-center: left;
   --text-center-panel: var(--text-center);
   --btn-gradient: linear-gradient(160deg, rgb(143, 205, 255) 0%, rgb(45, 111, 255) 47%, rgb(15, 0, 218) 74%);

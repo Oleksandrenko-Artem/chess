@@ -89,7 +89,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://3c7bc3553016f860-95-47-113-32.serveousercontent.com";
+      "https://42e2aeaa8d842feb-95-47-113-137.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -113,6 +113,7 @@ function App() {
       ...initialGameState,
       boardSize: 8,
       position: [createPosition(8)],
+      isVsBot: true,
     };
     dispatch({
       type: actionTypes.RESET_GAME,
@@ -129,6 +130,7 @@ function App() {
       ...initialOldGameState,
       boardSize: 8,
       position: [createOldPosition(8)],
+      isVsBot: true,
     };
     dispatch({
       type: actionTypes.RESET_GAME,
@@ -145,6 +147,7 @@ function App() {
       ...initialChess960State,
       boardSize: 8,
       position: [createChess960Position(8)],
+      isVsBot: true,
     };
     dispatch({
       type: actionTypes.RESET_GAME,
@@ -161,6 +164,7 @@ function App() {
       ...initialShatranj960State,
       boardSize: 8,
       position: [createShatranj960Position(8)],
+      isVsBot: true,
     };
     dispatch({
       type: actionTypes.RESET_GAME,
@@ -202,10 +206,8 @@ function App() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    const DEFAULT_LIGHT_COLOR =
-      "#F0D8B7";
-    const DEFAULT_DARK_COLOR =
-      "#7e5539";
+    const DEFAULT_LIGHT_COLOR = "#F0D8B7";
+    const DEFAULT_DARK_COLOR = "#7e5539";
 
     const savedStyle = localStorage.getItem("boardStyle");
 

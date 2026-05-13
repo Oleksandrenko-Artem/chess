@@ -10,8 +10,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://7cee786d90f3167a-95-47-113-32.serveousercontent.com",
-            "https://3c7bc3553016f860-95-47-113-32.serveousercontent.com",
+            "https://8acdd8eb14d95938-95-47-113-137.serveousercontent.com",
+            "https://42e2aeaa8d842feb-95-47-113-137.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -100,9 +100,11 @@ io.on('connection', (socket) => {
 
             if (room.players.length === 2 && room.players.every(p => !p.disconnected)) {
                 room.players.forEach((player, index) => {
+                    const opponent = room.players.find(p => p.socketId !== player.socketId);
                     io.to(player.socketId).emit('playersReady', {
                         playersCount: 2,
                         yourSide: player.side,
+                        opponent: { name: opponent.name, avatar: opponent.avatar },
                         message: 'Оба игрока готовы! Начинайте игру',
                     });
                 });
@@ -150,7 +152,7 @@ io.on('connection', (socket) => {
         }
 
         const side = rooms[roomId].players.length === 0 ? 'white' : 'black';
-        rooms[roomId].players.push({ socketId: socket.id, side, disconnected: false });
+        rooms[roomId].players.push({ socketId: socket.id, side, disconnected: false, name: gameData.userName, avatar: gameData.userAvatar });
 
         console.log(`User ${socket.id} joined room ${roomId} as ${side}. Game mode: ${rooms[roomId].gameMode}`);
         console.log(`Total players in room ${roomId}: ${rooms[roomId].players.length}`);
@@ -187,9 +189,11 @@ io.on('connection', (socket) => {
             });
 
             rooms[roomId].players.forEach((player, index) => {
+                const opponent = rooms[roomId].players.find(p => p.socketId !== player.socketId);
                 io.to(player.socketId).emit('playersReady', {
                     playersCount: 2,
                     yourSide: player.side,
+                    opponent: { name: opponent.name, avatar: opponent.avatar },
                     message: 'Оба игрока готовы! Начинайте игру',
                 });
                 console.log(`   Sent playersReady to player ${index + 1} (${player.side}): ${player.socketId}`);

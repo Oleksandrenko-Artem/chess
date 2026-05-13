@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import styles from "./CreateRoomWindow.module.scss";
 import actionTypes from "../../reducers/actionTypes";
 import { useAppContext } from "../../contexts/Context";
@@ -36,6 +37,7 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
   const navigate = useNavigate();
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
+  const user = useSelector((state) => state.users.user);
 
   const getInitialStateByMode = (mode, boardSize = 8) => {
     if (mode === "shatranj") {
@@ -113,7 +115,6 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
       roomPassword && roomPassword.trim() ? roomPassword.trim() : null;
 
     if (trimmedRoomName) {
-
       const searchPromise = new Promise((resolve) => {
         const timeout = setTimeout(() => {
           resolve({ success: false });
@@ -138,6 +139,8 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
               roomName: trimmedRoomName,
               password: trimmedPassword,
               initialState: null,
+              userName: user?.name,
+              userAvatar: user?.avatar,
             },
             (joinResponse) => {
               if (!joinResponse?.success) {
@@ -187,6 +190,8 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
                 isMultiplayer: true,
                 roomId,
               },
+              userName: user?.name,
+              userAvatar: user?.avatar,
             },
             (createResponse) => {
               if (!createResponse?.success) {
@@ -236,6 +241,8 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
             isMultiplayer: true,
             roomId,
           },
+          userName: user?.name,
+          userAvatar: user?.avatar,
         },
         (response) => {
           if (!response?.success) {

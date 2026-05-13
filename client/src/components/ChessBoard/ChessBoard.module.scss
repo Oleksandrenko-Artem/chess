@@ -1,9 +1,15 @@
 @use "/src/common/styles/templates" as *;
 
 @keyframes gradientFlow {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 95% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 95% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 %gradient-text {
@@ -37,11 +43,56 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    width: 100%;
+    width: clamp(380px, 90vw, 480px);
     max-width: 100%;
-    height: 100%;
+    height: clamp(380px, 90vw, 580px);
     max-height: 100%;
     position: relative;
+    .players-container {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+    .player-card {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      padding: 3px 8px;
+    }
+    .player-card.black-player {
+      @extend %panel-style;
+    }
+    .player-card.white-player {
+      @extend %panel-style;
+    }
+    .player-avatar {
+      @extend %panel-style;
+      width: 34px;
+      height: 34px;
+      object-fit: cover;
+    }
+    .player-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 0;
+    }
+    .player-color {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0.8;
+    }
+    .player-name {
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 320px;
+    }
     .chess-div {
       display: flex;
       align-items: center;
@@ -85,22 +136,22 @@
           animation: gradientFlow 8s ease infinite;
           transition: transform 0.6s;
           border: 2px solid black;
+        }
+      }
+      .promotion-div {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        padding: 0;
+      }
+      .promotion-div > * {
+        pointer-events: auto;
       }
     }
-    .promotion-div {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: none;
-      padding: 0;
-    }
-    .promotion-div > * {
-      pointer-events: auto;
-    }
   }
-}
 }
 .attacking::after {
   display: block;
@@ -148,7 +199,7 @@
   font-size: 12px;
   font-weight: bold;
   z-index: 15;
-   @extend %gradient-text;
+  @extend %gradient-text;
   &.white-orientation {
     top: 2px;
     left: 2px;
@@ -164,7 +215,7 @@
   font-size: 12px;
   font-weight: bold;
   z-index: 15;
-   @extend %gradient-text;
+  @extend %gradient-text;
   &.white-orientation {
     bottom: 2px;
     right: 2px;
@@ -200,11 +251,11 @@
   }
 }
 .light-text {
-    background-image: var(--dark-square-color);
-    background-color: var(--dark-square-color);
-  }
+  background-image: var(--dark-square-color);
+  background-color: var(--dark-square-color);
+}
 
-  .dark-text {
-    background-image: var(--light-square-color);
-    background-color: var(--light-square-color);
-  }
+.dark-text {
+  background-image: var(--light-square-color);
+  background-color: var(--light-square-color);
+}

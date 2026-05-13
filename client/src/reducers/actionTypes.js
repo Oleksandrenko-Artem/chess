@@ -18,6 +18,7 @@ const actionTypes = {
     "SET_BOARD_SIZE": "SET_BOARD_SIZE",
     "SET_MULTIPLAYER": "SET_MULTIPLAYER",
     "SET_VS_BOT": "SET_VS_BOT",
+    "SET_OPPONENT": "SET_OPPONENT",
 };
 
 export default actionTypes;

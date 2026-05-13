@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { useAppContext } from "../../contexts/Context";
 import Pieces from "../Pieces/Pieces";
 import Promotion from "../Promotion/Promotion";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
+import accountIcon from "../../assets/icons/account.png";
+import computerIcon from "../../assets/icons/computer.png";
 import styles from "./ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
 
@@ -11,6 +14,7 @@ const ChessBoard = (props) => {
   const { status } = props;
   const { t } = useTranslation();
   const { appState } = useAppContext();
+  const user = useSelector((state) => state.users.user);
   const boardSize = appState.boardSize;
   const [window, setWindow] = useState(false);
 
@@ -62,6 +66,93 @@ const ChessBoard = (props) => {
       return t("game_info_panel.black_baring_king");
     }
   };
+
+  const userSide =
+    typeof window !== "undefined"
+      ? localStorage.getItem("chess_side") || orientation
+      : orientation;
+
+  const whitePlayer = appState.isMultiplayer
+    ? {
+        color: "White",
+        name:
+          userSide === "white"
+            ? user?.name || "White player"
+            : appState.opponent?.name || "White player",
+        avatar:
+          userSide === "white"
+            ? user?.avatar || accountIcon
+            : appState.opponent?.avatar || accountIcon,
+      }
+    : {
+        color: "White",
+        name:
+          userSide === "white" && user
+            ? user.name || "White player"
+            : "White player",
+        avatar:
+          userSide === "white" && user
+            ? user.avatar || accountIcon
+            : accountIcon,
+      };
+
+  const blackPlayer = appState.isMultiplayer
+    ? {
+        color: "Black",
+        name:
+          userSide === "black"
+            ? user?.name || "Black player"
+            : appState.opponent?.name || "Black player",
+        avatar:
+          userSide === "black"
+            ? user?.avatar || accountIcon
+            : appState.opponent?.avatar || accountIcon,
+      }
+    : {
+        color: "Black",
+        name:
+          userSide === "black" && user
+            ? user.name || "Black player"
+            : "Black player",
+        avatar:
+          userSide === "black" && user
+            ? user.avatar || accountIcon
+            : accountIcon,
+      };
+
+  let bottomPlayer = userSide === "white" ? whitePlayer : blackPlayer;
+  let topPlayer = userSide === "white" ? blackPlayer : whitePlayer;
+
+  const isVsBot = !!appState.isVsBot;
+
+  if (isVsBot) {
+    topPlayer = {
+      ...topPlayer,
+      name: "Computer",
+      avatar: computerIcon,
+    };
+  }
+
+  const renderPlayerCard = (player) => (
+    <div
+      className={`${styles["player-card"]} ${
+        player.color === "White"
+          ? styles["white-player"]
+          : styles["black-player"]
+      }`}
+    >
+      <img
+        className={styles["player-avatar"]}
+        src={player.avatar}
+        alt={`${player.color} player`}
+      />
+      <div className={styles["player-info"]}>
+        <span className={styles["player-color"]}>{player.color}</span>
+        <span className={styles["player-name"]}>{player.name}</span>
+      </div>
+    </div>
+  );
+
   return (
     <article
       className={styles["wrapper"]}
@@ -70,6 +161,9 @@ const ChessBoard = (props) => {
       }}
     >
       <div className={styles["coordinates"]}>
+        <div className={styles["players-container"]}>
+          {renderPlayerCard(topPlayer)}
+        </div>
         <div className={styles["chess-div"]}>
           <div className={styles["chess-board"]}>
             {localStorage.getItem("chess_variant") !== "special" &&
@@ -102,6 +196,9 @@ const ChessBoard = (props) => {
           <div className={styles["promotion-div"]}>
             <Promotion />
           </div>
+        </div>
+        <div className={styles["players-container"]}>
+          {renderPlayerCard(bottomPlayer)}
         </div>
       </div>
     </article>

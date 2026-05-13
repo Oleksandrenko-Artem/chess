@@ -183,6 +183,12 @@ const GamesListPage = ({ start, setStart }) => {
         localStorage.setItem("chess_side", data.yourSide);
         dispatch({ type: actionTypes.SET_ORIENTATION, payload: data.yourSide });
       }
+      if (data.opponent) {
+        dispatch({
+          type: actionTypes.SET_OPPONENT,
+          payload: { opponent: data.opponent },
+        });
+      }
     };
 
     const onPlayerWaiting = (data) => {
