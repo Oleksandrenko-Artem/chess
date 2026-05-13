@@ -44,10 +44,12 @@ const GameInfoPanel = (props) => {
       });
       localStorage.removeItem("roomId");
     }
-    localStorage.setItem("chess_mode", "game");
+    localStorage.setItem("chess_mode", "multiplayer");
     setStart(false);
-    if (window.localStorage.getItem("chess_variant") === "multiplayer") {
-      window.localStorage.setItem("chess_variant", "multiplayer");
+    if (
+      appState?.isMultiplayer ||
+      window.localStorage.getItem("chess_mode") === "multiplayer"
+    ) {
       dispatch({
         type: actionTypes.RESET_GAME,
         payload: { initialState: initialGameState },
@@ -64,7 +66,7 @@ const GameInfoPanel = (props) => {
       localStorage.removeItem("roomId");
     }
 
-    localStorage.setItem("chess_mode", "game");
+    localStorage.setItem("chess_mode", "multiplayer");
     setStart(false);
     setSelectedColor(null);
     if (window.localStorage.getItem("chess_variant") === "chess") {
@@ -118,8 +120,10 @@ const GameInfoPanel = (props) => {
         },
       });
     }
-    if (window.localStorage.getItem("chess_variant") === "multiplayer") {
-      window.localStorage.setItem("chess_variant", "multiplayer");
+    if (
+      appState?.isMultiplayer ||
+      window.localStorage.getItem("chess_mode") === "multiplayer"
+    ) {
       dispatch({
         type: actionTypes.RESET_GAME,
         payload: {
@@ -162,36 +166,37 @@ const GameInfoPanel = (props) => {
   };
   return (
     <div className={styles.wrapper}>
-      {!start && localStorage.getItem("chess_variant") !== "multiplayer" && (
-        <div className={styles["start-panel"]}>
-          <h1>{t("game_info_panel.choose_color")}</h1>
-          <div className={styles["img-div"]}>
-            <img
-              src={black_king}
-              alt="black"
-              className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
-              onClick={() => {
-                setSelectedColor("black");
-                onClickBlack();
-              }}
-            />
-            <img
-              src={white_king}
-              alt="white"
-              className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
-              onClick={() => {
-                setSelectedColor("white");
-                onClickWhite();
-              }}
-            />
+      {(!start && appState?.isMultiplayer) ||
+        (window.localStorage.getItem("chess_mode") !== "multiplayer" && (
+          <div className={styles["start-panel"]}>
+            <h1>{t("game_info_panel.choose_color")}</h1>
+            <div className={styles["img-div"]}>
+              <img
+                src={black_king}
+                alt="black"
+                className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
+                onClick={() => {
+                  setSelectedColor("black");
+                  onClickBlack();
+                }}
+              />
+              <img
+                src={white_king}
+                alt="white"
+                className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
+                onClick={() => {
+                  setSelectedColor("white");
+                  onClickWhite();
+                }}
+              />
+            </div>
+            <div>
+              <button onClick={onClickStart} disabled={!selectedColor}>
+                {t("game_info_panel.start")}
+              </button>
+            </div>
           </div>
-          <div>
-            <button onClick={onClickStart} disabled={!selectedColor}>
-              {t("game_info_panel.start")}
-            </button>
-          </div>
-        </div>
-      )}
+        ))}
       {localStorage.getItem("chess_variant") !== "special" &&
         status !== status?.ongoing &&
         start && (
@@ -223,18 +228,16 @@ const GameInfoPanel = (props) => {
                   {t("custom_panel.rotate_board")}
                 </button>
                 {status === "Ongoing" ||
-                (localStorage.getItem("chess_variant") !== "multiplayer" &&
-                  status !== "Ongoing") ? (
+                (!appState?.isMultiplayer && status !== "Ongoing") ? (
                   <button onClick={onClickStartNew}>
                     {t("game_info_panel.start_again")}
                   </button>
                 ) : null}
-                {localStorage.getItem("chess_variant") === "multiplayer" &&
-                  status !== "Ongoing" && (
-                    <button onClick={onClickExit}>
-                      {t("game_info_panel.exit")}
-                    </button>
-                  )}
+                {appState?.isMultiplayer && status !== "Ongoing" && (
+                  <button onClick={onClickExit}>
+                    {t("game_info_panel.exit")}
+                  </button>
+                )}
               </div>
             </div>
           </div>

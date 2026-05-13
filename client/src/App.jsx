@@ -190,8 +190,7 @@ function App() {
   const handlePlayMultiplayer = () => {
     setStart(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("chess_variant", "multiplayer");
-      localStorage.removeItem("chess_mode");
+      localStorage.setItem("chess_mode", "multiplayer");
     }
   };
   const providerState = {

@@ -10,7 +10,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://8acdd8eb14d95938-95-47-113-137.serveousercontent.com",
+            "https://3fe6aa453cf8efda-95-47-113-137.serveousercontent.com",
             "https://42e2aeaa8d842feb-95-47-113-137.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
@@ -29,14 +29,20 @@ io.on('connection', (socket) => {
     console.log('User connected:', socket.id);
 
     socket.on('getActiveRooms', () => {
-        const activeRooms = Object.keys(rooms).map(roomId => ({
-            roomId,
-            roomName: rooms[roomId].roomName,
-            playersCount: rooms[roomId].players.length,
-            createdAt: rooms[roomId].createdAt || Date.now(),
-            gameMode: rooms[roomId].gameMode,
-            hasPassword: !!rooms[roomId].password,
-        })).filter(room => room.playersCount === 1);
+        const activeRooms = Object.keys(rooms).map(roomId => {
+            const room = rooms[roomId];
+            const activePlayers = room.players.filter(p => !p.disconnected).length;
+            const hasDisconnected = room.players.some(p => p.disconnected);
+            return {
+                roomId,
+                roomName: room.roomName,
+                playersCount: activePlayers,
+                createdAt: room.createdAt || Date.now(),
+                gameMode: room.gameMode,
+                hasPassword: !!room.password,
+                hasDisconnected,
+            };
+        }).filter(room => room.playersCount === 1 && !room.hasDisconnected);
 
         socket.emit('activeRooms', activeRooms);
     });
@@ -50,11 +56,19 @@ io.on('connection', (socket) => {
 
         let foundRoomId = Object.keys(rooms).find((roomId) => {
             const room = rooms[roomId];
-            return room.roomName && room.roomName.trim() === trimmedRoomName;
+            const activePlayers = room.players.filter(p => !p.disconnected).length;
+            const hasDisconnected = room.players.some(p => p.disconnected);
+            return !hasDisconnected && activePlayers === 1 &&
+                room.roomName && room.roomName.trim() === trimmedRoomName;
         });
 
         if (!foundRoomId) {
-            foundRoomId = Object.keys(rooms).find((roomId) => roomId === trimmedRoomName);
+            foundRoomId = Object.keys(rooms).find((roomId) => {
+                const room = rooms[roomId];
+                const activePlayers = room.players.filter(p => !p.disconnected).length;
+                const hasDisconnected = room.players.some(p => p.disconnected);
+                return !hasDisconnected && activePlayers === 1 && roomId === trimmedRoomName;
+            });
         }
 
         if (foundRoomId) {
@@ -98,9 +112,14 @@ io.on('connection', (socket) => {
                 message: 'Игрок восстановлен',
             });
 
-            if (room.players.length === 2 && room.players.every(p => !p.disconnected)) {
-                room.players.forEach((player, index) => {
-                    const opponent = room.players.find(p => p.socketId !== player.socketId);
+            const activePlayers = room.players.filter(p => !p.disconnected);
+            if (activePlayers.length === 2) {
+                activePlayers.forEach((player, index) => {
+                    const opponent = activePlayers.find(p => p.socketId !== player.socketId);
+                    if (!opponent) {
+                        console.warn(`Opponent not found for player ${player.socketId} in room ${roomId}`);
+                        return;
+                    }
                     io.to(player.socketId).emit('playersReady', {
                         playersCount: 2,
                         yourSide: player.side,
@@ -145,6 +164,15 @@ io.on('connection', (socket) => {
             return;
         }
 
+        const activePlayerCount = room.players.filter(p => !p.disconnected).length;
+        const hasDisconnected = room.players.some(p => p.disconnected);
+        if (hasDisconnected || activePlayerCount >= 2) {
+            if (callback) {
+                callback({ success: false, error: 'Комната временно недоступна или уже заполнена' });
+            }
+            return;
+        }
+
         socket.join(roomId);
 
         if (!rooms[roomId].initialState && gameData.initialState) {
@@ -175,7 +203,8 @@ io.on('connection', (socket) => {
             });
         }
 
-        if (rooms[roomId].players.length === 2) {
+        const activePlayers = rooms[roomId].players.filter(p => !p.disconnected);
+        if (activePlayers.length === 2) {
             console.log(`✅ Sending playersReady to room ${roomId}`);
             console.log(`   Socket IDs in room: ${rooms[roomId].players.map(p => p.socketId).join(', ')}`);
 
@@ -188,8 +217,12 @@ io.on('connection', (socket) => {
                 roomName: rooms[roomId].roomName,
             });
 
-            rooms[roomId].players.forEach((player, index) => {
-                const opponent = rooms[roomId].players.find(p => p.socketId !== player.socketId);
+            activePlayers.forEach((player, index) => {
+                const opponent = activePlayers.find(p => p.socketId !== player.socketId);
+                if (!opponent) {
+                    console.warn(`Opponent not found for player ${player.socketId} in room ${roomId}`);
+                    return;
+                }
                 io.to(player.socketId).emit('playersReady', {
                     playersCount: 2,
                     yourSide: player.side,
@@ -273,17 +306,24 @@ io.on('connection', (socket) => {
                 player.disconnected = true;
                 player.disconnectTime = Date.now();
 
-                rooms[roomId].timeout = setTimeout(() => {
-                    console.log(`Room ${roomId} deleted due to player disconnection timeout`);
-                    delete rooms[roomId];
-                }, 5 * 60 * 1000);
-
                 const remaining = rooms[roomId].players.find(p => !p.disconnected);
                 if (remaining) {
                     io.to(remaining.socketId).emit('opponentDisconnected', {
                         message: 'Противник отключился. Ожидание переподключения...'
                     });
                 }
+
+                rooms[roomId].timeout = setTimeout(() => {
+                    console.log(`Room ${roomId} deleted due to player disconnection timeout`);
+                    const winner = rooms[roomId]?.players.find(p => !p.disconnected);
+                    if (winner) {
+                        io.to(winner.socketId).emit('opponentLeft', {
+                            winner: winner.side,
+                            message: 'Противник не восстановился, вы побеждаете',
+                        });
+                    }
+                    delete rooms[roomId];
+                }, 30 * 1000);
             }
         });
     });

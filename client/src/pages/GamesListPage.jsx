@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { useAppContext } from "../contexts/Context";
 import actionTypes from "../reducers/actionTypes";
 import {
@@ -80,6 +81,7 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
 const GamesListPage = ({ start, setStart }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
+  const user = useSelector((state) => state.users.user);
 
   const [page, setPage] = useState(1);
   const [amount, setAmount] = useState(5);
@@ -118,7 +120,7 @@ const GamesListPage = ({ start, setStart }) => {
   }, [socket, dispatch]);
 
   useEffect(() => {
-    if (!socket || appState?.isMultiplayer) return;
+    if (!socket) return;
 
     const onActiveRooms = (rooms) => {
       setActiveRooms(rooms);
@@ -152,21 +154,8 @@ const GamesListPage = ({ start, setStart }) => {
       if (info.gameMode) {
         setGameMode(info.gameMode);
         localStorage.setItem("gameMode", info.gameMode);
-
-        if (
-          info.gameMode !== "custom" &&
-          info.gameMode !== "chess960" &&
-          info.gameMode !== "shatranj960"
-        ) {
-          const state = getInitialStateByMode(
-            info.gameMode,
-            appState?.boardSize || 8,
-          );
-          dispatch({
-            type: actionTypes.RESET_GAME,
-            payload: { initialState: state },
-          });
-        }
+        localStorage.setItem("chess_variant", info.gameMode);
+        localStorage.setItem("chess_mode", "multiplayer");
       }
 
       if (info.playersCount === 2) {
@@ -202,9 +191,6 @@ const GamesListPage = ({ start, setStart }) => {
     };
 
     const onOpponentDisconnected = () => {
-      if (playerSide && appState?.status === status.ongoing) {
-        dispatch({ type: actionTypes.SET_STATUS, payload: status[playerSide] });
-      }
       setPlayersCount(1);
       setGameReady(false);
     };
@@ -244,6 +230,17 @@ const GamesListPage = ({ start, setStart }) => {
             },
           },
         });
+        dispatch({
+          type: actionTypes.SET_MULTIPLAYER,
+          payload: {
+            isMultiplayer: true,
+            roomId: appState?.roomId || localStorage.getItem("roomId"),
+          },
+        });
+        if (data.initialState.gameMode) {
+          localStorage.setItem("chess_variant", data.initialState.gameMode);
+          localStorage.setItem("chess_mode", "multiplayer");
+        }
       }
       dispatch({
         type: actionTypes.SET_ORIENTATION,
@@ -306,8 +303,8 @@ const GamesListPage = ({ start, setStart }) => {
       payload: { initialState: { ...state, isVsBot: false } },
     });
     localStorage.setItem("gameMode", mode);
-    localStorage.setItem("chess_variant", "multiplayer");
-    localStorage.removeItem("chess_mode");
+    localStorage.setItem("chess_variant", mode);
+    localStorage.setItem("chess_mode", "multiplayer");
   };
 
   const handleFindGame = () => {
@@ -318,6 +315,7 @@ const GamesListPage = ({ start, setStart }) => {
   };
   const handleJoinRoomFromList = (room) => {
     if (!socket) return;
+    setStart(false);
     let password =
       joinPassword && joinPassword.trim() ? joinPassword.trim() : null;
     if (room.hasPassword && !password) {
@@ -337,6 +335,8 @@ const GamesListPage = ({ start, setStart }) => {
         gameMode: room.gameMode,
         password,
         initialState,
+        userName: user?.name,
+        userAvatar: user?.avatar,
       },
       (response) => {
         if (!response?.success) {
@@ -372,6 +372,8 @@ const GamesListPage = ({ start, setStart }) => {
         });
         localStorage.setItem("roomId", room.roomId);
         localStorage.setItem("chess_side", "black");
+        localStorage.setItem("chess_variant", room.gameMode);
+        localStorage.setItem("chess_mode", "multiplayer");
       },
     );
   };
@@ -447,7 +449,10 @@ const GamesListPage = ({ start, setStart }) => {
           </div>
           {roomWindow ? (
             <div className={styles["create-room-window"]}>
-              <CreateRoomWindow setRoomWindow={setRoomWindow} />
+              <CreateRoomWindow
+                setRoomWindow={setRoomWindow}
+                setStart={setStart}
+              />
             </div>
           ) : currentRooms.length === 0 ? (
             <p className={styles["no-active-games"]}>

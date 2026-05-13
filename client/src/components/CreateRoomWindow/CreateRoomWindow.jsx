@@ -28,7 +28,7 @@ const MODE_LABELS = {
   custom: "Custom",
 };
 
-const CreateRoomWindow = ({ setRoomWindow }) => {
+const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
   const [gameMode, setGameMode] = useState(
     localStorage.getItem("chess_variant") === "special" ? "custom" : "chess",
   );
@@ -160,15 +160,17 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
                 type: actionTypes.SET_ROOM_NAME,
                 payload: trimmedRoomName,
               });
+              setStart(false);
               setRoomWindow(false);
-              dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
+              dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
                 payload: { isMultiplayer: true, roomId: foundRoomId },
               });
 
-              localStorage.setItem("chess_mode", "game");
-              localStorage.setItem("chess_variant", "multiplayer");
+              localStorage.setItem("chess_side", "black");
+              localStorage.setItem("chess_mode", "multiplayer");
+              localStorage.setItem("chess_variant", gameMode);
               localStorage.setItem("gameMode", gameMode);
               localStorage.setItem("roomId", foundRoomId);
 
@@ -209,6 +211,7 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
                 type: actionTypes.SET_ROOM_NAME,
                 payload: trimmedRoomName,
               });
+              setStart(false);
               setRoomWindow(false);
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
               dispatch({
@@ -216,8 +219,8 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
                 payload: { isMultiplayer: true, roomId },
               });
 
-              localStorage.setItem("chess_mode", "game");
-              localStorage.setItem("chess_variant", "multiplayer");
+              localStorage.setItem("chess_mode", "multiplayer");
+              localStorage.setItem("chess_variant", gameMode);
               localStorage.setItem("gameMode", gameMode);
               localStorage.setItem("roomId", roomId);
 
@@ -252,6 +255,7 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
 
           applyRoomStateFromResponse(response, roomId, null);
 
+          setStart(false);
           setRoomWindow(false);
           dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
           dispatch({
@@ -259,8 +263,9 @@ const CreateRoomWindow = ({ setRoomWindow }) => {
             payload: { isMultiplayer: true, roomId },
           });
 
-          localStorage.setItem("chess_mode", "game");
-          localStorage.setItem("chess_variant", "multiplayer");
+          localStorage.setItem("chess_side", "white");
+          localStorage.setItem("chess_mode", "multiplayer");
+          localStorage.setItem("chess_variant", gameMode);
           localStorage.setItem("gameMode", gameMode);
           localStorage.setItem("roomId", roomId);
 
