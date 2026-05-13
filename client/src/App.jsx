@@ -40,7 +40,9 @@ import Shatranj960Page from "./pages/Shatranj960Page";
 
 function App() {
   const dispathUser = useDispatch();
-  const [start, setStart] = useState(false);
+  const savedBotState =
+    typeof window !== "undefined" ? localStorage.getItem("botGameState") : null;
+  const [start, setStart] = useState(Boolean(savedBotState));
   const savedVariant =
     typeof window !== "undefined"
       ? localStorage.getItem("chess_variant")
@@ -84,12 +86,35 @@ function App() {
                 : [createPosition(8)],
     };
   }
+
+  if (savedBotState) {
+    try {
+      const parsedBotState = JSON.parse(savedBotState);
+      if (parsedBotState && parsedBotState.isVsBot) {
+        initialStateAtLoad = parsedBotState;
+      }
+    } catch {
+      // ignore invalid saved state
+    }
+  }
+
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    if (appState?.isVsBot && !appState?.isMultiplayer) {
+      localStorage.setItem("botGameState", JSON.stringify(appState));
+      localStorage.setItem("chess_mode", "game");
+    } else {
+      localStorage.removeItem("botGameState");
+    }
+  }, [appState]);
+
+  useEffect(() => {
     const serverUrl =
-      "https://42e2aeaa8d842feb-95-47-113-137.serveousercontent.com";
+      "https://8e113d7a93c4592e-95-47-113-137.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,

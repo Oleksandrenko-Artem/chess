@@ -5,8 +5,9 @@ import styles from "./Timer.module.scss";
 import { useTranslation } from "react-i18next";
 
 const Timer = () => {
-  const { appState, dispatch } = useAppContext();
+  const { appState, dispatch, socket } = useAppContext();
   const intervalRef = useRef(null);
+  const moveTimeoutRef = useRef(null);
   const currentPlayerRef = useRef(appState.playerTurn);
   const whiteTimeRef = useRef(appState.whiteTime);
   const blackTimeRef = useRef(appState.blackTime);
@@ -46,10 +47,31 @@ const Timer = () => {
           });
         }
       }, 1000);
+
+      if (moveTimeoutRef.current) {
+        clearTimeout(moveTimeoutRef.current);
+      }
+      moveTimeoutRef.current = setTimeout(() => {
+        const currentPlayer = currentPlayerRef.current;
+        dispatch({
+          type: actionTypes.TIME_UP,
+          payload: { player: currentPlayer },
+        });
+        if (socket && appState?.isMultiplayer && appState?.roomId) {
+          socket.emit("playerTimedOut", {
+            roomId: appState.roomId,
+            loser: currentPlayer,
+          });
+        }
+      }, 120000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
+      }
+      if (moveTimeoutRef.current) {
+        clearTimeout(moveTimeoutRef.current);
+        moveTimeoutRef.current = null;
       }
     }
 
@@ -57,8 +79,19 @@ const Timer = () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
       }
+      if (moveTimeoutRef.current) {
+        clearTimeout(moveTimeoutRef.current);
+      }
     };
-  }, [appState.timerActive, appState.status, dispatch]);
+  }, [
+    appState.timerActive,
+    appState.status,
+    appState.playerTurn,
+    appState.isMultiplayer,
+    appState.roomId,
+    dispatch,
+    socket,
+  ]);
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);

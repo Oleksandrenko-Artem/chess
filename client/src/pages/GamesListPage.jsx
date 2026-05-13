@@ -166,7 +166,10 @@ const GamesListPage = ({ start, setStart }) => {
     const onPlayersReady = (data) => {
       setPlayersCount(2);
       setGameReady(true);
-      setTimeout(() => setStart(true), 2000);
+      setTimeout(() => {
+        setStart(true);
+        dispatch({ type: actionTypes.START_TIMER });
+      }, 2000);
       if (data.yourSide) {
         setPlayerSide(data.yourSide);
         localStorage.setItem("chess_side", data.yourSide);
@@ -205,6 +208,17 @@ const GamesListPage = ({ start, setStart }) => {
     };
 
     const onOpponentLeft = (data) => {
+      if (data?.winner && appState?.status === status.ongoing) {
+        dispatch({
+          type: actionTypes.SET_STATUS,
+          payload: status[data.winner],
+        });
+      }
+      setGameReady(false);
+      setPlayersCount(1);
+    };
+
+    const onPlayerTimedOut = (data) => {
       if (data?.winner && appState?.status === status.ongoing) {
         dispatch({
           type: actionTypes.SET_STATUS,
@@ -266,6 +280,7 @@ const GamesListPage = ({ start, setStart }) => {
     socket.on("opponentDisconnected", onOpponentDisconnected);
     socket.on("playerReconnected", onPlayerReconnected);
     socket.on("opponentLeft", onOpponentLeft);
+    socket.on("playerTimedOut", onPlayerTimedOut);
     socket.on("syncGameState", onSyncGameState);
 
     const savedRoom = localStorage.getItem("roomId");
@@ -286,6 +301,7 @@ const GamesListPage = ({ start, setStart }) => {
       socket.off("opponentDisconnected", onOpponentDisconnected);
       socket.off("playerReconnected", onPlayerReconnected);
       socket.off("opponentLeft", onOpponentLeft);
+      socket.off("playerTimedOut", onPlayerTimedOut);
       socket.off("syncGameState", onSyncGameState);
     };
   }, [

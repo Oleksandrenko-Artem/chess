@@ -7,6 +7,7 @@ import {
   initialGameState,
   initialOldGameState,
   initialShatranj960State,
+  status as statusMap,
 } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
 import black_king from "../../assets/icons/black_king.png";
@@ -66,7 +67,7 @@ const GameInfoPanel = (props) => {
       localStorage.removeItem("roomId");
     }
 
-    localStorage.setItem("chess_mode", "multiplayer");
+    localStorage.setItem("chess_mode", "game");
     setStart(false);
     setSelectedColor(null);
     if (window.localStorage.getItem("chess_variant") === "chess") {
@@ -140,11 +141,21 @@ const GameInfoPanel = (props) => {
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
   };
   const gameStatusMessage = () => {
-    if (status !== "Ongoing") {
-      return `${t("game_info_panel.game_over")}`;
+    if (status === statusMap.white) {
+      return t("game_info_panel.white_wins");
+    }
+    if (status === statusMap.black) {
+      return t("game_info_panel.black_wins");
+    }
+    if (status === statusMap.draw) {
+      return t("game_info_panel.draw");
+    }
+    if (status !== statusMap.ongoing) {
+      return t("game_info_panel.game_over");
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
+  console.log(status)
   const handleBoardStyleChange = (event) => {
     const style = event.target.value;
     setBoardStyle(style);
@@ -166,8 +177,9 @@ const GameInfoPanel = (props) => {
   };
   return (
     <div className={styles.wrapper}>
-      {(!start && appState?.isMultiplayer) ||
-        (window.localStorage.getItem("chess_mode") !== "multiplayer" && (
+      {!start &&
+        !appState?.isMultiplayer &&
+        window.localStorage.getItem("chess_mode") !== "multiplayer" && (
           <div className={styles["start-panel"]}>
             <h1>{t("game_info_panel.choose_color")}</h1>
             <div className={styles["img-div"]}>
@@ -196,9 +208,8 @@ const GameInfoPanel = (props) => {
               </button>
             </div>
           </div>
-        ))}
+        )}
       {localStorage.getItem("chess_variant") !== "special" &&
-        status !== status?.ongoing &&
         start && (
           <div className={styles["game-status"]}>
             <div className={styles["game-message"]}>
@@ -227,13 +238,11 @@ const GameInfoPanel = (props) => {
                 <button onClick={handleToggle}>
                   {t("custom_panel.rotate_board")}
                 </button>
-                {status === "Ongoing" ||
-                (!appState?.isMultiplayer && status !== "Ongoing") ? (
+                {!appState?.isMultiplayer ? (
                   <button onClick={onClickStartNew}>
                     {t("game_info_panel.start_again")}
                   </button>
-                ) : null}
-                {appState?.isMultiplayer && status !== "Ongoing" && (
+                ) : (
                   <button onClick={onClickExit}>
                     {t("game_info_panel.exit")}
                   </button>

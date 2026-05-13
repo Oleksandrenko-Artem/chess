@@ -10,8 +10,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://3fe6aa453cf8efda-95-47-113-137.serveousercontent.com",
-            "https://42e2aeaa8d842feb-95-47-113-137.serveousercontent.com",
+            "https://0af8bcab4c9722b1-95-47-113-137.serveousercontent.com",
+            "https://8e113d7a93c4592e-95-47-113-137.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -248,6 +248,35 @@ io.on('connection', (socket) => {
             room.moves.push(move);
         }
         socket.to(roomId).emit('moveMade', move);
+    });
+
+    socket.on('playerTimedOut', ({ roomId, loser }) => {
+        const room = rooms[roomId];
+        if (!room) return;
+
+        const winnerSide = loser === 'white' ? 'black' : 'white';
+        const winner = room.players.find(
+            (p) => p.side === winnerSide && !p.disconnected,
+        );
+        const loserPlayer = room.players.find((p) => p.side === loser);
+
+        if (winner) {
+            io.to(winner.socketId).emit('playerTimedOut', {
+                winner: winner.side,
+                message: 'Противник проиграл по времени, вы побеждаете',
+            });
+        }
+        if (loserPlayer) {
+            io.to(loserPlayer.socketId).emit('playerTimedOut', {
+                winner: winnerSide,
+                message: 'Вы проиграли по времени',
+            });
+        }
+
+        if (room.timeout) {
+            clearTimeout(room.timeout);
+        }
+        delete rooms[roomId];
     });
 
     socket.on('leaveGame', ({ roomId }) => {
