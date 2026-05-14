@@ -363,7 +363,6 @@ const Pieces = ({ flipped = false }) => {
         (m) => m[0] === targetRank && m[1] === targetFile,
       );
       if (!isValidMove) {
-        dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
         return;
       }
 
