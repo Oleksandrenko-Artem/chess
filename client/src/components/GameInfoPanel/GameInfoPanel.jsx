@@ -150,7 +150,7 @@ const GameInfoPanel = (props) => {
     if (status === statusMap.draw) {
       return t("game_info_panel.draw");
     }
-    if (status !== statusMap.ongoing) {
+    if (status !== statusMap.ongoing && status !== statusMap.promotion) {
       return t("game_info_panel.game_over");
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;

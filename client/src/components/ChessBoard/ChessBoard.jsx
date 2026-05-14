@@ -20,10 +20,10 @@ const ChessBoard = (props) => {
 
   const orientation = appState.orientation;
   useEffect(() => {
-    if (status !== "Ongoing") {
+    if (status !== "Ongoing" && status !== "Promotion") {
       const timer = setTimeout(() => {
         setWindow(true);
-      }, 1000);
+      }, 3000);
     } else {
       setWindow(false);
     }

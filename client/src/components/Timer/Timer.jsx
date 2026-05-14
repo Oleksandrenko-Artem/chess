@@ -63,7 +63,7 @@ const Timer = () => {
             loser: currentPlayer,
           });
         }
-      }, 120000);
+      }, 300000);
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);

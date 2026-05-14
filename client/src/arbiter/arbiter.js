@@ -867,27 +867,29 @@ const arbiter = {
                 }
             }
         }
-        if (pieces.length === 2) {
-            return true;
-        }
-        if (pieces.length === 3) {
-            return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse'));
-        }
-        if (pieces.length === 4) {
-            const whiteHorse = pieceCounts['white_horse'] || 0;
-            const blackHorse = pieceCounts['black_horse'] || 0;
-            if (whiteHorse === 1 && blackHorse === 1) {
-                return true;
-            } else if (whiteHorse === 2 && blackHorse === 0) {
-                return true;
-            } else if (whiteHorse === 0 && blackHorse === 2) {
+        if (localStorage.getItem('chess_variant') !== 'shatranj') {
+            if (pieces.length === 2) {
                 return true;
             }
-            const whiteBishop = findPieceCoords(position, 'white_bishop');
-            const blackBishop = findPieceCoords(position, 'black_bishop');
-            if (whiteBishop.length === 1 && blackBishop.length === 1) {
-                if (areSameColorBishops(whiteBishop[0], blackBishop[0])) {
+            if (pieces.length === 3) {
+                return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse'));
+            }
+            if (pieces.length === 4) {
+                const whiteHorse = pieceCounts['white_horse'] || 0;
+                const blackHorse = pieceCounts['black_horse'] || 0;
+                if (whiteHorse === 1 && blackHorse === 1) {
                     return true;
+                } else if (whiteHorse === 2 && blackHorse === 0) {
+                    return true;
+                } else if (whiteHorse === 0 && blackHorse === 2) {
+                    return true;
+                }
+                const whiteBishop = findPieceCoords(position, 'white_bishop');
+                const blackBishop = findPieceCoords(position, 'black_bishop');
+                if (whiteBishop.length === 1 && blackBishop.length === 1) {
+                    if (areSameColorBishops(whiteBishop[0], blackBishop[0])) {
+                        return true;
+                    }
                 }
             }
         }
