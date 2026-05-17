@@ -248,7 +248,12 @@ const GamesListPage = ({ start, setStart }) => {
           type: actionTypes.SET_MULTIPLAYER,
           payload: {
             isMultiplayer: true,
-            roomId: appState?.roomId || localStorage.getItem("roomId"),
+            roomId:
+              data.initialState?.roomId ||
+              appState?.roomId ||
+              localStorage.getItem("roomId"),
+            whiteTime: data.initialState?.whiteTime,
+            blackTime: data.initialState?.blackTime,
           },
         });
         if (data.initialState.gameMode) {
@@ -260,14 +265,7 @@ const GamesListPage = ({ start, setStart }) => {
         type: actionTypes.SET_ORIENTATION,
         payload: currentOrientation,
       });
-      if (Array.isArray(data?.moves) && data.moves.length > 0) {
-        data.moves.forEach((move) => {
-          dispatch({ type: actionTypes.NEW_MOVE, payload: move });
-        });
-        setGameReady(true);
-      } else {
-        setGameReady(false);
-      }
+      setGameReady(data?.playersCount === 2);
     };
 
     socket.on("gameInfo", onGameInfo);
@@ -287,7 +285,7 @@ const GamesListPage = ({ start, setStart }) => {
     if (savedRoom && !appState?.isMultiplayer) {
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: true, roomId: savedRoom },
+        payload: { isMultiplayer: true, roomId: savedRoom, whiteTime: null, blackTime: null },
       });
       socket.emit("reconnectGame", { roomId: savedRoom });
     }
@@ -342,8 +340,10 @@ const GamesListPage = ({ start, setStart }) => {
     const initialState = getInitialStateByMode(
       room.gameMode,
       appState?.boardSize || 8,
+      room.whiteTime || null,
+      room.blackTime || null,
     );
-
+    console.log(room.whiteTime, room.blackTime);
     socket.emit(
       "joinGame",
       room.roomId,
@@ -353,6 +353,8 @@ const GamesListPage = ({ start, setStart }) => {
         initialState,
         userName: user?.name,
         userAvatar: user?.avatar,
+        whiteTime: room.whiteTime ?? appState.whiteTime,
+        blackTime: room.blackTime ?? appState.blackTime,
       },
       (response) => {
         if (!response?.success) {
@@ -368,6 +370,16 @@ const GamesListPage = ({ start, setStart }) => {
                 ...response.initialState,
                 isMultiplayer: true,
                 roomId: room.roomId,
+                whiteTime:
+                  response.initialState.whiteTime ??
+                  room.whiteTime ??
+                  appState.whiteTime,
+
+                blackTime:
+                  response.initialState.blackTime ??
+                  room.blackTime ??
+                  appState.blackTime,
+
                 isVsBot: false,
               },
             },
@@ -384,7 +396,20 @@ const GamesListPage = ({ start, setStart }) => {
         setRoomWindow(false);
         dispatch({
           type: actionTypes.SET_MULTIPLAYER,
-          payload: { isMultiplayer: true, roomId: room.roomId },
+          payload: {
+            isMultiplayer: true,
+            roomId: room.roomId,
+
+            whiteTime:
+              response.initialState?.whiteTime ??
+              room.whiteTime ??
+              appState.whiteTime,
+
+            blackTime:
+              response.initialState?.blackTime ??
+              room.blackTime ??
+              appState.blackTime,
+          },
         });
         localStorage.setItem("roomId", room.roomId);
         localStorage.setItem("chess_side", "black");
@@ -400,7 +425,7 @@ const GamesListPage = ({ start, setStart }) => {
     }
     dispatch({
       type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: false, roomId: null },
+      payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
     });
     localStorage.removeItem("roomId");
     localStorage.removeItem("gameMode");

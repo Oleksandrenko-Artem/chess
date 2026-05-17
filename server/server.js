@@ -10,8 +10,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://0af8bcab4c9722b1-95-47-113-137.serveousercontent.com",
-            "https://8e113d7a93c4592e-95-47-113-137.serveousercontent.com",
+            "https://2f7c7e569c0aded6-95-47-113-249.serveousercontent.com",
+            "https://0e1255ecc5a24e53-95-47-113-249.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -150,6 +150,8 @@ io.on('connection', (socket) => {
                 initialState,
                 moves: [],
                 roomName,
+                whiteTime: gameData.whiteTime,
+                blackTime: gameData.blackTime,
                 password: gameData.password && gameData.password.trim()
                     ? gameData.password.trim()
                     : null,

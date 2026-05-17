@@ -111,7 +111,7 @@ const evaluatePosition = (position, gameVariant = "") => {
                 value += pawnBonus;
             }
 
-            if (type !== "king" && type !== "imperator" && isCenter) {
+            if (type !== "king" && isCenter) {
                 value += 25;
             }
 

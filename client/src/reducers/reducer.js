@@ -166,6 +166,8 @@ export const reducer = (state, action) => {
                 ...state,
                 isMultiplayer: action.payload.isMultiplayer,
                 roomId: action.payload.roomId,
+                whiteTime: action.payload.whiteTime ?? state.whiteTime,
+                blackTime: action.payload.blackTime ?? state.blackTime,
             };
         };
         case actionTypes.SET_OPPONENT: {

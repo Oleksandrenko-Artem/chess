@@ -39,9 +39,14 @@ const GameInfoPanel = (props) => {
   };
   const onClickExit = () => {
     if (appState?.isMultiplayer && socket && appState?.roomId) {
+      if (socket && appState?.roomId) {
+        socket.emit("leaveGame", {
+          roomId: appState.roomId,
+        });
+      }
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: false, roomId: null },
+        payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
       });
       localStorage.removeItem("roomId");
     }
@@ -61,7 +66,7 @@ const GameInfoPanel = (props) => {
     if (appState?.isMultiplayer && socket && appState?.roomId) {
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: false, roomId: null },
+        payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
       });
       socket.emit("leaveGame", { roomId: appState.roomId });
       localStorage.removeItem("roomId");

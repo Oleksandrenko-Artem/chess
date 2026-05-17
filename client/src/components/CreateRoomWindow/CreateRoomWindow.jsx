@@ -34,17 +34,21 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
   );
   const [roomName, setRoomName] = useState("");
   const [roomPassword, setRoomPassword] = useState("");
+  const [timeType, setTimeType] = useState(1200);
   const navigate = useNavigate();
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
 
-  const getInitialStateByMode = (mode, boardSize = 8) => {
+  const getInitialStateByMode = (mode, boardSize = 8, whiteTime = timeType,
+  blackTime = timeType) => {
     if (mode === "shatranj") {
       return {
         ...initialOldGameState,
         boardSize,
         position: [createOldPosition(boardSize)],
+        whiteTime,
+        blackTime,
       };
     }
     if (mode === "chess960") {
@@ -52,6 +56,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
         ...initialChess960State,
         boardSize,
         position: [createChess960Position(boardSize)],
+        whiteTime,
+        blackTime,
       };
     }
     if (mode === "shatranj960") {
@@ -59,6 +65,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
         ...initialShatranj960State,
         boardSize,
         position: [createShatranj960Position(boardSize)],
+        whiteTime,
+        blackTime,
       };
     }
     if (mode === "custom") {
@@ -66,12 +74,16 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
         ...initialSpecialGameState,
         boardSize,
         position: [createSpecialPosition(boardSize)],
+        whiteTime,
+        blackTime,
       };
     }
     return {
       ...initialGameState,
       boardSize,
       position: [createPosition(boardSize)],
+      whiteTime,
+      blackTime,
     };
   };
 
@@ -93,6 +105,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
             roomId,
             roomName,
             isVsBot: false,
+            whiteTime: response.initialState?.whiteTime ?? timeType,
+            blackTime: response.initialState?.blackTime ?? timeType,
           },
         },
       });
@@ -141,6 +155,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               initialState: null,
               userName: user?.name,
               userAvatar: user?.avatar,
+              whiteTime: timeType,
+              blackTime: timeType,
             },
             (joinResponse) => {
               if (!joinResponse?.success) {
@@ -165,7 +181,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
-                payload: { isMultiplayer: true, roomId: foundRoomId },
+                payload: { isMultiplayer: true, roomId: foundRoomId, whiteTime: timeType, blackTime: timeType },
               });
 
               localStorage.setItem("chess_side", "black");
@@ -194,6 +210,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               },
               userName: user?.name,
               userAvatar: user?.avatar,
+              whiteTime: timeType,
+              blackTime: timeType,
             },
             (createResponse) => {
               if (!createResponse?.success) {
@@ -216,7 +234,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
-                payload: { isMultiplayer: true, roomId },
+                payload: { isMultiplayer: true, roomId, whiteTime: timeType, blackTime: timeType },
               });
 
               localStorage.setItem("chess_mode", "multiplayer");
@@ -246,6 +264,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
           },
           userName: user?.name,
           userAvatar: user?.avatar,
+          whiteTime: timeType,
+          blackTime: timeType,
         },
         (response) => {
           if (!response?.success) {
@@ -260,7 +280,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
           dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
           dispatch({
             type: actionTypes.SET_MULTIPLAYER,
-            payload: { isMultiplayer: true, roomId },
+            payload: { isMultiplayer: true, roomId, whiteTime: timeType, blackTime: timeType },
           });
 
           localStorage.setItem("chess_side", "white");
@@ -306,6 +326,15 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
         value={roomPassword}
         onChange={(e) => setRoomPassword(e.target.value)}
       />
+      <select
+        value={timeType}
+        onChange={(e) => setTimeType(Number(e.target.value))}
+      >
+        <option value={300}>5 min</option>
+        <option value={600}>10 min</option>
+        <option value={1200}>20 min</option>
+        <option value={1800}>30 min</option>
+      </select>
       <button onClick={handlePlayInRoom}>{t("header.create-game")}</button>
     </div>
   );
