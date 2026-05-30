@@ -448,7 +448,7 @@ export const piecesArrayPromotion = [
     'archbishop',
     'marshal',
     'amazon',
-    'long-range elephant',
+    'elephant_long_range',
     'knight',
     'dinozavr',
     'checker',

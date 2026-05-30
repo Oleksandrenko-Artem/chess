@@ -50,20 +50,22 @@ const evaluatePosition = (position, gameVariant = "") => {
                 if (isOpening || isMiddlegame) {
                     if (type === "horse") value += 40;
                     if (type === "elephant") value += 30;
+                    if (type === "firzan") value += 15;
 
-                    if (type === "horse" || type === "elephant") {
-                        if (isWhite && r < 7) value += 25;
-                        if (!isWhite && r > 0) value += 25;
+                    if (type === "horse" || type === "elephant" || type === "firzan") {
+                        if (isWhite && r < 7) value += 35;
+                        if (!isWhite && r > 0) value += 35;
                     }
                 }
             } else {
-                if (isEndgame && (type === "rook" || type === "rook_960")) {
-                    value += 40;
+                if (isEndgame) {
+                    if (type === "rook") value += 40;
+                    if (type === "firzan") value += 30;
                 }
             }
 
             if (isOpening) {
-                if (type === "rook" || type === "rook_960") {
+                if (type === "rook") {
                     if (isWhite && r !== 7) value -= 60;
                     if (!isWhite && r !== 0) value -= 60;
                 }
