@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
+import { useSelector, useDispatch } from "react-redux";
 import {
   BOARD_STYLES,
   initialChess960State,
@@ -10,6 +11,7 @@ import {
   status as statusMap,
 } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
+import { updateUserThunk } from "../../store/usersSlice";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import styles from "./GameInfoPanel.module.scss";
@@ -19,11 +21,41 @@ import Timer from "../Timer/Timer";
 const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;
   const { dispatch, appState, socket } = useAppContext();
+  const reduxDispatch = useDispatch();
+  const user = useSelector((state) => state.users.user);
   const { t } = useTranslation();
   const [boardStyle, setBoardStyle] = useState(
     localStorage.getItem("boardStyle") || "standart",
   );
   const [selectedColor, setSelectedColor] = useState(null);
+
+  const getEarlyExitLossUpdate = () => {
+    if (!user?._id) return null;
+    const mode =
+      typeof window !== "undefined"
+        ? localStorage.getItem("chess_variant")
+        : null;
+    const chessMode =
+      typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+    if (mode === "custom" && chessMode === "multiplayer") return null;
+    else if (
+      appState.status !== statusMap.ongoing &&
+      appState.status !== statusMap.promotion
+    ) {
+      return null;
+    }
+
+    const updateValues = {
+      loses: (user.loses || 0) + 1,
+    };
+    if (appState.isVsBot) {
+      updateValues.botLoses = (user.botLoses || 0) + 1;
+    }
+    if (appState.isMultiplayer) {
+      updateValues.multiLoses = (user.multiLoses || 0) + 1;
+    }
+    return updateValues;
+  };
   const onClickWhite = () => {
     localStorage.setItem("chess_side", "white");
     dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
@@ -38,6 +70,11 @@ const GameInfoPanel = (props) => {
     dispatch({ type: actionTypes.START_TIMER });
   };
   const onClickExit = () => {
+    const updateValues = getEarlyExitLossUpdate();
+    if (updateValues) {
+      reduxDispatch(updateUserThunk({ id: user._id, values: updateValues }));
+    }
+
     if (appState?.isMultiplayer && socket && appState?.roomId) {
       if (socket && appState?.roomId) {
         socket.emit("leaveGame", {
@@ -46,7 +83,12 @@ const GameInfoPanel = (props) => {
       }
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
+        payload: {
+          isMultiplayer: false,
+          roomId: null,
+          whiteTime: null,
+          blackTime: null,
+        },
       });
       localStorage.removeItem("roomId");
     }
@@ -63,10 +105,20 @@ const GameInfoPanel = (props) => {
     }
   };
   const onClickStartNew = () => {
+    const updateValues = getEarlyExitLossUpdate();
+    if (updateValues) {
+      reduxDispatch(updateUserThunk({ id: user._id, values: updateValues }));
+    }
+
     if (appState?.isMultiplayer && socket && appState?.roomId) {
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
+        payload: {
+          isMultiplayer: false,
+          roomId: null,
+          whiteTime: null,
+          blackTime: null,
+        },
       });
       socket.emit("leaveGame", { roomId: appState.roomId });
       localStorage.removeItem("roomId");
@@ -160,7 +212,7 @@ const GameInfoPanel = (props) => {
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
-  console.log(status)
+  console.log(status);
   const handleBoardStyleChange = (event) => {
     const style = event.target.value;
     setBoardStyle(style);
@@ -214,48 +266,47 @@ const GameInfoPanel = (props) => {
             </div>
           </div>
         )}
-      {localStorage.getItem("chess_variant") !== "special" &&
-        start && (
-          <div className={styles["game-status"]}>
-            <div className={styles["game-message"]}>
-              <div className={styles["game-message-text"]}>
-                <h2>{gameStatusMessage()}</h2>
-              </div>
-              <Timer />
-              <div className={styles["buttons-div"]}>
-                <select value={boardStyle} onChange={handleBoardStyleChange}>
-                  <option value="standart">{t("style_panel.standart")}</option>
-                  <option value="classic">{t("style_panel.classic")}</option>
-                  <option value="shatranj">{t("header.shatranj")}</option>
-                  <option value="violet">{t("style_panel.violet")}</option>
-                  <option value="blue">{t("style_panel.blue")}</option>
-                  <option value="white">{t("style_panel.white")}</option>
-                  <option value="green">{t("style_panel.green")}</option>
-                  <option value="pale">{t("style_panel.pale")}</option>
-                  <option value="yellow">{t("style_panel.yellow")}</option>
-                  <option value="orange">{t("style_panel.orange")}</option>
-                  <option value="red">{t("style_panel.red")}</option>
-                  <option value="alexandrite">
-                    {t("style_panel.alexandrite")}
-                  </option>
-                  <option value="onix">{t("style_panel.onix")}</option>
-                </select>
-                <button onClick={handleToggle}>
-                  {t("custom_panel.rotate_board")}
+      {localStorage.getItem("chess_variant") !== "special" && start && (
+        <div className={styles["game-status"]}>
+          <div className={styles["game-message"]}>
+            <div className={styles["game-message-text"]}>
+              <h2>{gameStatusMessage()}</h2>
+            </div>
+            <Timer />
+            <div className={styles["buttons-div"]}>
+              <select value={boardStyle} onChange={handleBoardStyleChange}>
+                <option value="standart">{t("style_panel.standart")}</option>
+                <option value="classic">{t("style_panel.classic")}</option>
+                <option value="shatranj">{t("header.shatranj")}</option>
+                <option value="violet">{t("style_panel.violet")}</option>
+                <option value="blue">{t("style_panel.blue")}</option>
+                <option value="white">{t("style_panel.white")}</option>
+                <option value="green">{t("style_panel.green")}</option>
+                <option value="pale">{t("style_panel.pale")}</option>
+                <option value="yellow">{t("style_panel.yellow")}</option>
+                <option value="orange">{t("style_panel.orange")}</option>
+                <option value="red">{t("style_panel.red")}</option>
+                <option value="alexandrite">
+                  {t("style_panel.alexandrite")}
+                </option>
+                <option value="onix">{t("style_panel.onix")}</option>
+              </select>
+              <button onClick={handleToggle}>
+                {t("custom_panel.rotate_board")}
+              </button>
+              {!appState?.isMultiplayer ? (
+                <button onClick={onClickStartNew}>
+                  {t("game_info_panel.start_again")}
                 </button>
-                {!appState?.isMultiplayer ? (
-                  <button onClick={onClickStartNew}>
-                    {t("game_info_panel.start_again")}
-                  </button>
-                ) : (
-                  <button onClick={onClickExit}>
-                    {t("game_info_panel.exit")}
-                  </button>
-                )}
-              </div>
+              ) : (
+                <button onClick={onClickExit}>
+                  {t("game_info_panel.exit")}
+                </button>
+              )}
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };

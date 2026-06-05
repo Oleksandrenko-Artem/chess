@@ -28,7 +28,7 @@ const MODE_LABELS = {
   custom: "Custom",
 };
 
-const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
+const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
   const [gameMode, setGameMode] = useState(
     localStorage.getItem("chess_variant") === "special" ? "custom" : "chess",
   );
@@ -40,8 +40,12 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
 
-  const getInitialStateByMode = (mode, boardSize = 8, whiteTime = timeType,
-  blackTime = timeType) => {
+  const getInitialStateByMode = (
+    mode,
+    boardSize = 8,
+    whiteTime = timeType,
+    blackTime = timeType,
+  ) => {
     if (mode === "shatranj") {
       return {
         ...initialOldGameState,
@@ -181,7 +185,12 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
-                payload: { isMultiplayer: true, roomId: foundRoomId, whiteTime: timeType, blackTime: timeType },
+                payload: {
+                  isMultiplayer: true,
+                  roomId: foundRoomId,
+                  whiteTime: timeType,
+                  blackTime: timeType,
+                },
               });
 
               localStorage.setItem("chess_side", "black");
@@ -234,7 +243,12 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
-                payload: { isMultiplayer: true, roomId, whiteTime: timeType, blackTime: timeType },
+                payload: {
+                  isMultiplayer: true,
+                  roomId,
+                  whiteTime: timeType,
+                  blackTime: timeType,
+                },
               });
 
               localStorage.setItem("chess_mode", "multiplayer");
@@ -280,7 +294,12 @@ const CreateRoomWindow = ({ setRoomWindow, setStart }) => {
           dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
           dispatch({
             type: actionTypes.SET_MULTIPLAYER,
-            payload: { isMultiplayer: true, roomId, whiteTime: timeType, blackTime: timeType },
+            payload: {
+              isMultiplayer: true,
+              roomId,
+              whiteTime: timeType,
+              blackTime: timeType,
+            },
           });
 
           localStorage.setItem("chess_side", "white");

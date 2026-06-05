@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import actionTypes from "../../reducers/actionTypes";
 import { openPromotion } from "../../reducers/actions/promotion";
 import {
@@ -10,6 +10,7 @@ import {
 import { useAppContext } from "../../contexts/Context";
 import { makeNewMove } from "../../reducers/actions/move";
 import { status, PIECE_VALUES } from "../../constants";
+import { updateUserThunk } from "../../store/usersSlice";
 import { getKingPosition } from "../../arbiter/getMoves";
 import arbiter from "../../arbiter/arbiter";
 import Piece from "./Piece";
@@ -191,9 +192,100 @@ const Pieces = ({ flipped = false }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
+  const dispatchRedux = useDispatch();
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [positionHistory, setPositionHistory] = useState([]);
   const prevPositionRef = useRef(null);
+  const lastResultStatusRef = useRef(null);
+
+  const getUserResultUpdate = (gameStatus) => {
+    const userSide = localStorage.getItem("chess_side");
+    if (!userSide) return null;
+
+    const chessMode =
+      typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+    const chessVariant =
+      typeof window !== "undefined"
+        ? localStorage.getItem("chess_variant")
+        : null;
+    if (chessMode === "editor" || chessVariant === "custom") return null;
+
+    const isMultiplayerGame = appState.isMultiplayer;
+    const isBotGame = appState.isVsBot;
+    if (!isMultiplayerGame && !isBotGame) return null;
+
+    const result = {
+      wins: user?.wins || 0,
+      draws: user?.draws || 0,
+      loses: user?.loses || 0,
+    };
+
+    if (isMultiplayerGame) {
+      result.multiWins = user?.multiWins || 0;
+      result.multiDraws = user?.multiDraws || 0;
+      result.multiLoses = user?.multiLoses || 0;
+    }
+    if (isBotGame) {
+      result.botWins = user?.botWins || 0;
+      result.botDraws = user?.botDraws || 0;
+      result.botLoses = user?.botLoses || 0;
+    }
+
+    if (gameStatus === status.draw) {
+      result.draws += 1;
+      if (isMultiplayerGame) result.multiDraws += 1;
+      if (isBotGame) result.botDraws += 1;
+      return result;
+    }
+
+    const winnerColor =
+      gameStatus === status.white
+        ? "white"
+        : gameStatus === status.black
+          ? "black"
+          : null;
+
+    if (!winnerColor) return null;
+
+    const isUserWin = winnerColor === userSide;
+    if (isUserWin) {
+      result.wins += 1;
+      if (isMultiplayerGame) result.multiWins += 1;
+      if (isBotGame) result.botWins += 1;
+    } else {
+      result.loses += 1;
+      if (isMultiplayerGame) result.multiLoses += 1;
+      if (isBotGame) result.botLoses += 1;
+    }
+
+    return result;
+  };
+
+  useEffect(() => {
+    const previousStatus = lastResultStatusRef.current;
+    const currentStatus = appState.status;
+    const chessMode =
+      typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+
+    const isTerminalStatus =
+      currentStatus !== status.ongoing && currentStatus !== status.promotion;
+    const wasActiveGame =
+      previousStatus === status.ongoing || previousStatus === status.promotion;
+
+    if (chessMode === "editor") {
+      lastResultStatusRef.current = currentStatus;
+      return;
+    }
+
+    if (wasActiveGame && isTerminalStatus && user?._id) {
+      const updateValues = getUserResultUpdate(currentStatus);
+      if (updateValues) {
+        dispatchRedux(updateUserThunk({ id: user._id, values: updateValues }));
+      }
+    }
+
+    lastResultStatusRef.current = currentStatus;
+  }, [appState.status, user, dispatchRedux]);
 
   useEffect(() => {
     if (appState.position && appState.position.length > 1) {

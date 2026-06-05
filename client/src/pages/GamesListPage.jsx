@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useAppContext } from "../contexts/Context";
 import actionTypes from "../reducers/actionTypes";
 import {
@@ -25,6 +25,7 @@ import GameInfoPanel from "../components/GameInfoPanel/GameInfoPanel";
 import MovesList from "../components/MovesList/MovesList";
 import Pagination from "./../components/Pagination/Pagination";
 import FilterGameMode from "../components/FiltersPanel/FilterGameMode";
+import { updateUserThunk } from "../store/usersSlice";
 import CreateRoomWindow from "../components/CreateRoomWindow/CreateRoomWindow";
 
 const MODE_LABELS = {
@@ -80,6 +81,7 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
 
 const GamesListPage = ({ start, setStart }) => {
   const { appState, dispatch, socket } = useAppContext();
+  const reduxDispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
 
@@ -97,6 +99,33 @@ const GamesListPage = ({ start, setStart }) => {
   const [playerSide, setPlayerSide] = useState(null);
   const [playersCount, setPlayersCount] = useState(1);
   const [gameReady, setGameReady] = useState(false);
+
+  const getEarlyExitLossUpdate = () => {
+    if (!user?._id) return null;
+    const mode =
+      typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+    const variant =
+      typeof window !== "undefined"
+        ? localStorage.getItem("chess_variant")
+        : null;
+    if (mode === "editor" || variant === "custom") return null;
+    if (
+      appState.status !== status.ongoing &&
+      appState.status !== status.promotion
+    ) {
+      return null;
+    }
+    const updateValues = {
+      loses: (user.loses || 0) + 1,
+    };
+    if (appState.isMultiplayer) {
+      updateValues.multiLoses = (user.multiLoses || 0) + 1;
+    }
+    if (appState.isVsBot) {
+      updateValues.botLoses = (user.botLoses || 0) + 1;
+    }
+    return updateValues;
+  };
 
   useEffect(() => {
     if (!socket) return;
@@ -430,6 +459,10 @@ const GamesListPage = ({ start, setStart }) => {
   };
 
   const handleExitGame = () => {
+    const updateValues = getEarlyExitLossUpdate();
+    if (updateValues) {
+      reduxDispatch(updateUserThunk({ id: user._id, values: updateValues }));
+    }
     if (socket && appState?.roomId) {
       socket.emit("leaveGame", { roomId: appState.roomId });
     }

@@ -8,8 +8,8 @@ import styles from "./Pages.module.scss";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user, error } = useSelector((state) => state.users);
   const fileInputRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
@@ -110,12 +110,11 @@ const ProfilePage = () => {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
                 >
-                  {isUploading ? `${t("profile.upload_photo")}` : `${t("profile.change_photo")}`}
+                  {isUploading
+                    ? `${t("profile.upload_photo")}`
+                    : `${t("profile.change_photo")}`}
                 </button>
-                <button
-                  onClick={removeAvatar}
-                  disabled={isUploading}
-                >
+                <button onClick={removeAvatar} disabled={isUploading}>
                   {t("profile.remove_photo")}
                 </button>
               </div>
@@ -123,12 +122,18 @@ const ProfilePage = () => {
           )}
           {!avatar && (
             <div>
-              <img src="src/assets/icons/account.png" alt="Default Avatar" className={styles["default-avatar"]} />
+              <img
+                src="src/assets/icons/account.png"
+                alt="Default Avatar"
+                className={styles["default-avatar"]}
+              />
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
               >
-                {isUploading ? `${t("profile.upload_photo")}` : `${t("profile.change_photo")}`}
+                {isUploading
+                  ? `${t("profile.upload_photo")}`
+                  : `${t("profile.change_photo")}`}
               </button>
             </div>
           )}
@@ -140,13 +145,51 @@ const ProfilePage = () => {
             style={{ display: "none" }}
           />
         </div>
-        <div>
+        <div className={styles["profile-info"]}>
           <p>
             <b>{t("profile.name")}:</b> {user?.name}
           </p>
           <p>
             <b>{t("profile.email")}:</b> {user?.email}
           </p>
+          <div className={styles["stats-section"]}>
+            <h3>Bot statistics</h3>
+            <table className={styles.users}>
+              <thead>
+                <tr>
+                  <th>Wins</th>
+                  <th>Draws</th>
+                  <th>Loses</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{user?.botWins || 0}</td>
+                  <td>{user?.botDraws || 0}</td>
+                  <td>{user?.botLoses || 0}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className={styles["stats-section"]}>
+            <h3>Multiplayer statistics</h3>
+            <table className={styles.users}>
+              <thead>
+                <tr>
+                  <th>Wins</th>
+                  <th>Draws</th>
+                  <th>Loses</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{user?.multiWins || 0}</td>
+                  <td>{user?.multiDraws || 0}</td>
+                  <td>{user?.multiLoses || 0}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

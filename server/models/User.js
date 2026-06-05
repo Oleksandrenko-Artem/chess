@@ -28,6 +28,42 @@ const userSchema = mongoose.Schema({
     avatar: {
         type: String,
         default: null,
+    },
+    wins: {
+        type: Number,
+        default: 0,
+    },
+    draws: {
+        type: Number,
+        default: 0,
+    },
+    loses: {
+        type: Number,
+        default: 0,
+    },
+    botWins: {
+        type: Number,
+        default: 0,
+    },
+    botDraws: {
+        type: Number,
+        default: 0,
+    },
+    botLoses: {
+        type: Number,
+        default: 0,
+    },
+    multiWins: {
+        type: Number,
+        default: 0,
+    },
+    multiDraws: {
+        type: Number,
+        default: 0,
+    },
+    multiLoses: {
+        type: Number,
+        default: 0,
     }
 });
 

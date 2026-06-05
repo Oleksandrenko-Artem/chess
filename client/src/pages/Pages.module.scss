@@ -19,24 +19,50 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
+    width: 70%;
+    align-items: flex-start;
+
+    > div {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
     button {
       @include button-style(120px, $buttonHeight, $buttonPadding);
       @extend %btn-style;
       margin-right: 10px;
     }
-    .default-avatar {
-      width: 350px;
-      height: 250px;
+    .default-avatar,
+    .profile-avatar {
+      width: 100%;
+      max-width: 350px;
+      height: auto;
+      max-height: 250px;
       display: flex;
       align-items: center;
       justify-content: center;
       margin-bottom: 15px;
     }
     .profile-avatar {
-      width: 350px;
-      height: 250px;
       object-fit: cover;
-      margin-bottom: 10px;
+    }
+    .profile-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      p {
+        font-size: 1.1em;
+        margin: 0;
+      }
+    }
+  }
+  @media screen and (max-width: $l) {
+    flex-direction: column;
+    align-items: center;
+
+    .profile-wrapper {
+      flex-direction: column;
+      align-items: center;
     }
   }
 }
