@@ -87,7 +87,7 @@ const evaluatePosition = (position, gameVariant = "") => {
             if (!p) continue;
 
             const isWhite = p.startsWith("white");
-            const type = p.split('_').pop();
+            const type = p.replace(/^(white|black)_/, "");
 
             let value = PIECE_VALUES[type] || 100;
             const isCenter = r >= centerStart && r <= centerEnd && f >= centerStart && f <= centerEnd;
@@ -258,8 +258,10 @@ const minimax = (
         const pA = position[a.targetRank][a.targetFile];
         const pB = position[b.targetRank][b.targetFile];
 
-        const valA = pA ? (PIECE_VALUES[pA.split("_").pop()] || 0) : 0;
-        const valB = pB ? (PIECE_VALUES[pB.split("_").pop()] || 0) : 0;
+        const typeA = pA ? pA.replace(/^(white|black)_/, "") : null;
+        const typeB = pB ? pB.replace(/^(white|black)_/, "") : null;
+        const valA = typeA ? (PIECE_VALUES[typeA] || 0) : 0;
+        const valB = typeB ? (PIECE_VALUES[typeB] || 0) : 0;
 
         return valB - valA;
     });
@@ -352,8 +354,10 @@ self.onmessage = (e) => {
         topMoves.sort((a, b) => {
             const capturedA = currentPosition[a.targetRank][a.targetFile];
             const capturedB = currentPosition[b.targetRank][b.targetFile];
-            const valA = capturedA ? (PIECE_VALUES[capturedA.split('_').pop()] || 0) : 0;
-            const valB = capturedB ? (PIECE_VALUES[capturedB.split('_').pop()] || 0) : 0;
+            const typeA = capturedA ? capturedA.replace(/^(white|black)_/, "") : null;
+            const typeB = capturedB ? capturedB.replace(/^(white|black)_/, "") : null;
+            const valA = typeA ? (PIECE_VALUES[typeA] || 0) : 0;
+            const valB = typeB ? (PIECE_VALUES[typeB] || 0) : 0;
             return valB - valA;
         });
     }
