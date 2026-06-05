@@ -1,6 +1,50 @@
 import { PIECE_VALUES } from "../../constants";
 import arbiter from "./../../arbiter/arbiter";
 
+const PAWN_POSITION_TABLE = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [50, 50, 50, 50, 50, 50, 50, 50],
+    [10, 10, 20, 30, 30, 20, 10, 10],
+    [5, 5, 10, 25, 25, 10, 5, 5],
+    [0, 0, 0, 20, 20, 0, 0, 0],
+    [5, -5, -10, 0, 0, -10, -5, 5],
+    [5, 10, 10, -20, -20, 10, 10, 5],
+    [0, 0, 0, 0, 0, 0, 0, 0]
+];
+
+const HORSE_POSITION_TABLE = [
+    [-50, -40, -30, -30, -30, -30, -40, -50],
+    [-40, -20, 0, 0, 0, 0, -20, -40],
+    [-30, 0, 10, 15, 15, 10, 0, -30],
+    [-30, 5, 15, 20, 20, 15, 5, -30],
+    [-30, 0, 15, 20, 20, 15, 0, -30],
+    [-30, 5, 10, 15, 15, 10, 5, -30],
+    [-40, -20, 0, 5, 5, 0, -20, -40],
+    [-50, -40, -30, -30, -30, -30, -40, -50]
+];
+
+const BISHOP_POSITION_TABLE = [
+    [-20, -10, -10, -10, -10, -10, -10, -20],
+    [-10, 0, 0, 0, 0, 0, 0, -10],
+    [-10, 0, 5, 10, 10, 5, 0, -10],
+    [-10, 5, 5, 10, 10, 5, 5, -10],
+    [-10, 0, 10, 10, 10, 10, 0, -10],
+    [-10, 10, 10, 10, 10, 10, 10, -10],
+    [-10, 5, 0, 0, 0, 0, 5, -10],
+    [-20, -10, -10, -10, -10, -10, -10, -20]
+];
+
+const KING_POSITION_TABLE = [
+    [20, 30, 10, 0, 0, 10, 30, 20],
+    [20, 20, 0, 0, 0, 0, 20, 20],
+    [-10, -20, -20, -20, -20, -20, -20, -10],
+    [-20, -30, -30, -40, -40, -30, -30, -20],
+    [-30, -40, -40, -50, -50, -40, -40, -30],
+    [-30, -40, -40, -50, -50, -40, -40, -30],
+    [-30, -40, -40, -50, -50, -40, -40, -30],
+    [-30, -40, -40, -50, -50, -40, -40, -30]
+];
+
 const evaluatePosition = (position, gameVariant = "") => {
     let totalScore = 0;
 
@@ -15,6 +59,8 @@ const evaluatePosition = (position, gameVariant = "") => {
     let blackKingPos = null;
     let whiteBacklinePieces = 0;
     let blackBacklinePieces = 0;
+    let whiteAttacks = 0;
+    let blackAttacks = 0;
 
     for (let r = 0; r < boardSize; r++) {
         const row = position[r];
@@ -46,6 +92,19 @@ const evaluatePosition = (position, gameVariant = "") => {
             let value = PIECE_VALUES[type] || 100;
             const isCenter = r >= centerStart && r <= centerEnd && f >= centerStart && f <= centerEnd;
 
+            if (type === "pawn" && boardSize === 8) {
+                const row_idx = isWhite ? 7 - r : r;
+                value += isWhite ? PAWN_POSITION_TABLE[row_idx][f] : PAWN_POSITION_TABLE[row_idx][f];
+            }
+            if ((type === "horse") && boardSize === 8) {
+                const row_idx = isWhite ? 7 - r : r;
+                value += isWhite ? HORSE_POSITION_TABLE[row_idx][f] : HORSE_POSITION_TABLE[row_idx][f];
+            }
+            if ((type === "bishop") && boardSize === 8) {
+                const row_idx = isWhite ? 7 - r : r;
+                value += isWhite ? BISHOP_POSITION_TABLE[row_idx][f] : BISHOP_POSITION_TABLE[row_idx][f];
+            }
+
             if (isShatranj) {
                 if (isOpening || isMiddlegame) {
                     if (type === "horse") value += 40;
@@ -60,7 +119,7 @@ const evaluatePosition = (position, gameVariant = "") => {
             } else {
                 if (isEndgame) {
                     if (type === "rook") value += 40;
-                    if (type === "firzan") value += 30;
+                    if (type === "ferz") value += 30;
                 }
             }
 
@@ -199,19 +258,10 @@ const minimax = (
         const pA = position[a.targetRank][a.targetFile];
         const pB = position[b.targetRank][b.targetFile];
 
-        const attackerA = position[a.rank][a.file]?.split("_").pop() || "";
-        const attackerB = position[b.rank][b.file]?.split("_").pop() || "";
+        const valA = pA ? (PIECE_VALUES[pA.split("_").pop()] || 0) : 0;
+        const valB = pB ? (PIECE_VALUES[pB.split("_").pop()] || 0) : 0;
 
-        const valA = pA ? PIECE_VALUES[pA.split("_").pop()] || 100 : 0;
-        const valB = pB ? PIECE_VALUES[pB.split("_").pop()] || 100 : 0;
-
-        const costAttackerA = PIECE_VALUES[attackerA] || 100;
-        const costAttackerB = PIECE_VALUES[attackerB] || 100;
-
-        const scoreA = valA > 0 ? (valA * 10 - costAttackerA) : 0;
-        const scoreB = valB > 0 ? (valB * 10 - costAttackerB) : 0;
-
-        return scoreB - scoreA;
+        return valB - valA;
     });
 
     if (isMaximizing) {
@@ -297,7 +347,18 @@ self.onmessage = (e) => {
 
     const bestScore = scoredMoves[0].score;
     const topMoves = scoredMoves.filter(m => m.score === bestScore);
-    const chosenMove = topMoves[Math.floor(Math.random() * topMoves.length)];
+
+    if (topMoves.length > 1) {
+        topMoves.sort((a, b) => {
+            const capturedA = currentPosition[a.targetRank][a.targetFile];
+            const capturedB = currentPosition[b.targetRank][b.targetFile];
+            const valA = capturedA ? (PIECE_VALUES[capturedA.split('_').pop()] || 0) : 0;
+            const valB = capturedB ? (PIECE_VALUES[capturedB.split('_').pop()] || 0) : 0;
+            return valB - valA;
+        });
+    }
+
+    const chosenMove = topMoves[0];
 
     self.postMessage({ chosenMove });
 };

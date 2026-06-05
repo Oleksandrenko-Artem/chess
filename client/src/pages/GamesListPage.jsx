@@ -260,6 +260,11 @@ const GamesListPage = ({ start, setStart }) => {
           localStorage.setItem("chess_variant", data.initialState.gameMode);
           localStorage.setItem("chess_mode", "multiplayer");
         }
+        if (Array.isArray(data?.moves) && data.moves.length > 0) {
+          data.moves.forEach((move) => {
+            dispatch({ type: actionTypes.NEW_MOVE, payload: move });
+          });
+        }
       }
       dispatch({
         type: actionTypes.SET_ORIENTATION,
@@ -285,7 +290,12 @@ const GamesListPage = ({ start, setStart }) => {
     if (savedRoom && !appState?.isMultiplayer) {
       dispatch({
         type: actionTypes.SET_MULTIPLAYER,
-        payload: { isMultiplayer: true, roomId: savedRoom, whiteTime: null, blackTime: null },
+        payload: {
+          isMultiplayer: true,
+          roomId: savedRoom,
+          whiteTime: null,
+          blackTime: null,
+        },
       });
       socket.emit("reconnectGame", { roomId: savedRoom });
     }
@@ -425,7 +435,12 @@ const GamesListPage = ({ start, setStart }) => {
     }
     dispatch({
       type: actionTypes.SET_MULTIPLAYER,
-      payload: { isMultiplayer: false, roomId: null, whiteTime: null, blackTime: null },
+      payload: {
+        isMultiplayer: false,
+        roomId: null,
+        whiteTime: null,
+        blackTime: null,
+      },
     });
     localStorage.removeItem("roomId");
     localStorage.removeItem("gameMode");
