@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 
@@ -327,6 +327,14 @@ const arbiter = {
             });
         } else if (piece.endsWith('elephant')) {
             const jumps = [[2, 2], [2, -2], [-2, 2], [-2, -2]];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
+                    attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('alibaba')) {
+            const jumps = [[2, 2], [2, -2], [-2, 2], [-2, -2], [0, 2], [2, 0], [0, -2], [-2, 0]];
             jumps.forEach(([dr, df]) => {
                 const [r, f] = [rank + dr, file + df];
                 if (position?.[r]?.[f] !== undefined) {
@@ -726,6 +734,8 @@ const arbiter = {
             moves = getMarshalMoves({ position, piece, rank, file });
         } else if (piece.endsWith('amazon')) {
             moves = getAmazonMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('alibaba')) {
+            moves = getAlibabaMoves({ position, rank, file });
         } else if (piece.endsWith('imperator')) {
             moves = getImperatorMoves({ position, piece, rank, file });
         } else if (piece.endsWith('king')) {

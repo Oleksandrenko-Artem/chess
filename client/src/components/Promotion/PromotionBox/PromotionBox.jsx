@@ -23,6 +23,7 @@ import black_elephant_long_range from "../../../assets/icons/black_elephant_long
 import black_rhino from "../../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../../assets/icons/black_wildebeest.png";
 import black_man from "../../../assets/icons/black_man.png";
+import black_alibaba from "../../../assets/icons/black_alibaba.png";
 import black_knight from "../../../assets/icons/black_knight.png";
 import black_dinozavr from "../../../assets/icons/black_dinozavr.png";
 import black_checkers from "../../../assets/icons/black_checkers.png";
@@ -50,6 +51,7 @@ import white_elephant_long_range from "../../../assets/icons/white_elephant_long
 import white_rhino from "../../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../../assets/icons/white_wildebeest.png";
 import white_man from "../../../assets/icons/white_man.png";
+import white_alibaba from "../../../assets/icons/white_alibaba.png";
 import white_knight from "../../../assets/icons/white_knight.png";
 import white_dinozavr from "../../../assets/icons/white_dinozavr.png";
 import white_checkers from "../../../assets/icons/white_checkers.png";
@@ -76,6 +78,7 @@ const promoImageMap = {
   black_rhino,
   black_wildebeest,
   black_man,
+  black_alibaba,
   black_knight,
   black_dinozavr,
   black_checkers,
@@ -103,6 +106,7 @@ const promoImageMap = {
   white_rhino,
   white_wildebeest,
   white_man,
+  white_alibaba,
   white_knight,
   white_dinozavr,
   white_checkers,

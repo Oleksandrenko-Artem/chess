@@ -781,3 +781,10 @@ export const getManMoves = ({ position, piece, rank, file }) => {
     ];
     return moves;
 };
+export const getAlibabaMoves = ({ position, rank, file }) => {
+    const moves = [
+        ...getElephantMoves({ position, rank, file }),
+        ...getTankMoves({ position, rank, file }),
+    ];
+    return moves;
+};

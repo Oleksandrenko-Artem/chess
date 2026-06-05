@@ -43,6 +43,7 @@ import black_elephant_long_range from "../../assets/icons/black_elephant_long_ra
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
+import black_alibaba from "../../assets/icons/black_alibaba.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -72,6 +73,7 @@ import white_elephant_long_range from "../../assets/icons/white_elephant_long_ra
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
+import white_alibaba from "../../assets/icons/white_alibaba.png";
 import brick from "../../assets/icons/brick.png";
 import styles from "./../ChessBoard/ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
@@ -106,6 +108,7 @@ const imageMap = {
   black_rhino,
   black_wildebeest,
   black_man,
+  black_alibaba,
   white_imperator,
   white_king,
   white_ferz,
@@ -135,6 +138,7 @@ const imageMap = {
   white_rhino,
   white_wildebeest,
   white_man,
+  white_alibaba,
   brick,
 };
 
@@ -208,7 +212,7 @@ const Pieces = ({ flipped = false }) => {
       typeof window !== "undefined"
         ? localStorage.getItem("chess_variant")
         : null;
-    if (chessMode === "editor" || chessVariant === "custom") return null;
+    if (chessVariant === "special" && chessMode === "editor" || chessVariant === "custom" && chessMode === "multiplayer") return null;
 
     const isMultiplayerGame = appState.isMultiplayer;
     const isBotGame = appState.isVsBot;

@@ -37,7 +37,11 @@ const GameInfoPanel = (props) => {
         : null;
     const chessMode =
       typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
-    if (mode === "custom" && chessMode === "multiplayer") return null;
+    if (
+      (mode === "special" && chessMode === "editor") ||
+      (mode === "custom" && chessMode === "multiplayer")
+    )
+      return null;
     else if (
       appState.status !== statusMap.ongoing &&
       appState.status !== statusMap.promotion
