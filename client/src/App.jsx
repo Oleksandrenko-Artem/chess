@@ -11,6 +11,7 @@ import {
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
+  status,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
 import actionTypes from "./reducers/actionTypes";
@@ -104,13 +105,20 @@ function App() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    if (appState?.isVsBot && !appState?.isMultiplayer) {
+    const isActiveBotGame =
+      appState?.isVsBot &&
+      !appState?.isMultiplayer &&
+      start &&
+      (appState.status === status.ongoing ||
+        appState.status === status.promotion);
+
+    if (isActiveBotGame) {
       localStorage.setItem("botGameState", JSON.stringify(appState));
       localStorage.setItem("chess_mode", "game");
     } else {
       localStorage.removeItem("botGameState");
     }
-  }, [appState]);
+  }, [appState, start]);
 
   useEffect(() => {
     const serverUrl =
