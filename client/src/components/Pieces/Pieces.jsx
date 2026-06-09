@@ -212,7 +212,11 @@ const Pieces = ({ flipped = false }) => {
       typeof window !== "undefined"
         ? localStorage.getItem("chess_variant")
         : null;
-    if (chessVariant === "special" && chessMode === "editor" || chessVariant === "custom" && chessMode === "multiplayer") return null;
+    if (
+      (chessVariant === "special" && chessMode === "editor") ||
+      (chessVariant === "custom" && chessMode === "multiplayer")
+    )
+      return null;
 
     const isMultiplayerGame = appState.isMultiplayer;
     const isBotGame = appState.isVsBot;
@@ -299,6 +303,17 @@ const Pieces = ({ flipped = false }) => {
     }
   }, [appState.position]);
   useEffect(() => {
+    if (!appState || !appState.position) return;
+    if (appState.position.length === 1) {
+      const initialHash = generatePositionHash(
+        appState.position[0],
+        appState.playerTurn,
+        appState.castleDirection,
+      );
+      setPositionHistory([initialHash]);
+    }
+  }, [appState.position, appState.playerTurn, appState.castleDirection]);
+  useEffect(() => {
     if (appState.isVsBot && appState.status === status.ongoing) {
       const userSide = localStorage.getItem("chess_side");
       if (appState.playerTurn === userSide) {
@@ -371,8 +386,9 @@ const Pieces = ({ flipped = false }) => {
         prevPosition,
         playerTurn,
         castleDirection,
-        depth: gameVariant === "special" ? 3 : 4,
+        depth: 3,
         gameVariant,
+        positionHistory,
       });
 
       worker.onmessage = (e) => {

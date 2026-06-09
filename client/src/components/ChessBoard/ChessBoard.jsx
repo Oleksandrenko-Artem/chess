@@ -72,7 +72,7 @@ const ChessBoard = (props) => {
       ? localStorage.getItem("chess_side") || orientation
       : orientation;
 
-  const whitePlayer = appState.isMultiplayer
+  let whitePlayer = appState.isMultiplayer
     ? {
         color: "White",
         name:
@@ -96,7 +96,7 @@ const ChessBoard = (props) => {
             : accountIcon,
       };
 
-  const blackPlayer = appState.isMultiplayer
+  let blackPlayer = appState.isMultiplayer
     ? {
         color: "Black",
         name:
@@ -120,18 +120,27 @@ const ChessBoard = (props) => {
             : accountIcon,
       };
 
-  let bottomPlayer = userSide === "white" ? whitePlayer : blackPlayer;
-  let topPlayer = userSide === "white" ? blackPlayer : whitePlayer;
-
   const isVsBot = !!appState.isVsBot;
+  const botSide = userSide === "white" ? "black" : "white";
 
   if (isVsBot) {
-    topPlayer = {
-      ...topPlayer,
-      name: "Computer",
-      avatar: computerIcon,
-    };
+    if (botSide === "white") {
+      whitePlayer = {
+        ...whitePlayer,
+        name: "Computer",
+        avatar: computerIcon,
+      };
+    } else {
+      blackPlayer = {
+        ...blackPlayer,
+        name: "Computer",
+        avatar: computerIcon,
+      };
+    }
   }
+
+  let bottomPlayer = userSide === "white" ? whitePlayer : blackPlayer;
+  let topPlayer = userSide === "white" ? blackPlayer : whitePlayer;
 
   const renderPlayerCard = (player) => (
     <div

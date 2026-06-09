@@ -141,6 +141,7 @@ function App() {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "chess");
       localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
     }
     const newInitialState = {
       ...initialGameState,
@@ -158,6 +159,7 @@ function App() {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "shatranj");
       localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
     }
     const newInitialState = {
       ...initialOldGameState,
@@ -175,6 +177,7 @@ function App() {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "chess960");
       localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
     }
     const newInitialState = {
       ...initialChess960State,
@@ -192,6 +195,7 @@ function App() {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "shatranj960");
       localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
     }
     const newInitialState = {
       ...initialShatranj960State,
@@ -224,6 +228,7 @@ function App() {
     setStart(false);
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_mode", "multiplayer");
+      localStorage.removeItem("botGameState");
     }
   };
   const providerState = {

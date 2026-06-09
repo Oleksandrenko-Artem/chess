@@ -107,19 +107,23 @@ const evaluatePosition = (position, gameVariant = "") => {
 
             if (isShatranj) {
                 if (isOpening || isMiddlegame) {
-                    if (type === "horse") value += 40;
-                    if (type === "elephant") value += 30;
-                    if (type === "firzan") value += 15;
+                    if (type === "horse") value += 20;
+                    if (type === "elephant") value += 20;
+                    if (type === "firzan") value += 10;
 
                     if (type === "horse" || type === "elephant" || type === "firzan") {
-                        if (isWhite && r < 7) value += 35;
-                        if (!isWhite && r > 0) value += 35;
+                        if (isWhite && r < 7) value += 50;
+                        if (!isWhite && r > 0) value += 50;
+                    }
+
+                    if (type === "horse" && ((isWhite && r <= 4) || (!isWhite && r >= 3))) {
+                        value -= 35;
                     }
                 }
             } else {
                 if (isEndgame) {
                     if (type === "rook") value += 40;
-                    if (type === "ferz") value += 30;
+                    if (type === "ferz") value += 40;
                 }
             }
 
@@ -213,6 +217,97 @@ const unmakeMoveOnBoard = (position, move, piece, captured) => {
     position[move.targetRank][move.targetFile] = captured;
 };
 
+const isMoveLegal = (position, move, playerColor) => {
+    const piece = position[move.rank][move.file];
+    const captured = position[move.targetRank][move.targetFile];
+    position[move.targetRank][move.targetFile] = piece;
+    position[move.rank][move.file] = "";
+    const inCheck = arbiter.isKingInCheck({ position, playerColor });
+    position[move.rank][move.file] = piece;
+    position[move.targetRank][move.targetFile] = captured;
+    return !inCheck;
+};
+
+const isCaptureMove = (position, move) => {
+    return move.isEnPassant || position[move.targetRank][move.targetFile] !== "";
+};
+
+const sortMovesByCapture = (position, moves) => {
+    return moves.slice().sort((a, b) => {
+        const targetA = position[a.targetRank][a.targetFile];
+        const targetB = position[b.targetRank][b.targetFile];
+        const typeA = targetA ? targetA.replace(/^(white|black)_/, "") : null;
+        const typeB = targetB ? targetB.replace(/^(white|black)_/, "") : null;
+        const valA = typeA ? (PIECE_VALUES[typeA] || 0) : 0;
+        const valB = typeB ? (PIECE_VALUES[typeB] || 0) : 0;
+        const attackerA = PIECE_VALUES[position[a.rank][a.file].replace(/^(white|black)_/, "")] || 0;
+        const attackerB = PIECE_VALUES[position[b.rank][b.file].replace(/^(white|black)_/, "")] || 0;
+        return (valB - attackerB) - (valA - attackerA);
+    });
+};
+
+const getCaptureMoves = (position, moves, playerColor) => {
+    return moves.filter((move) => {
+        return isCaptureMove(position, move) && isMoveLegal(position, move, playerColor);
+    });
+};
+
+const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant) => {
+    const standPat = evaluatePosition(position, gameVariant);
+    if (isMaximizing) {
+        if (standPat >= beta) return standPat;
+        if (alpha < standPat) alpha = standPat;
+    } else {
+        if (standPat <= alpha) return standPat;
+        if (beta > standPat) beta = standPat;
+    }
+
+    const playerColor = isMaximizing ? "white" : "black";
+    const captureMoves = sortMovesByCapture(
+        position,
+        getCaptureMoves(
+            position,
+            arbiter.getBoardValidMoves({
+                position,
+                playerColor,
+                castleDirection,
+                prevPosition,
+            }),
+            playerColor
+        )
+    );
+
+    if (captureMoves.length === 0) return standPat;
+
+    if (isMaximizing) {
+        let maxEval = standPat;
+        for (const move of captureMoves) {
+            const piece = position[move.rank][move.file];
+            const captured = makeMoveOnBoard(position, move);
+            const evalScore = quiescence(position, false, alpha, beta, castleDirection, position, gameVariant);
+            unmakeMoveOnBoard(position, move, piece, captured);
+
+            maxEval = Math.max(maxEval, evalScore);
+            alpha = Math.max(alpha, evalScore);
+            if (beta <= alpha) break;
+        }
+        return maxEval;
+    }
+
+    let minEval = standPat;
+    for (const move of captureMoves) {
+        const piece = position[move.rank][move.file];
+        const captured = makeMoveOnBoard(position, move);
+        const evalScore = quiescence(position, true, alpha, beta, castleDirection, position, gameVariant);
+        unmakeMoveOnBoard(position, move, piece, captured);
+
+        minEval = Math.min(minEval, evalScore);
+        beta = Math.min(beta, evalScore);
+        if (beta <= alpha) break;
+    }
+    return minEval;
+};
+
 const minimax = (
     position,
     depth,
@@ -223,7 +318,7 @@ const minimax = (
     prevPosition,
     gameVariant,
 ) => {
-    if (depth === 0) return evaluatePosition(position, gameVariant);
+    if (depth === 0) return quiescence(position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant);
 
     const playerColor = isMaximizing ? "white" : "black";
     const rawMoves = arbiter.getBoardValidMoves({

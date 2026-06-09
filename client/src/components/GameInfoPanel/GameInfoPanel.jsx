@@ -97,6 +97,7 @@ const GameInfoPanel = (props) => {
       localStorage.removeItem("roomId");
     }
     localStorage.setItem("chess_mode", "multiplayer");
+    localStorage.removeItem("botGameState");
     setStart(false);
     if (
       appState?.isMultiplayer ||
@@ -129,6 +130,7 @@ const GameInfoPanel = (props) => {
     }
 
     localStorage.setItem("chess_mode", "game");
+    localStorage.removeItem("botGameState");
     setStart(false);
     setSelectedColor(null);
     if (window.localStorage.getItem("chess_variant") === "chess") {
