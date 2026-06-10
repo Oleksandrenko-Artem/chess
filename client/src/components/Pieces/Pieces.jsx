@@ -569,9 +569,9 @@ const Pieces = ({ flipped = false }) => {
     ) {
       let promotionPiece;
 
-      if (gameMode === "chess") {
+      if (gameMode === "chess" || gameMode === "chess960") {
         promotionPiece = "ferz";
-      } else if (gameMode === "shatranj") {
+      } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
         promotionPiece = "firzan";
       } else {
         promotionPiece = promotionOptions

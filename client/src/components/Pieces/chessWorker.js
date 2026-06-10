@@ -26,7 +26,7 @@ const HORSE_POSITION_TABLE = [
 const BISHOP_POSITION_TABLE = [
     [-20, -10, -10, -10, -10, -10, -10, -20],
     [-10, 0, 0, 0, 0, 0, 0, -10],
-    [-10, 0, 5, 10, 10, 5, 0, -10],
+    [-10, 0, 5, 5, 5, 5, 0, -10],
     [-10, 5, 5, 10, 10, 5, 5, -10],
     [-10, 0, 10, 10, 10, 10, 0, -10],
     [-10, 10, 10, 10, 10, 10, 10, -10],
@@ -114,10 +114,6 @@ const evaluatePosition = (position, gameVariant = "") => {
                     if (type === "horse" || type === "elephant" || type === "firzan") {
                         if (isWhite && r < 7) value += 50;
                         if (!isWhite && r > 0) value += 50;
-                    }
-
-                    if (type === "horse" && ((isWhite && r <= 4) || (!isWhite && r >= 3))) {
-                        value -= 35;
                     }
                 }
             } else {
