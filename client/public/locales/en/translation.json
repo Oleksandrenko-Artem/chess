@@ -121,6 +121,13 @@
     "close": "Close",
     "exit": "Exit"
   },
+  "statistic_panel": {
+    "wins": "Wins",
+    "draws": "Draws",
+    "losses": "Losses",
+    "multiplayer": "Multiplayer Statistics",
+    "bot": "Bot Statistics"
+  },
   "validation": {
     "error_email": "Email is already exists",
     "error_unauthorized": "Unauthorized",
@@ -132,6 +139,9 @@
     "required": "This field is required."
   },
   "home": {
-    "home_caption": "Home Page"
+    "home_caption": "Home Page",
+    "number": "Number",
+    "photo": "Photo",
+    "name": "Name"
   }
 }

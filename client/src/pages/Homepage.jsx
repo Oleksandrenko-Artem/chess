@@ -6,7 +6,7 @@ import styles from './Pages.module.scss';
 
 const Homepage = () => {
     const dispatch = useDispatch();
-    const { t } = useTranslation();
+  const { t } = useTranslation();
     const { users } = useSelector((state) => state.users);
     useEffect(() => {
         dispatch(findAllUsersThunk());  
@@ -17,15 +17,17 @@ const Homepage = () => {
         <table className={styles.users}>
           <thead>
             <tr>
-              <th>Number</th>
-              <th>Photo</th>
-              <th>Name</th>
-              <th>Email</th>
+              <th>{t("home.number")}</th>
+              <th>{t("home.photo")}</th>
+              <th>{t("home.name")}</th>
+              <th>{t("statistic_panel.wins")}</th>
+              <th>{t("statistic_panel.draws")}</th>
+              <th>{t("statistic_panel.losses")}</th>
             </tr>
           </thead>
           <tbody>
             {users?.map((user, index) => (
-              <tr key={index}>
+              <tr key={index} >
                 <td>{index + 1}.</td>
                 <td className={styles["home-page-user-photo"]}>
                   <img
@@ -34,7 +36,9 @@ const Homepage = () => {
                   />
                 </td>
                 <td>{user.name}</td>
-                <td>{user.email}</td>
+                <td>{user.multiWins || 0}</td>
+                <td>{user.multiDraws || 0}</td>
+                <td>{user.multiLoses || 0}</td>
               </tr>
             ))}
           </tbody>

@@ -153,13 +153,13 @@ const ProfilePage = () => {
             <b>{t("profile.email")}:</b> {user?.email}
           </p>
           <div className={styles["stats-section"]}>
-            <h3>Bot statistics</h3>
+            <h3>{t("statistic_panel.bot")}</h3>
             <table className={styles.users}>
               <thead>
                 <tr>
-                  <th>Wins</th>
-                  <th>Draws</th>
-                  <th>Loses</th>
+                  <th>{t("statistic_panel.wins")}</th>
+                  <th>{t("statistic_panel.draws")}</th>
+                  <th>{t("statistic_panel.losses")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -172,13 +172,13 @@ const ProfilePage = () => {
             </table>
           </div>
           <div className={styles["stats-section"]}>
-            <h3>Multiplayer statistics</h3>
+            <h3>{t("statistic_panel.multiplayer")}</h3>
             <table className={styles.users}>
               <thead>
                 <tr>
-                  <th>Wins</th>
-                  <th>Draws</th>
-                  <th>Loses</th>
+                  <th>{t("statistic_panel.wins")}</th>
+                  <th>{t("statistic_panel.draws")}</th>
+                  <th>{t("statistic_panel.losses")}</th>
                 </tr>
               </thead>
               <tbody>

@@ -218,7 +218,6 @@ const GameInfoPanel = (props) => {
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
-  console.log(status);
   const handleBoardStyleChange = (event) => {
     const style = event.target.value;
     setBoardStyle(style);

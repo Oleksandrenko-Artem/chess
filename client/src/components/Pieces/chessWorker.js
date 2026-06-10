@@ -89,7 +89,7 @@ const evaluatePosition = (position, gameVariant = "") => {
             const isWhite = p.startsWith("white");
             const type = p.replace(/^(white|black)_/, "");
 
-            let value = PIECE_VALUES[type] || 100;
+            let value = PIECE_VALUES[type];
             const isCenter = r >= centerStart && r <= centerEnd && f >= centerStart && f <= centerEnd;
 
             if (type === "pawn" && boardSize === 8) {
