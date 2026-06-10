@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAppContext } from "../../contexts/Context";
 import { status } from "../../constants";
 import styles from "./Pieces.module.scss";
 import arbiter from "../../arbiter/arbiter";
 import { generateValidMoves } from "../../reducers/actions/move";
+
+const MOVE_DELAY_MS = 260;
 
 const Piece = ({ rank, file, piece, imageSrc }) => {
   const baseClass = piece !== "brick" ? styles.piece : styles["piece-any"];
@@ -13,9 +15,51 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
       : piece && piece.endsWith("brick")
         ? styles["piece-brick"]
         : "";
-  const classNames = `${baseClass} ${pieceClass}`.trim();
-  const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
   const { appState, dispatch } = useAppContext();
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [showPiece, setShowPiece] = useState(true);
+  const isMoveTarget =
+    appState.lastMove &&
+    appState.lastMove.toRank === rank &&
+    appState.lastMove.toFile === file;
+  const isMoveSource =
+    appState.lastMove &&
+    appState.lastMove.fromRank === rank &&
+    appState.lastMove.fromFile === file;
+
+  useEffect(() => {
+    if (isMoveTarget) {
+      setShowPiece(false);
+      const timer = setTimeout(() => {
+        setShowPiece(true);
+      }, MOVE_DELAY_MS);
+      return () => clearTimeout(timer);
+    }
+    if (isMoveSource) {
+      setShowPiece(false);
+      const timer = setTimeout(() => {
+        setShowPiece(true);
+      }, MOVE_DELAY_MS);
+      return () => clearTimeout(timer);
+    }
+
+    setShowPiece(true);
+  }, [isMoveTarget, isMoveSource, appState.lastMove]);
+
+  if (!showPiece) {
+    return null;
+  }
+
+  const classNames = [
+    baseClass,
+    pieceClass,
+    isMoveTarget && showPiece ? styles["piece-move"] : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
+
   const { playerTurn, castleDirection, position } = appState;
   const currentPosition = position[position.length - 1];
 
@@ -91,7 +135,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
     <div
       className={classNames}
       style={style}
-      draggable={true}
+      draggable={piece !== "brick"}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
       onClick={onClick}

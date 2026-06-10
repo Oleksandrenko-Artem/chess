@@ -75,7 +75,8 @@ import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
 import brick from "../../assets/icons/brick.png";
-import styles from "./../ChessBoard/ChessBoard.module.scss";
+import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
+import pieceStyles from "./Pieces.module.scss";
 import { useTranslation } from "react-i18next";
 
 const imageMap = {
@@ -199,6 +200,7 @@ const Pieces = ({ flipped = false }) => {
   const dispatchRedux = useDispatch();
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [positionHistory, setPositionHistory] = useState([]);
+  const [movingPiece, setMovingPiece] = useState(null);
   const prevPositionRef = useRef(null);
   const lastResultStatusRef = useRef(null);
 
@@ -314,6 +316,39 @@ const Pieces = ({ flipped = false }) => {
     }
   }, [appState.position, appState.playerTurn, appState.castleDirection]);
   useEffect(() => {
+    if (
+      !appState.lastMove ||
+      !appState.position ||
+      appState.position.length < 2
+    ) {
+      setMovingPiece(null);
+      return;
+    }
+
+    const prevBoard = appState.position[appState.position.length - 2];
+    const pieceAtStart =
+      prevBoard?.[appState.lastMove.fromRank]?.[appState.lastMove.fromFile];
+
+    if (!pieceAtStart) {
+      setMovingPiece(null);
+      return;
+    }
+
+    const pieceImage = getPieceImageSrc(pieceAtStart);
+    setMovingPiece({
+      piece: pieceAtStart,
+      imageSrc: pieceImage,
+      fromRank: appState.lastMove.fromRank,
+      fromFile: appState.lastMove.fromFile,
+      toRank: appState.lastMove.toRank,
+      toFile: appState.lastMove.toFile,
+    });
+
+    const timer = setTimeout(() => setMovingPiece(null), 260);
+    return () => clearTimeout(timer);
+  }, [appState.lastMove, appState.position]);
+
+  useEffect(() => {
     if (appState.isVsBot && appState.status === status.ongoing) {
       const userSide = localStorage.getItem("chess_side");
       if (appState.playerTurn === userSide) {
@@ -386,7 +421,7 @@ const Pieces = ({ flipped = false }) => {
         prevPosition,
         playerTurn,
         castleDirection,
-        depth: 3,
+        depth: gameVariant === "special" ? 2 : 3,
         gameVariant,
         positionHistory,
       });
@@ -850,13 +885,71 @@ const Pieces = ({ flipped = false }) => {
       }
     }
   };
+  const movingPieceStyle =
+    movingPiece && ref.current
+      ? (() => {
+          const cellSize =
+            ref.current.getBoundingClientRect().width / appState.boardSize;
+
+          const isPawnOrSoldier =
+            movingPiece.piece.endsWith("soldier") ||
+            movingPiece.piece.endsWith("pawn");
+          const sizeMultiplier = isPawnOrSoldier ? 0.55 : 0.75;
+
+          const pieceWidth = cellSize * sizeMultiplier;
+          const pieceHeight = cellSize * sizeMultiplier;
+
+          const offsetX = (cellSize - pieceWidth) / 2;
+          const offsetY = isPawnOrSoldier
+            ? cellSize * 0.30
+            : (cellSize - pieceHeight) / 2;
+
+          const displayFromFile = flipped
+            ? appState.boardSize - 1 - movingPiece.fromFile
+            : movingPiece.fromFile;
+          const displayFromRank = flipped
+            ? appState.boardSize - 1 - movingPiece.fromRank
+            : movingPiece.fromRank;
+
+          const displayToFile = flipped
+            ? appState.boardSize - 1 - movingPiece.toFile
+            : movingPiece.toFile;
+          const displayToRank = flipped
+            ? appState.boardSize - 1 - movingPiece.toRank
+          : movingPiece.toRank;
+        
+          const left = displayFromFile * cellSize + offsetX;
+          const top = displayFromRank * cellSize + offsetY;
+
+          const translateX = (displayToFile - displayFromFile) * cellSize;
+          const translateY = (displayToRank - displayFromRank) * cellSize;
+
+          return {
+            width: `${pieceWidth}px`,
+            height: `${pieceHeight}px`,
+            left: `${left}px`,
+            top: `${top}px`,
+            "--move-x": `${translateX}px`,
+            "--move-y": `${translateY}px`,
+            backgroundImage: `url(${movingPiece.imageSrc})`,
+          };
+        })()
+      : null;
+
   return (
     <div
       ref={ref}
-      className={styles["chess-board"]}
+      className={boardStyles["chess-board"]}
       onDrop={onDrop}
       onDragOver={onDragOver}
     >
+      {movingPiece && (
+        <div
+          className={pieceStyles["piece-travel"]}
+          style={movingPieceStyle}
+          aria-hidden="true"
+        />
+      )}
       {[...Array(appState.boardSize)].map((_, dispRank) => {
         return (
           <React.Fragment key={dispRank}>
@@ -870,7 +963,9 @@ const Pieces = ({ flipped = false }) => {
               const f = currentPosition?.[realRank]?.[realFile];
               const tileColor = (realRank + realFile) % 2;
               let tileClass =
-                tileColor === 0 ? styles["white-tile"] : styles["black-tile"];
+                tileColor === 0
+                  ? boardStyles["white-tile"]
+                  : boardStyles["black-tile"];
 
               const showNumber =
                 numberFileByRank[realRank] === realFile &&
@@ -884,7 +979,7 @@ const Pieces = ({ flipped = false }) => {
                 isChecked[0] === realRank &&
                 isChecked[1] === realFile
               ) {
-                tileClass += ` ${styles["check"]}`;
+                tileClass += ` ${boardStyles["check"]}`;
               } else {
                 const lastMove = appState.lastMove;
 
@@ -934,11 +1029,11 @@ const Pieces = ({ flipped = false }) => {
                 }
 
                 if (isAttack) {
-                  tileClass += ` ${styles["attacking"]}`;
+                  tileClass += ` ${boardStyles["attacking"]}`;
                 } else if (isValid) {
-                  tileClass += ` ${styles["highlight"]}`;
+                  tileClass += ` ${boardStyles["highlight"]}`;
                 } else if (isPrevious) {
-                  tileClass += ` ${styles["previous"]}`;
+                  tileClass += ` ${boardStyles["previous"]}`;
                 }
               }
               return (
@@ -949,14 +1044,14 @@ const Pieces = ({ flipped = false }) => {
                 >
                   {showNumber && (
                     <span
-                      className={`${styles["coordinate-number"]} ${
+                      className={`${boardStyles["coordinate-number"]} ${
                         flipped
-                          ? styles["black-orientation"]
-                          : styles["white-orientation"]
+                          ? boardStyles["black-orientation"]
+                          : boardStyles["white-orientation"]
                       } ${
                         tileColor === 0
-                          ? styles["light-text"]
-                          : styles["dark-text"]
+                          ? boardStyles["light-text"]
+                          : boardStyles["dark-text"]
                       }`}
                     >
                       {appState.boardSize - realRank}
@@ -964,14 +1059,14 @@ const Pieces = ({ flipped = false }) => {
                   )}
                   {showLetter && (
                     <span
-                      className={`${styles["coordinate-letter"]} ${
+                      className={`${boardStyles["coordinate-letter"]} ${
                         flipped
-                          ? styles["black-orientation"]
-                          : styles["white-orientation"]
+                          ? boardStyles["black-orientation"]
+                          : boardStyles["white-orientation"]
                       } ${
                         tileColor === 0
-                          ? styles["light-text"]
-                          : styles["dark-text"]
+                          ? boardStyles["light-text"]
+                          : boardStyles["dark-text"]
                       }`}
                     >
                       {String.fromCharCode(97 + realFile)}
