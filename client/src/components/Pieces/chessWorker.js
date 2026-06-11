@@ -107,19 +107,35 @@ const evaluatePosition = (position, gameVariant = "") => {
 
             if (isShatranj) {
                 if (isOpening || isMiddlegame) {
-                    if (type === "horse") value += 20;
-                    if (type === "elephant") value += 20;
-                    if (type === "firzan") value += 10;
-
-                    if (type === "horse" || type === "elephant" || type === "firzan") {
-                        if (isWhite && r < 7) value += 50;
-                        if (!isWhite && r > 0) value += 50;
-                    }
+                    if (type === "horse") value += 8;
+                    if (type === "elephant") value += 8;
+                    if (type === "firzan") value += 4;
                 }
             } else {
                 if (isEndgame) {
-                    if (type === "rook") value += 40;
-                    if (type === "ferz") value += 40;
+                    if (type === "rook") value += 10;
+                    if (type === "ferz") value += 10;
+                }
+            }
+
+            if (isShatranj && isOpening) {
+
+                if (type === "horse") {
+                    if (isWhite && r === 7) value -= 25;
+                    if (!isWhite && r === 0) value -= 25;
+                }
+
+                if (type === "elephant") {
+                    if (isWhite && r === 7) value -= 15;
+                    if (!isWhite && r === 0) value -= 15;
+                }
+
+                if (type === "firzan") {
+                    if (isWhite && r === 7 && f === 3)
+                        value -= 10;
+
+                    if (!isWhite && r === 0 && f === 3)
+                        value -= 10;
                 }
             }
 
@@ -135,17 +151,11 @@ const evaluatePosition = (position, gameVariant = "") => {
                         if (f >= centerStart - 1 && f <= centerEnd + 1) {
                             advanceBonus += isWhite ? (boardSize - 1 - r) * 15 : r * 15;
                         }
-                        if (isWhite && r <= 4 && whiteBacklinePieces >= 2) advanceBonus -= 30;
-                        if (!isWhite && r >= 3 && blackBacklinePieces >= 2) advanceBonus -= 30;
 
                         value += advanceBonus;
                     }
                     if ((type === "elephant" || type === "horse") && isCenter) {
-                        value += 35;
-                    }
-                    if (type === "elephant" || type === "horse") {
-                        if (isWhite && r <= 5 && position[r + 1]?.[f] === "white_soldier") value -= 40;
-                        if (!isWhite && r >= 2 && position[r - 1]?.[f] === "black_soldier") value -= 40;
+                        value += 12;
                     }
                 } else {
                     if (type === "pawn" && (f === 3 || f === 4)) {
@@ -173,15 +183,19 @@ const evaluatePosition = (position, gameVariant = "") => {
             }
 
             if (type !== "king" && isCenter) {
-                value += 25;
+                value += 15;
             }
 
             if (type === "king" || type === "imperator") {
                 if (isEndgame) {
-                    if (isCenter) value += 60;
+                    if (isCenter) value += 45;
                 } else {
                     if (f <= 1 || f >= boardSize - 2) value += 45;
                 }
+            }
+
+            if (type === "elephant") {
+                value += 40;
             }
 
             totalScore += isWhite ? value : -value;
@@ -194,8 +208,8 @@ const evaluatePosition = (position, gameVariant = "") => {
         else if (totalScore < -150) totalScore -= (14 - distance) * 20;
     }
 
-    if (arbiter.isKingInCheck({ position, playerColor: "white" })) totalScore -= 80;
-    if (arbiter.isKingInCheck({ position, playerColor: "black" })) totalScore += 80;
+    if (arbiter.isKingInCheck({ position, playerColor: "white" })) totalScore -= 30;
+    if (arbiter.isKingInCheck({ position, playerColor: "black" })) totalScore += 30;
 
     return totalScore;
 };
@@ -248,8 +262,11 @@ const getCaptureMoves = (position, moves, playerColor) => {
     });
 };
 
-const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant) => {
+const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant, qDepth = 0) => {
     const standPat = evaluatePosition(position, gameVariant);
+    if (qDepth >= 4) {
+        return evaluatePosition(position, gameVariant);
+    }
     if (isMaximizing) {
         if (standPat >= beta) return standPat;
         if (alpha < standPat) alpha = standPat;
@@ -280,7 +297,16 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
         for (const move of captureMoves) {
             const piece = position[move.rank][move.file];
             const captured = makeMoveOnBoard(position, move);
-            const evalScore = quiescence(position, false, alpha, beta, castleDirection, position, gameVariant);
+            const evalScore = quiescence(
+                position,
+                false,
+                alpha,
+                beta,
+                castleDirection,
+                position,
+                gameVariant,
+                qDepth + 1
+            );
             unmakeMoveOnBoard(position, move, piece, captured);
 
             maxEval = Math.max(maxEval, evalScore);
@@ -453,7 +479,12 @@ self.onmessage = (e) => {
         });
     }
 
-    const chosenMove = topMoves[0];
+    const chosenMove =
+        topMoves[
+        Math.floor(
+            Math.random() * topMoves.length
+        )
+        ];
 
     self.postMessage({ chosenMove });
 };

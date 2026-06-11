@@ -5,7 +5,7 @@ import styles from "./Pieces.module.scss";
 import arbiter from "../../arbiter/arbiter";
 import { generateValidMoves } from "../../reducers/actions/move";
 
-const MOVE_DELAY_MS = 260;
+const MOVE_DELAY_MS = 240;
 
 const Piece = ({ rank, file, piece, imageSrc }) => {
   const baseClass = piece !== "brick" ? styles.piece : styles["piece-any"];
