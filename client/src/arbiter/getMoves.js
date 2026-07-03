@@ -471,58 +471,44 @@ export const getCheckersMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
+
     if (isInBounds(position, targetRank, file - 1) && position[targetRank][file - 1] === '') {
         moves.push([targetRank, file - 1]);
     }
     if (isInBounds(position, targetRank, file + 1) && position[targetRank][file + 1] === '') {
         moves.push([targetRank, file + 1]);
     }
+
     return moves;
 };
 export const getCheckersCaptures = ({ position, piece, rank, file }) => {
     const moves = [];
-    const direction = piece.startsWith('white') ? -1 : 1;
+    const directions = piece.startsWith('white') ? [-1, 1] : [1, -1];
     const enemy = piece.startsWith('white') ? 'black' : 'white';
-    const adjRankForward = rank + direction;
-    const landRankForward = rank + 2 * direction;
-    if (isInBounds(position, landRankForward, file - 2)) {
-        if (
-            isInBounds(position, adjRankForward, file - 1) &&
-            position[adjRankForward][file - 1].startsWith(enemy) &&
-            position[landRankForward][file - 2] === ''
-        ) {
-            moves.push([landRankForward, file - 2]);
+
+    directions.forEach((direction) => {
+        const adjRank = rank + direction;
+        const landRank = rank + 2 * direction;
+
+        if (isInBounds(position, landRank, file - 2)) {
+            if (
+                isInBounds(position, adjRank, file - 1) &&
+                position[adjRank][file - 1].startsWith(enemy) &&
+                position[landRank][file - 2] === ''
+            ) {
+                moves.push([landRank, file - 2]);
+            }
         }
-    }
-    if (isInBounds(position, landRankForward, file + 2)) {
-        if (
-            isInBounds(position, adjRankForward, file + 1) &&
-            position[adjRankForward][file + 1].startsWith(enemy) &&
-            position[landRankForward][file + 2] === ''
-        ) {
-            moves.push([landRankForward, file + 2]);
+        if (isInBounds(position, landRank, file + 2)) {
+            if (
+                isInBounds(position, adjRank, file + 1) &&
+                position[adjRank][file + 1].startsWith(enemy) &&
+                position[landRank][file + 2] === ''
+            ) {
+                moves.push([landRank, file + 2]);
+            }
         }
-    }
-    const adjRankBackward = rank - direction;
-    const landRankBackward = rank - 2 * direction;
-    if (isInBounds(position, landRankBackward, file - 2)) {
-        if (
-            isInBounds(position, adjRankBackward, file - 1) &&
-            position[adjRankBackward][file - 1].startsWith(enemy) &&
-            position[landRankBackward][file - 2] === ''
-        ) {
-            moves.push([landRankBackward, file - 2]);
-        }
-    }
-    if (isInBounds(position, landRankBackward, file + 2)) {
-        if (
-            isInBounds(position, adjRankBackward, file + 1) &&
-            position[adjRankBackward][file + 1].startsWith(enemy) &&
-            position[landRankBackward][file + 2] === ''
-        ) {
-            moves.push([landRankBackward, file + 2]);
-        }
-    }
+    });
 
     return moves;
 };

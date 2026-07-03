@@ -21,6 +21,13 @@ const arbiter = {
                         kingMoves.forEach(([tr, tf]) => {
                             allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
+                    } else if (piece.endsWith('checkers')) {
+                        const simpleMoves = getCheckersMoves({ position, piece, rank: r, file: f });
+                        const captureMoves = getCheckersCaptures({ position, piece, rank: r, file: f });
+                        const checkerMoves = captureMoves.length > 0 ? captureMoves : simpleMoves;
+                        checkerMoves.forEach(([tr, tf]) => {
+                            allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
+                        });
                     } else if (isPawn) {
                         const direction = playerColor === 'white' ? -1 : 1;
                         const boardSize = getBoardSize(position);
@@ -761,10 +768,9 @@ const arbiter = {
         } else if (piece.endsWith('wazir')) {
             moves = getWazirMoves({ position, piece, rank, file });
         } else if (piece.endsWith('checkers')) {
-            moves = [
-                ...getCheckersMoves({ position, piece, rank, file }),
-                ...getCheckersCaptures({ position, piece, rank, file }),
-            ];
+            const simpleMoves = getCheckersMoves({ position, piece, rank, file });
+            const captureMoves = getCheckersCaptures({ position, piece, rank, file });
+            moves = captureMoves.length > 0 ? captureMoves : simpleMoves;
         }
         const playerColor = piece.startsWith('white') ? 'white' : 'black';
         const filteredMoves = moves.filter(([toRank, toFile]) =>

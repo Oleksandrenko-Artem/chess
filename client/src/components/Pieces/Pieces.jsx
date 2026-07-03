@@ -526,10 +526,24 @@ const Pieces = ({ flipped = false }) => {
     const newCaptured = JSON.parse(
       JSON.stringify(appState.captured || { white: [], black: [] }),
     );
+    const isCheckerCapture =
+      p.endsWith("checkers") &&
+      Math.abs(targetRank - rank) === 2 &&
+      Math.abs(targetFile - file) === 2;
+    const isCaptureMove =
+      !isNew &&
+      (isCheckerCapture ||
+        Boolean(currentPosition?.[targetRank]?.[targetFile]));
+    const captureRank = isCheckerCapture
+      ? Math.floor((rank + targetRank) / 2)
+      : targetRank;
+    const captureFile = isCheckerCapture
+      ? Math.floor((file + targetFile) / 2)
+      : targetFile;
 
-    if (!isNew && currentPosition[targetRank][targetFile]) {
+    if (!isNew && currentPosition[captureRank][captureFile]) {
       let capturedPiece = getActualPiece(
-        currentPosition[targetRank][targetFile],
+        currentPosition[captureRank][captureFile],
       );
       const opponentColor = capturedPiece.startsWith("white")
         ? "black"
@@ -553,6 +567,10 @@ const Pieces = ({ flipped = false }) => {
 
     if (!isNew && rank !== undefined && file !== undefined) {
       newPosition[rank][file] = "";
+    }
+
+    if (isCheckerCapture) {
+      newPosition[captureRank][captureFile] = "";
     }
 
     if (newPosition[targetRank] !== undefined) {
@@ -696,6 +714,7 @@ const Pieces = ({ flipped = false }) => {
         isInCheck,
         isCheckmate: gameStatus.includes("wins"),
         isStalemate: gameStatus === "Draw",
+        isCapture: isCaptureMove,
       });
     }
 
@@ -901,7 +920,7 @@ const Pieces = ({ flipped = false }) => {
 
           const offsetX = (cellSize - pieceWidth) / 2;
           const offsetY = isPawnOrSoldier
-            ? cellSize * 0.30
+            ? cellSize * 0.3
             : (cellSize - pieceHeight) / 2;
 
           const displayFromFile = flipped
@@ -916,8 +935,8 @@ const Pieces = ({ flipped = false }) => {
             : movingPiece.toFile;
           const displayToRank = flipped
             ? appState.boardSize - 1 - movingPiece.toRank
-          : movingPiece.toRank;
-        
+            : movingPiece.toRank;
+
           const left = displayFromFile * cellSize + offsetX;
           const top = displayFromRank * cellSize + offsetY;
 

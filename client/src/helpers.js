@@ -562,7 +562,7 @@ export const createShatranj960Position = (size = 8) => {
 
     return position;
 };
-export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType }) => {
+export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, isCapture = null }) => {
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
         if (isCheckmate) return castling + '#';
@@ -571,7 +571,7 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
     }
     let note = '';
     const pieceType = p[6].toLowerCase();
-    const isCapture = !!position[targetRank][targetFile];
+    const hasCapture = isCapture ?? !!position?.[targetRank]?.[targetFile];
     const isSailboat = (pieceType === 's' && rookType === 'sailboat');
     const isPawnType = pieceType === 'p' || (pieceType === 's' && !isSailboat);
     if (!isPawnType) {
@@ -582,7 +582,7 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
         } else {
             note += pieceType.toUpperCase();
         }
-        if (isCapture) note += 'x';
+        if (hasCapture) note += 'x';
     } else {
         if (file !== targetFile) {
             note += getCharacter(file) + 'x';
