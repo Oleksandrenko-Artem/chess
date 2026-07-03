@@ -21,7 +21,7 @@ const arbiter = {
                         kingMoves.forEach(([tr, tf]) => {
                             allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
-                    } else if (piece.endsWith('checkers')) {
+                    } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
                         const simpleMoves = getCheckersMoves({ position, piece, rank: r, file: f });
                         const captureMoves = getCheckersCaptures({ position, piece, rank: r, file: f });
                         const checkerMoves = captureMoves.length > 0 ? captureMoves : simpleMoves;
@@ -609,39 +609,53 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('checkers')) {
+        } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
             const us = piece.startsWith('white') ? 'white' : 'black';
             const enemy = us === 'white' ? 'black' : 'white';
-            const direction = us === 'white' ? -1 : 1;
-            const diagonalSquares = [
-                [rank - 1, file - 1],
-                [rank - 1, file + 1],
-                [rank + 1, file - 1],
-                [rank + 1, file + 1],
-            ];
-            diagonalSquares.forEach(([r, f]) => {
-                if (position?.[r]?.[f] !== undefined) {
-                    attacks.push([r, f]);
+            const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+
+            if (piece.endsWith('checker_long_range')) {
+                directions.forEach(([dr, df]) => {
+                    for (let i = 1; i < boardSize; i++) {
+                        const [r, f] = [rank + i * dr, file + i * df];
+                        if (!isInBounds(position, r, f)) break;
+                        const target = position[r][f];
+                        attacks.push([r, f]);
+                        if (target !== '') break;
+                    }
+                });
+            } else {
+                const direction = us === 'white' ? -1 : 1;
+                const diagonalSquares = [
+                    [rank - 1, file - 1],
+                    [rank - 1, file + 1],
+                    [rank + 1, file - 1],
+                    [rank + 1, file + 1],
+                ];
+                diagonalSquares.forEach(([r, f]) => {
+                    if (position?.[r]?.[f] !== undefined) {
+                        attacks.push([r, f]);
+                    }
+                });
+                for (let df of [-1, 1]) {
+                    const adjRank = rank + direction;
+                    const adjFile = file + df;
+                    const landRank = rank + 2 * direction;
+                    const landFile = file + 2 * df;
+                    if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                        position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
+                        attacks.push([landRank, landFile]);
+                    }
                 }
-            });
-            for (let df of [-1, 1]) {
-                const adjRank = rank + direction;
-                const adjFile = file + df;
-                const landRank = rank + 2 * direction;
-                const landFile = file + 2 * df;
-                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
-                    position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
-                    attacks.push([landRank, landFile]);
-                }
-            }
-            for (let df of [-1, 1]) {
-                const adjRank = rank - direction;
-                const adjFile = file + df;
-                const landRank = rank - 2 * direction;
-                const landFile = file + 2 * df;
-                if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
-                    position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
-                    attacks.push([landRank, landFile]);
+                for (let df of [-1, 1]) {
+                    const adjRank = rank - direction;
+                    const adjFile = file + df;
+                    const landRank = rank - 2 * direction;
+                    const landFile = file + 2 * df;
+                    if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                        position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
+                        attacks.push([landRank, landFile]);
+                    }
                 }
             }
         }
@@ -681,10 +695,21 @@ const arbiter = {
             newPosition[fromRank][toFile] = '';
         }
 
-        if (piece.endsWith('checkers') && Math.abs(toRank - fromRank) === 2 && Math.abs(toFile - fromFile) === 2) {
-            const capRank = (fromRank + toRank) / 2;
-            const capFile = (fromFile + toFile) / 2;
-            newPosition[capRank][capFile] = '';
+        if ((piece.endsWith('checkers') || piece.endsWith('checker_long_range')) && Math.abs(toRank - fromRank) === Math.abs(toFile - fromFile)) {
+            const stepRank = toRank > fromRank ? 1 : toRank < fromRank ? -1 : 0;
+            const stepFile = toFile > fromFile ? 1 : toFile < fromFile ? -1 : 0;
+            let currentRank = fromRank + stepRank;
+            let currentFile = fromFile + stepFile;
+
+            while (currentRank !== toRank || currentFile !== toFile) {
+                const square = position[currentRank]?.[currentFile];
+                if (square && square !== '') {
+                    newPosition[currentRank][currentFile] = '';
+                    break;
+                }
+                currentRank += stepRank;
+                currentFile += stepFile;
+            }
         }
 
         if (piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
@@ -767,7 +792,7 @@ const arbiter = {
             moves = getWildebeestMoves({ position, rank, file });
         } else if (piece.endsWith('wazir')) {
             moves = getWazirMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('checkers')) {
+        } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
             const simpleMoves = getCheckersMoves({ position, piece, rank, file });
             const captureMoves = getCheckersCaptures({ position, piece, rank, file });
             moves = captureMoves.length > 0 ? captureMoves : simpleMoves;

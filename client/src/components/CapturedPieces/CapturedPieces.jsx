@@ -25,6 +25,7 @@ import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
+import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
@@ -58,6 +59,7 @@ import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
+import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 
 const imageMap = {
   black_pawn,
@@ -89,6 +91,7 @@ const imageMap = {
   black_wildebeest,
   black_man,
   black_alibaba,
+  black_checker_long_range,
   white_pawn,
   white_soldier,
   white_horse,
@@ -118,6 +121,7 @@ const imageMap = {
   white_wildebeest,
   white_man,
   white_alibaba,
+  white_checker_long_range,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;

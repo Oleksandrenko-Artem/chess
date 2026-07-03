@@ -469,6 +469,21 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
 };
 export const getCheckersMoves = ({ position, piece, rank, file }) => {
     const moves = [];
+
+    if (piece.endsWith('checker_long_range')) {
+        const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+        directions.forEach(([dr, df]) => {
+            let nextRank = rank + dr;
+            let nextFile = file + df;
+            while (isInBounds(position, nextRank, nextFile) && position[nextRank][nextFile] === '') {
+                moves.push([nextRank, nextFile]);
+                nextRank += dr;
+                nextFile += df;
+            }
+        });
+        return moves;
+    }
+
     const direction = piece.startsWith('white') ? -1 : 1;
     const targetRank = rank + direction;
 
@@ -483,9 +498,37 @@ export const getCheckersMoves = ({ position, piece, rank, file }) => {
 };
 export const getCheckersCaptures = ({ position, piece, rank, file }) => {
     const moves = [];
-    const directions = piece.startsWith('white') ? [-1, 1] : [1, -1];
     const enemy = piece.startsWith('white') ? 'black' : 'white';
 
+    if (piece.endsWith('checker_long_range')) {
+        const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+        directions.forEach(([dr, df]) => {
+            let currentRank = rank + dr;
+            let currentFile = file + df;
+            let jumped = false;
+            while (isInBounds(position, currentRank, currentFile)) {
+                const target = position[currentRank][currentFile];
+                if (target === '') {
+                    if (jumped) {
+                        moves.push([currentRank, currentFile]);
+                    }
+                    currentRank += dr;
+                    currentFile += df;
+                    continue;
+                }
+                if (!jumped && target.startsWith(enemy)) {
+                    jumped = true;
+                    currentRank += dr;
+                    currentFile += df;
+                    continue;
+                }
+                break;
+            }
+        });
+        return moves;
+    }
+
+    const directions = piece.startsWith('white') ? [-1, 1] : [1, -1];
     directions.forEach((direction) => {
         const adjRank = rank + direction;
         const landRank = rank + 2 * direction;

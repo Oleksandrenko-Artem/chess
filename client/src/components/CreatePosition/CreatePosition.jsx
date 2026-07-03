@@ -54,6 +54,7 @@ import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
+import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -82,6 +83,7 @@ import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
+import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
 import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
@@ -845,6 +847,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                   e.dataTransfer.setData("text", `white_checkers,isNew`)
                 }
               />
+              <img
+                src={white_checker_long_range}
+                alt="white_checker_long_range"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_checker_long_range,isNew`)
+                }
+              />
             </div>
           )}
         </div>
@@ -1078,6 +1088,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_checkers,isNew`)
+                }
+              />
+              <img
+                src={black_checker_long_range}
+                alt="black_checker_long_range"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_checker_long_range,isNew`)
                 }
               />
             </div>

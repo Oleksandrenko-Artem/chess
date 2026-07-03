@@ -44,6 +44,7 @@ import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
+import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -74,6 +75,7 @@ import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
+import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 import brick from "../../assets/icons/brick.png";
 import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
 import pieceStyles from "./Pieces.module.scss";
@@ -110,6 +112,7 @@ const imageMap = {
   black_wildebeest,
   black_man,
   black_alibaba,
+  black_checker_long_range,
   white_imperator,
   white_king,
   white_ferz,
@@ -140,6 +143,7 @@ const imageMap = {
   white_wildebeest,
   white_man,
   white_alibaba,
+  white_checker_long_range,
   brick,
 };
 
@@ -478,6 +482,52 @@ const Pieces = ({ flipped = false }) => {
       }),
     );
   };
+
+  const getCheckerCaptureInfo = ({
+    piece,
+    rank,
+    file,
+    targetRank,
+    targetFile,
+    position,
+  }) => {
+    if (
+      !piece?.endsWith("checkers") &&
+      !piece?.endsWith("checker_long_range")
+    ) {
+      return null;
+    }
+
+    const stepRank = targetRank > rank ? 1 : targetRank < rank ? -1 : 0;
+    const stepFile = targetFile > file ? 1 : targetFile < file ? -1 : 0;
+
+    if (
+      stepRank === 0 ||
+      stepFile === 0 ||
+      Math.abs(targetRank - rank) !== Math.abs(targetFile - file)
+    ) {
+      return null;
+    }
+
+    let currentRank = rank + stepRank;
+    let currentFile = file + stepFile;
+
+    while (currentRank !== targetRank || currentFile !== targetFile) {
+      const square = position?.[currentRank]?.[currentFile];
+      if (square && square !== "") {
+        return {
+          captureRank: currentRank,
+          captureFile: currentFile,
+        };
+      }
+
+      currentRank += stepRank;
+      currentFile += stepFile;
+    }
+
+    return null;
+  };
+
   const makeMove = (moveData) => {
     if (appState.status !== status.ongoing) return;
 
@@ -526,19 +576,24 @@ const Pieces = ({ flipped = false }) => {
     const newCaptured = JSON.parse(
       JSON.stringify(appState.captured || { white: [], black: [] }),
     );
-    const isCheckerCapture =
-      p.endsWith("checkers") &&
-      Math.abs(targetRank - rank) === 2 &&
-      Math.abs(targetFile - file) === 2;
+    const checkerCaptureInfo = getCheckerCaptureInfo({
+      piece: p,
+      rank,
+      file,
+      targetRank,
+      targetFile,
+      position: currentPosition,
+    });
+    const isCheckerCapture = Boolean(checkerCaptureInfo);
     const isCaptureMove =
       !isNew &&
       (isCheckerCapture ||
         Boolean(currentPosition?.[targetRank]?.[targetFile]));
     const captureRank = isCheckerCapture
-      ? Math.floor((rank + targetRank) / 2)
+      ? checkerCaptureInfo.captureRank
       : targetRank;
     const captureFile = isCheckerCapture
-      ? Math.floor((file + targetFile) / 2)
+      ? checkerCaptureInfo.captureFile
       : targetFile;
 
     if (!isNew && currentPosition[captureRank][captureFile]) {
@@ -580,6 +635,41 @@ const Pieces = ({ flipped = false }) => {
       localStorage.getItem("promotion_options"),
     ) || ["ferz", "rook", "bishop", "horse"];
     const gameMode = localStorage.getItem("chess_variant");
+    const shouldPromoteChecker =
+      p.endsWith("checkers") &&
+      (targetRank === 0 || targetRank === appState.boardSize - 1);
+    if (shouldPromoteChecker) {
+      newPosition[targetRank][targetFile] =
+        p.split("_")[0] + "_checker_long_range";
+    } else if (
+      (p.endsWith("pawn") || p.endsWith("soldier")) &&
+      (targetRank === 0 || targetRank === appState.boardSize - 1)
+    ) {
+      if (!isHuman) {
+        let promotionPiece;
+
+        if (gameMode === "chess" || gameMode === "chess960") {
+          promotionPiece = "ferz";
+        } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
+          promotionPiece = "firzan";
+        } else {
+          promotionPiece = promotionOptions
+            .map((piece) => ({
+              piece,
+              value: PIECE_VALUES[piece] || 0,
+            }))
+            .sort((a, b) => b.value - a.value)[0].piece;
+        }
+
+        newPosition[targetRank][targetFile] =
+          p.split("_")[0] + "_" + promotionPiece;
+      } else {
+        newPosition[targetRank][targetFile] = p;
+      }
+    } else {
+      newPosition[targetRank][targetFile] = p;
+    }
+
     if (
       !isHuman &&
       (p.endsWith("pawn") || p.endsWith("soldier")) &&
@@ -1035,15 +1125,22 @@ const Pieces = ({ flipped = false }) => {
                     }
                   }
 
-                  if (!isAttack && selected?.piece?.endsWith("checkers")) {
+                  if (
+                    !isAttack &&
+                    (selected?.piece?.endsWith("checkers") ||
+                      selected?.piece?.endsWith("checker_long_range"))
+                  ) {
                     const fromRank = selected.from?.[0];
                     const fromFile = selected.from?.[1];
-                    if (
-                      Math.abs(realRank - fromRank) === 2 &&
-                      Math.abs(realFile - fromFile) === 2
-                    ) {
-                      isAttack = true;
-                    }
+                    const captureInfo = getCheckerCaptureInfo({
+                      piece: selected.piece,
+                      rank: fromRank,
+                      file: fromFile,
+                      targetRank: realRank,
+                      targetFile: realFile,
+                      position: currentPosition,
+                    });
+                    isAttack = Boolean(captureInfo);
                   }
                 }
 

@@ -89,7 +89,7 @@ const evaluatePosition = (position, gameVariant = "") => {
             const isWhite = p.startsWith("white");
             const type = p.replace(/^(white|black)_/, "");
 
-            let value = PIECE_VALUES[type];
+            let value = PIECE_VALUES[type] || 0;
             const isCenter = r >= centerStart && r <= centerEnd && f >= centerStart && f <= centerEnd;
 
             if (type === "pawn" && boardSize === 8) {
@@ -214,31 +214,82 @@ const evaluatePosition = (position, gameVariant = "") => {
     return totalScore;
 };
 
+const getCheckerCaptureInfo = (position, move) => {
+    const piece = position[move.rank]?.[move.file];
+    if (!piece || (!piece.endsWith("checkers") && !piece.endsWith("checker_long_range"))) {
+        return null;
+    }
+
+    const stepRank = move.targetRank > move.rank ? 1 : move.targetRank < move.rank ? -1 : 0;
+    const stepFile = move.targetFile > move.file ? 1 : move.targetFile < move.file ? -1 : 0;
+
+    if (stepRank === 0 || stepFile === 0 || Math.abs(move.targetRank - move.rank) !== Math.abs(move.targetFile - move.file)) {
+        return null;
+    }
+
+    let currentRank = move.rank + stepRank;
+    let currentFile = move.file + stepFile;
+
+    while (currentRank !== move.targetRank || currentFile !== move.targetFile) {
+        const square = position[currentRank]?.[currentFile];
+        if (square && square !== "") {
+            return { captureRank: currentRank, captureFile: currentFile };
+        }
+        currentRank += stepRank;
+        currentFile += stepFile;
+    }
+
+    return null;
+};
+
 const makeMoveOnBoard = (position, move) => {
     const piece = position[move.rank][move.file];
     const captured = position[move.targetRank][move.targetFile];
+    const checkerCapture = getCheckerCaptureInfo(position, move);
     position[move.targetRank][move.targetFile] = piece;
     position[move.rank][move.file] = "";
-    return captured;
+
+    let removedPiece = null;
+    let captureRank = null;
+    let captureFile = null;
+    if (checkerCapture) {
+        captureRank = checkerCapture.captureRank;
+        captureFile = checkerCapture.captureFile;
+        removedPiece = position[captureRank][captureFile];
+        position[captureRank][captureFile] = "";
+    }
+
+    return { captured, removedPiece, captureRank, captureFile };
 };
 
-const unmakeMoveOnBoard = (position, move, piece, captured) => {
+const unmakeMoveOnBoard = (position, move, piece, moveState) => {
     position[move.rank][move.file] = piece;
-    position[move.targetRank][move.targetFile] = captured;
+    position[move.targetRank][move.targetFile] = moveState.captured;
+
+    if (moveState.captureRank !== null && moveState.captureFile !== null) {
+        position[moveState.captureRank][moveState.captureFile] = moveState.removedPiece;
+    }
 };
 
 const isMoveLegal = (position, move, playerColor) => {
     const piece = position[move.rank][move.file];
-    const captured = position[move.targetRank][move.targetFile];
-    position[move.targetRank][move.targetFile] = piece;
-    position[move.rank][move.file] = "";
-    const inCheck = arbiter.isKingInCheck({ position, playerColor });
-    position[move.rank][move.file] = piece;
-    position[move.targetRank][move.targetFile] = captured;
-    return !inCheck;
+    if (!piece) return false;
+
+    return arbiter.isMoveLegal({
+        position,
+        piece,
+        fromRank: move.rank,
+        fromFile: move.file,
+        toRank: move.targetRank,
+        toFile: move.targetFile,
+        playerColor,
+    });
 };
 
 const isCaptureMove = (position, move) => {
+    if (getCheckerCaptureInfo(position, move)) {
+        return true;
+    }
     return move.isEnPassant || position[move.targetRank][move.targetFile] !== "";
 };
 
@@ -296,7 +347,7 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
         let maxEval = standPat;
         for (const move of captureMoves) {
             const piece = position[move.rank][move.file];
-            const captured = makeMoveOnBoard(position, move);
+            const moveState = makeMoveOnBoard(position, move);
             const evalScore = quiescence(
                 position,
                 false,
@@ -307,7 +358,7 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
                 gameVariant,
                 qDepth + 1
             );
-            unmakeMoveOnBoard(position, move, piece, captured);
+            unmakeMoveOnBoard(position, move, piece, moveState);
 
             maxEval = Math.max(maxEval, evalScore);
             alpha = Math.max(alpha, evalScore);
@@ -319,9 +370,9 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
     let minEval = standPat;
     for (const move of captureMoves) {
         const piece = position[move.rank][move.file];
-        const captured = makeMoveOnBoard(position, move);
+        const moveState = makeMoveOnBoard(position, move);
         const evalScore = quiescence(position, true, alpha, beta, castleDirection, position, gameVariant);
-        unmakeMoveOnBoard(position, move, piece, captured);
+        unmakeMoveOnBoard(position, move, piece, moveState);
 
         minEval = Math.min(minEval, evalScore);
         beta = Math.min(beta, evalScore);
