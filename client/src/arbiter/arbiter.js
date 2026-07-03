@@ -790,6 +790,11 @@ const arbiter = {
             if (repetitions >= 3) {
                 return status.draw;
             }
+
+            if (!this.hasKing({ position, playerColor })) {
+                return playerColor === 'white' ? status.black : status.white;
+            }
+
             const isInCheck = this.isKingInCheck({ position, playerColor });
             let hasLegalMove = false;
             const boardSize = getBoardSize(position);
@@ -851,6 +856,18 @@ const arbiter = {
             console.error(error);
         }
         return status.ongoing;
+    },
+    hasKing: function ({ position, playerColor }) {
+        const boardSize = getBoardSize(position);
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
+                const piece = position[r][f];
+                if (piece && piece !== '' && piece.startsWith(playerColor) && (piece.endsWith('king') || piece.endsWith('imperator'))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     },
     isBareKing: function ({ position, playerColor }) {
         const boardSize = getBoardSize(position);
