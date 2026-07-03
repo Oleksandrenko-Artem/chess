@@ -49,9 +49,15 @@ const Header = (props) => {
     <header className={styles.header}>
       <div className={styles["header-logo"]}>
         <div className={styles.logo}>
-          <NavLink to="/">
-            <img src="/src/assets/icons/black_horse.png" alt="logo" />
-          </NavLink>
+          {theme === "light" ? (
+            <NavLink to="/">
+              <img src="/src/assets/icons/black_horse.png" alt="logo" />
+            </NavLink>
+          ) : (
+            <NavLink to="/">
+              <img src="/src/assets/icons/white_horse.png" alt="logo" />
+            </NavLink>
+          )}
           <NavLink to="/">{t("header.chess")}</NavLink>
         </div>
         <div className={styles.sign}>

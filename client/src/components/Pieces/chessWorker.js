@@ -1,5 +1,6 @@
 import { PIECE_VALUES } from "../../constants";
 import arbiter from "./../../arbiter/arbiter";
+import { generatePositionHash } from "../../helpers";
 
 const PAWN_POSITION_TABLE = [
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -44,6 +45,25 @@ const KING_POSITION_TABLE = [
     [-30, -40, -40, -50, -50, -40, -40, -30],
     [-30, -40, -40, -50, -50, -40, -40, -30]
 ];
+
+const MAX_MOVES_PER_NODE = 8;
+const MAX_QUIESCENCE_MOVES = 6;
+const transpositionTable = new Map();
+
+const getTableKey = (position, depth, isMaximizing, castleDirection, gameVariant, qDepth = 0) => {
+    const playerColor = isMaximizing ? "white" : "black";
+    return `${generatePositionHash(position, playerColor, castleDirection)}|${depth}|${qDepth}|${isMaximizing}|${gameVariant || ""}`;
+};
+
+const getMovePriority = (position, move) => {
+    const piece = position[move.rank]?.[move.file];
+    const target = position[move.targetRank]?.[move.targetFile];
+    const pieceType = piece ? piece.replace(/^(white|black)_/, "") : "";
+    const targetType = target ? target.replace(/^(white|black)_/, "") : "";
+    const attackerValue = PIECE_VALUES[pieceType] || 0;
+    const targetValue = PIECE_VALUES[targetType] || 0;
+    return (targetValue > 0 ? 1000 + targetValue : 0) - attackerValue;
+};
 
 const evaluatePosition = (position, gameVariant = "") => {
     let totalScore = 0;
@@ -314,9 +334,17 @@ const getCaptureMoves = (position, moves, playerColor) => {
 };
 
 const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant, qDepth = 0) => {
+    const playerColor = isMaximizing ? "white" : "black";
+    const tableKey = getTableKey(position, 0, isMaximizing, castleDirection, gameVariant, qDepth);
+    const cached = transpositionTable.get(tableKey);
+    if (cached !== undefined) {
+        return cached;
+    }
+
     const standPat = evaluatePosition(position, gameVariant);
-    if (qDepth >= 4) {
-        return evaluatePosition(position, gameVariant);
+    if (qDepth >= 2) {
+        transpositionTable.set(tableKey, standPat);
+        return standPat;
     }
     if (isMaximizing) {
         if (standPat >= beta) return standPat;
@@ -326,7 +354,6 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
         if (beta > standPat) beta = standPat;
     }
 
-    const playerColor = isMaximizing ? "white" : "black";
     const captureMoves = sortMovesByCapture(
         position,
         getCaptureMoves(
@@ -339,9 +366,12 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
             }),
             playerColor
         )
-    );
+    ).slice(0, MAX_QUIESCENCE_MOVES);
 
-    if (captureMoves.length === 0) return standPat;
+    if (captureMoves.length === 0) {
+        transpositionTable.set(tableKey, standPat);
+        return standPat;
+    }
 
     if (isMaximizing) {
         let maxEval = standPat;
@@ -378,7 +408,9 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
         beta = Math.min(beta, evalScore);
         if (beta <= alpha) break;
     }
-    return minEval;
+    const result = minEval;
+    transpositionTable.set(tableKey, result);
+    return result;
 };
 
 const minimax = (
@@ -394,6 +426,12 @@ const minimax = (
     if (depth === 0) return quiescence(position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant);
 
     const playerColor = isMaximizing ? "white" : "black";
+    const tableKey = getTableKey(position, depth, isMaximizing, castleDirection, gameVariant);
+    const cached = transpositionTable.get(tableKey);
+    if (cached !== undefined) {
+        return cached;
+    }
+
     const rawMoves = arbiter.getBoardValidMoves({
         position,
         playerColor,
@@ -414,29 +452,33 @@ const minimax = (
 
     if (moves.length === 0) {
         if (arbiter.isKingInCheck({ position, playerColor })) {
-            return isMaximizing ? -1000000 + (4 - depth) : 1000000 - (4 - depth);
+            const result = isMaximizing ? -1000000 + (4 - depth) : 1000000 - (4 - depth);
+            transpositionTable.set(tableKey, result);
+            return result;
         }
         const currentEval = evaluatePosition(position, gameVariant);
-        if (isMaximizing && currentEval > 0) return -50000;
-        if (!isMaximizing && currentEval < 0) return 50000;
+        if (isMaximizing && currentEval > 0) {
+            transpositionTable.set(tableKey, -50000);
+            return -50000;
+        }
+        if (!isMaximizing && currentEval < 0) {
+            transpositionTable.set(tableKey, 50000);
+            return 50000;
+        }
+        transpositionTable.set(tableKey, 0);
         return 0;
     }
 
-    moves.sort((a, b) => {
-        const pA = position[a.targetRank][a.targetFile];
-        const pB = position[b.targetRank][b.targetFile];
-
-        const typeA = pA ? pA.replace(/^(white|black)_/, "") : null;
-        const typeB = pB ? pB.replace(/^(white|black)_/, "") : null;
-        const valA = typeA ? (PIECE_VALUES[typeA] || 0) : 0;
-        const valB = typeB ? (PIECE_VALUES[typeB] || 0) : 0;
-
-        return valB - valA;
-    });
+    const captureMoves = moves.filter((move) => isCaptureMove(position, move));
+    const quietMoves = moves.filter((move) => !isCaptureMove(position, move));
+    const orderedMoves = [...captureMoves, ...quietMoves]
+        .slice()
+        .sort((a, b) => getMovePriority(position, b) - getMovePriority(position, a))
+        .slice(0, MAX_MOVES_PER_NODE);
 
     if (isMaximizing) {
         let maxEval = -Infinity;
-        for (const move of moves) {
+        for (const move of orderedMoves) {
             const piece = position[move.rank][move.file];
             const captured = makeMoveOnBoard(position, move);
             const evalScore = minimax(position, depth - 1, false, alpha, beta, castleDirection, position, gameVariant);
@@ -449,7 +491,7 @@ const minimax = (
         return maxEval;
     } else {
         let minEval = Infinity;
-        for (const move of moves) {
+        for (const move of orderedMoves) {
             const piece = position[move.rank][move.file];
             const captured = makeMoveOnBoard(position, move);
             const evalScore = minimax(position, depth - 1, true, alpha, beta, castleDirection, position, gameVariant);
@@ -459,11 +501,15 @@ const minimax = (
             beta = Math.min(beta, evalScore);
             if (beta <= alpha) break;
         }
-        return minEval;
+        const result = minEval;
+        transpositionTable.set(tableKey, result);
+        return result;
     }
 };
 
 self.onmessage = (e) => {
+    transpositionTable.clear();
+
     const { currentPosition, prevPosition, playerTurn, castleDirection, depth, gameVariant } = e.data;
 
     const moves = arbiter.getBoardValidMoves({
