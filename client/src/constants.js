@@ -460,6 +460,6 @@ export const PIECE_VALUES = {
     bishop: 350, rook: 500, chariot: 500, sailboat: 500, ferz: 900, imperator: 20000, king: 20000,
     tank: 150, alibaba: 200, camel: 180, zebra: 150, amazon: 1300, dinozavr: 2200,
     lion: 310, giraffe: 550, rukh: 1000, wazir: 200, man: 300,
-    knight: 700, checkers: 50, checker_long_range: 450, elephant_long_range: 600, rhino: 700,
+    knight: 800, checkers: 50, checker_long_range: 450, elephant_long_range: 600, rhino: 700,
     wildebeest: 550, marshal: 850, archbishop: 600,
 };
