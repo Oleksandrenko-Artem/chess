@@ -864,13 +864,18 @@ const arbiter = {
                 if (hasLegalMove) break;
             }
             const isShatranj = localStorage.getItem('chess_variant') === 'shatranj' || localStorage.getItem('chess_variant') === 'shatranj960';
+            const isCheckers = localStorage.getItem('chess_variant') === 'checkers';
+
+            if (isCheckers && !this.hasCheckers({ position, playerColor })) {
+                return playerColor === 'white' ? status.black : status.white;
+            }
 
             if (isInCheck && !hasLegalMove) {
                 return playerColor === 'white' ? status.black : status.white;
             }
 
             else if (!isInCheck && !hasLegalMove) {
-                if (isShatranj) {
+                if (isShatranj || isCheckers) {
                     return playerColor === 'white' ? status.black : status.white;
                 }
                 return status.draw;
@@ -902,6 +907,23 @@ const arbiter = {
             for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece !== '' && piece.startsWith(playerColor) && (piece.endsWith('king') || piece.endsWith('imperator'))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
+    hasCheckers: function ({ position, playerColor }) {
+        const boardSize = getBoardSize(position);
+        for (let r = 0; r < boardSize; r++) {
+            for (let f = 0; f < boardSize; f++) {
+                const piece = position[r][f];
+                if (
+                    piece &&
+                    piece !== '' &&
+                    piece.startsWith(playerColor) &&
+                    (piece.endsWith('checkers') || piece.endsWith('checker_long_range'))
+                ) {
                     return true;
                 }
             }

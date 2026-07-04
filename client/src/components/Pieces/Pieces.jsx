@@ -645,7 +645,8 @@ const Pieces = ({ flipped = false }) => {
     const gameMode = localStorage.getItem("chess_variant");
     const shouldPromoteChecker =
       p.endsWith("checkers") &&
-      (targetRank === 0 || targetRank === appState.boardSize - 1);
+      ((p.startsWith("white") && targetRank === 0) ||
+        (p.startsWith("black") && targetRank === appState.boardSize - 1));
     if (shouldPromoteChecker) {
       newPosition[targetRank][targetFile] =
         p.split("_")[0] + "_checker_long_range";
@@ -674,32 +675,6 @@ const Pieces = ({ flipped = false }) => {
       } else {
         newPosition[targetRank][targetFile] = p;
       }
-    } else {
-      newPosition[targetRank][targetFile] = p;
-    }
-
-    if (
-      !isHuman &&
-      (p.endsWith("pawn") || p.endsWith("soldier")) &&
-      (targetRank === 0 || targetRank === appState.boardSize - 1)
-    ) {
-      let promotionPiece;
-
-      if (gameMode === "chess" || gameMode === "chess960") {
-        promotionPiece = "ferz";
-      } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
-        promotionPiece = "firzan";
-      } else {
-        promotionPiece = promotionOptions
-          .map((piece) => ({
-            piece,
-            value: PIECE_VALUES[piece] || 0,
-          }))
-          .sort((a, b) => b.value - a.value)[0].piece;
-      }
-
-      newPosition[targetRank][targetFile] =
-        p.split("_")[0] + "_" + promotionPiece;
     } else {
       newPosition[targetRank][targetFile] = p;
     }

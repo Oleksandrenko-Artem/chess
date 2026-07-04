@@ -57,6 +57,66 @@ export const createOldPosition = (size = 8) => {
 
     return position;
 }
+export const createCheckersPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    position[7][0] = 'white_checkers';
+    position[7][1] = 'white_checkers';
+    position[7][2] = 'white_checkers';
+    position[7][3] = 'white_king';
+    position[7][4] = 'white_checkers';
+    position[7][5] = 'white_checkers';
+    position[7][6] = 'white_checkers';
+    position[7][7] = 'white_checkers';
+
+    position[6][0] = 'white_checkers';
+    position[6][1] = 'white_checkers';
+    position[6][2] = 'white_checkers';
+    position[6][3] = 'white_checkers';
+    position[6][4] = 'white_checkers';
+    position[6][5] = 'white_checkers';
+    position[6][6] = 'white_checkers';
+    position[6][7] = 'white_checkers';
+
+    position[5][0] = 'white_checkers';
+    position[5][1] = 'white_checkers';
+    position[5][2] = 'white_checkers';
+    position[5][3] = 'white_checkers';
+    position[5][4] = 'white_checkers';
+    position[5][5] = 'white_checkers';
+    position[5][6] = 'white_checkers';
+    position[5][7] = 'white_checkers';
+
+    position[2][0] = 'black_checkers';
+    position[2][1] = 'black_checkers';
+    position[2][2] = 'black_checkers';
+    position[2][3] = 'black_checkers';
+    position[2][4] = 'black_checkers';
+    position[2][5] = 'black_checkers';
+    position[2][6] = 'black_checkers';
+    position[2][7] = 'black_checkers';
+
+    position[1][0] = 'black_checkers';
+    position[1][1] = 'black_checkers';
+    position[1][2] = 'black_checkers';
+    position[1][3] = 'black_checkers';
+    position[1][4] = 'black_checkers';
+    position[1][5] = 'black_checkers';
+    position[1][6] = 'black_checkers';
+    position[1][7] = 'black_checkers';
+
+    position[0][0] = 'black_checkers';
+    position[0][1] = 'black_checkers';
+    position[0][2] = 'black_checkers';
+    position[0][3] = 'black_checkers';
+    position[0][4] = 'black_king';
+    position[0][5] = 'black_checkers';
+    position[0][6] = 'black_checkers';
+    position[0][7] = 'black_checkers';
+
+    return position;
+}
 export const createSpecialPosition = (size = 8) => {
     const position = createEmptyPosition(size);
     return position;

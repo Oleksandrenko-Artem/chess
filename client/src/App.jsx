@@ -11,6 +11,7 @@ import {
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
+  initialCheckersGameState,
   status,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
@@ -34,10 +35,12 @@ import {
   createOldPosition,
   createChess960Position,
   createShatranj960Position,
+  createCheckersPosition,
 } from "./helpers";
 import SinglePlayerPage from "./pages/SinglePlayerPage";
 import Chess960Page from "./pages/Chess960Page";
 import Shatranj960Page from "./pages/Shatranj960Page";
+import CheckersPage from "./pages/CheckersPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -63,7 +66,9 @@ function App() {
           ? initialChess960State
           : savedVariant === "shatranj960"
             ? initialShatranj960State
-            : initialGameState;
+            : savedVariant === "checkers"
+              ? initialCheckersGameState
+              : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -84,7 +89,9 @@ function App() {
               ? [createChess960Position(8)]
               : savedVariant === "shatranj960"
                 ? [createShatranj960Position(8)]
-                : [createPosition(8)],
+                : savedVariant === "checkers"
+                  ? [createCheckersPosition()]
+                  : [createPosition(8)],
     };
   }
 
@@ -208,6 +215,24 @@ function App() {
       payload: { initialState: newInitialState },
     });
   };
+  const handlePlayCheckers = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "checkers");
+      localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
+    }
+    const newInitialState = {
+      ...initialOldGameState,
+      boardSize: 8,
+      position: [createCheckersPosition(8)],
+      isVsBot: true,
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
   const handlePlaySpecial = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "special");
@@ -312,6 +337,7 @@ function App() {
                 onPlayShatranj={handlePlayShatranj}
                 onPlayChess960={handlePlayChess960}
                 onPlayShatranj960={handlePlayShatranj960}
+                onPlayCheckers={handlePlayCheckers}
               />
             }
           />
@@ -334,6 +360,10 @@ function App() {
           <Route
             path="/play-shatranj960"
             element={<Shatranj960Page start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-checkers"
+            element={<CheckersPage start={start} setStart={setStart} />}
           />
           <Route path="/create-position" element={<CreatePositionPage />} />
 

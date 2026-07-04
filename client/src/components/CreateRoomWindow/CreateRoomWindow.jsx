@@ -6,6 +6,7 @@ import styles from "./CreateRoomWindow.module.scss";
 import actionTypes from "../../reducers/actionTypes";
 import { useAppContext } from "../../contexts/Context";
 import {
+  initialCheckersGameState,
   initialChess960State,
   initialGameState,
   initialOldGameState,
@@ -18,6 +19,7 @@ import {
   createSpecialPosition,
   createChess960Position,
   createShatranj960Position,
+  createCheckersPosition,
 } from "../../helpers";
 
 const MODE_LABELS = {
@@ -25,6 +27,7 @@ const MODE_LABELS = {
   shatranj: "Shatranj",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
+  checkers: "Checkers v2",
   custom: "Custom",
 };
 
@@ -69,6 +72,15 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
         ...initialShatranj960State,
         boardSize,
         position: [createShatranj960Position(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "checkers") {
+      return {
+        ...initialCheckersGameState,
+        boardSize,
+        position: [createCheckersPosition(boardSize)],
         whiteTime,
         blackTime,
       };
@@ -322,6 +334,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
           <option value="shatranj">{MODE_LABELS.shatranj}</option>
           <option value="chess960">{MODE_LABELS.chess960}</option>
           <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
+          <option value="checkers">{MODE_LABELS.checkers}</option>
         </select>
       )}
       {localStorage.getItem("chess_variant") === "special" && (

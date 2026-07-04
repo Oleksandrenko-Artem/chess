@@ -4,8 +4,13 @@ import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
 const SinglePlayerPage = (props) => {
-    const { onPlayChess, onPlayShatranj, onPlayChess960, onPlayShatranj960 } =
-      props;
+    const {
+      onPlayChess,
+      onPlayShatranj,
+      onPlayChess960,
+      onPlayShatranj960,
+      onPlayCheckers,
+    } = props;
     const { t } = useTranslation();
     const handleNavigation = (callback) => {
       if (callback) callback();
@@ -57,6 +62,20 @@ const SinglePlayerPage = (props) => {
           <NavLink
             to="/play-shatranj960"
             onClick={() => handleNavigation(onPlayShatranj960)}
+          >
+            {t("game_info_panel.start")}
+          </NavLink>
+        </div>
+        <div>
+          <img
+            src="/src/assets/icons/white_checkers.png"
+            alt="white_checkers"
+          />
+          <h2>{t("header.checkers")}</h2>
+          <p>{t("header.single-player-checkers")}</p>
+          <NavLink
+            to="/play-checkers"
+            onClick={() => handleNavigation(onPlayCheckers)}
           >
             {t("game_info_panel.start")}
           </NavLink>

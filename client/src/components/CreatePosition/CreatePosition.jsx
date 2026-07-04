@@ -318,9 +318,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     "grand-ace-drex": initialGrandAceDrexState,
     "great-chess": initialGreatChessState,
     "grand-chess": initialGrandChessState,
-    amazon: initialAmazonState,
-    walls: initialWallsGameState,
-    arena: initialArenaGameState,
+    "amazon": initialAmazonState,
+    "walls": initialWallsGameState,
+    "arena": initialArenaGameState,
     "ferz-vs-rukh": initialFerzVsRukhGameState,
     "dinozavr-chess": initialDinoGameState,
   };
@@ -458,7 +458,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <>
               <button
                 onClick={handleStartVariant}
-                disabled={!hasValidKingSetup()}
+                disabled={!hasValidKingSetup() || roomWindow}
               >
                 {t("custom_panel.play_vs_bot")}
               </button>

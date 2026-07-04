@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useAppContext } from "../contexts/Context";
 import actionTypes from "../reducers/actionTypes";
 import {
+  initialCheckersGameState,
   initialChess960State,
   initialGameState,
   initialOldGameState,
@@ -17,6 +18,7 @@ import {
   createSpecialPosition,
   createChess960Position,
   createShatranj960Position,
+  createCheckersPosition,
 } from "../helpers";
 import styles from "./Pages.module.scss";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
@@ -33,6 +35,7 @@ const MODE_LABELS = {
   shatranj: "Shatranj",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
+  checkers: "Checkers v2",
   custom: "Custom",
 };
 const MODE_ICONS = {
@@ -40,6 +43,7 @@ const MODE_ICONS = {
   shatranj: "/src/assets/icons/white_elephant.png",
   chess960: "/src/assets/icons/chess_960.png",
   shatranj960: "/src/assets/icons/chess_960.png",
+  checkers: "/src/assets/icons/checkers.png",
   custom: "/src/assets/icons/custom.png",
 };
 
@@ -63,6 +67,13 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       ...initialShatranj960State,
       boardSize: 8,
       position: [createShatranj960Position(8)],
+    };
+  }
+  if (mode === "checkers") {
+    return {
+      ...initialCheckersGameState,
+      boardSize: 8,
+      position: [createCheckersPosition(8)],
     };
   }
   if (mode === "custom") {
