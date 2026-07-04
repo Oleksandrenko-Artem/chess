@@ -28,7 +28,7 @@ const BISHOP_POSITION_TABLE = [
     [-20, -10, -10, -10, -10, -10, -10, -20],
     [-10, 0, 0, 0, 0, 0, 0, -10],
     [-10, 0, 5, 5, 5, 5, 0, -10],
-    [-10, 5, 5, 10, 10, 5, 5, -10],
+    [-10, 5, 10, 10, 10, 10, 5, -10],
     [-10, 0, 10, 10, 10, 10, 0, -10],
     [-10, 10, 10, 10, 10, 10, 10, -10],
     [-10, 5, 0, 0, 0, 0, 5, -10],
@@ -46,9 +46,11 @@ const KING_POSITION_TABLE = [
     [-30, -40, -40, -50, -50, -40, -40, -30]
 ];
 
-const MAX_MOVES_PER_NODE = 8;
-const MAX_QUIESCENCE_MOVES = 6;
+const MAX_QUIESCENCE_MOVES = 20;
 const transpositionTable = new Map();
+
+if (transpositionTable.size > 300000)
+    transpositionTable.clear();
 
 const getTableKey = (position, depth, isMaximizing, castleDirection, gameVariant, qDepth = 0) => {
     const playerColor = isMaximizing ? "white" : "black";
@@ -342,7 +344,7 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
     }
 
     const standPat = evaluatePosition(position, gameVariant);
-    if (qDepth >= 2) {
+    if (qDepth >= 5) {
         transpositionTable.set(tableKey, standPat);
         return standPat;
     }
@@ -474,7 +476,6 @@ const minimax = (
     const orderedMoves = [...captureMoves, ...quietMoves]
         .slice()
         .sort((a, b) => getMovePriority(position, b) - getMovePriority(position, a))
-        .slice(0, MAX_MOVES_PER_NODE);
 
     if (isMaximizing) {
         let maxEval = -Infinity;
