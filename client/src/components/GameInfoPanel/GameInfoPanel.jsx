@@ -21,6 +21,9 @@ import Timer from "../Timer/Timer";
 const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;
   const { dispatch, appState, socket } = useAppContext();
+  const [botLevel, setBotLevel] = useState(
+    parseInt(localStorage.getItem("bot_level") || "1", 10),
+  );
   const reduxDispatch = useDispatch();
   const user = useSelector((state) => state.users.user);
   const { t } = useTranslation();
@@ -237,6 +240,11 @@ const GameInfoPanel = (props) => {
       localStorage.setItem("boardStyle", style);
     }
   };
+  const handleBotLevelChange = (event) => {
+    const level = parseInt(event.target.value, 10);
+    setBotLevel(level);
+    localStorage.setItem("bot_level", level.toString());
+  };
   return (
     <div className={styles.wrapper}>
       {!start &&
@@ -263,6 +271,15 @@ const GameInfoPanel = (props) => {
                   onClickWhite();
                 }}
               />
+            </div>
+            <div className={styles["bot-level-div"]}>
+              <p>{t("game_info_panel.bot_level")}</p>
+              <select value={botLevel} onChange={handleBotLevelChange}>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
             </div>
             <div>
               <button onClick={onClickStart} disabled={!selectedColor}>

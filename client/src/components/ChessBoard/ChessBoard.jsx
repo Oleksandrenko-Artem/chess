@@ -122,18 +122,20 @@ const ChessBoard = (props) => {
 
   const isVsBot = !!appState.isVsBot;
   const botSide = userSide === "white" ? "black" : "white";
+  const botLevel = Number(localStorage.getItem("bot_level")) || 1;
+  const botName = `Computer (lvl ${botLevel})`;
 
   if (isVsBot) {
     if (botSide === "white") {
       whitePlayer = {
         ...whitePlayer,
-        name: "Computer",
+        name: botName,
         avatar: computerIcon,
       };
     } else {
       blackPlayer = {
         ...blackPlayer,
-        name: "Computer",
+        name: botName,
         avatar: computerIcon,
       };
     }

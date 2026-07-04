@@ -353,11 +353,18 @@ const Pieces = ({ flipped = false }) => {
   }, [appState.lastMove, appState.position]);
 
   useEffect(() => {
-    if (appState.isVsBot && appState.status === status.ongoing) {
-      const userSide = localStorage.getItem("chess_side");
-      if (appState.playerTurn === userSide) {
-        makeBotMove();
-      }
+    const mode = localStorage.getItem("chess_mode");
+    if (
+      !appState.isVsBot ||
+      appState.status !== status.ongoing ||
+      mode === "game"
+    ) {
+      return;
+    }
+
+    const userSide = localStorage.getItem("chess_side");
+    if (appState.playerTurn !== userSide) {
+      makeBotMove();
     }
   }, [appState.playerTurn, appState.isVsBot, appState.status]);
 
@@ -419,13 +426,14 @@ const Pieces = ({ flipped = false }) => {
       });
 
       const gameVariant = localStorage.getItem("chess_variant");
+      const botLevel = parseInt(localStorage.getItem("bot_level") || "1", 10);
 
       worker.postMessage({
         currentPosition,
         prevPosition,
         playerTurn,
         castleDirection,
-        depth: gameVariant === "special" ? 2 : 3,
+        depth: gameVariant === "special" ? 2 : botLevel,
         gameVariant,
         positionHistory,
       });

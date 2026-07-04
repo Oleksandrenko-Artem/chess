@@ -49,6 +49,22 @@
         }
       }
     }
+    .bot-level-div {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      select {
+        @extend %btn-style;
+        height: 5vh;
+        width: 7vh;
+      }
+      select, p {
+        margin: 0;
+        font-size: 14px;
+      }
+    }
     .active {
       --btn-style-color: rgb(100, 185, 255);
     }

@@ -119,7 +119,8 @@
     "choose_color": "Choose color",
     "game_over": "Game Over",
     "close": "Close",
-    "exit": "Exit"
+    "exit": "Exit",
+    "bot_level": "Bot Level: "
   },
   "statistic_panel": {
     "wins": "Wins",

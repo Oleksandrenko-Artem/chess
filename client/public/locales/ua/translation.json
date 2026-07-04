@@ -115,7 +115,8 @@
     "choose_color": "Виберіть колір",
     "game_over": "Гру завершено",
     "close": "Закрити",
-    "exit": "Вийти"
+    "exit": "Вийти",
+    "bot_level": "Рівень бота: "
   },
   "statistic_panel": {
     "wins": "Перемоги",
