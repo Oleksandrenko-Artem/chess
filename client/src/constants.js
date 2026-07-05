@@ -1,4 +1,4 @@
-import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition } from "./helpers";
+import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
 
 export const BOARD_STYLES = {
     standart: {
@@ -57,10 +57,11 @@ export const BOARD_STYLES = {
 export const GAME_MODES = [
     "chess",
     "shatranj",
-    "chess960",
-    "shatranj960",
     "checkers_v2",
     "new_chess",
+    "chess960",
+    "shatranj960",
+    "new_chess960",
     "custom",
 ];
 export const status = {
@@ -409,6 +410,29 @@ export const initialChess960State = {
 };
 export const initialShatranj960State = {
     position: [createShatranj960Position()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 3600,
+    blackTime: 3600,
+    timerActive: false,
+    boardSize: 8,
+    isVsBot: false,
+    botDifficulty: 'easy',
+};
+export const initialNewChess960State = {
+    position: [createNewChess960Position()],
     playerTurn: 'white',
     movesList: [],
     validMoves: [],

@@ -14,6 +14,7 @@ import {
   initialCheckersGameState,
   status,
   initialNewVariantGameState,
+  initialNewChess960State,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
 import actionTypes from "./reducers/actionTypes";
@@ -38,12 +39,14 @@ import {
   createShatranj960Position,
   createCheckersPosition,
   createNewVariantPosition,
+  createNewChess960Position,
 } from "./helpers";
 import SinglePlayerPage from "./pages/SinglePlayerPage";
 import Chess960Page from "./pages/Chess960Page";
 import Shatranj960Page from "./pages/Shatranj960Page";
 import CheckersPage from "./pages/CheckersPage";
 import NewVariantChessPage from "./pages/NewVariantChessPage";
+import NewVariantChess960Page from "./pages/NewVariantChess960Page";
 
 function App() {
   const dispathUser = useDispatch();
@@ -73,7 +76,9 @@ function App() {
               ? initialCheckersGameState
               : savedVariant === "new_chess"
                 ? initialNewVariantGameState
-                : initialGameState;
+                : savedVariant === "new_chess960"
+                  ? initialNewChess960State
+                  : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -98,7 +103,9 @@ function App() {
                   ? [createCheckersPosition()]
                   : savedVariant === "new_chess"
                     ? [createNewVariantPosition(8)]
-                    : [createPosition(8)],
+                    : savedVariant === "new_chess960"
+                      ? [createNewChess960Position(8)]
+                      : [createPosition(8)],
     };
   }
 
@@ -258,6 +265,24 @@ function App() {
       payload: { initialState: newInitialState },
     });
   };
+  const handlePlayNewVariantChess960 = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "new_chess960");
+      localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
+    }
+    const newInitialState = {
+      ...initialNewChess960State,
+      boardSize: 8,
+      position: [createNewChess960Position(8)],
+      isVsBot: true,
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
   const handlePlaySpecial = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "special");
@@ -364,6 +389,7 @@ function App() {
                 onPlayShatranj960={handlePlayShatranj960}
                 onPlayCheckers={handlePlayCheckers}
                 onPlayNewVariantChess={handlePlayNewVariantChess}
+                onPlayNewVariantChess960={handlePlayNewVariantChess960}
               />
             }
           />
@@ -394,6 +420,10 @@ function App() {
           <Route
             path="/play-new-variant-chess"
             element={<NewVariantChessPage start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-new-variant-chess960"
+            element={<NewVariantChess960Page start={start} setStart={setStart} />}
           />
           <Route path="/create-position" element={<CreatePositionPage />} />
 

@@ -9,6 +9,7 @@ import {
   initialCheckersGameState,
   initialChess960State,
   initialGameState,
+  initialNewChess960State,
   initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
@@ -22,15 +23,17 @@ import {
   createShatranj960Position,
   createCheckersPosition,
   createNewVariantPosition,
+  createNewChess960Position,
 } from "../../helpers";
 
 const MODE_LABELS = {
   chess: "Chess",
   shatranj: "Shatranj",
-  chess960: "Chess960",
-  shatranj960: "Shatranj960",
   checkers_v2: "Checkers v2",
   new_chess: "New Chess",
+  chess960: "Chess960",
+  shatranj960: "Shatranj960",
+  new_chess960: "New Chess960",
   custom: "Custom",
 };
 
@@ -94,6 +97,15 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
         ...initialNewVariantGameState,
         boardSize,
         position: [createNewVariantPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "new_chess960") {
+      return {
+        ...initialNewChess960State,
+        boardSize,
+        position: [createNewChess960Position(boardSize)],
         whiteTime,
         blackTime,
       };
@@ -345,10 +357,11 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
         <select value={gameMode} onChange={(e) => setGameMode(e.target.value)}>
           <option value="chess">{MODE_LABELS.chess}</option>
           <option value="shatranj">{MODE_LABELS.shatranj}</option>
-          <option value="chess960">{MODE_LABELS.chess960}</option>
-          <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
           <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
           <option value="new_chess">{MODE_LABELS.new_chess}</option>
+          <option value="chess960">{MODE_LABELS.chess960}</option>
+          <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
+          <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
         </select>
       )}
       {localStorage.getItem("chess_variant") === "special" && (

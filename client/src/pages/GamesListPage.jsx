@@ -7,6 +7,7 @@ import {
   initialCheckersGameState,
   initialChess960State,
   initialGameState,
+  initialNewChess960State,
   initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
@@ -21,6 +22,7 @@ import {
   createShatranj960Position,
   createCheckersPosition,
   createNewVariantPosition,
+  createNewChess960Position,
 } from "../helpers";
 import styles from "./Pages.module.scss";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
@@ -39,6 +41,7 @@ const MODE_LABELS = {
   shatranj960: "Shatranj960",
   checkers_v2: "Checkers v2",
   new_chess: "New Chess",
+  new_chess960: "New Chess960",
   custom: "Custom",
 };
 const MODE_ICONS = {
@@ -48,6 +51,7 @@ const MODE_ICONS = {
   shatranj960: "/src/assets/icons/chess_960.png",
   checkers_v2: "/src/assets/icons/white_checkers.png",
   new_chess: "/src/assets/icons/white_knight.png",
+  new_chess960: "/src/assets/icons/chess_960.png",
   custom: "/src/assets/icons/custom.png",
 };
 
@@ -85,6 +89,13 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       ...initialNewVariantGameState,
       boardSize: 8,
       position: [createNewVariantPosition(8)],
+    };
+  }
+  if (mode === "new_chess960") {
+    return {
+      ...initialNewChess960State,
+      boardSize: 8,
+      position: [createNewChess960Position(8)],
     };
   }
   if (mode === "custom") {

@@ -11,6 +11,7 @@ const SinglePlayerPage = (props) => {
       onPlayShatranj960,
       onPlayCheckers,
       onPlayNewVariantChess,
+      onPlayNewVariantChess960,
     } = props;
     const { t } = useTranslation();
     const handleNavigation = (callback) => {
@@ -46,6 +47,31 @@ const SinglePlayerPage = (props) => {
           </NavLink>
         </div>
         <div>
+          <img
+            src="/src/assets/icons/white_checkers.png"
+            alt="white_checkers"
+          />
+          <h2>{t("header.checkers")}</h2>
+          <p>{t("header.single-player-checkers")}</p>
+          <NavLink
+            to="/play-checkers"
+            onClick={() => handleNavigation(onPlayCheckers)}
+          >
+            {t("game_info_panel.start")}
+          </NavLink>
+        </div>
+        <div>
+          <img src="/src/assets/icons/white_knight.png" alt="white_knight" />
+          <h2>{t("header.new_chess")}</h2>
+          <p>{t("header.single-player-new-chess")}</p>
+          <NavLink
+            to="/play-new-variant-chess"
+            onClick={() => handleNavigation(onPlayNewVariantChess)}
+          >
+            {t("game_info_panel.start")}
+          </NavLink>
+        </div>
+        <div>
           <img src="/src/assets/icons/chess_960.png" alt="chess_960" />
           <h2>{t("header.chess960")}</h2>
           <p>{t("header.single-player-chess960")}</p>
@@ -68,26 +94,12 @@ const SinglePlayerPage = (props) => {
           </NavLink>
         </div>
         <div>
-          <img
-            src="/src/assets/icons/white_checkers.png"
-            alt="white_checkers"
-          />
-          <h2>{t("header.checkers")}</h2>
-          <p>{t("header.single-player-checkers")}</p>
+          <img src="/src/assets/icons/chess_960.png" alt="new_chess_960" />
+          <h2>{t("header.new_chess960")}</h2>
+          <p>{t("header.single-player-new-chess960")}</p>
           <NavLink
-            to="/play-checkers"
-            onClick={() => handleNavigation(onPlayCheckers)}
-          >
-            {t("game_info_panel.start")}
-          </NavLink>
-        </div>
-        <div>
-          <img src="/src/assets/icons/white_knight.png" alt="white_knight" />
-          <h2>{t("header.new_chess")}</h2>
-          <p>{t("header.single-player-new-chess")}</p>
-          <NavLink
-            to="/play-new-variant-chess"
-            onClick={() => handleNavigation(onPlayNewVariantChess)}
+            to="/play-new-variant-chess960"
+            onClick={() => handleNavigation(onPlayNewVariantChess960)}
           >
             {t("game_info_panel.start")}
           </NavLink>
