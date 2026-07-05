@@ -9,6 +9,7 @@ import {
   initialCheckersGameState,
   initialChess960State,
   initialGameState,
+  initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
@@ -20,6 +21,7 @@ import {
   createChess960Position,
   createShatranj960Position,
   createCheckersPosition,
+  createNewVariantPosition,
 } from "../../helpers";
 
 const MODE_LABELS = {
@@ -27,13 +29,15 @@ const MODE_LABELS = {
   shatranj: "Shatranj",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
-  checkers: "Checkers v2",
+  checkers_v2: "Checkers v2",
+  new_chess: "New Chess",
   custom: "Custom",
 };
 
 const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
+  const storedVariant = localStorage.getItem("chess_variant");
   const [gameMode, setGameMode] = useState(
-    localStorage.getItem("chess_variant") === "special" ? "custom" : "chess",
+    storedVariant === "special" ? "custom" : storedVariant || "chess",
   );
   const [roomName, setRoomName] = useState("");
   const [roomPassword, setRoomPassword] = useState("");
@@ -76,11 +80,20 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
         blackTime,
       };
     }
-    if (mode === "checkers") {
+    if (mode === "checkers_v2") {
       return {
         ...initialCheckersGameState,
         boardSize,
         position: [createCheckersPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "new_chess") {
+      return {
+        ...initialNewVariantGameState,
+        boardSize,
+        position: [createNewVariantPosition(boardSize)],
         whiteTime,
         blackTime,
       };
@@ -334,7 +347,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
           <option value="shatranj">{MODE_LABELS.shatranj}</option>
           <option value="chess960">{MODE_LABELS.chess960}</option>
           <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
-          <option value="checkers">{MODE_LABELS.checkers}</option>
+          <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
+          <option value="new_chess">{MODE_LABELS.new_chess}</option>
         </select>
       )}
       {localStorage.getItem("chess_variant") === "special" && (

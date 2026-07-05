@@ -13,6 +13,7 @@ import {
   initialSpecialGameState,
   initialCheckersGameState,
   status,
+  initialNewVariantGameState,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
 import actionTypes from "./reducers/actionTypes";
@@ -36,11 +37,13 @@ import {
   createChess960Position,
   createShatranj960Position,
   createCheckersPosition,
+  createNewVariantPosition,
 } from "./helpers";
 import SinglePlayerPage from "./pages/SinglePlayerPage";
 import Chess960Page from "./pages/Chess960Page";
 import Shatranj960Page from "./pages/Shatranj960Page";
 import CheckersPage from "./pages/CheckersPage";
+import NewVariantChessPage from "./pages/NewVariantChessPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -66,9 +69,11 @@ function App() {
           ? initialChess960State
           : savedVariant === "shatranj960"
             ? initialShatranj960State
-            : savedVariant === "checkers"
+            : savedVariant === "checkers_v2"
               ? initialCheckersGameState
-              : initialGameState;
+              : savedVariant === "new_chess"
+                ? initialNewVariantGameState
+                : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -89,9 +94,11 @@ function App() {
               ? [createChess960Position(8)]
               : savedVariant === "shatranj960"
                 ? [createShatranj960Position(8)]
-                : savedVariant === "checkers"
+                : savedVariant === "checkers_v2"
                   ? [createCheckersPosition()]
-                  : [createPosition(8)],
+                  : savedVariant === "new_chess"
+                    ? [createNewVariantPosition(8)]
+                    : [createPosition(8)],
     };
   }
 
@@ -129,7 +136,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://9c350e662b7c1e31-95-47-113-189.serveousercontent.com";
+      "https://2d9b12e66a94ec39-95-47-113-228.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -218,7 +225,7 @@ function App() {
   const handlePlayCheckers = () => {
     setStart(false);
     if (typeof window !== "undefined") {
-      localStorage.setItem("chess_variant", "checkers");
+      localStorage.setItem("chess_variant", "checkers_v2");
       localStorage.removeItem("chess_mode");
       localStorage.removeItem("botGameState");
     }
@@ -226,6 +233,24 @@ function App() {
       ...initialOldGameState,
       boardSize: 8,
       position: [createCheckersPosition(8)],
+      isVsBot: true,
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
+  const handlePlayNewVariantChess = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "new_chess");
+      localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
+    }
+    const newInitialState = {
+      ...initialNewVariantGameState,
+      boardSize: 8,
+      position: [createNewVariantPosition(8)],
       isVsBot: true,
     };
     dispatch({
@@ -338,6 +363,7 @@ function App() {
                 onPlayChess960={handlePlayChess960}
                 onPlayShatranj960={handlePlayShatranj960}
                 onPlayCheckers={handlePlayCheckers}
+                onPlayNewVariantChess={handlePlayNewVariantChess}
               />
             }
           />
@@ -364,6 +390,10 @@ function App() {
           <Route
             path="/play-checkers"
             element={<CheckersPage start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-new-variant-chess"
+            element={<NewVariantChessPage start={start} setStart={setStart} />}
           />
           <Route path="/create-position" element={<CreatePositionPage />} />
 

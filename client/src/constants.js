@@ -59,7 +59,8 @@ export const GAME_MODES = [
     "shatranj",
     "chess960",
     "shatranj960",
-    "checkers v2",
+    "checkers_v2",
+    "new_chess",
     "custom",
 ];
 export const status = {

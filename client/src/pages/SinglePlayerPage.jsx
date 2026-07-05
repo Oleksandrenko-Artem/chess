@@ -10,6 +10,7 @@ const SinglePlayerPage = (props) => {
       onPlayChess960,
       onPlayShatranj960,
       onPlayCheckers,
+      onPlayNewVariantChess,
     } = props;
     const { t } = useTranslation();
     const handleNavigation = (callback) => {
@@ -76,6 +77,17 @@ const SinglePlayerPage = (props) => {
           <NavLink
             to="/play-checkers"
             onClick={() => handleNavigation(onPlayCheckers)}
+          >
+            {t("game_info_panel.start")}
+          </NavLink>
+        </div>
+        <div>
+          <img src="/src/assets/icons/white_knight.png" alt="white_knight" />
+          <h2>{t("header.new_chess")}</h2>
+          <p>{t("header.single-player-new-chess")}</p>
+          <NavLink
+            to="/play-new-variant-chess"
+            onClick={() => handleNavigation(onPlayNewVariantChess)}
           >
             {t("game_info_panel.start")}
           </NavLink>

@@ -310,19 +310,19 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     setPiecesStyle(event.target.value);
   };
   const presetsMap = {
-    chess: initialGameState,
-    shatranj: initialOldGameState,
-    "new-chess": initialNewVariantGameState,
-    "old-chess": initialOldVariantGameState,
-    "extended-chess": initialExtendedGameState,
-    "grand-ace-drex": initialGrandAceDrexState,
-    "great-chess": initialGreatChessState,
-    "grand-chess": initialGrandChessState,
+    "chess": initialGameState,
+    "shatranj": initialOldGameState,
+    "new_chess": initialNewVariantGameState,
+    "old_chess": initialOldVariantGameState,
+    "extended_chess": initialExtendedGameState,
+    "grand_ace_drex": initialGrandAceDrexState,
+    "great_chess": initialGreatChessState,
+    "grand_chess": initialGrandChessState,
     "amazon": initialAmazonState,
     "walls": initialWallsGameState,
     "arena": initialArenaGameState,
-    "ferz-vs-rukh": initialFerzVsRukhGameState,
-    "dinozavr-chess": initialDinoGameState,
+    "ferz_vs_rukh": initialFerzVsRukhGameState,
+    "dinozavr_chess": initialDinoGameState,
   };
   const handleChangePreset = (e) => {
     const val = e.target.value;
@@ -425,17 +425,17 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <option value="custom">{t("header.custom_position")}</option>
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
-            <option value="new-chess">{t("header.new_chess")}</option>
-            <option value="old-chess">{t("header.old_chess")}</option>
-            <option value="extended-chess">{t("header.extended_chess")}</option>
-            <option value="grand-ace-drex">{t("header.grand-ace-drex")}</option>
-            <option value="great-chess">{t("header.great-chess")}</option>
-            <option value="grand-chess">{t("header.grand-chess")}</option>
+            <option value="new_chess">{t("header.new_chess")}</option>
+            <option value="old_chess">{t("header.old_chess")}</option>
+            <option value="extended_chess">{t("header.extended_chess")}</option>
+            <option value="grand_ace_drex">{t("header.grand-ace-drex")}</option>
+            <option value="great_chess">{t("header.great-chess")}</option>
+            <option value="grand_chess">{t("header.grand-chess")}</option>
             <option value="amazon">{t("header.amazon")}</option>
             <option value="walls">{t("header.walls_chess")}</option>
             <option value="arena">{t("header.arena")}</option>
-            <option value="ferz-vs-rukh">{t("header.ferz_vs_rukh")}</option>
-            <option value="dinozavr-chess">{t("header.dinozavr_chess")}</option>
+            <option value="ferz_vs_rukh">{t("header.ferz_vs_rukh")}</option>
+            <option value="dinozavr_chess">{t("header.dinozavr_chess")}</option>
           </select>
           <select
             value={appState.boardSize}

@@ -4,8 +4,10 @@ import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
 import {
   BOARD_STYLES,
+  initialCheckersGameState,
   initialChess960State,
   initialGameState,
+  initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
   status as statusMap,
@@ -182,6 +184,30 @@ const GameInfoPanel = (props) => {
         payload: {
           initialState: {
             ...initialShatranj960State,
+            isVsBot: appState.isVsBot,
+          },
+        },
+      });
+    }
+    if (window.localStorage.getItem("chess_variant") === "checkers_v2") {
+      window.localStorage.setItem("chess_variant", "checkers_v2");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...initialCheckersGameState,
+            isVsBot: appState.isVsBot,
+          },
+        },
+      });
+    }
+    if (window.localStorage.getItem("chess_variant") === "new_chess") {
+      window.localStorage.setItem("chess_variant", "new_chess");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...initialNewVariantGameState,
             isVsBot: appState.isVsBot,
           },
         },
