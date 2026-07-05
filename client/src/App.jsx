@@ -112,11 +112,21 @@ function App() {
   if (savedBotState) {
     try {
       const parsedBotState = JSON.parse(savedBotState);
-      if (parsedBotState && parsedBotState.isVsBot) {
+      const isActiveBotState =
+        parsedBotState &&
+        parsedBotState.isVsBot &&
+        (parsedBotState.status === status.ongoing ||
+          parsedBotState.status === status.promotion);
+
+      if (isActiveBotState) {
         initialStateAtLoad = parsedBotState;
+      } else if (typeof window !== "undefined") {
+        localStorage.removeItem("botGameState");
       }
     } catch {
-      // ignore invalid saved state
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("botGameState");
+      }
     }
   }
 
@@ -423,7 +433,9 @@ function App() {
           />
           <Route
             path="/play-new-variant-chess960"
-            element={<NewVariantChess960Page start={start} setStart={setStart} />}
+            element={
+              <NewVariantChess960Page start={start} setStart={setStart} />
+            }
           />
           <Route path="/create-position" element={<CreatePositionPage />} />
 
