@@ -113,6 +113,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  .slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
   .single-player-options {
     display: flex;
     flex-direction: row;
@@ -129,6 +138,9 @@
       width: 300px;
       height: 300px;
       padding: 10px;
+      p {
+        margin: 0;
+      }
       img {
         width: 8vh;
         height: 8vh;
@@ -139,13 +151,19 @@
       }
     }
     @media screen and (max-width: $m) {
-      flex-direction: column;
-    }
-    @media screen and (max-width: $s) {
       div {
-        width: 100%;
-        height: 100%;
+        width: 70%;
+        height: 70%;
       }
+    }
+  }
+  .nav-button {
+    @extend %btn-style;
+    @include button-style(40px, 40px, 0px);
+    font-size: 1.1em;
+    &:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
     }
   }
 }
