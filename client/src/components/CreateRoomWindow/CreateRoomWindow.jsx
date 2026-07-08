@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { Icon } from "@mdi/react";
+import { mdiEyeOutline, mdiEyeOffOutline } from "@mdi/js";
 import styles from "./CreateRoomWindow.module.scss";
 import actionTypes from "../../reducers/actionTypes";
 import { useAppContext } from "../../contexts/Context";
@@ -42,6 +44,8 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
   const [gameMode, setGameMode] = useState(
     storedVariant === "special" ? "custom" : storedVariant || "chess",
   );
+  const [type, setType] = useState('password');
+  const [showPassword, setShowPassword] = useState(mdiEyeOutline);
   const [roomName, setRoomName] = useState("");
   const [roomPassword, setRoomPassword] = useState("");
   const [timeType, setTimeType] = useState(1200);
@@ -49,7 +53,15 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
-
+  const changeType = () => {
+          if (type === 'password') {
+              setType('text');
+              setShowPassword(mdiEyeOffOutline);
+          } else {
+              setType('password');
+              setShowPassword(mdiEyeOutline);
+          }
+      };
   const getInitialStateByMode = (
     mode,
     boardSize = 8,
@@ -377,14 +389,22 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
         value={roomName}
         onChange={(e) => setRoomName(e.target.value)}
       />
-      <input
-        type="password"
-        name="room-password"
-        autoComplete="new-password"
-        placeholder={` ${t("header.room-password")}`}
-        value={roomPassword}
-        onChange={(e) => setRoomPassword(e.target.value)}
-      />
+      <div className={styles["password-wrapper"]}>
+        <input
+          type={type}
+          name="room-password"
+          autoComplete="new-password"
+          placeholder={` ${t("header.room-password")}`}
+          value={roomPassword}
+          onChange={(e) => setRoomPassword(e.target.value)}
+        />
+        <Icon
+          path={showPassword}
+          size={1.2}
+          onClick={changeType}
+          className={styles["show-password"]}
+        />
+      </div>
       <select
         value={timeType}
         onChange={(e) => setTimeType(Number(e.target.value))}
