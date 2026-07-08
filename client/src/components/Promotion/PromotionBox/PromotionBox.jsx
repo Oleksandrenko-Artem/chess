@@ -125,7 +125,14 @@ const PromotionBox = ({ onClosePromotion }) => {
           "bishop",
           "horse",
         ]
-      : ["ferz", "rook", "bishop", "horse"];
+      : localStorage.getItem("chess_variant") === "new_chess"
+        ? [
+            "knight",
+            "ferz",
+            "rook",
+            "bishop",
+          ]
+        : ["ferz", "rook", "bishop", "horse"];
   const { appState, dispatch, socket } = useAppContext();
   const { promotionSquare } = appState;
   const variant =
@@ -257,8 +264,8 @@ const PromotionBox = ({ onClosePromotion }) => {
           option === "rook"
             ? replaceSetting === "sailboat"
               ? "sailboat"
-              : replaceSetting === "rukh"
-                ? "rukh"
+              : replaceSetting === "chariot"
+                ? "chariot"
                 : "rook"
             : option;
         const keyName = `${color}_${displayOption}`;
