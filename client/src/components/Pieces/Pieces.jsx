@@ -661,6 +661,8 @@ const Pieces = ({ flipped = false }) => {
           promotionPiece = "ferz";
         } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
           promotionPiece = "firzan";
+        } else if (gameMode === "new_chess" || gameMode === "new_chess960") {
+          promotionPiece = "knight";
         } else {
           promotionPiece = promotionOptions
             .map((piece) => ({

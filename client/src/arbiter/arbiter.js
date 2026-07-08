@@ -380,9 +380,9 @@ const arbiter = {
                 { step1: [-1, 0], step2: [-1, 1] }, { step1: [-1, 0], step2: [-1, -1] },
                 { step1: [0, 1], step2: [1, 1] }, { step1: [0, 1], step2: [-1, 1] },
                 { step1: [0, -1], step2: [1, -1] }, { step1: [0, -1], step2: [-1, -1] },
-                { step1: [1, 1], step2: [1, 0] }, { step1: [1, 1], step2: [1, 0] },
-                { step1: [-1, 1], step2: [-1, 0] }, { step1: [-1, 1], step2: [-1, 0] },
-                { step1: [1, 1], step2: [0, 1] }, { step1: [1, 1], step2: [0, 1] },
+                { step1: [1, 1], step2: [1, 0] }, { step1: [1, -1], step2: [1, 0] },
+                { step1: [-1, 1], step2: [-1, 0] }, { step1: [-1, -1], step2: [-1, 0] },
+                { step1: [1, 1], step2: [0, 1] }, { step1: [-1, 1], step2: [0, 1] },
                 { step1: [1, -1], step2: [0, -1] }, { step1: [-1, -1], step2: [0, -1] },
             ];
             knightPaths.forEach(path => {
