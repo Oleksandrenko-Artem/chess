@@ -1,7 +1,8 @@
 @use '/src/common/styles/templates' as *;
+@use "/src/common/styles/breakpoints" as *;
 
 .form {
-    width: 520px;
+    width: 70%;
     margin: auto;
     display: flex;
     flex-direction: column;
@@ -22,13 +23,27 @@
             display: flex;
             position: absolute;
             right: 0;
-            bottom: 0.9vh;
+            bottom: 0.5vh;
             margin: 0px 15px;
         }
     }
     button {
         @extend %btn-style;
-        width: 416px;
-        height: 41px;
+        width: 400px;
+        height: 35px;
+    }
+    .error {
+        color: red;
+        text-transform: capitalize;
+    }
+    @media screen and (max-width: $s) {
+        button {
+            width: 250px;
+        }
+        label {
+            input {
+                width: 250px;
+            }
+        }
     }
 }
