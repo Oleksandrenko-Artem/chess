@@ -50,3 +50,6 @@ body {
 option {
   color: black;
 }
+::placeholder {
+  color: var(--text-color);
+}
