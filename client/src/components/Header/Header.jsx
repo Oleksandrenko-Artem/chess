@@ -8,7 +8,7 @@ import styles from "./Header.module.scss";
 
 const Header = (props) => {
   const dispatch = useDispatch();
-  const { onPlaySpecial, onPlayMultiplayer } = props;
+  const { onPlaySpecial, onPlayMultiplayer, start } = props;
   const { user } = useSelector((state) => state.users);
   const { appState } = useAppContext();
   const initialTheme = localStorage.getItem("theme") || "light";
@@ -82,12 +82,13 @@ const Header = (props) => {
           )}
         </div>
       </div>
-      <div className={styles["header-nav"]}>
-        <nav>
-          <NavLink
-            to="/play"
-            className={({ isActive }) =>
-              isActive ? styles["active-nav"] : undefined
+      {!start && (
+        <div className={styles["header-nav"]}>
+          <nav>
+            <NavLink
+              to="/play"
+              className={({ isActive }) =>
+                isActive ? styles["active-nav"] : undefined
             }
           >
             {t("header.single-player")}
@@ -131,7 +132,7 @@ const Header = (props) => {
             />
           </button>
         </div>
-      </div>
+      </div>)}
     </header>
   );
 };;

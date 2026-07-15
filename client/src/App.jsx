@@ -383,6 +383,7 @@ function App() {
         <Header
           onPlaySpecial={handlePlaySpecial}
           onPlayMultiplayer={handlePlayMultiplayer}
+          start={start}
         />
         <Routes>
           <Route path="/" element={<Homepage />} />
