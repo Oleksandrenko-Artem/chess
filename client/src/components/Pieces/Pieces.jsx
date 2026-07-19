@@ -43,6 +43,8 @@ import black_elephant_long_range from "../../assets/icons/black_elephant_long_ra
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
+import black_duke from "../../assets/icons/black_duke.png";
+import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
 import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
 import white_imperator from "../../assets/icons/white_king.png";
@@ -74,6 +76,8 @@ import white_elephant_long_range from "../../assets/icons/white_elephant_long_ra
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
+import white_duke from "../../assets/icons/white_duke.png";
+import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 import brick from "../../assets/icons/brick.png";
@@ -111,6 +115,8 @@ const imageMap = {
   black_rhino,
   black_wildebeest,
   black_man,
+  black_duke,
+  black_prince,
   black_alibaba,
   black_checker_long_range,
   white_imperator,
@@ -142,6 +148,8 @@ const imageMap = {
   white_rhino,
   white_wildebeest,
   white_man,
+  white_duke,
+  white_prince,
   white_alibaba,
   white_checker_long_range,
   brick,
@@ -662,7 +670,7 @@ const Pieces = ({ flipped = false }) => {
         } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
           promotionPiece = "firzan";
         } else if (gameMode === "new_chess" || gameMode === "new_chess960") {
-          promotionPiece = "knight";
+          promotionPiece = "prince";
         } else {
           promotionPiece = promotionOptions
             .map((piece) => ({

@@ -159,7 +159,7 @@ export const createNewVariantPosition = (size = 8) => {
     position[7][0] = 'white_rook';
     position[7][1] = 'white_knight';
     position[7][2] = 'white_bishop';
-    position[7][3] = 'white_ferz';
+    position[7][3] = 'white_prince';
     position[7][4] = 'white_king';
     position[7][5] = 'white_bishop';
     position[7][6] = 'white_knight';
@@ -167,7 +167,7 @@ export const createNewVariantPosition = (size = 8) => {
     position[0][0] = 'black_rook';
     position[0][1] = 'black_knight';
     position[0][2] = 'black_bishop';
-    position[0][3] = 'black_ferz';
+    position[0][3] = 'black_prince';
     position[0][4] = 'black_king';
     position[0][5] = 'black_bishop';
     position[0][6] = 'black_knight';
@@ -674,10 +674,11 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
         return castling;
     }
     let note = '';
+    const princeType = p[6].toLowerCase() === 'p' && p[7].toLowerCase() === 'r';
     const pieceType = p[6].toLowerCase();
     const hasCapture = isCapture ?? !!position?.[targetRank]?.[targetFile];
     const isSailboat = (pieceType === 's' && rookType === 'sailboat');
-    const isPawnType = pieceType === 'p' || (pieceType === 's' && !isSailboat);
+    const isPawnType = pieceType === 'p' && !princeType || (pieceType === 's' && !isSailboat);
     if (!isPawnType) {
         if (pieceType === 'i') {
             note += 'K'

@@ -825,3 +825,89 @@ export const getAlibabaMoves = ({ position, rank, file }) => {
     ];
     return moves;
 };
+export const getPrinceMoves = ({ position, piece, rank, file }) => {
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const boardSize = getBoardSize(position);
+    const finalMoves = [];
+    const princePaths = [
+        { step1: [1, 1], step2: [1, 1], step3: [1, 0] },
+        { step1: [1, -1], step2: [1, -1], step3: [1, 0] },
+        { step1: [-1, 1], step2: [-1, 1], step3: [-1, 0] },
+        { step1: [-1, -1], step2: [-1, -1], step3: [-1, 0] },
+        { step1: [1, 1], step2: [1, 1], step3: [0, 1] },
+        { step1: [-1, 1], step2: [-1, 1], step3: [0, 1] },
+        { step1: [1, -1], step2: [1, -1], step3: [0, -1] },
+        { step1: [-1, -1], step2: [-1, -1], step3: [0, -1] },
+    ];
+    princePaths.forEach(path => {
+        let currentX = rank;
+        let currentY = file;
+        while (true) {
+            currentX += path.step1[0];
+            currentY += path.step1[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece1 = position[currentX][currentY];
+            if (piece1.startsWith(us) || piece1.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece1 !== '') break;
+            currentX += path.step2[0];
+            currentY += path.step2[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece2 = position[currentX][currentY];
+            if (piece2.startsWith(us) || piece2.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece2 !== '') break;
+            currentX += path.step3[0];
+            currentY += path.step3[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece3 = position[currentX][currentY];
+            if (piece3.startsWith(us) || piece3.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece3 !== '') break;
+        }
+    });
+    return finalMoves;
+};
+export const getDukeMoves = ({ position, piece, rank, file }) => {
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const boardSize = getBoardSize(position);
+    const finalMoves = [];
+    const dukePaths = [
+        { step1: [1, 0], step2: [1, 0], step3: [1, 1] },
+        { step1: [1, 0], step2: [1, 0], step3: [1, -1] },
+        { step1: [-1, 0], step2: [-1, 0], step3: [-1, 1] },
+        { step1: [-1, 0], step2: [-1, 0], step3: [-1, -1] },
+        { step1: [0, 1], step2: [0, 1], step3: [1, 1] },
+        { step1: [0, 1], step2: [0, 1], step3: [-1, 1] },
+        { step1: [0, -1], step2: [0, -1], step3: [1, -1] },
+        { step1: [0, -1], step2: [0, -1], step3: [-1, -1] },
+    ];
+    dukePaths.forEach(path => {
+        let currentX = rank;
+        let currentY = file;
+        while (true) {
+            currentX += path.step1[0];
+            currentY += path.step1[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece1 = position[currentX][currentY];
+            if (piece1.startsWith(us) || piece1.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece1 !== '') break;
+            currentX += path.step2[0];
+            currentY += path.step2[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece2 = position[currentX][currentY];
+            if (piece2.startsWith(us) || piece2.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece2 !== '') break;
+            currentX += path.step3[0];
+            currentY += path.step3[1];
+            if (!isInBounds(position, currentX, currentY)) break;
+            let piece3 = position[currentX][currentY];
+            if (piece3.startsWith(us) || piece3.endsWith('brick')) break;
+            finalMoves.push([currentX, currentY]);
+            if (piece3 !== '') break;
+        }
+    });
+    return finalMoves;
+};

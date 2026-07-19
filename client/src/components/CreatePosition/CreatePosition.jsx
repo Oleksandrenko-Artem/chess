@@ -53,6 +53,8 @@ import white_elephant_long_range from "../../assets/icons/white_elephant_long_ra
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
+import white_duke from "../../assets/icons/white_duke.png";
+import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
@@ -82,6 +84,8 @@ import black_elephant_long_range from "../../assets/icons/black_elephant_long_ra
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
+import black_duke from "../../assets/icons/black_duke.png";
+import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
 import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
 import brick from "../../assets/icons/brick.png";
@@ -832,6 +836,22 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 }
               />
               <img
+                src={white_prince}
+                alt="white_prince"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_prince,isNew`)
+                }
+              />
+              <img
+                src={white_duke}
+                alt="white_duke"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_duke,isNew`)
+                }
+              />
+              <img
                 src={white_dinozavr}
                 alt="white_dinozavr"
                 draggable={editorMode}
@@ -852,7 +872,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 alt="white_checker_long_range"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `white_checker_long_range,isNew`)
+                  e.dataTransfer.setData(
+                    "text",
+                    `white_checker_long_range,isNew`,
+                  )
                 }
               />
             </div>
@@ -1075,6 +1098,22 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 }
               />
               <img
+                src={black_prince}
+                alt="black_prince"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_prince,isNew`)
+                }
+              />
+              <img
+                src={black_duke}
+                alt="black_duke"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_duke,isNew`)
+                }
+              />
+              <img
                 src={black_dinozavr}
                 alt="black_dinozavr"
                 draggable={editorMode}
@@ -1095,7 +1134,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 alt="black_checker_long_range"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `black_checker_long_range,isNew`)
+                  e.dataTransfer.setData(
+                    "text",
+                    `black_checker_long_range,isNew`,
+                  )
                 }
               />
             </div>

@@ -29,6 +29,8 @@ import black_checker_long_range from "../../assets/icons/black_checker_long_rang
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
+import black_duke from "../../assets/icons/black_duke.png";
+import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_soldier from "../../assets/icons/white_soldier.png";
@@ -58,6 +60,8 @@ import white_elephant_long_range from "../../assets/icons/white_elephant_long_ra
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
+import white_duke from "../../assets/icons/white_duke.png";
+import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
 
@@ -92,6 +96,8 @@ const imageMap = {
   black_man,
   black_alibaba,
   black_checker_long_range,
+  black_duke,
+  black_prince,
   white_pawn,
   white_soldier,
   white_horse,
@@ -122,6 +128,8 @@ const imageMap = {
   white_man,
   white_alibaba,
   white_checker_long_range,
+  white_duke,
+  white_prince,
 };
 const getPieceType = (pieceName) => {
   if (!pieceName) return null;

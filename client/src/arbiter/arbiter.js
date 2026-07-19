@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 
@@ -401,6 +401,70 @@ const arbiter = {
                     if (position[currentX][currentY] !== '') break;
                 }
             });
+        } else if (piece.endsWith('prince')) {
+            const princePaths = [
+                { step1: [1, 1], step2: [1, 1], step3: [1, 0] },
+                { step1: [1, -1], step2: [1, -1], step3: [1, 0] },
+                { step1: [-1, 1], step2: [-1, 1], step3: [-1, 0] },
+                { step1: [-1, -1], step2: [-1, -1], step3: [-1, 0] },
+                { step1: [1, 1], step2: [1, 1], step3: [0, 1] },
+                { step1: [-1, 1], step2: [-1, 1], step3: [0, 1] },
+                { step1: [1, -1], step2: [1, -1], step3: [0, -1] },
+                { step1: [-1, -1], step2: [-1, -1], step3: [0, -1] },
+            ];
+            princePaths.forEach(path => {
+                let currentX = rank;
+                let currentY = file;
+                while (true) {
+                    currentX += path.step1[0];
+                    currentY += path.step1[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step2[0];
+                    currentY += path.step2[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step3[0];
+                    currentY += path.step3[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                }
+            });
+        } else if (piece.endsWith('duke')) {
+            const dukePaths = [
+                { step1: [1, 0], step2: [1, 0], step3: [1, 1] },
+                { step1: [1, 0], step2: [1, 0], step3: [1, -1] },
+                { step1: [-1, 0], step2: [-1, 0], step3: [-1, 1] },
+                { step1: [-1, 0], step2: [-1, 0], step3: [-1, -1] },
+                { step1: [0, 1], step2: [0, 1], step3: [1, 1] },
+                { step1: [0, 1], step2: [0, 1], step3: [-1, 1] },
+                { step1: [0, -1], step2: [0, -1], step3: [1, -1] },
+                { step1: [0, -1], step2: [0, -1], step3: [-1, -1] },
+            ];
+            dukePaths.forEach(path => {
+                let currentX = rank;
+                let currentY = file;
+                while (true) {
+                    currentX += path.step1[0];
+                    currentY += path.step1[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step2[0];
+                    currentY += path.step2[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                    currentX += path.step3[0];
+                    currentY += path.step3[1];
+                    if (!isInBounds(position, currentX, currentY)) break;
+                    attacks.push([currentX, currentY]);
+                    if (position[currentX][currentY] !== '') break;
+                }
+            });
         } else if (piece.endsWith('giraffe')) {
             const diagonalDirections = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
             diagonalDirections.forEach(([dr1, df1]) => {
@@ -790,6 +854,10 @@ const arbiter = {
             moves = getKnightMoves({ position, piece, rank, file });
         } else if (piece.endsWith('rukh')) {
             moves = getRukhMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('duke')) {
+            moves = getDukeMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('prince')) {
+            moves = getPrinceMoves({ position, piece, rank, file });
         } else if (piece.endsWith('dinozavr')) {
             moves = getDinozavrMoves({ position, piece, rank, file });
         } else if (piece.endsWith('giraffe')) {
