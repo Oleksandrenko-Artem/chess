@@ -133,7 +133,7 @@ const PromotionBox = ({ onClosePromotion }) => {
           "bishop",
           "horse",
         ]
-      : localStorage.getItem("chess_variant") === "new_chess"
+      : localStorage.getItem("chess_variant") === "new_chess" || localStorage.getItem("chess_variant") === "new_chess960"
         ? [
             "duke",
             "prince",

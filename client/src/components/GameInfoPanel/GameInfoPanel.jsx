@@ -7,6 +7,7 @@ import {
   initialCheckersGameState,
   initialChess960State,
   initialGameState,
+  initialNewChess960State,
   initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
@@ -208,6 +209,18 @@ const GameInfoPanel = (props) => {
         payload: {
           initialState: {
             ...initialNewVariantGameState,
+            isVsBot: appState.isVsBot,
+          },
+        },
+      });
+    }
+    if (window.localStorage.getItem("chess_variant") === "new_chess960") {
+      window.localStorage.setItem("chess_variant", "new_chess960");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...initialNewChess960State,
             isVsBot: appState.isVsBot,
           },
         },

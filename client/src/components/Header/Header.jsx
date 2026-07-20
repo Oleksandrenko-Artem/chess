@@ -8,7 +8,8 @@ import styles from "./Header.module.scss";
 
 const Header = (props) => {
   const dispatch = useDispatch();
-  const { onPlaySpecial, onPlayMultiplayer, start } = props;
+  const { onPlaySpecial, onPlayMultiplayer, start, setStart } = props;
+  console.log(start)
   const { user } = useSelector((state) => state.users);
   const { appState } = useAppContext();
   const initialTheme = localStorage.getItem("theme") || "light";
@@ -41,20 +42,21 @@ const Header = (props) => {
     const nextLang = langData[currentLang]?.next || "ua";
     i18n.changeLanguage(nextLang);
   };
-
   const handleNavigation = (e, callback) => {
     if (callback) callback();
   };
   return (
     <header className={styles.header}>
       <div className={styles["header-logo"]}>
-        <div className={styles.logo}>
+        <div className={styles.logo} onClick={() => setStart(false)}>
           {theme === "light" ? (
-            <NavLink to="/">
+            <NavLink
+              to="/"
+            >
               <img src="/src/assets/icons/black_horse.png" alt="logo" />
             </NavLink>
           ) : (
-            <NavLink to="/">
+              <NavLink to="/">
               <img src="/src/assets/icons/white_horse.png" alt="logo" />
             </NavLink>
           )}
@@ -89,50 +91,54 @@ const Header = (props) => {
               to="/play"
               className={({ isActive }) =>
                 isActive ? styles["active-nav"] : undefined
-            }
-          >
-            {t("header.single-player")}
-          </NavLink>
-          <NavLink
-            to="/games"
-            onClick={(e) => handleNavigation(e, onPlayMultiplayer)}
-            className={({ isActive }) =>
-              isActive ? styles["active-nav"] : undefined
-            }
-          >
-            {t("header.games_list")}
-          </NavLink>
-          {user && (
+              }
+            >
+              {t("header.single-player")}
+            </NavLink>
             <NavLink
-              to="/create-position"
-              onClick={(e) => handleNavigation(e, onPlaySpecial)}
+              to="/games"
+              onClick={(e) => handleNavigation(e, onPlayMultiplayer)}
               className={({ isActive }) =>
                 isActive ? styles["active-nav"] : undefined
               }
             >
-              {t("header.custom_position")}
+              {t("header.games_list")}
             </NavLink>
-          )}
-        </nav>
-        <div className={styles["style-panel"]}>
-          <button className={styles["btn-second"]} onClick={handleChangeStyle}>
-            {t("style_panel.change_style")}
-          </button>
-          <button className={styles.btn} onClick={handleChangeTheme}>
-            {theme === "light" ? (
-              <img src="/src/assets/icons/light.png" alt="theme" />
-            ) : (
-              <img src="/src/assets/icons/dark.png" alt="theme" />
+            {user && (
+              <NavLink
+                to="/create-position"
+                onClick={(e) => handleNavigation(e, onPlaySpecial)}
+                className={({ isActive }) =>
+                  isActive ? styles["active-nav"] : undefined
+                }
+              >
+                {t("header.custom_position")}
+              </NavLink>
             )}
-          </button>
-          <button className={styles.btn} onClick={handleChangeLang}>
-            <img
-              src={langData[currentLang]?.icon || langData.ua.icon}
-              alt={currentLang.toUpperCase()}
-            />
-          </button>
+          </nav>
+          <div className={styles["style-panel"]}>
+            <button
+              className={styles["btn-second"]}
+              onClick={handleChangeStyle}
+            >
+              {t("style_panel.change_style")}
+            </button>
+            <button className={styles.btn} onClick={handleChangeTheme}>
+              {theme === "light" ? (
+                <img src="/src/assets/icons/light.png" alt="theme" />
+              ) : (
+                <img src="/src/assets/icons/dark.png" alt="theme" />
+              )}
+            </button>
+            <button className={styles.btn} onClick={handleChangeLang}>
+              <img
+                src={langData[currentLang]?.icon || langData.ua.icon}
+                alt={currentLang.toUpperCase()}
+              />
+            </button>
+          </div>
         </div>
-      </div>)}
+      )}
     </header>
   );
 };;

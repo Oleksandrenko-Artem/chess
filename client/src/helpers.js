@@ -638,7 +638,7 @@ export const createNewChess960Position = (size = 8) => {
 
     let emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
     const queen = emptySquares[Math.floor(Math.random() * emptySquares.length)];
-    backRank[queen] = 'ferz';
+    backRank[queen] = 'prince';
 
     emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
     const knight1 = emptySquares.splice(Math.floor(Math.random() * emptySquares.length), 1)[0];
