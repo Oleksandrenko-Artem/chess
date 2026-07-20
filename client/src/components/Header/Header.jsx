@@ -50,19 +50,17 @@ const Header = (props) => {
       <div className={styles["header-logo"]}>
         <div className={styles.logo} onClick={() => setStart(false)}>
           {theme === "light" ? (
-            <NavLink
-              to="/"
-            >
+            <NavLink to="/">
               <img src="/src/assets/icons/black_horse.png" alt="logo" />
             </NavLink>
           ) : (
-              <NavLink to="/">
+            <NavLink to="/">
               <img src="/src/assets/icons/white_horse.png" alt="logo" />
             </NavLink>
           )}
           <NavLink to="/">{t("header.chess")}</NavLink>
         </div>
-        <div className={styles.sign}>
+        <div className={styles.sign} onClick={() => setStart(false)}>
           {user ? (
             <>
               <Link to="/account" className={styles["user-image"]}>
