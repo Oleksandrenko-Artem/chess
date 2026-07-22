@@ -925,6 +925,7 @@ const arbiter = {
             }
             const isShatranj = localStorage.getItem('chess_variant') === 'shatranj' || localStorage.getItem('chess_variant') === 'shatranj960';
             const isCheckers = localStorage.getItem('chess_variant') === 'checkers_v2';
+            const isNewChess = localStorage.getItem('chess_variant') === 'new_chess' || localStorage.getItem('chess_variant') === 'new_chess960';
 
             if (isCheckers && !this.hasCheckers({ position, playerColor })) {
                 return playerColor === 'white' ? status.black : status.white;
@@ -935,7 +936,7 @@ const arbiter = {
             }
 
             else if (!isInCheck && !hasLegalMove) {
-                if (isShatranj || isCheckers) {
+                if (isShatranj || isCheckers || isNewChess) {
                     return playerColor === 'white' ? status.black : status.white;
                 } else {
                     return status.draw;
