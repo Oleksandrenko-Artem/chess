@@ -65,6 +65,7 @@
     "other": "Інше",
     "reset_board_colors": "Скинути колір дошки",
     "reset_arrow_colors": "Скинути колір стрілок",
+    "reset_square_colors": "Скинути колір полів",
     "change_color": "Змінити колір",
     "rotate_board": "Повернути дошку",
     "play_vs_bot": "Грати проти бота",

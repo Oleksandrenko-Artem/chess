@@ -25,6 +25,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: "rgba(255, 170, 0, 0.85)",
     },
+    squareColor: {
+        type: String,
+        default: "rgba(0, 17, 255, 0.5)",
+    },
     rookType: {
         type: String,
         default: 'rook',

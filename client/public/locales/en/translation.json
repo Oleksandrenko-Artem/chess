@@ -67,6 +67,7 @@
     "other": "Other",
     "reset_board_colors": "Reset board color",
     "reset_arrow_colors": "Reset arrow color",
+    "reset_square_colors": "Reset square color",
     "change_color": "Change color",
     "rotate_board": "Rotate board",
     "play_vs_bot": "Play vs Bot",

@@ -68,6 +68,7 @@
     "other": "Другое",
     "reset_board_colors": "Сбросить цвет доски",
     "reset_arrow_colors": "Сбросить цвет стрелок",
+    "reset_square_colors": "Сбросить цвет полей",
     "change_color": "Изменить цвет",
     "rotate_board": "Повернуть доску",
     "play_vs_bot": "Играть против бота",
