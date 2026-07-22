@@ -188,15 +188,6 @@ const ChessBoard = (props) => {
                   ) : status === "Black wins" ? (
                     <img src={black_king} alt="black" />
                   ) : null}
-                  {localStorage.getItem("chess_variant") === "shatranj" &&
-                  status === "Draw" &&
-                  appState.playerTurn === "white" ? (
-                    <img src={black_king} alt="white" />
-                  ) : localStorage.getItem("chess_variant") === "shatranj" &&
-                    status === "Draw" &&
-                    appState.playerTurn === "black" ? (
-                    <img src={white_king} alt="black" />
-                  ) : null}
                   <button onClick={onClickStartNew}>
                     {t("game_info_panel.close")}
                   </button>

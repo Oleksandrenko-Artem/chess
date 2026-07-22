@@ -945,8 +945,9 @@ const arbiter = {
             else if (!isInCheck && !hasLegalMove) {
                 if (isShatranj || isCheckers) {
                     return playerColor === 'white' ? status.black : status.white;
+                } else {
+                    return status.draw;
                 }
-                return status.draw;
             }
 
             if (isShatranj) {
