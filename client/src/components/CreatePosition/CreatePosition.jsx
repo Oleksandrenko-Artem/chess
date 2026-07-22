@@ -127,14 +127,20 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   );
   const DEFAULT_LIGHT_COLOR = "#F0D8B7";
   const DEFAULT_DARK_COLOR = "#7e5539";
+  const DEFAULT_ARROW_COLOR = "rgba(255, 170, 0, 0.85)";
   const [lightSquareColor, setLightSquareColor] = useState(() =>
     user ? user.boardColor.light : DEFAULT_LIGHT_COLOR,
   );
   const [darkSquareColor, setDarkSquareColor] = useState(() =>
     user ? user.boardColor.dark : DEFAULT_DARK_COLOR,
   );
+  const [arrowColor, setArrowColor] = useState(() =>
+    user ? user.arrowColor : DEFAULT_ARROW_COLOR,
+  );
   const savedStyle = localStorage.getItem("board_style");
+  const arrowStyle = localStorage.getItem("arrowColor");
   const editorMode = localStorage.getItem("chess_mode") === "editor";
+  const newArrowColor = user?.arrowColor || DEFAULT_ARROW_COLOR;
   useEffect(() => {
     if (user) {
       if (savedStyle && BOARD_STYLES[savedStyle]) {
@@ -148,6 +154,8 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
           selected.dark,
         );
         return;
+      } else if (arrowStyle) {
+        document.documentElement.style.setProperty("--arrow-color", arrowStyle);
       } else {
         if (user.boardColor.light !== lightSquareColor) {
           const newLight = user.boardColor.light || DEFAULT_LIGHT_COLOR;
@@ -165,7 +173,17 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             newDark,
           );
         }
+        console.log("user.arrowColor =", user.arrowColor);
+        console.log("arrowColor =", arrowColor);
+        if (newArrowColor !== arrowColor) {
+          setArrowColor(newArrowColor);
+          document.documentElement.style.setProperty(
+            "--arrow-color",
+            newArrowColor,
+          );
+        }
       }
+      console.log(arrowColor, user.arrowColor);
       if ((user.rookType === "sailboat") !== pieceSailBoat) {
         setPieceSailBoat(user.rookType === "sailboat");
       }
@@ -179,6 +197,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     } else {
       setLightSquareColor(DEFAULT_LIGHT_COLOR);
       setDarkSquareColor(DEFAULT_DARK_COLOR);
+      setArrowColor(DEFAULT_ARROW_COLOR);
       setPieceSailBoat(false);
       setPieceChariot(false);
       localStorage.setItem("lightSquareColor", DEFAULT_LIGHT_COLOR);
@@ -193,6 +212,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         "--dark-square-color",
         DEFAULT_DARK_COLOR,
       );
+      document.documentElement.style.setProperty(
+        "--arrow-color",
+        DEFAULT_ARROW_COLOR,
+      );
     }
   }, [user]);
   useEffect(() => {
@@ -206,19 +229,24 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         darkSquareColor && darkSquareColor.trim().startsWith("rgb")
           ? rgbStringToHex(darkSquareColor)
           : darkSquareColor;
+      const arrowHex =
+        arrowColor && arrowColor.trim().startsWith("rgb")
+          ? rgbStringToHex(arrowColor)
+          : arrowColor;
       if (user) {
         dispatchRedux(
           updateUserThunk({
             id: user._id,
-            values: { boardColor: { light: lightHex, dark: darkHex } },
+            values: { boardColor: { light: lightHex, dark: darkHex }, arrowColor: arrowHex },
           }),
         );
       } else {
         localStorage.setItem("lightSquareColor", lightHex);
         localStorage.setItem("darkSquareColor", darkHex);
+        localStorage.setItem("arrowColor", arrowHex);
       }
     }, 500);
-  }, [lightSquareColor, darkSquareColor, user, dispatchRedux]);
+  }, [lightSquareColor, darkSquareColor, arrowColor, user, dispatchRedux]);
   useEffect(() => {
     const initLight =
       lightSquareColor && lightSquareColor.trim().startsWith("rgb")
@@ -228,11 +256,16 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
       darkSquareColor && darkSquareColor.trim().startsWith("rgb")
         ? rgbStringToHex(darkSquareColor)
         : darkSquareColor;
+    const initArrow =
+      arrowColor && arrowColor.trim().startsWith("rgb")
+        ? rgbStringToHex(arrowColor)
+        : arrowColor;
     document.documentElement.style.setProperty(
       "--light-square-color",
       initLight,
     );
     document.documentElement.style.setProperty("--dark-square-color", initDark);
+    document.documentElement.style.setProperty("--arrow-color", initArrow);
   }, []);
   const handleChangeColor = () => {
     if (color === "white") {
@@ -264,6 +297,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     document.documentElement.style.setProperty(
       "--dark-square-color",
       DEFAULT_DARK_COLOR,
+    );
+  };
+  const handleResetArrowColors = () => {
+    console.log("Reset to", DEFAULT_ARROW_COLOR);
+    setArrowColor(DEFAULT_ARROW_COLOR);
+    document.documentElement.style.setProperty(
+      "--arrow-color",
+      DEFAULT_ARROW_COLOR,
     );
   };
   const handleReplacePieceSailBoat = () => {
@@ -516,7 +557,23 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             onClick={handleResetBoardColors}
             className={styles["reset-colors-btn"]}
           >
-            {t("custom_panel.reset_colors")}
+            {t("custom_panel.reset_board_colors")}
+          </button>
+          <input
+            type="color"
+            value={arrowColor}
+            onChange={(e) => {
+              const val = e.target.value;
+              setArrowColor(val);
+              document.documentElement.style.setProperty("--arrow-color", val);
+              localStorage.setItem("arrowColor", val);
+            }}
+          />
+          <button
+            onClick={handleResetArrowColors}
+            className={styles["reset-colors-btn"]}
+          >
+            {t("custom_panel.reset_arrow_colors")}
           </button>
           <div>
             <div className={styles["img-div"]}>

@@ -21,6 +21,10 @@ const userSchema = mongoose.Schema({
         light: { type: String, default: 'linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)' },
         dark: { type: String, default: 'linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)' }
     },
+    arrowColor: {
+        type: String,
+        default: "rgba(255, 170, 0, 0.85)",
+    },
     rookType: {
         type: String,
         default: 'rook',

@@ -17,53 +17,111 @@ const ChessBoard = (props) => {
   const user = useSelector((state) => state.users.user);
   const boardSize = appState.boardSize;
   const [window, setWindow] = useState(false);
-
   const orientation = appState.orientation;
+
+  const [arrows, setArrows] = useState([]);
+  const [startSquare, setStartSquare] = useState(null);
+
+  const arrowColor =
+    user?.arrowColor || localStorage.getItem("arrowColor") || "#ffaa00";
   useEffect(() => {
     if (status !== "Ongoing" && status !== "Promotion") {
       const timer = setTimeout(() => {
         setWindow(true);
       }, 3000);
+      return () => clearTimeout(timer);
     } else {
       setWindow(false);
     }
   }, [status]);
 
+  const getSquareFromCoords = (clientX, clientY, boardElement) => {
+    const rect = boardElement.getBoundingClientRect();
+    const x = clientX - rect.left;
+    const y = clientY - rect.top;
+
+    let colIdx = Math.floor((x / rect.width) * boardSize);
+    let rowIdx = Math.floor((y / rect.height) * boardSize);
+
+    colIdx = Math.max(0, Math.min(boardSize - 1, colIdx));
+    rowIdx = Math.max(0, Math.min(boardSize - 1, rowIdx));
+
+    if (orientation === "black") {
+      colIdx = boardSize - 1 - colIdx;
+      rowIdx = boardSize - 1 - rowIdx;
+    }
+
+    return `${colIdx},${rowIdx}`;
+  };
+
+  const getSquareCenter = (square) => {
+    if (!square) return { x: 0, y: 0 };
+
+    let [colIdx, rowIdx] = square.split(",").map(Number);
+
+    if (orientation === "black") {
+      colIdx = boardSize - 1 - colIdx;
+      rowIdx = boardSize - 1 - rowIdx;
+    }
+
+    const cellSize = 100 / boardSize;
+    const x = colIdx * cellSize + cellSize / 2;
+    const y = rowIdx * cellSize + cellSize / 2;
+
+    return { x: `${x}%`, y: `${y}%` };
+  };
+
+  const handleMouseDown = (e) => {
+    if (e.button === 2) {
+      e.preventDefault();
+      const boardElement = e.currentTarget;
+      const square = getSquareFromCoords(e.clientX, e.clientY, boardElement);
+      setStartSquare(square);
+    } else if (e.button === 0) {
+      setArrows([]);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    if (e.button === 2 && startSquare) {
+      e.preventDefault();
+      const boardElement = e.currentTarget;
+      const endSquare = getSquareFromCoords(e.clientX, e.clientY, boardElement);
+
+      if (startSquare !== endSquare) {
+        const newArrow = { start: startSquare, end: endSquare };
+
+        setArrows((prev) => {
+          const exists = prev.some(
+            (a) => a.start === newArrow.start && a.end === newArrow.end,
+          );
+          if (exists) {
+            return prev.filter(
+              (a) => !(a.start === newArrow.start && a.end === newArrow.end),
+            );
+          }
+          return [...prev, newArrow];
+        });
+      }
+      setStartSquare(null);
+    }
+  };
+
   const onClickStartNew = () => {
     setWindow(false);
   };
   const gameStatusMessage = () => {
-    if (status === "White wins") {
-      return t("game_info_panel.white_wins");
-    }
-    if (status === "Black wins") {
-      return t("game_info_panel.black_wins");
-    }
-    if (status === "Draw") {
-      return t("game_info_panel.draw");
-    }
+    if (status === "White wins") return t("game_info_panel.white_wins");
+    if (status === "Black wins") return t("game_info_panel.black_wins");
+    if (status === "Draw") return t("game_info_panel.draw");
     if (
       (status === "Draw" &&
         localStorage.getItem("chess_variant") === "shatranj") ||
       localStorage.getItem("chess_variant") === "shatranj960"
     ) {
-      if (appState?.playerTurn === "white") {
-        return t("game_info_panel.black_wins");
-      } else {
-        return t("game_info_panel.white_wins");
-      }
-    }
-    if (
-      status === "White wins" &&
-      arbiter.isBareKing(appState.position, "black")
-    ) {
-      return t("game_info_panel.white_baring_king");
-    }
-    if (
-      status === "Black wins" &&
-      arbiter.isBareKing(appState.position, "white")
-    ) {
-      return t("game_info_panel.black_baring_king");
+      return appState?.playerTurn === "white"
+        ? t("game_info_panel.black_wins")
+        : t("game_info_panel.white_wins");
     }
   };
 
@@ -126,19 +184,9 @@ const ChessBoard = (props) => {
   const botName = `Computer (lvl ${botLevel})`;
 
   if (isVsBot) {
-    if (botSide === "white") {
-      whitePlayer = {
-        ...whitePlayer,
-        name: botName,
-        avatar: computerIcon,
-      };
-    } else {
-      blackPlayer = {
-        ...blackPlayer,
-        name: botName,
-        avatar: computerIcon,
-      };
-    }
+    if (botSide === "white")
+      whitePlayer = { ...whitePlayer, name: botName, avatar: computerIcon };
+    else blackPlayer = { ...blackPlayer, name: botName, avatar: computerIcon };
   }
 
   let bottomPlayer = userSide === "white" ? whitePlayer : blackPlayer;
@@ -146,11 +194,7 @@ const ChessBoard = (props) => {
 
   const renderPlayerCard = (player) => (
     <div
-      className={`${styles["player-card"]} ${
-        player.color === "White"
-          ? styles["white-player"]
-          : styles["black-player"]
-      }`}
+      className={`${styles["player-card"]} ${player.color === "White" ? styles["white-player"] : styles["black-player"]}`}
     >
       <img
         className={styles["player-avatar"]}
@@ -167,34 +211,84 @@ const ChessBoard = (props) => {
   return (
     <article
       className={styles["wrapper"]}
-      style={{
-        "--board-size": boardSize,
-      }}
+      style={{ "--board-size": boardSize }}
     >
       <div className={styles["coordinates"]}>
         <div className={styles["players-container"]}>
           {renderPlayerCard(topPlayer)}
         </div>
         <div className={styles["chess-div"]}>
-          <div className={styles["chess-board"]}>
-            {localStorage.getItem("chess_variant") !== "special" &&
-              status !== "Ongoing" &&
-              status !== "Promotion" &&
-              window && (
-                <div className={styles["game-status-text"]}>
-                  <h2>{gameStatusMessage()}</h2>
-                  {status === "White wins" ? (
-                    <img src={white_king} alt="white" />
-                  ) : status === "Black wins" ? (
-                    <img src={black_king} alt="black" />
-                  ) : null}
-                  <button onClick={onClickStartNew}>
-                    {t("game_info_panel.close")}
-                  </button>
-                </div>
-              )}
-            <Pieces flipped={orientation === "black"} />
+          {/* Обгортка для відстеження миші та позиціонування SVG */}
+          <div
+            className={styles["board-wrapper"]}
+            style={{ position: "relative", width: "100%", height: "100%" }}
+            onMouseDown={handleMouseDown}
+            onMouseUp={handleMouseUp}
+            onContextMenu={(e) => e.preventDefault()}
+          >
+            <div className={styles["chess-board"]}>
+              {localStorage.getItem("chess_variant") !== "special" &&
+                status !== "Ongoing" &&
+                status !== "Promotion" &&
+                window && (
+                  <div className={styles["game-status-text"]}>
+                    <h2>{gameStatusMessage()}</h2>
+                    {status === "White wins" ? (
+                      <img src={white_king} alt="white" />
+                    ) : status === "Black wins" ? (
+                      <img src={black_king} alt="black" />
+                    ) : null}
+                    <button onClick={onClickStartNew}>
+                      {t("game_info_panel.close")}
+                    </button>
+                  </div>
+                )}
+              <Pieces flipped={orientation === "black"} />
+            </div>
+
+            {/* Шар малювання SVG стрілок — адаптований під будь-який boardSize */}
+            <svg
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                pointerEvents: "none",
+                zIndex: 10,
+              }}
+            >
+              <defs>
+                <marker
+                  id="arrowhead"
+                  markerWidth="6"
+                  markerHeight="4"
+                  refX="3.5"
+                  refY="2"
+                  orient="auto"
+                >
+                  <polygon points="0 0, 6 2, 0 4" fill={arrowColor} />
+                </marker>
+              </defs>
+              {arrows.map((arrow, index) => {
+                const startPt = getSquareCenter(arrow.start);
+                const endPt = getSquareCenter(arrow.end);
+                return (
+                  <line
+                    key={index}
+                    x1={startPt.x}
+                    y1={startPt.y}
+                    x2={endPt.x}
+                    y2={endPt.y}
+                    stroke={arrowColor}
+                    strokeWidth="6"
+                    markerEnd="url(#arrowhead)"
+                  />
+                );
+              })}
+            </svg>
           </div>
+
           <div className={styles["promotion-div"]}>
             <Promotion />
           </div>

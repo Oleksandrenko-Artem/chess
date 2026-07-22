@@ -9,7 +9,6 @@ import styles from "./Header.module.scss";
 const Header = (props) => {
   const dispatch = useDispatch();
   const { onPlaySpecial, onPlayMultiplayer, start, setStart } = props;
-  console.log(start)
   const { user } = useSelector((state) => state.users);
   const { appState } = useAppContext();
   const initialTheme = localStorage.getItem("theme") || "light";
