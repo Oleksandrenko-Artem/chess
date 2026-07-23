@@ -7,7 +7,7 @@ import { generateValidMoves } from "../../reducers/actions/move";
 
 const MOVE_DELAY_MS = 240;
 
-const Piece = ({ rank, file, piece, imageSrc }) => {
+const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
   const baseClass = piece !== "brick" ? styles.piece : styles["piece-any"];
   const pieceClass =
     piece && (piece.endsWith("pawn") || piece.endsWith("soldier"))
@@ -53,6 +53,7 @@ const Piece = ({ rank, file, piece, imageSrc }) => {
   const classNames = [
     baseClass,
     pieceClass,
+    className,
     isMoveTarget && showPiece ? styles["piece-move"] : "",
   ]
     .filter(Boolean)

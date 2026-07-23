@@ -110,3 +110,7 @@
   background-repeat: no-repeat;
   background-position: center;
 }
+.loser-piece {
+  filter: grayscale(100%) brightness(0.35) contrast(0.8);
+  transition: filter .4s ease;
+}

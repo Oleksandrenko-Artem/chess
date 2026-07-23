@@ -1038,6 +1038,15 @@ const Pieces = ({ flipped = false }) => {
         })()
       : null;
 
+  const loserColor =
+    appState.status === status.white
+      ? "black"
+      : appState.status === status.black
+        ? "white"
+        : null;
+
+  const isLoserPiece = (piece) => loserColor && piece?.startsWith(loserColor);
+  
   return (
     <div
       ref={ref}
@@ -1187,6 +1196,7 @@ const Pieces = ({ flipped = false }) => {
                       file={realFile}
                       piece={f}
                       imageSrc={getPieceImageSrc(f)}
+                      className={isLoserPiece(f) ? pieceStyles['loser-piece'] : ""}
                     />
                   ) : null}
                 </div>
