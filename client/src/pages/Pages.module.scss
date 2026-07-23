@@ -26,11 +26,15 @@
       flex: 1 1 0;
       min-width: 0;
     }
-
-    button {
-      @include button-style(120px, $buttonHeight, $buttonPadding);
+    .buttons-div {
+      div {
+        margin-top: 5px;
+        button {
+      @include button-style(140px, $buttonHeight, $buttonPadding);
       @extend %btn-style;
       margin-right: 10px;
+    }
+      }
     }
     .default-avatar,
     .profile-avatar {

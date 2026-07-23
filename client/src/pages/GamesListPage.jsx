@@ -415,7 +415,6 @@ const GamesListPage = ({ start, setStart }) => {
       room.whiteTime || null,
       room.blackTime || null,
     );
-    console.log(room.whiteTime, room.blackTime);
     socket.emit(
       "joinGame",
       room.roomId,

@@ -109,7 +109,9 @@
     "email": "Пошта",
     "password": "Пароль",
     "register": "Реєстрація",
-    "login": "Увійти"
+    "login": "Увійти",
+    "update": "Оновити дані",
+    "update_form": "Оновити персональні дані"
   },
   "game_info_panel": {
     "white_wins": "Білі перемогли",

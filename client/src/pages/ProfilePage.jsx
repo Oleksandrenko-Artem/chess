@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import { findUserAccountThunk } from "../store/usersSlice";
 import { updateUser } from "../api";
 import styles from "./Pages.module.scss";
+import { updateUserThunk } from './../store/usersSlice';
+import UpdateForm from './../components/forms/UpdateForm';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ const ProfilePage = () => {
   const fileInputRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false);
   useEffect(() => {
     if (!user) {
       dispatch(findUserAccountThunk());
@@ -21,9 +24,15 @@ const ProfilePage = () => {
       setAvatar(user.avatar);
     }
   }, [dispatch, user]);
-  if (error) {
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (
+      error &&
+      (error.status === 401 || error.message?.includes("Unauthorized"))
+    ) {
+      navigate("/login");
+    }
+  }, [error, navigate]);
+
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -69,7 +78,6 @@ const ProfilePage = () => {
       }
 
       const response = await updateUser(user._id, { avatar: base64String });
-      console.log("Avatar uploaded successfully:", response.data);
       dispatch(findUserAccountThunk());
     } catch (err) {
       console.error("Error uploading avatar:", err);
@@ -83,7 +91,6 @@ const ProfilePage = () => {
     try {
       setIsUploading(true);
       const response = await updateUser(user._id, { avatar: null });
-      console.log("Avatar removed:", response.data);
       setAvatar(null);
       dispatch(findUserAccountThunk());
     } catch (err) {
@@ -93,35 +100,45 @@ const ProfilePage = () => {
       setIsUploading(false);
     }
   };
+  const handleUpdateForm = () => {
+    setIsUpdate(!isUpdate);
+  };
   return (
     <div className={styles.profile}>
       <h2>{t("profile.profile")}</h2>
       <div className={styles["profile-wrapper"]}>
         <div>
           {avatar && (
-            <div>
+            <div className={styles["avatar-div"]}>
               <img
                 src={avatar}
                 alt="Profile Avatar"
                 className={styles["profile-avatar"]}
               />
-              <div>
-                <button
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                >
-                  {isUploading
-                    ? `${t("profile.upload_photo")}`
-                    : `${t("profile.change_photo")}`}
-                </button>
-                <button onClick={removeAvatar} disabled={isUploading}>
-                  {t("profile.remove_photo")}
-                </button>
+              <div className={styles['buttons-div']}>
+                <div>
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                  >
+                    {isUploading
+                      ? `${t("profile.upload_photo")}`
+                      : `${t("profile.change_photo")}`}
+                  </button>
+                  <button onClick={removeAvatar} disabled={isUploading}>
+                    {t("profile.remove_photo")}
+                  </button>
+                </div>
+                <div>
+                  <button onClick={handleUpdateForm}>
+                    {t("form_panel.update")}
+                  </button>
+                </div>
               </div>
             </div>
           )}
           {!avatar && (
-            <div>
+            <div className={styles["avatar-div"]}>
               <img
                 src="src/assets/icons/account.png"
                 alt="Default Avatar"
@@ -190,10 +207,11 @@ const ProfilePage = () => {
               </tbody>
             </table>
           </div>
+          {isUpdate && <UpdateForm setIsUpdate={setIsUpdate} />}
         </div>
       </div>
     </div>
   );
-};
+};;
 
 export default ProfilePage;

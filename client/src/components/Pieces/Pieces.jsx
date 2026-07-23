@@ -563,11 +563,9 @@ const Pieces = ({ flipped = false }) => {
 
     if (appState.isMultiplayer && !isNew) {
       if (appState.playerTurn !== userSide) {
-        console.log("Не ваш ход в multiplayer режиме");
         return;
       }
     } else if (!isHuman && !isBot && !isNew) {
-      console.log("Зараз хід бота, зачекайте");
       return;
     }
 

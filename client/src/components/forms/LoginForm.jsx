@@ -41,9 +41,11 @@ const LoginForm = () => {
       >
         {() => (
           <Form className={styles.form}>
-            <h2>Sign in</h2>
+            <h2>{t("form_panel.login")}</h2>
             {error && error.includes("401") && (
-              <p className={styles.error}>{t("validation.error_unauthorized")}</p>
+              <p className={styles.error}>
+                {t("validation.error_unauthorized")}
+              </p>
             )}
             <label>
               <Field

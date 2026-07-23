@@ -26,7 +26,6 @@ const io = new Server(server, {
 const rooms = {};
 
 io.on('connection', (socket) => {
-    console.log('User connected:', socket.id);
 
     socket.on('getActiveRooms', () => {
         const activeRooms = Object.keys(rooms).map(roomId => {
@@ -109,7 +108,7 @@ io.on('connection', (socket) => {
 
             io.to(roomId).emit("playerReconnected", {
                 playersCount: room.players.filter(p => !p.disconnected).length,
-                message: 'Игрок восстановлен',
+                message: 'The player has been reinstated',
             });
 
             const activePlayers = room.players.filter(p => !p.disconnected);
@@ -124,7 +123,7 @@ io.on('connection', (socket) => {
                         playersCount: 2,
                         yourSide: player.side,
                         opponent: { name: opponent.name, avatar: opponent.avatar },
-                        message: 'Оба игрока готовы! Начинайте игру',
+                        message: 'Players ready',
                     });
                 });
             }
@@ -184,10 +183,6 @@ io.on('connection', (socket) => {
         const side = rooms[roomId].players.length === 0 ? 'white' : 'black';
         rooms[roomId].players.push({ socketId: socket.id, side, disconnected: false, name: gameData.userName, avatar: gameData.userAvatar });
 
-        console.log(`User ${socket.id} joined room ${roomId} as ${side}. Game mode: ${rooms[roomId].gameMode}`);
-        console.log(`Total players in room ${roomId}: ${rooms[roomId].players.length}`);
-        console.log(`Players list:`, rooms[roomId].players);
-
         socket.emit('gameInfo', {
             roomId,
             side,
@@ -207,14 +202,11 @@ io.on('connection', (socket) => {
 
         const activePlayers = rooms[roomId].players.filter(p => !p.disconnected);
         if (activePlayers.length === 2) {
-            console.log(`✅ Sending playersReady to room ${roomId}`);
-            console.log(`   Socket IDs in room: ${rooms[roomId].players.map(p => p.socketId).join(', ')}`);
-
             io.to(roomId).emit('gameInfo', {
                 roomId,
                 playersCount: 2,
                 side: 'both',
-                message: 'Оба игрока присоединились!',
+                message: 'Both players have joined!',
                 gameMode: rooms[roomId].gameMode,
                 roomName: rooms[roomId].roomName,
             });
@@ -229,15 +221,13 @@ io.on('connection', (socket) => {
                     playersCount: 2,
                     yourSide: player.side,
                     opponent: { name: opponent.name, avatar: opponent.avatar },
-                    message: 'Оба игрока готовы! Начинайте игру',
+                    message: 'Players ready',
                 });
-                console.log(`   Sent playersReady to player ${index + 1} (${player.side}): ${player.socketId}`);
             });
         } else {
-            console.log(`First player waiting in room ${roomId}`);
             socket.emit('playerWaiting', {
                 playersCount: 1,
-                message: 'Ожидание второго игрока...',
+                message: 'Waiting for the second player...',
             });
         }
     });
@@ -265,13 +255,13 @@ io.on('connection', (socket) => {
         if (winner) {
             io.to(winner.socketId).emit('playerTimedOut', {
                 winner: winner.side,
-                message: 'Противник проиграл по времени, вы побеждаете',
+                message: 'The opponent lost on time, you win.',
             });
         }
         if (loserPlayer) {
             io.to(loserPlayer.socketId).emit('playerTimedOut', {
                 winner: winnerSide,
-                message: 'Вы проиграли по времени',
+                message: 'You lost on time',
             });
         }
 
@@ -282,7 +272,6 @@ io.on('connection', (socket) => {
     });
 
     socket.on('leaveGame', ({ roomId }) => {
-        console.log(`User ${socket.id} leaves room ${roomId}`);
         if (!rooms[roomId]) return;
 
         rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
@@ -295,18 +284,17 @@ io.on('connection', (socket) => {
         const remaining = rooms[roomId].players[0];
         io.to(remaining.socketId).emit('opponentLeft', {
             winner: remaining.side,
-            message: 'Противник покинул игру, вы побеждаете'
+            message: 'The opponent has left the game; you win.'
         });
         io.to(roomId).emit('playerDisconnected', {
             playersCount: rooms[roomId].players.length,
-            message: 'Противник вышел из комнаты'
+            message: 'The opponent left the room.'
         });
 
         delete rooms[roomId];
     });
 
     socket.on('restartGame', ({ roomId }) => {
-        console.log(`User ${socket.id} restarts game in room ${roomId}`);
         if (!rooms[roomId]) return;
 
         rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
@@ -319,18 +307,17 @@ io.on('connection', (socket) => {
         const remaining = rooms[roomId].players[0];
         io.to(remaining.socketId).emit('opponentLeft', {
             winner: remaining.side,
-            message: 'Противник начал игру заново, вы побеждаете'
+            message: 'The opponent has restarted the game, you are winning.'
         });
         io.to(roomId).emit('playerDisconnected', {
             playersCount: rooms[roomId].players.length,
-            message: 'Противник вышел из комнаты'
+            message: 'The opponent left the room'
         });
 
         delete rooms[roomId];
     });
 
     socket.on('disconnect', () => {
-        console.log('User disconnected:', socket.id);
         Object.keys(rooms).forEach(roomId => {
             const player = rooms[roomId].players.find(p => p.socketId === socket.id);
             if (player) {
@@ -340,17 +327,16 @@ io.on('connection', (socket) => {
                 const remaining = rooms[roomId].players.find(p => !p.disconnected);
                 if (remaining) {
                     io.to(remaining.socketId).emit('opponentDisconnected', {
-                        message: 'Противник отключился. Ожидание переподключения...'
+                        message: 'Opponent disconnected. Waiting to reconnect...'
                     });
                 }
 
                 rooms[roomId].timeout = setTimeout(() => {
-                    console.log(`Room ${roomId} deleted due to player disconnection timeout`);
                     const winner = rooms[roomId]?.players.find(p => !p.disconnected);
                     if (winner) {
                         io.to(winner.socketId).emit('opponentLeft', {
                             winner: winner.side,
-                            message: 'Противник не восстановился, вы побеждаете',
+                            message: 'The opponent has not recovered; you are winning',
                         });
                     }
                     delete rooms[roomId];

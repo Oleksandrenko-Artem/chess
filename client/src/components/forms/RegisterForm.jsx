@@ -41,7 +41,7 @@ const RegisterForm = () => {
       >
         {() => (
           <Form className={styles.form}>
-            <h2>Sign up</h2>
+            <h2>{t("form_panel.register")}</h2>
             {error && error.includes("409") && (
               <p className={styles.error}>{t("validation.error_email")}</p>
             )}
