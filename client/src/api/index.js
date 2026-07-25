@@ -20,3 +20,4 @@ export const findAllUsers = (values) => {
     return apiClient.get(`/users/${query}`);
 };
 export const updateUser = (id, values) => apiClient.patch(`/users/${id}`, values);
+export const deleteUser = (id) => apiClient.delete(`/users/${id}`);

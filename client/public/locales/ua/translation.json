@@ -83,7 +83,8 @@
     "email": "Пошта",
     "upload_photo": "Завантаження...",
     "change_photo": "Змінити фото",
-    "remove_photo": "Видалити фото"
+    "remove_photo": "Видалити фото",
+    "delete_user": "Ви дійсно хочете видалити профіль?"
   },
   "captured_pieces": {
     "white": "Білі",
@@ -111,7 +112,8 @@
     "register": "Реєстрація",
     "login": "Увійти",
     "update": "Оновити дані",
-    "update_form": "Оновити персональні дані"
+    "update_form": "Оновити персональні дані",
+    "delete": "Видалити дані"
   },
   "game_info_panel": {
     "white_wins": "Білі перемогли",

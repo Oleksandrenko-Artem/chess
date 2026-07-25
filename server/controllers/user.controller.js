@@ -68,3 +68,14 @@ module.exports.patchUser = async (req, res, next) => {
         next(error);
     }
 };
+module.exports.deleteUser = async (req, res, next) => {
+    try {
+        const deletedUser = await User.findByIdAndDelete(req.params.idUser);
+        if (!deletedUser) {
+            throw createError(404, 'User not found');
+        }
+        res.status(200).send({ data: deletedUser });
+    } catch (error) {
+        next(error);
+    }
+}

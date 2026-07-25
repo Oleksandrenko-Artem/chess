@@ -85,7 +85,8 @@
     "email": "Email",
     "upload_photo": "Uploading...",
     "change_photo": "Change photo",
-    "remove_photo": "Remove photo"
+    "remove_photo": "Remove photo",
+    "delete_user": "Do you really want to delete the profile?"
   },
   "captured_pieces": {
     "white": "White",
@@ -115,7 +116,8 @@
     "register": "Register",
     "login": "Login",
     "update": "Update info",
-    "update_form": "Update personal info"
+    "update_form": "Update personal info",
+    "delete": "Delete info"
   },
   "game_info_panel": {
     "white_wins": "White wins",

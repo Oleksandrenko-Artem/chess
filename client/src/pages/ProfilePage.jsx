@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { findUserAccountThunk } from "../store/usersSlice";
+import { deleteUserThunk, findUserAccountThunk } from "../store/usersSlice";
 import { updateUser } from "../api";
 import styles from "./Pages.module.scss";
 import { updateUserThunk } from './../store/usersSlice';
@@ -25,13 +25,13 @@ const ProfilePage = () => {
     }
   }, [dispatch, user]);
   useEffect(() => {
-    if (
-      error &&
-      (error.status === 401 || error.message?.includes("Unauthorized"))
-    ) {
-      navigate("/login");
+    const token = localStorage.getItem("token");
+    if (!user && token) {
+      dispatch(findUserAccountThunk());
+    } else if (user) {
+      setAvatar(user.avatar);
     }
-  }, [error, navigate]);
+  }, [dispatch, user]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -103,6 +103,20 @@ const ProfilePage = () => {
   const handleUpdateForm = () => {
     setIsUpdate(!isUpdate);
   };
+  const handleDeleteUser = async (event) => {
+    event.stopPropagation();
+
+    if (window.confirm(`${t("profile.delete_user")}`)) {
+      try {
+        await dispatch(deleteUserThunk(user._id)).unwrap();
+        navigate("/");
+      } catch (err) {
+        console.error("Delete user error:", err);
+        navigate("/");
+      }
+    }
+  };
+
   return (
     <div className={styles.profile}>
       <h2>{t("profile.profile")}</h2>
@@ -115,7 +129,7 @@ const ProfilePage = () => {
                 alt="Profile Avatar"
                 className={styles["profile-avatar"]}
               />
-              <div className={styles['buttons-div']}>
+              <div className={styles["buttons-div"]}>
                 <div>
                   <button
                     onClick={() => fileInputRef.current?.click()}
@@ -127,11 +141,6 @@ const ProfilePage = () => {
                   </button>
                   <button onClick={removeAvatar} disabled={isUploading}>
                     {t("profile.remove_photo")}
-                  </button>
-                </div>
-                <div>
-                  <button onClick={handleUpdateForm}>
-                    {t("form_panel.update")}
                   </button>
                 </div>
               </div>
@@ -147,6 +156,7 @@ const ProfilePage = () => {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
+                className={styles['upload-btn']}
               >
                 {isUploading
                   ? `${t("profile.upload_photo")}`
@@ -161,6 +171,10 @@ const ProfilePage = () => {
             onChange={handleFileSelect}
             style={{ display: "none" }}
           />
+          <div className={styles["account-btns"]}>
+            <button onClick={handleUpdateForm}>{t("form_panel.update")}</button>
+            <button onClick={handleDeleteUser}>{t("form_panel.delete")}</button>
+          </div>
         </div>
         <div className={styles["profile-info"]}>
           <p>

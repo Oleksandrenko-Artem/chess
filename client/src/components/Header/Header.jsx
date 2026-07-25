@@ -44,6 +44,7 @@ const Header = (props) => {
   const handleNavigation = (e, callback) => {
     if (callback) callback();
   };
+  const token = localStorage.getItem("token");
   return (
     <header className={styles.header}>
       <div className={styles["header-logo"]}>
@@ -60,7 +61,7 @@ const Header = (props) => {
           <NavLink to="/">{t("header.chess")}</NavLink>
         </div>
         <div className={styles.sign} onClick={() => setStart(false)}>
-          {user ? (
+          {user && token ? (
             <>
               <Link to="/account" className={styles["user-image"]}>
                 <img

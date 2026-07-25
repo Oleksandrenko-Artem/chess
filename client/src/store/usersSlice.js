@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { loginUser, registerUser, findUserAccount, updateUser, findAllUsers } from '../api';
+import { loginUser, registerUser, findUserAccount, updateUser, findAllUsers, deleteUser } from '../api';
 import { fulfilledCase, pendingCase, rejectedCase } from './functions';
 
 export const updateUserThunk = createAsyncThunk('users/updateUserThunk', async ({ id, values }, thunkAPI) => {
@@ -50,6 +50,14 @@ export const registerUserThunk = createAsyncThunk('users/registerUserThunk', asy
         return thunkAPI.rejectWithValue(error?.message);
     }
 });
+export const deleteUserThunk = createAsyncThunk('users/deleteUserThunk', async (id, thunkAPI) => {
+    try {
+        const response = await deleteUser(id);
+        return response.data.data;
+    } catch (error) {
+        return thunkAPI.rejectWithValue(error?.message);
+    }
+});
 
 const usersSlice = createSlice({
     name: 'users',
@@ -86,6 +94,20 @@ const usersSlice = createSlice({
         builder.addCase(updateUserThunk.pending, pendingCase);
         builder.addCase(updateUserThunk.fulfilled, fulfilledCase);
         builder.addCase(updateUserThunk.rejected, rejectedCase);
+        builder.addCase(deleteUserThunk.pending, pendingCase);
+        builder.addCase(deleteUserThunk.fulfilled, (state, action) => {
+            state.isLoading = false;
+            state.error = null;
+            state.user = null;
+            if (action.payload?._id) {
+                state.users = state.users.filter((user) => user._id !== action.payload._id);
+            }
+        });
+        builder.addCase(deleteUserThunk.rejected, (state) => {
+            state.user = null;
+            state.error = null;
+            state.isLoading = false;
+        });
     },
 });
 

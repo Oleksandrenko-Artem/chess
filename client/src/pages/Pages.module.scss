@@ -30,10 +30,10 @@
       div {
         margin-top: 5px;
         button {
-      @include button-style(140px, $buttonHeight, $buttonPadding);
-      @extend %btn-style;
-      margin-right: 10px;
-    }
+          @include button-style(140px, $buttonHeight, $buttonPadding);
+          @extend %btn-style;
+          margin: 0 10px 10px 0;
+        }
       }
     }
     .default-avatar,
@@ -57,6 +57,18 @@
       p {
         font-size: 1.1em;
         margin: 0;
+      }
+    }
+    .upload-btn {
+      @include button-style(140px, $buttonHeight, $buttonPadding);
+          @extend %btn-style;
+          margin-bottom: 10px;
+    }
+    .account-btns {
+      button {
+        @include button-style(140px, $buttonHeight, $buttonPadding);
+          @extend %btn-style;
+          margin-right: 10px;
       }
     }
   }

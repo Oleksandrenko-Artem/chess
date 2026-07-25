@@ -1,0 +1,2 @@
+DELETE http://localhost:3000/users/6a651a966c9731cb4c0709d1 HTTP/1.1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZhNjUxZDBjNmM5NzMxY2I0YzA3MGEwMiIsImlhdCI6MTc4NTAxMTQ3MywiZXhwIjoxNzg1NjE2MjczfQ.pmvEkv1hJ8s3WShBkvZnWmWN1dhX7GHeBrDtcSZcoW4
