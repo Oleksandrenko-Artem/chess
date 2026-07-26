@@ -17,7 +17,8 @@ const Homepage = () => {
         <table className={styles.users}>
           <thead>
             <tr>
-              <th>{t("home.number")}</th>
+              <th>#</th>
+              <th>{t("profile.rating")}</th>
               <th>{t("home.photo")}</th>
               <th>{t("home.name")}</th>
               <th>{t("statistic_panel.wins")}</th>
@@ -26,21 +27,24 @@ const Homepage = () => {
             </tr>
           </thead>
           <tbody>
-            {users?.map((user, index) => (
-              <tr key={index} >
-                <td>{index + 1}.</td>
-                <td className={styles["home-page-user-photo"]}>
-                  <img
-                    src={user.avatar || "/src/assets/icons/account.png"}
-                    alt="avatar"
-                  />
-                </td>
-                <td>{user.name}</td>
-                <td>{user.multiWins || 0}</td>
-                <td>{user.multiDraws || 0}</td>
-                <td>{user.multiLoses || 0}</td>
-              </tr>
-            ))}
+            {[...(users || [])]
+              .sort((a, b) => (b.rating || 0) - (a.rating || 0))
+              .map((user, index) => (
+                <tr key={user._id || index}>
+                  <td>{index + 1}</td>
+                  <td>{user.rating}</td>
+                  <td className={styles["home-page-user-photo"]}>
+                    <img
+                      src={user.avatar || "/src/assets/icons/account.png"}
+                      alt="avatar"
+                    />
+                  </td>
+                  <td>{user.name}</td>
+                  <td>{user.multiWins || 0}</td>
+                  <td>{user.multiDraws || 0}</td>
+                  <td>{user.multiLoses || 0}</td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
