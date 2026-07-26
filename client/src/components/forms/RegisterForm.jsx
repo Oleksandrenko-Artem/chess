@@ -15,7 +15,7 @@ const RegisterForm = () => {
     const navigate = useNavigate();
     const { t } = useTranslation();
     const { error } = useSelector((state) => state.users);
-    const [type, setType] = useState('password');
+  const [type, setType] = useState('password');
     const [showPassword, setShowPassword] = useState(mdiEyeOutline);
     const changeType = () => {
         if (type === 'password') {
@@ -27,15 +27,16 @@ const RegisterForm = () => {
         }
     };
     const onSubmit = (values) => {
-        dispatch(registerUserThunk(values)).unwrap().then(() => {
+      dispatch(registerUserThunk(values)).unwrap().then(() => {
+          console.log(values)
             navigate('/login');
         }).catch((err) => {
             console.log(err);
         });
-    };
+  };
     return (
       <Formik
-        initialValues={{ name: "", email: "", password: "" }}
+        initialValues={{ name: "", rating: 200, email: "", password: "" }}
         validationSchema={registerSchema}
         onSubmit={onSubmit}
       >
@@ -54,6 +55,16 @@ const RegisterForm = () => {
             </label>
             <label>
               <Error name="name" />
+            </label>
+            <label>
+              <Field name="rating" as="select">
+                <option value={200}>200</option>
+                <option value={600}>600</option>
+                <option value={1000}>1000</option>
+                <option value={1400}>1400</option>
+                <option value={1800}>1800</option>
+                <option value={2200}>2200</option>
+              </Field>
             </label>
             <label>
               <Field

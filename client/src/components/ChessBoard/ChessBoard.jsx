@@ -143,8 +143,9 @@ const ChessBoard = (props) => {
         color: "White",
         name:
           userSide === "white"
-            ? user?.name || "White player"
-            : appState.opponent?.name || "White player",
+            ? `${user?.name} ${user?.rating}` || "White player"
+            : `${appState.opponent.name} ${appState.opponent.rating}` ||
+              "White player",
         avatar:
           userSide === "white"
             ? user?.avatar || accountIcon
@@ -154,11 +155,11 @@ const ChessBoard = (props) => {
         color: "White",
         name:
           userSide === "white" && user
-            ? user.name || "White player"
+            ? `${user?.name} ${user?.rating}` || "White player"
             : "White player",
         avatar:
           userSide === "white" && user
-            ? user.avatar || accountIcon
+            ? user?.avatar || accountIcon
             : accountIcon,
       };
 
@@ -167,8 +168,9 @@ const ChessBoard = (props) => {
         color: "Black",
         name:
           userSide === "black"
-            ? user?.name || "Black player"
-            : appState.opponent?.name || "Black player",
+            ? `${user?.name} ${user?.rating}` || "Black player"
+            : `${appState.opponent.name} ${appState.opponent.rating}` ||
+              "Black player",
         avatar:
           userSide === "black"
             ? user?.avatar || accountIcon
@@ -178,11 +180,11 @@ const ChessBoard = (props) => {
         color: "Black",
         name:
           userSide === "black" && user
-            ? user.name || "Black player"
+            ? `${user?.name} ${user?.rating}` || "Black player"
             : "Black player",
         avatar:
           userSide === "black" && user
-            ? user.avatar || accountIcon
+            ? user?.avatar || accountIcon
             : accountIcon,
       };
 

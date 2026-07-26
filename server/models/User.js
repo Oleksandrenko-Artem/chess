@@ -17,6 +17,11 @@ const userSchema = mongoose.Schema({
         type: String,
         required: true,
     },
+    rating: {
+        type: Number,
+        default: 200,
+        required: true,
+    },
     boardColor: {
         light: { type: String, default: 'linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)' },
         dark: { type: String, default: 'linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)' }

@@ -25,8 +25,7 @@ const ProfilePage = () => {
     }
   }, [dispatch, user]);
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!user && token) {
+    if (!user) {
       dispatch(findUserAccountThunk());
     } else if (user) {
       setAvatar(user.avatar);
@@ -156,7 +155,7 @@ const ProfilePage = () => {
               <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={isUploading}
-                className={styles['upload-btn']}
+                className={styles["upload-btn"]}
               >
                 {isUploading
                   ? `${t("profile.upload_photo")}`
@@ -178,7 +177,7 @@ const ProfilePage = () => {
         </div>
         <div className={styles["profile-info"]}>
           <p>
-            <b>{t("profile.name")}:</b> {user?.name}
+            <b>{t("profile.name")}:</b> {user?.name} ({user?.rating})
           </p>
           <p>
             <b>{t("profile.email")}:</b> {user?.email}

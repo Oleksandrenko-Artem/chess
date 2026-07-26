@@ -19,6 +19,7 @@ const actionTypes = {
     "SET_MULTIPLAYER": "SET_MULTIPLAYER",
     "SET_VS_BOT": "SET_VS_BOT",
     "SET_OPPONENT": "SET_OPPONENT",
+    "UPDATE_OPPONENT_RATING": "UPDATE_OPPONENT_RATING",
 };
 
 export default actionTypes;

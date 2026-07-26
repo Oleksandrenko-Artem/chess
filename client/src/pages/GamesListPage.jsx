@@ -381,6 +381,33 @@ const GamesListPage = ({ start, setStart }) => {
     appState?.boardSize,
     setStart,
   ]);
+  useEffect(() => {
+    if (!socket) return;
+
+    const onRatingUpdated = ({ myRating, opponentRating }) => {
+      if (user?._id) {
+        reduxDispatch(
+          updateUserThunk({
+            id: user._id,
+            values: {
+              rating: myRating,
+            },
+          }),
+        );
+      }
+
+      dispatch({
+        type: actionTypes.UPDATE_OPPONENT_RATING,
+        payload: opponentRating,
+      });
+    };
+
+    socket.on("ratingUpdated", onRatingUpdated);
+
+    return () => {
+      socket.off("ratingUpdated", onRatingUpdated);
+    };
+  }, [socket, user, reduxDispatch, dispatch]);
 
   const setGameState = (mode) => {
     const state = getInitialStateByMode(mode, appState?.boardSize || 8);
@@ -405,7 +432,7 @@ const GamesListPage = ({ start, setStart }) => {
     let password =
       joinPassword && joinPassword.trim() ? joinPassword.trim() : null;
     if (room.hasPassword && !password) {
-      const enteredPassword = window.prompt("Введите пароль комнаты");
+      const enteredPassword = window.prompt("Enter the room password");
       if (!enteredPassword) return;
       password = enteredPassword.trim();
     }
@@ -424,12 +451,14 @@ const GamesListPage = ({ start, setStart }) => {
         initialState,
         userName: user?.name,
         userAvatar: user?.avatar,
+        userId: user?._id,
+        userRating: user?.rating,
         whiteTime: room.whiteTime ?? appState.whiteTime,
         blackTime: room.blackTime ?? appState.blackTime,
       },
       (response) => {
         if (!response?.success) {
-          alert(response?.error || "Не удалось войти в комнату");
+          alert(response?.error || "Failed to enter the room");
           return;
         }
 

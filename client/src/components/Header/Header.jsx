@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logoutUserThunk } from "../../store/usersSlice";
 import { useAppContext } from "../../contexts/Context";
 import styles from "./Header.module.scss";
 
 const Header = (props) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { onPlaySpecial, onPlayMultiplayer, start, setStart } = props;
   const { user } = useSelector((state) => state.users);
   const { appState } = useAppContext();
@@ -18,6 +19,7 @@ const Header = (props) => {
   const [style, setStyle] = useState(initialStyle);
   const logout = () => {
     dispatch(logoutUserThunk());
+    navigate('/');
   };
   const handleChangeTheme = () => {
     setTheme((theme) => (theme === "light" ? "dark" : "light"));

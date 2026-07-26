@@ -5,11 +5,13 @@ const emailSchema = Yup.string().trim().email();
 const passwordSchema = Yup.string().trim().min(8).max(125);
 const avatarSchema = Yup.string().nullable().max(50000000);
 const numberSchema = Yup.number().integer().min(0);
+const ratingSchema = Yup.number().integer().min(200);
 
 module.exports.registerSchema = Yup.object({
     name: nameSchema.required(),
     email: emailSchema.required(),
     password: passwordSchema.required(),
+    rating: ratingSchema.required(),
 });
 
 module.exports.loginSchema = Yup.object({

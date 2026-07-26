@@ -3,6 +3,7 @@ const app = require('./app');
 const connectDB = require('./config/db');
 const { Server } = require('socket.io');
 const { getInitialStateByMode } = require('./helpers');
+const User = require('./models/User');
 
 connectDB();
 
@@ -10,8 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://621d4b59d7bcc84b-95-47-113-228.serveousercontent.com",
-            "https://2d9b12e66a94ec39-95-47-113-228.serveousercontent.com",
+            "https://a3dfac69622f515b-95-47-113-236.serveousercontent.com",
+            "https://e1f2c40d4df75d0e-95-47-113-236.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -24,6 +25,75 @@ const io = new Server(server, {
 });
 
 const rooms = {};
+
+async function updateRating(whiteId, blackId, result) {
+    const white = await User.findById(whiteId);
+    const black = await User.findById(blackId);
+
+    const K = 20;
+
+    if (!white || !black) {
+        return;
+    }
+    
+    const expectedWhite =
+        1 / (1 + Math.pow(10, (black.rating - white.rating) / 400));
+
+    const expectedBlack =
+        1 / (1 + Math.pow(10, (white.rating - black.rating) / 400));
+
+    let scoreWhite;
+    let scoreBlack;
+
+    if (result === "white") {
+        scoreWhite = 1;
+        scoreBlack = 0;
+    } else if (result === "black") {
+        scoreWhite = 0;
+        scoreBlack = 1;
+    } else {
+        scoreWhite = 0.5;
+        scoreBlack = 0.5;
+    }
+
+    white.rating = Math.round(
+        white.rating + K * (scoreWhite - expectedWhite)
+    );
+
+    black.rating = Math.round(
+        black.rating + K * (scoreBlack - expectedBlack)
+    );
+
+    await white.save();
+    await black.save();
+}
+
+async function finishGame(roomId, result) {
+    const room = rooms[roomId];
+    if (!room || room.finished) return;
+
+    room.finished = true;
+
+    const white = room.players.find(p => p.side === "white");
+    const black = room.players.find(p => p.side === "black");
+
+    if (!white || !black) return;
+
+    await updateRating(white.userId, black.userId, result);
+
+    const whiteUser = await User.findById(white.userId);
+    const blackUser = await User.findById(black.userId);
+
+    io.to(white.socketId).emit("ratingUpdated", {
+        myRating: whiteUser.rating,
+        opponentRating: blackUser.rating,
+    });
+
+    io.to(black.socketId).emit("ratingUpdated", {
+        myRating: blackUser.rating,
+        opponentRating: whiteUser.rating,
+    });
+}
 
 io.on('connection', (socket) => {
 
@@ -122,7 +192,7 @@ io.on('connection', (socket) => {
                     io.to(player.socketId).emit('playersReady', {
                         playersCount: 2,
                         yourSide: player.side,
-                        opponent: { name: opponent.name, avatar: opponent.avatar },
+                        opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, },
                         message: 'Players ready',
                     });
                 });
@@ -160,7 +230,8 @@ io.on('connection', (socket) => {
         const room = rooms[roomId];
         if (room.password && room.password !== (gameData.password && gameData.password.trim())) {
             if (callback) {
-                callback({ success: false, error: 'Неверный пароль для комнаты' });
+                callback({
+                    success: false, error: 'Incorrect room password' });
             }
             return;
         }
@@ -169,7 +240,8 @@ io.on('connection', (socket) => {
         const hasDisconnected = room.players.some(p => p.disconnected);
         if (hasDisconnected || activePlayerCount >= 2) {
             if (callback) {
-                callback({ success: false, error: 'Комната временно недоступна или уже заполнена' });
+                callback({
+                    success: false, error: 'The room is temporarily unavailable or already full' });
             }
             return;
         }
@@ -181,7 +253,15 @@ io.on('connection', (socket) => {
         }
 
         const side = rooms[roomId].players.length === 0 ? 'white' : 'black';
-        rooms[roomId].players.push({ socketId: socket.id, side, disconnected: false, name: gameData.userName, avatar: gameData.userAvatar });
+        rooms[roomId].players.push({
+            socketId: socket.id,
+            userId: gameData.userId,
+            side,
+            disconnected: false,
+            name: gameData.userName,
+            avatar: gameData.userAvatar,
+            rating: gameData.userRating,
+        });
 
         socket.emit('gameInfo', {
             roomId,
@@ -220,7 +300,7 @@ io.on('connection', (socket) => {
                 io.to(player.socketId).emit('playersReady', {
                     playersCount: 2,
                     yourSide: player.side,
-                    opponent: { name: opponent.name, avatar: opponent.avatar },
+                    opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, },
                     message: 'Players ready',
                 });
             });
@@ -232,17 +312,24 @@ io.on('connection', (socket) => {
         }
     });
 
-    socket.on('makeMove', (data) => {
-        const { roomId, move } = data;
+    socket.on("makeMove", async ({ roomId, move }) => {
         const room = rooms[roomId];
-        if (room) {
-            room.moves = room.moves || [];
-            room.moves.push(move);
+        if (!room) return;
+
+        room.moves.push(move);
+
+        socket.to(roomId).emit("moveMade", move);
+
+        if (move.gameStatus === "White wins") {
+            await finishGame(roomId, "white");
+        } else if (move.gameStatus === "Black wins") {
+            await finishGame(roomId, "black");
+        } else if (move.gameStatus === "Draw") {
+            await finishGame(roomId, "draw");
         }
-        socket.to(roomId).emit('moveMade', move);
     });
 
-    socket.on('playerTimedOut', ({ roomId, loser }) => {
+    socket.on('playerTimedOut', async ({ roomId, loser }) => {
         const room = rooms[roomId];
         if (!room) return;
 
@@ -257,12 +344,14 @@ io.on('connection', (socket) => {
                 winner: winner.side,
                 message: 'The opponent lost on time, you win.',
             });
+            await finishGame(roomId, winner.side);
         }
         if (loserPlayer) {
             io.to(loserPlayer.socketId).emit('playerTimedOut', {
                 winner: winnerSide,
                 message: 'You lost on time',
             });
+            await finishGame(roomId, winner.side);
         }
 
         if (room.timeout) {
@@ -271,7 +360,7 @@ io.on('connection', (socket) => {
         delete rooms[roomId];
     });
 
-    socket.on('leaveGame', ({ roomId }) => {
+    socket.on('leaveGame', async ({ roomId }) => {
         if (!rooms[roomId]) return;
 
         rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
@@ -286,6 +375,7 @@ io.on('connection', (socket) => {
             winner: remaining.side,
             message: 'The opponent has left the game; you win.'
         });
+        await finishGame(roomId, remaining.side);
         io.to(roomId).emit('playerDisconnected', {
             playersCount: rooms[roomId].players.length,
             message: 'The opponent left the room.'
@@ -294,7 +384,7 @@ io.on('connection', (socket) => {
         delete rooms[roomId];
     });
 
-    socket.on('restartGame', ({ roomId }) => {
+    socket.on('restartGame', async ({ roomId }) => {
         if (!rooms[roomId]) return;
 
         rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
@@ -309,6 +399,7 @@ io.on('connection', (socket) => {
             winner: remaining.side,
             message: 'The opponent has restarted the game, you are winning.'
         });
+        await finishGame(roomId, remaining.side);
         io.to(roomId).emit('playerDisconnected', {
             playersCount: rooms[roomId].players.length,
             message: 'The opponent left the room'
@@ -317,7 +408,7 @@ io.on('connection', (socket) => {
         delete rooms[roomId];
     });
 
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
         Object.keys(rooms).forEach(roomId => {
             const player = rooms[roomId].players.find(p => p.socketId === socket.id);
             if (player) {
@@ -331,13 +422,14 @@ io.on('connection', (socket) => {
                     });
                 }
 
-                rooms[roomId].timeout = setTimeout(() => {
+                rooms[roomId].timeout = setTimeout(async () => {
                     const winner = rooms[roomId]?.players.find(p => !p.disconnected);
                     if (winner) {
                         io.to(winner.socketId).emit('opponentLeft', {
                             winner: winner.side,
                             message: 'The opponent has not recovered; you are winning',
                         });
+                        await finishGame(roomId, winner.side);
                     }
                     delete rooms[roomId];
                 }, 30 * 1000);

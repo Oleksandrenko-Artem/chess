@@ -181,6 +181,16 @@ export const reducer = (state, action) => {
                 ...state,
                 roomName: action.payload,
             };
+        case actionTypes.UPDATE_OPPONENT_RATING:
+            return {
+                ...state,
+                opponent: state.opponent
+                    ? {
+                        ...state.opponent,
+                        rating: action.payload,
+                    }
+                    : null,
+            };
         default:
             return state;
     };
