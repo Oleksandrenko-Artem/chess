@@ -177,7 +177,10 @@ const ProfilePage = () => {
         </div>
         <div className={styles["profile-info"]}>
           <p>
-            <b>{t("profile.name")}:</b> {user?.name} ({user?.rating})
+            <b>{t("profile.name")}:</b> {user?.name}
+          </p>
+          <p>
+            <b>{t("profile.rating")}:</b> {user?.rating}
           </p>
           <p>
             <b>{t("profile.email")}:</b> {user?.email}

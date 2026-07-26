@@ -33,6 +33,11 @@
         width: 400px;
         height: 35px;
     }
+    select {
+        @extend %panel-style;
+        width: 400px;
+        height: 35px;
+    }
     .error {
         color: red;
         text-transform: capitalize;

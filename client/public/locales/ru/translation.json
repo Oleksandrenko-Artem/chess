@@ -83,6 +83,7 @@
   "profile": {
     "profile": "Профиль",
     "name": "Имя",
+    "rating": "Рейтинг",
     "email": "Почта",
     "upload_photo": "Загрузка...",
     "change_photo": "Изменить фото",

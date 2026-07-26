@@ -82,6 +82,7 @@
   "profile": {
     "profile": "Profile",
     "name": "Name",
+    "rating": "Rating",
     "email": "Email",
     "upload_photo": "Uploading...",
     "change_photo": "Change photo",

@@ -80,6 +80,7 @@
   "profile": {
     "profile": "Профіль",
     "name": "І'мя",
+    "rating": "Рейтинг",
     "email": "Пошта",
     "upload_photo": "Завантаження...",
     "change_photo": "Змінити фото",
