@@ -23,14 +23,15 @@
         @include button-style(80%, $buttonHeight, $buttonPadding);
     }
     .password-wrapper {
+        display: flex;
+        justify-content: center;
         width: 100%;
         position: relative;
         .show-password {
             display: flex;
             position: absolute;
-            right: 25px;
+            right: 40px;
             bottom: 0.5vh;
-            margin: 0px 15px;
         }
     }
 }
