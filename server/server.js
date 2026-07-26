@@ -11,7 +11,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://4a0f606ee39d046b-95-47-113-236.serveousercontent.com",
+            "https://7622b2ba0a6f2dba-95-47-113-236.serveousercontent.com",
             "https://e1f2c40d4df75d0e-95-47-113-236.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
@@ -115,9 +115,51 @@ io.on('connection', (socket) => {
                 hasPassword: !!room.password,
                 hasDisconnected,
             };
-        }).filter(room => room.playersCount === 1 && !room.hasDisconnected);
+        }).filter(room => room.playersCount === 1 && !room.hasDisconnected &&
+            !rooms[room.roomId].isQuickGame);
 
         socket.emit('activeRooms', activeRooms);
+    });
+
+    socket.on("findQuickGame", (gameData, callback) => {
+        const roomId = Object.keys(rooms).find((id) => {
+            const room = rooms[id];
+
+            const activePlayers = room.players.filter(p => !p.disconnected).length;
+
+            if (activePlayers !== 1) return false;
+            if (room.password) return false;
+
+            const waitTime = Date.now() - room.createdAt;
+
+            let maxDiff = 100;
+
+            if (waitTime > 10000) maxDiff = 200;
+            if (waitTime > 20000) maxDiff = 400;
+            if (waitTime > 30000) maxDiff = Infinity;
+
+            const ratingDiff = Math.abs(room.players[0].rating - gameData.userRating);
+
+            return (
+                room.gameMode === gameData.gameMode &&
+                room.whiteTime === gameData.whiteTime &&
+                room.blackTime === gameData.blackTime &&
+                ratingDiff <= maxDiff
+            );
+        });
+
+        if (roomId) {
+            callback({
+                success: true,
+                roomId,
+                create: false,
+            });
+        } else {
+            callback({
+                success: true,
+                create: true,
+            });
+        }
     });
 
     socket.on('findRoomByName', (roomName) => {
@@ -228,6 +270,7 @@ io.on('connection', (socket) => {
                 password: gameData.password && gameData.password.trim()
                     ? gameData.password.trim()
                     : null,
+                isQuickGame: gameData.isQuickGame || false,
             };
         }
 
@@ -279,6 +322,7 @@ io.on('connection', (socket) => {
             callback({
                 success: true,
                 roomId,
+                side,
                 initialState: rooms[roomId].initialState || null,
                 moves: rooms[roomId].moves || [],
             });
@@ -364,26 +408,21 @@ io.on('connection', (socket) => {
         delete rooms[roomId];
     });
 
-    socket.on('leaveGame', async ({ roomId }) => {
-        if (!rooms[roomId]) return;
+    socket.on("leaveGame", async ({ roomId }) => {
+        const room = rooms[roomId];
+        if (!room) return;
 
-        rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
+        const leaver = room.players.find(p => p.socketId === socket.id);
+        const winner = room.players.find(p => p.socketId !== socket.id);
 
-        if (rooms[roomId].players.length === 0) {
-            delete rooms[roomId];
-            return;
+        if (winner) {
+            io.to(winner.socketId).emit("opponentLeft", {
+                winner: winner.side,
+                message: "The opponent has left the game; you win."
+            });
+
+            await finishGame(roomId, winner.side);
         }
-
-        const remaining = rooms[roomId].players[0];
-        io.to(remaining.socketId).emit('opponentLeft', {
-            winner: remaining.side,
-            message: 'The opponent has left the game; you win.'
-        });
-        await finishGame(roomId, remaining.side);
-        io.to(roomId).emit('playerDisconnected', {
-            playersCount: rooms[roomId].players.length,
-            message: 'The opponent left the room.'
-        });
 
         delete rooms[roomId];
     });

@@ -39,12 +39,12 @@ const MODE_LABELS = {
   custom: "Custom",
 };
 
-const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
+const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
   const storedVariant = localStorage.getItem("chess_variant");
   const [gameMode, setGameMode] = useState(
     storedVariant === "special" ? "custom" : storedVariant || "chess",
   );
-  const [type, setType] = useState('password');
+  const [type, setType] = useState("password");
   const [showPassword, setShowPassword] = useState(mdiEyeOutline);
   const [roomName, setRoomName] = useState("");
   const [roomPassword, setRoomPassword] = useState("");
@@ -54,14 +54,14 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const changeType = () => {
-          if (type === 'password') {
-              setType('text');
-              setShowPassword(mdiEyeOffOutline);
-          } else {
-              setType('password');
-              setShowPassword(mdiEyeOutline);
-          }
-      };
+    if (type === "password") {
+      setType("text");
+      setShowPassword(mdiEyeOffOutline);
+    } else {
+      setType("password");
+      setShowPassword(mdiEyeOutline);
+    }
+  };
   const getInitialStateByMode = (
     mode,
     boardSize = 8,
@@ -232,7 +232,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
                 payload: trimmedRoomName,
               });
               setStart(false);
-              setRoomWindow(false);
+              setWindowMode(false);
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
@@ -292,7 +292,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
                 payload: trimmedRoomName,
               });
               setStart(false);
-              setRoomWindow(false);
+              setWindowMode(false);
               dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
               dispatch({
                 type: actionTypes.SET_MULTIPLAYER,
@@ -345,7 +345,7 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
           applyRoomStateFromResponse(response, roomId, null);
 
           setStart(false);
-          setRoomWindow(false);
+          setWindowMode(false);
           dispatch({ type: actionTypes.SET_ORIENTATION, payload: "white" });
           dispatch({
             type: actionTypes.SET_MULTIPLAYER,
@@ -370,57 +370,65 @@ const CreateRoomWindow = ({ setRoomWindow, setStart = () => {} }) => {
   };
   return (
     <div className={styles.wrapper}>
-      <h2>{t("header.creating-room")}</h2>
-      {localStorage.getItem("chess_variant") !== "special" && (
-        <select value={gameMode} onChange={(e) => setGameMode(e.target.value)}>
-          <option value="chess">{MODE_LABELS.chess}</option>
-          <option value="shatranj">{MODE_LABELS.shatranj}</option>
-          <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
-          <option value="new_chess">{MODE_LABELS.new_chess}</option>
-          <option value="chess960">{MODE_LABELS.chess960}</option>
-          <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
-          <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
-        </select>
-      )}
-      {localStorage.getItem("chess_variant") === "special" && (
-        <select value={gameMode} onChange={(e) => setGameMode(e.target.value)}>
-          <option value="custom">{MODE_LABELS.custom}</option>
-        </select>
-      )}
-      <input
-        type="text"
-        name="room-name"
-        autoComplete="off"
-        placeholder={` ${t("header.room-name")}`}
-        value={roomName}
-        onChange={(e) => setRoomName(e.target.value)}
-      />
-      <div className={styles["password-wrapper"]}>
+      <div>
+        <h2>{t("header.creating-room")}</h2>
+        {localStorage.getItem("chess_variant") !== "special" && (
+          <select
+            value={gameMode}
+            onChange={(e) => setGameMode(e.target.value)}
+          >
+            <option value="chess">{MODE_LABELS.chess}</option>
+            <option value="shatranj">{MODE_LABELS.shatranj}</option>
+            <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
+            <option value="new_chess">{MODE_LABELS.new_chess}</option>
+            <option value="chess960">{MODE_LABELS.chess960}</option>
+            <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
+            <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
+          </select>
+        )}
+        {localStorage.getItem("chess_variant") === "special" && (
+          <select
+            value={gameMode}
+            onChange={(e) => setGameMode(e.target.value)}
+          >
+            <option value="custom">{MODE_LABELS.custom}</option>
+          </select>
+        )}
         <input
-          type={type}
-          name="room-password"
-          autoComplete="new-password"
-          placeholder={` ${t("header.room-password")}`}
-          value={roomPassword}
-          onChange={(e) => setRoomPassword(e.target.value)}
+          type="text"
+          name="room-name"
+          autoComplete="off"
+          placeholder={` ${t("header.room-name")}`}
+          value={roomName}
+          onChange={(e) => setRoomName(e.target.value)}
         />
-        <Icon
-          path={showPassword}
-          size={1.2}
-          onClick={changeType}
-          className={styles["show-password"]}
-        />
+        <div className={styles["password-wrapper"]}>
+          <input
+            type={type}
+            name="room-password"
+            autoComplete="new-password"
+            placeholder={` ${t("header.room-password")}`}
+            value={roomPassword}
+            onChange={(e) => setRoomPassword(e.target.value)}
+          />
+          <Icon
+            path={showPassword}
+            size={1.2}
+            onClick={changeType}
+            className={styles["show-password"]}
+          />
+        </div>
+        <select
+          value={timeType}
+          onChange={(e) => setTimeType(Number(e.target.value))}
+        >
+          <option value={300}>5 min</option>
+          <option value={600}>10 min</option>
+          <option value={1200}>20 min</option>
+          <option value={1800}>30 min</option>
+        </select>
+        <button onClick={handlePlayInRoom}>{t("header.create-game")}</button>
       </div>
-      <select
-        value={timeType}
-        onChange={(e) => setTimeType(Number(e.target.value))}
-      >
-        <option value={300}>5 min</option>
-        <option value={600}>10 min</option>
-        <option value={1200}>20 min</option>
-        <option value={1800}>30 min</option>
-      </select>
-      <button onClick={handlePlayInRoom}>{t("header.create-game")}</button>
     </div>
   );
 };

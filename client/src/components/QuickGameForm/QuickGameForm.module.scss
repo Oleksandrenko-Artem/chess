@@ -15,25 +15,13 @@
         justify-content: center;
         align-items: center;
         gap: 8px;
-        select, input {
+        select {
             @extend %panel-style;
             @include button-style(80%, 35px, $buttonPadding);
         }
         button {
             @extend %btn-style;
             @include button-style(80%, $buttonHeight, $buttonPadding);
-        }
-        .password-wrapper {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-            position: relative;
-            .show-password {
-                display: flex;
-                position: absolute;
-                right: 40px;
-                bottom: 0.5vh;
-            }
         }
     }
 }

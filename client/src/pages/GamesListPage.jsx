@@ -34,6 +34,7 @@ import FilterGameMode from "../components/FiltersPanel/FilterGameMode";
 import { updateUserThunk } from "../store/usersSlice";
 import CreateRoomWindow from "../components/CreateRoomWindow/CreateRoomWindow";
 import { useNavigate } from "react-router-dom";
+import QuickGameForm from "../components/QuickGameForm/QuickGameForm";
 
 const MODE_LABELS = {
   chess: "Chess",
@@ -126,7 +127,7 @@ const GamesListPage = ({ start, setStart }) => {
   const [gameMode, setGameMode] = useState(
     localStorage.getItem("game_mode") || "chess",
   );
-  const [roomWindow, setRoomWindow] = useState(false);
+  const [windowMode, setWindowMode] = useState(null);
   const [activeRooms, setActiveRooms] = useState([]);
   const [inputRoomId, setInputRoomId] = useState("");
   const [joinPassword, setJoinPassword] = useState("");
@@ -134,13 +135,13 @@ const GamesListPage = ({ start, setStart }) => {
   const [playerSide, setPlayerSide] = useState(null);
   const [playersCount, setPlayersCount] = useState(1);
   const [gameReady, setGameReady] = useState(false);
-  
+
   useEffect(() => {
     if (!user) {
-      navigate("/") 
+      navigate("/");
     }
   }, [user]);
-  
+
   const getEarlyExitLossUpdate = () => {
     if (!user?._id) return null;
     const mode =
@@ -428,12 +429,14 @@ const GamesListPage = ({ start, setStart }) => {
     localStorage.setItem("chess_mode", "multiplayer");
   };
 
-  const handleFindGame = () => {
-    setRoomWindow(true);
-  };
-  const handleCloseRoom = () => {
-    setRoomWindow(false);
-  };
+  const handleFindGame = () => setWindowMode("create");
+
+  const handleCloseRoom = () => setWindowMode(null);
+
+  const handleFindQuickGame = () => setWindowMode("quick");
+
+  const handleCloseQuickGame = () => setWindowMode(null);
+
   const handleJoinRoomFromList = (room) => {
     if (!socket) return;
     setStart(false);
@@ -500,8 +503,6 @@ const GamesListPage = ({ start, setStart }) => {
             dispatch({ type: actionTypes.NEW_MOVE, payload: move });
           });
         }
-
-        setRoomWindow(false);
         dispatch({
           type: actionTypes.SET_MULTIPLAYER,
           payload: {
@@ -590,13 +591,22 @@ const GamesListPage = ({ start, setStart }) => {
                 value={inputRoomId}
                 onChange={(e) => setInputRoomId(e.target.value)}
               />
-              {!roomWindow && (
+              {windowMode !== "create" ? (
                 <button onClick={handleFindGame}>
                   {t("header.create-game")}
                 </button>
-              )}
-              {roomWindow && (
+              ) : (
                 <button onClick={handleCloseRoom}>
+                  {t("header.close_room")}
+                </button>
+              )}
+
+              {windowMode !== "quick" ? (
+                <button onClick={handleFindQuickGame}>
+                  {t("header.find-game")}
+                </button>
+              ) : (
+                <button onClick={handleCloseQuickGame}>
                   {t("header.close_room")}
                 </button>
               )}
@@ -605,10 +615,17 @@ const GamesListPage = ({ start, setStart }) => {
               <FilterGameMode mode={filterMode} setGameMode={setFilterMode} />
             </div>
           </div>
-          {roomWindow ? (
+          {windowMode === "create" ? (
             <div className={styles["create-room-window"]}>
               <CreateRoomWindow
-                setRoomWindow={setRoomWindow}
+                setWindowMode={setWindowMode}
+                setStart={setStart}
+              />
+            </div>
+          ) : windowMode === "quick" ? (
+            <div className={styles["create-room-window"]}>
+              <QuickGameForm
+                setWindowMode={setWindowMode}
                 setStart={setStart}
               />
             </div>
