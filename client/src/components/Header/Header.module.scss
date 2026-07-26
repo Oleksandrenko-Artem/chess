@@ -57,6 +57,11 @@
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
+    .disabledLink {
+      opacity: 0.5;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
     nav {
       display: flex;
       flex-direction: row;

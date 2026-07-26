@@ -96,25 +96,39 @@ const Header = (props) => {
               {t("header.single-player")}
             </NavLink>
             <NavLink
-              to="/games"
-              onClick={(e) => handleNavigation(e, onPlayMultiplayer)}
+              to={user ? "/games" : "#"}
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  return;
+                }
+                onPlayMultiplayer?.();
+              }}
               className={({ isActive }) =>
-                isActive ? styles["active-nav"] : undefined
+                `${isActive ? styles["active-nav"] : ""} ${
+                  !user ? styles.disabledLink : ""
+                }`
               }
             >
               {t("header.games_list")}
             </NavLink>
-            {user && (
-              <NavLink
-                to="/create-position"
-                onClick={(e) => handleNavigation(e, onPlaySpecial)}
-                className={({ isActive }) =>
-                  isActive ? styles["active-nav"] : undefined
+            <NavLink
+              to={user ? "/create-position" : "#"}
+              onClick={(e) => {
+                if (!user) {
+                  e.preventDefault();
+                  return;
                 }
-              >
-                {t("header.custom_position")}
-              </NavLink>
-            )}
+                onPlaySpecial?.();
+              }}
+              className={({ isActive }) =>
+                `${isActive ? styles["active-nav"] : ""} ${
+                  !user ? styles.disabledLink : ""
+                }`
+              }
+            >
+              {t("header.custom_position")}
+            </NavLink>
           </nav>
           <div className={styles["style-panel"]}>
             <button

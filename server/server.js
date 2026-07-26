@@ -11,7 +11,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://a3dfac69622f515b-95-47-113-236.serveousercontent.com",
+            "https://4a0f606ee39d046b-95-47-113-236.serveousercontent.com",
             "https://e1f2c40d4df75d0e-95-47-113-236.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
@@ -73,6 +73,10 @@ async function finishGame(roomId, result) {
     if (!room || room.finished) return;
 
     room.finished = true;
+
+    if (room.gameMode === "custom") {
+        return;
+    }
 
     const white = room.players.find(p => p.side === "white");
     const black = room.players.find(p => p.side === "black");
