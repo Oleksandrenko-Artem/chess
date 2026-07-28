@@ -33,7 +33,6 @@ import Pagination from "./../components/Pagination/Pagination";
 import FilterGameMode from "../components/FiltersPanel/FilterGameMode";
 import { updateUserThunk } from "../store/usersSlice";
 import CreateRoomWindow from "../components/CreateRoomWindow/CreateRoomWindow";
-import { useNavigate } from "react-router-dom";
 import QuickGameForm from "../components/QuickGameForm/QuickGameForm";
 
 const MODE_LABELS = {
@@ -120,7 +119,6 @@ const GamesListPage = ({ start, setStart }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
 
-  const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [amount, setAmount] = useState(5);
   const [filterMode, setFilterMode] = useState("all");
@@ -135,12 +133,6 @@ const GamesListPage = ({ start, setStart }) => {
   const [playerSide, setPlayerSide] = useState(null);
   const [playersCount, setPlayersCount] = useState(1);
   const [gameReady, setGameReady] = useState(false);
-
-  useEffect(() => {
-    if (!user) {
-      navigate("/");
-    }
-  }, [user]);
 
   const getEarlyExitLossUpdate = () => {
     if (!user?._id) return null;

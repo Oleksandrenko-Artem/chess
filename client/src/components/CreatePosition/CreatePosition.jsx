@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
@@ -96,7 +95,6 @@ import { createSpecialPosition } from "../../helpers";
 const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();

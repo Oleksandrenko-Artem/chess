@@ -410,10 +410,10 @@ function App() {
               />
             }
           />
-          <Route
+          {user && <Route
             path="/games"
             element={<GamesListPage start={start} setStart={setStart} />}
-          />
+          />}
           <Route
             path="/play-chess"
             element={<ChessPage start={start} setStart={setStart} />}
@@ -444,7 +444,7 @@ function App() {
               <NewVariantChess960Page start={start} setStart={setStart} />
             }
           />
-          <Route path="/create-position" element={<CreatePositionPage />} />
+          {user && <Route path="/create-position" element={<CreatePositionPage />} />}
           <Route path="/achievements" element={<AchievementsPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
