@@ -1,17 +1,17 @@
 const User = require("../models/User");
 
 const ACHIEVEMENTS = {
-    bishop: [5, 50, 100, 500],
-    rook: [5, 50, 100, 500],
-    horse: [5, 50, 100, 500],
-    ferz: [5, 50, 100, 500],
-    soldier: [5, 50, 100, 500],
-    king: [5, 50, 100, 500],
-    elephant: [5, 50, 100, 500],
-    firzan: [5, 50, 100, 500],
-    knight: [5, 50, 100, 500],
-    prince: [5, 50, 100, 500],
-    duke: [5, 50, 100, 500],
+    bishop: [3, 12, 26, 68],
+    rook: [5, 50, 100, 250],
+    horse: [3, 12, 26, 68],
+    ferz: [5, 50, 100, 250],
+    soldier: [1, 5, 10, 50],
+    king: [1, 5, 10, 50],
+    elephant: [3, 12, 26, 68],
+    firzan: [3, 12, 26, 68],
+    knight: [5, 50, 100, 250],
+    prince: [3, 12, 26, 68],
+    duke: [5, 50, 100, 250],
 };
 
 function getLevel(count, levels) {
