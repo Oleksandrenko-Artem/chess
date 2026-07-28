@@ -144,19 +144,33 @@ const ChessBoard = (props) => {
         name:
           userSide === "white"
             ? `${user?.name} ${user?.rating}` || "White player"
-            : `${appState.opponent.name} ${appState.opponent.rating}` ||
+            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
               "White player",
+        achievement:
+          userSide === "white"
+            ? user?.achievements.selectedIcon
+            : appState.opponent?.selectedAchievement,
+        achievementLevel:
+          userSide === "white" ? null : appState.opponent?.achievementLevel,
         avatar:
           userSide === "white"
             ? user?.avatar || accountIcon
             : appState.opponent?.avatar || accountIcon,
+        isOpponent: userSide !== "white",
       }
     : {
         color: "White",
         name:
-          userSide === "white" && user
+          userSide === "white"
             ? `${user?.name} ${user?.rating}` || "White player"
-            : "White player",
+            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
+              "White player",
+        achievement:
+          userSide === "white"
+            ? user?.achievements.selectedIcon
+            : appState.opponent?.selectedAchievement,
+        achievementLevel:
+          userSide === "white" ? null : appState.opponent?.achievementLevel,
         avatar:
           userSide === "white" && user
             ? user?.avatar || accountIcon
@@ -169,12 +183,19 @@ const ChessBoard = (props) => {
         name:
           userSide === "black"
             ? `${user?.name} ${user?.rating}` || "Black player"
-            : `${appState.opponent.name} ${appState.opponent.rating}` ||
+            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
               "Black player",
+        achievement:
+          userSide === "black"
+            ? user?.achievements.selectedIcon
+            : appState.opponent?.selectedAchievement,
+        achievementLevel:
+          userSide === "black" ? null : appState.opponent?.achievementLevel,
         avatar:
           userSide === "black"
             ? user?.avatar || accountIcon
             : appState.opponent?.avatar || accountIcon,
+        isOpponent: userSide !== "black",
       }
     : {
         color: "Black",
@@ -182,6 +203,12 @@ const ChessBoard = (props) => {
           userSide === "black" && user
             ? `${user?.name} ${user?.rating}` || "Black player"
             : "Black player",
+        achievement:
+          userSide === "black"
+            ? user?.achievements.selectedIcon
+            : appState.opponent?.selectedAchievement,
+        achievementLevel:
+          userSide === "black" ? null : appState.opponent?.achievementLevel,
         avatar:
           userSide === "black" && user
             ? user?.avatar || accountIcon
@@ -213,10 +240,42 @@ const ChessBoard = (props) => {
       />
       <div className={styles["player-info"]}>
         <span className={styles["player-color"]}>{player.color}</span>
-        <span className={styles["player-name"]}>{player.name}</span>
+        <span className={styles["player-name"]}>
+          {player.name}
+
+          {player.achievement && (
+            <img
+              src={getAchievementIcon(player)}
+              className={styles["achievement-icon"]}
+              alt=""
+            />
+          )}
+        </span>
       </div>
     </div>
   );
+const LEVEL_NAMES = {
+  1: "bronze",
+  2: "silver",
+  3: "gold",
+  4: "platinum",
+};
+
+const getAchievementIcon = (player) => {
+  if (!player.achievement) return null;
+
+  if (player.isOpponent) {
+    return `/src/assets/icons/${
+      LEVEL_NAMES[player.achievementLevel]
+    }_${player.achievement}.png`;
+  }
+
+  const level = user?.achievements?.icons?.[user?.achievements?.selectedIcon];
+
+  return `/src/assets/icons/${
+    ["", "bronze", "silver", "gold", "platinum"][level]
+  }_${player.achievement}.png`;
+};
 
   return (
     <article

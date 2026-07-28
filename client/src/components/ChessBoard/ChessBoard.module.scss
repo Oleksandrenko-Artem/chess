@@ -225,6 +225,29 @@
     right: 2px;
   }
 }
+
+.player-name {
+  display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: nowrap;
+    font-weight: 600;
+}
+
+.player-rating {
+    color: #bbb;
+}
+
+.achievement-icon {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+}
+.achievement-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+}
 .game-status-text {
   @extend %panel-style;
   display: flex;

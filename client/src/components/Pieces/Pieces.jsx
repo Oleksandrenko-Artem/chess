@@ -84,6 +84,7 @@ import brick from "../../assets/icons/brick.png";
 import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
 import pieceStyles from "./Pieces.module.scss";
 import { useTranslation } from "react-i18next";
+import { getPieceStyle } from "../../helpers/getPieceImage";
 
 const imageMap = {
   black_imperator,
@@ -155,34 +156,6 @@ const imageMap = {
   brick,
 };
 
-const getPieceImageSrc = (pieceName) => {
-  if (!pieceName) return "";
-  try {
-    if (pieceName.endsWith("_rook")) {
-      const rep =
-        typeof window !== "undefined"
-          ? localStorage.getItem("replaceRook")
-          : null;
-      if (rep === "sailboat") {
-        return (
-          imageMap[pieceName.replace("rook", "sailboat")] ||
-          imageMap[pieceName] ||
-          ""
-        );
-      }
-      if (rep === "chariot") {
-        return (
-          imageMap[pieceName.replace("rook", "chariot")] ||
-          imageMap[pieceName] ||
-          ""
-        );
-      }
-    }
-  } catch (e) {
-    // ignore and fallback to regular mapping
-  }
-  return imageMap[pieceName] || "";
-};
 const getActualPiece = (piece) => {
   if (!piece) return piece;
   try {
@@ -346,7 +319,11 @@ const Pieces = ({ flipped = false }) => {
       return;
     }
 
-    const pieceImage = getPieceImageSrc(pieceAtStart);
+    const pieceImage = getPieceStyle(
+      pieceAtStart,
+      pieceAtStart.startsWith(localStorage.getItem("chess_side")),
+      user,
+    );
     setMovingPiece({
       piece: pieceAtStart,
       imageSrc: pieceImage,
@@ -816,6 +793,24 @@ const Pieces = ({ flipped = false }) => {
             },
       }),
     );
+    if (user && (gameStatus === status.white || gameStatus === status.black)) {
+      const winnerColor = gameStatus === status.white ? "white" : "black";
+
+      if (winnerColor === localStorage.getItem("chess_side")) {
+        const matePiece = piece.replace("white_", "").replace("black_", "");
+
+        fetch("http://localhost:3000/achievements", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: user._id,
+            matePiece,
+          }),
+        });
+      }
+    }
     if (appState.isMultiplayer) {
       socket.emit("makeMove", {
         roomId: appState.roomId,
@@ -1193,8 +1188,14 @@ const Pieces = ({ flipped = false }) => {
                       rank={realRank}
                       file={realFile}
                       piece={f}
-                      imageSrc={getPieceImageSrc(f)}
-                      className={isLoserPiece(f) ? pieceStyles['loser-piece'] : ""}
+                      imageSrc={getPieceStyle(
+                          f,
+                          f.startsWith(localStorage.getItem("chess_side")),
+                          user
+                      )}
+                      className={
+                        isLoserPiece(f) ? pieceStyles["loser-piece"] : ""
+                      }
                     />
                   ) : null}
                 </div>

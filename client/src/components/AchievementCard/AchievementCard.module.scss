@@ -1,0 +1,29 @@
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/mixins" as *;
+
+.card {
+    @extend %panel-style;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: row;
+    gap: 20px;
+    padding: 15px;
+    margin: 10px;
+    height: 80px;
+    .image-style {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 20px;
+    }
+    .level-div {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        button {
+            @extend %btn-style;
+            @include button-style(140px, 30px, 5px);
+        }
+    }
+}

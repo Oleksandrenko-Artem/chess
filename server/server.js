@@ -3,6 +3,7 @@ const app = require('./app');
 const connectDB = require('./config/db');
 const { Server } = require('socket.io');
 const { getInitialStateByMode } = require('./helpers');
+const { updateAchievements } = require("./helpers/achievements.js");
 const User = require('./models/User');
 
 connectDB();
@@ -11,8 +12,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://7622b2ba0a6f2dba-95-47-113-236.serveousercontent.com",
-            "https://e1f2c40d4df75d0e-95-47-113-236.serveousercontent.com",
+            "https://f5f2dc3e7012cea7-95-47-113-3.serveousercontent.com",
+            "https://3245613157cc7d47-95-47-113-3.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -238,7 +239,7 @@ io.on('connection', (socket) => {
                     io.to(player.socketId).emit('playersReady', {
                         playersCount: 2,
                         yourSide: player.side,
-                        opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, },
+                        opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel },
                         message: 'Players ready',
                     });
                 });
@@ -308,6 +309,8 @@ io.on('connection', (socket) => {
             name: gameData.userName,
             avatar: gameData.userAvatar,
             rating: gameData.userRating,
+            selectedAchievement: gameData.userSelectedAchievement,
+            achievementLevel: gameData.userAchievementLevel,
         });
 
         socket.emit('gameInfo', {
@@ -348,7 +351,7 @@ io.on('connection', (socket) => {
                 io.to(player.socketId).emit('playersReady', {
                     playersCount: 2,
                     yourSide: player.side,
-                    opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, },
+                    opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel },
                     message: 'Players ready',
                 });
             });
@@ -361,6 +364,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on("makeMove", async ({ roomId, move }) => {
+        console.log("MOVE RECEIVED");
         const room = rooms[roomId];
         if (!room) return;
 
@@ -370,9 +374,27 @@ io.on('connection', (socket) => {
 
         if (move.gameStatus === "White wins") {
             await finishGame(roomId, "white");
-        } else if (move.gameStatus === "Black wins") {
+
+            const winner = room.players.find(p => p.side === "white");
+
+            await updateAchievements(
+                winner.userId,
+                move.lastMovePiece
+            );
+        }
+
+        if (move.gameStatus === "Black wins") {
             await finishGame(roomId, "black");
-        } else if (move.gameStatus === "Draw") {
+
+            const winner = room.players.find(p => p.side === "black");
+
+            await updateAchievements(
+                winner.userId,
+                move.lastMovePiece
+            );
+        }
+
+        if (move.gameStatus === "Draw") {
             await finishGame(roomId, "draw");
         }
     });

@@ -86,7 +86,8 @@
     "upload_photo": "Завантаження...",
     "change_photo": "Змінити фото",
     "remove_photo": "Видалити фото",
-    "delete_user": "Ви дійсно хочете видалити профіль?"
+    "delete_user": "Ви дійсно хочете видалити профіль?",
+    "achievements": "Досягнення"
   },
   "captured_pieces": {
     "white": "Білі",
@@ -105,7 +106,11 @@
     "orange": "Бурштин",
     "red": "Рубін",
     "alexandrite": "Олександрит",
-    "onix": "Онікс"
+    "onix": "Онікс",
+    "bronze": "Бронза",
+    "silver": "Срібло",
+    "gold": "Золото",
+    "platinum": "Платина"
   },
   "form_panel": {
     "name": "І'мя",

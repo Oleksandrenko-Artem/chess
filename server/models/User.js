@@ -22,6 +22,50 @@ const userSchema = mongoose.Schema({
         default: 200,
         required: true,
     },
+    achievements: {
+        icons: {
+            bishop: { type: Number, default: 0 },
+            horse: { type: Number, default: 0 },
+            rook: { type: Number, default: 0 },
+            ferz: { type: Number, default: 0 },
+            king: { type: Number, default: 0 },
+            soldier: { type: Number, default: 0 },
+
+            elephant: { type: Number, default: 0 },
+            firzan: { type: Number, default: 0 },
+            knight: { type: Number, default: 0 },
+        },
+        selectedIcon: {
+            type: String,
+            default: null,
+        },
+        selectedPieceSet: {
+            type: String,
+            default: "standart",
+        },
+        pieceSets: {
+            bronze: { type: Boolean, default: false },
+            silver: { type: Boolean, default: false },
+            gold: { type: Boolean, default: false },
+            platinum: { type: Boolean, default: false },
+        },
+        stats: {
+            bishop: { type: Number, default: 0 },
+            rook: { type: Number, default: 0 },
+            horse: { type: Number, default: 0 },
+            ferz: { type: Number, default: 0 },
+            soldier: { type: Number, default: 0 },
+            king: { type: Number, default: 0 },
+
+            elephant: { type: Number, default: 0 },
+            firzan: { type: Number, default: 0 },
+            knight: { type: Number, default: 0 },
+        },
+    },
+    pieceStyle: {
+        type: String,
+        default: "default", // default | bronze | silver | gold | platinum
+    },
     boardColor: {
         light: { type: String, default: 'linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)' },
         dark: { type: String, default: 'linear-gradient(160deg,rgb(89, 142, 255) 0%, rgb(0, 43, 122) 50%, rgb(2, 0, 36) 100%)' }

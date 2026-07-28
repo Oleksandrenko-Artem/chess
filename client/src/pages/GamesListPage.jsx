@@ -464,6 +464,7 @@ const GamesListPage = ({ start, setStart }) => {
         userAvatar: user?.avatar,
         userId: user?._id,
         userRating: user?.rating,
+        userSelectedAchievement: user?.achievements.selectedIcon,
         whiteTime: room.whiteTime ?? appState.whiteTime,
         blackTime: room.blackTime ?? appState.blackTime,
       },
@@ -472,7 +473,6 @@ const GamesListPage = ({ start, setStart }) => {
           alert(response?.error || "Failed to enter the room");
           return;
         }
-
         if (response?.initialState) {
           dispatch({
             type: actionTypes.RESET_GAME,

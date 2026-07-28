@@ -47,6 +47,7 @@ import Shatranj960Page from "./pages/Shatranj960Page";
 import CheckersPage from "./pages/CheckersPage";
 import NewVariantChessPage from "./pages/NewVariantChessPage";
 import NewVariantChess960Page from "./pages/NewVariantChess960Page";
+import AchievementsPage from "./pages/AchievementsPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -153,7 +154,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://e1f2c40d4df75d0e-95-47-113-236.serveousercontent.com";
+      "https://3245613157cc7d47-95-47-113-3.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -360,6 +361,10 @@ function App() {
       return;
     }
 
+    if (user?.selectedPieceSet) {
+      localStorage.setItem("pieceStyle", user.selectedPieceSet);
+    }
+
     try {
       const light = getStoredColor("lightSquareColor", DEFAULT_LIGHT_COLOR);
       const dark = getStoredColor("darkSquareColor", DEFAULT_DARK_COLOR);
@@ -440,6 +445,7 @@ function App() {
             }
           />
           <Route path="/create-position" element={<CreatePositionPage />} />
+          <Route path="/achievements" element={<AchievementsPage />} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

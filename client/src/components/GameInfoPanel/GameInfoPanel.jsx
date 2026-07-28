@@ -33,6 +33,9 @@ const GameInfoPanel = (props) => {
   const [boardStyle, setBoardStyle] = useState(
     localStorage.getItem("boardStyle") || "standart",
   );
+  const [pieceStyle, setPieceStyle] = useState(
+    localStorage.getItem("pieceStyle") || "standart",
+  );
   const [selectedColor, setSelectedColor] = useState(null);
 
   const getEarlyExitLossUpdate = () => {
@@ -260,11 +263,35 @@ const GameInfoPanel = (props) => {
     }
     return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
   };
-  const handleBoardStyleChange = (event) => {
+  const handlePieceStyleChange = (event) => {
     const style = event.target.value;
-    setBoardStyle(style);
 
-    const selected = BOARD_STYLES[style];
+    if (style !== "standart" && !user?.achievements?.pieceSets?.[style]) {
+      return;
+    }
+
+    setPieceStyle(style);
+    localStorage.setItem("pieceStyle", style);
+
+    if (user?._id) {
+      reduxDispatch(
+        updateUserThunk({
+          id: user._id,
+          values: {
+            achievements: {
+              ...user.achievements,
+              selectedPieceSet: style,
+            },
+          },
+        }),
+      );
+    }
+  };
+  const handleBoardStyleChange = (event) => {
+    const styleBoard = event.target.value;
+    setBoardStyle(styleBoard);
+
+    const selected = BOARD_STYLES[styleBoard];
 
     if (selected) {
       document.documentElement.style.setProperty(
@@ -276,7 +303,7 @@ const GameInfoPanel = (props) => {
         selected.dark,
       );
 
-      localStorage.setItem("boardStyle", style);
+      localStorage.setItem("boardStyle", styleBoard);
     }
   };
   const handleBotLevelChange = (event) => {
@@ -284,6 +311,31 @@ const GameInfoPanel = (props) => {
     setBotLevel(level);
     localStorage.setItem("bot_level", level.toString());
   };
+  const unlockedSets = user?.achievements?.pieceSets || {};
+
+  const pieceOptions = [
+    { value: "standart", label: t("style_panel.standart"), unlocked: true },
+    {
+      value: "bronze",
+      label: t("style_panel.bronze"),
+      unlocked: unlockedSets.bronze,
+    },
+    {
+      value: "silver",
+      label: t("style_panel.silver"),
+      unlocked: unlockedSets.silver,
+    },
+    {
+      value: "gold",
+      label: t("style_panel.gold"),
+      unlocked: unlockedSets.gold,
+    },
+    {
+      value: "platinum",
+      label: t("style_panel.platinum"),
+      unlocked: unlockedSets.platinum,
+    },
+  ];
   return (
     <div className={styles.wrapper}>
       {!start &&
@@ -334,6 +386,7 @@ const GameInfoPanel = (props) => {
             </div>
             <Timer />
             <div className={styles["buttons-div"]}>
+              <h3>Board style</h3>
               <select value={boardStyle} onChange={handleBoardStyleChange}>
                 <option value="standart">{t("style_panel.standart")}</option>
                 <option value="classic">{t("style_panel.classic")}</option>
@@ -350,6 +403,23 @@ const GameInfoPanel = (props) => {
                   {t("style_panel.alexandrite")}
                 </option>
                 <option value="onix">{t("style_panel.onix")}</option>
+              </select>
+              <h3>Piece style</h3>
+              <select
+                value={pieceStyle}
+                onChange={handlePieceStyleChange}
+                disabled={localStorage.getItem("chess_variant") === "custom"}
+              >
+                {pieceOptions.map((option) => (
+                  <option
+                    key={option.value}
+                    value={option.value}
+                    disabled={!option.unlocked}
+                  >
+                    {option.label}
+                    {!option.unlocked ? " 🔒" : ""}
+                  </option>
+                ))}
               </select>
               <button onClick={handleToggle}>
                 {t("custom_panel.rotate_board")}

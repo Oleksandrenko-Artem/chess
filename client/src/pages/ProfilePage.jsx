@@ -115,6 +115,9 @@ const ProfilePage = () => {
       }
     }
   };
+  const handleNavigateAchievements = () => {
+    navigate('/achievements');
+  };
 
   return (
     <div className={styles.profile}>
@@ -177,7 +180,19 @@ const ProfilePage = () => {
         </div>
         <div className={styles["profile-info"]}>
           <p>
-            <b>{t("profile.name")}:</b> {user?.name}
+            <b>{t("profile.name")}:</b> {user?.name}{" "}
+            {user?.achievements?.selectedIcon && (
+              <img
+                src={`/src/assets/icons/${
+                  ["", "bronze", "silver", "gold", "platinum"][
+                    user.achievements.icons[user.achievements.selectedIcon]
+                  ]
+                }_${user.achievements.selectedIcon}.png`}
+                width={24}
+                height={24}
+                alt=""
+              />
+            )}
           </p>
           <p>
             <b>{t("profile.rating")}:</b> {user?.rating}
@@ -185,6 +200,9 @@ const ProfilePage = () => {
           <p>
             <b>{t("profile.email")}:</b> {user?.email}
           </p>
+          <button onClick={handleNavigateAchievements}>
+            {t("profile.achievements")}
+          </button>
           <div className={styles["stats-section"]}>
             <h3>{t("statistic_panel.bot")}</h3>
             <table className={styles.users}>

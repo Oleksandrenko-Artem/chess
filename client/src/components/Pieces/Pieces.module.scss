@@ -4,6 +4,7 @@
   height: 80%;
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -16,6 +17,7 @@
   height: 80%;
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -29,6 +31,7 @@
   margin-top: 20%;
   max-width: 100%;
   max-height: 100%;
+  object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -37,6 +40,7 @@
 .piece-travel {
   position: absolute;
   z-index: 6;
+  object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;

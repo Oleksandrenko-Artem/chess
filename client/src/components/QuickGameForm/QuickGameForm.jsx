@@ -189,6 +189,7 @@ const QuickGameForm = ({ setWindowMode, setStart = () => { } }) => {
                 userAvatar: user.avatar,
                 userId: user._id,
                 userRating: user.rating,
+                userSelectedAchievement: user?.achievements,
                 whiteTime: timeType,
                 blackTime: timeType,
                 isQuickGame: true,

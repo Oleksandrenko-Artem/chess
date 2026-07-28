@@ -39,7 +39,7 @@ const MODE_LABELS = {
   custom: "Custom",
 };
 
-const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
+const CreateRoomWindow = ({ setWindowMode = () => {}, setStart = () => {} }) => {
   const storedVariant = localStorage.getItem("chess_variant");
   const [gameMode, setGameMode] = useState(
     storedVariant === "special" ? "custom" : storedVariant || "chess",
@@ -210,6 +210,9 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
               userAvatar: user?.avatar,
               userId: user?._id,
               userRating: user?.rating,
+              userSelectedAchievement: user?.achievements.selectedIcon,
+              userAchievementLevel:
+                user?.achievements.icons?.[user?.achievements.selectedIcon],
               whiteTime: timeType,
               blackTime: timeType,
             },
@@ -220,7 +223,6 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
                 );
                 return;
               }
-
               applyRoomStateFromResponse(
                 joinResponse,
                 foundRoomId,
@@ -272,6 +274,9 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
               userAvatar: user?.avatar,
               userId: user?._id,
               userRating: user?.rating,
+              userSelectedAchievement: user?.achievements.selectedIcon,
+              userAchievementLevel:
+                user?.achievements.icons?.[user?.achievements.selectedIcon],
               whiteTime: timeType,
               blackTime: timeType,
             },
@@ -280,7 +285,6 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
                 alert(createResponse?.error || "Не удалось создать комнату");
                 return;
               }
-
               applyRoomStateFromResponse(
                 createResponse,
                 roomId,
@@ -333,6 +337,9 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
           userAvatar: user?.avatar,
           userId: user?._id,
           userRating: user?.rating,
+          userSelectedAchievement: user?.achievements.selectedIcon,
+          userAchievementLevel:
+            user?.achievements.icons?.[user?.achievements.selectedIcon],
           whiteTime: timeType,
           blackTime: timeType,
         },
@@ -341,7 +348,6 @@ const CreateRoomWindow = ({ setWindowMode, setStart = () => {} }) => {
             alert(response?.error || "Не удалось создать комнату");
             return;
           }
-
           applyRoomStateFromResponse(response, roomId, null);
 
           setStart(false);

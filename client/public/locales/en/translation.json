@@ -88,7 +88,8 @@
     "upload_photo": "Uploading...",
     "change_photo": "Change photo",
     "remove_photo": "Remove photo",
-    "delete_user": "Do you really want to delete the profile?"
+    "delete_user": "Do you really want to delete the profile?",
+    "achievements": "Achievements"
   },
   "captured_pieces": {
     "white": "White",
@@ -109,7 +110,11 @@
     "orange": "Amber",
     "red": "Ruby",
     "alexandrite": "Alexandrite",
-    "onix": "Onix"
+    "onix": "Onix",
+    "bronze": "Bronze",
+    "silver": "Silver",
+    "gold": "Gold",
+    "platinum": "Platinum"
   },
   "form_panel": {
     "name": "Name",
