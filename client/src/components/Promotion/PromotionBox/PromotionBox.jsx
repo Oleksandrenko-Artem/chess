@@ -2,6 +2,8 @@ import React, { useEffect, useCallback, useRef } from "react";
 import { useAppContext } from "../../../contexts/Context";
 import { copyPosition, getNewMoveNotation } from "../../../helpers";
 import { promoteAndMove } from "../../../reducers/actions/promotion";
+import { getPieceStyle } from "../../../helpers/getPieceImage";
+import { useSelector } from "react-redux";
 import arbiter from "../../../arbiter/arbiter";
 import black_ferz from "../../../assets/icons/black_ferz.png";
 import black_rook from "../../../assets/icons/black_rook.png";
@@ -125,6 +127,7 @@ const promoImageMap = {
 };
 
 const PromotionBox = ({ onClosePromotion }) => {
+  const user = useSelector((state) => state.users.user);
   const options =
     localStorage.getItem("chess_variant") === "special"
       ? JSON.parse(localStorage.getItem("promotion_options")) || [
@@ -275,8 +278,10 @@ const PromotionBox = ({ onClosePromotion }) => {
                 : "rook"
             : option;
         const keyName = `${color}_${displayOption}`;
-        const imageSrc = promoImageMap[keyName];
-        const style = imageSrc ? { backgroundImage: `url(${imageSrc})` } : {};
+        const imageSrc = getPieceStyle(keyName, true, user);
+        const style = {
+          backgroundImage: `url(${imageSrc})`,
+        };
         if (option === "pawn") {
           style.marginTop = "5px";
           style.width = "40px";

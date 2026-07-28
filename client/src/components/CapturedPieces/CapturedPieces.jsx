@@ -1,4 +1,6 @@
 import React from "react";
+import { getPieceStyle } from "../../helpers/getPieceImage";
+import { useSelector } from "react-redux";
 import styles from "./CapturedPieces.module.scss";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_soldier from "../../assets/icons/black_soldier.png";
@@ -147,6 +149,8 @@ const CapturedPieces = ({
   whiteCaptures,
   blackCaptures,
 }) => {
+  const user = useSelector((state) => state.users.user);
+  const myColor = localStorage.getItem("chess_side");
   return (
     <div className={styles["captured-container"]}>
       <div className={styles["side"]}>
@@ -155,7 +159,7 @@ const CapturedPieces = ({
             const type = getPieceType(piece);
             return (
               <div key={idx} className={styles["captured-piece"]}>
-                <img src={imageMap[piece]} alt={piece} />
+                <img src={getPieceStyle(piece, piece.startsWith(myColor), user)} alt={piece} />
               </div>
             );
           })}
@@ -163,7 +167,10 @@ const CapturedPieces = ({
             const type = getPieceType(piece);
             return (
               <div key={idx} className={styles["captured-piece"]}>
-                <img src={imageMap[piece]} alt={piece} />
+                <img
+                  src={getPieceStyle(piece, piece.startsWith(myColor), user)}
+                  alt={piece}
+                />
               </div>
             );
           })}

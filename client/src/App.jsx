@@ -154,7 +154,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://3245613157cc7d47-95-47-113-3.serveousercontent.com";
+      "https://94149a2656e6d162-95-47-113-3.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
