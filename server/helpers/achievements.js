@@ -11,7 +11,7 @@ const ACHIEVEMENTS = {
     firzan: [3, 12, 26, 68],
     knight: [5, 50, 100, 250],
     prince: [3, 12, 26, 68],
-    duke: [5, 50, 100, 250],
+    duke: [3, 12, 26, 68],
 };
 
 function getLevel(count, levels) {
@@ -58,6 +58,10 @@ const PIECE_ALIASES = {
     elephant: "elephant",
 
     king: "king",
+    king: "imperator",
+
+    prince: "prince",
+    duke: "duke",
 };
 
 async function updateAchievements(userId, matePiece) {

@@ -34,6 +34,8 @@ const userSchema = mongoose.Schema({
             elephant: { type: Number, default: 0 },
             firzan: { type: Number, default: 0 },
             knight: { type: Number, default: 0 },
+            prince: { type: Number, default: 0 },
+            duke: { type: Number, default: 0 },
         },
         selectedIcon: {
             type: String,
@@ -60,6 +62,8 @@ const userSchema = mongoose.Schema({
             elephant: { type: Number, default: 0 },
             firzan: { type: Number, default: 0 },
             knight: { type: Number, default: 0 },
+            prince: { type: Number, default: 0 },
+            duke: { type: Number, default: 0 },
         },
     },
     pieceStyle: {

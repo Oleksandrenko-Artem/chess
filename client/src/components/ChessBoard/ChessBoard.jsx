@@ -138,14 +138,34 @@ const ChessBoard = (props) => {
       ? localStorage.getItem("chess_side") || orientation
       : orientation;
 
+  const formatPlayerName = ({
+    currentUser,
+    opponent,
+    fallback,
+    isCurrentSide,
+  }) => {
+    if (isCurrentSide && currentUser?.name) {
+      const ratingPart = currentUser?.rating ? ` ${currentUser.rating}` : "";
+      return `${currentUser.name}${ratingPart}`;
+    }
+
+    if (opponent?.name) {
+      const ratingPart = opponent?.rating ? ` ${opponent.rating}` : "";
+      return `${opponent.name}${ratingPart}`;
+    }
+
+    return fallback;
+  };
+
   let whitePlayer = appState.isMultiplayer
     ? {
         color: "White",
-        name:
-          userSide === "white"
-            ? `${user?.name} ${user?.rating}` || "White player"
-            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
-              "White player",
+        name: formatPlayerName({
+          currentUser: user,
+          opponent: appState.opponent,
+          fallback: "White player",
+          isCurrentSide: userSide === "white",
+        }),
         achievement:
           userSide === "white"
             ? user?.achievements.selectedIcon
@@ -160,11 +180,12 @@ const ChessBoard = (props) => {
       }
     : {
         color: "White",
-        name:
-          userSide === "white"
-            ? `${user?.name} ${user?.rating}` || "White player"
-            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
-              "White player",
+        name: formatPlayerName({
+          currentUser: user,
+          opponent: appState.opponent,
+          fallback: "White player",
+          isCurrentSide: userSide === "white",
+        }),
         achievement:
           userSide === "white"
             ? user?.achievements.selectedIcon
@@ -180,11 +201,12 @@ const ChessBoard = (props) => {
   let blackPlayer = appState.isMultiplayer
     ? {
         color: "Black",
-        name:
-          userSide === "black"
-            ? `${user?.name} ${user?.rating}` || "Black player"
-            : `${appState.opponent?.name} ${appState.opponent?.rating}` ||
-              "Black player",
+        name: formatPlayerName({
+          currentUser: user,
+          opponent: appState.opponent,
+          fallback: "Black player",
+          isCurrentSide: userSide === "black",
+        }),
         achievement:
           userSide === "black"
             ? user?.achievements.selectedIcon
@@ -199,10 +221,12 @@ const ChessBoard = (props) => {
       }
     : {
         color: "Black",
-        name:
-          userSide === "black" && user
-            ? `${user?.name} ${user?.rating}` || "Black player"
-            : "Black player",
+        name: formatPlayerName({
+          currentUser: user,
+          opponent: appState.opponent,
+          fallback: "Black player",
+          isCurrentSide: userSide === "black",
+        }),
         achievement:
           userSide === "black"
             ? user?.achievements.selectedIcon
@@ -254,28 +278,28 @@ const ChessBoard = (props) => {
       </div>
     </div>
   );
-const LEVEL_NAMES = {
-  1: "bronze",
-  2: "silver",
-  3: "gold",
-  4: "platinum",
-};
+  const LEVEL_NAMES = {
+    1: "bronze",
+    2: "silver",
+    3: "gold",
+    4: "platinum",
+  };
 
-const getAchievementIcon = (player) => {
-  if (!player.achievement) return null;
+  const getAchievementIcon = (player) => {
+    if (!player.achievement) return null;
 
-  if (player.isOpponent) {
+    if (player.isOpponent) {
+      return `/src/assets/icons/${
+        LEVEL_NAMES[player.achievementLevel]
+      }_${player.achievement}.png`;
+    }
+
+    const level = user?.achievements?.icons?.[user?.achievements?.selectedIcon];
+
     return `/src/assets/icons/${
-      LEVEL_NAMES[player.achievementLevel]
+      ["", "bronze", "silver", "gold", "platinum"][level]
     }_${player.achievement}.png`;
-  }
-
-  const level = user?.achievements?.icons?.[user?.achievements?.selectedIcon];
-
-  return `/src/assets/icons/${
-    ["", "bronze", "silver", "gold", "platinum"][level]
-  }_${player.achievement}.png`;
-};
+  };
 
   return (
     <article
