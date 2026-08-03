@@ -288,17 +288,34 @@ const ChessBoard = (props) => {
   const getAchievementIcon = (player) => {
     if (!player.achievement) return null;
 
+    const parseSelectedAchievement = (value) => {
+      if (!value) return { style: "bronze", piece: player.achievement };
+
+      if (value.includes("_")) {
+        const [style, ...pieceParts] = value.split("_");
+        return { style, piece: pieceParts.join("_") };
+      }
+
+      const level = user?.achievements?.icons?.[value] ?? 0;
+      return {
+        style:
+          ["", "bronze", "silver", "gold", "platinum"][Math.min(level, 4)] ||
+          "bronze",
+        piece: value,
+      };
+    };
+
     if (player.isOpponent) {
       return `/src/assets/icons/${
-        LEVEL_NAMES[player.achievementLevel]
+        LEVEL_NAMES[player.achievementLevel] || "bronze"
       }_${player.achievement}.png`;
     }
 
-    const level = user?.achievements?.icons?.[user?.achievements?.selectedIcon];
+    const selected = parseSelectedAchievement(user?.achievements?.selectedIcon);
+    const piece = selected.piece || player.achievement;
+    const style = selected.style || "bronze";
 
-    return `/src/assets/icons/${
-      ["", "bronze", "silver", "gold", "platinum"][level]
-    }_${player.achievement}.png`;
+    return `/src/assets/icons/${style}_${piece}.png`;
   };
 
   return (

@@ -42,6 +42,10 @@ const userSchema = mongoose.Schema({
             type: String,
             default: null,
         },
+        unlockedIcons: {
+            type: mongoose.Schema.Types.Mixed,
+            default: {},
+        },
         selectedPieceSet: {
             type: String,
             default: "standart",

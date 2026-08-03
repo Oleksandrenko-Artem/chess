@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const createError = require('http-errors');
 const User = require("../models/User");
 const CONSTANTS = require('../constants');
+const { normalizeAchievementLevels } = require('../helpers/achievements');
 
 module.exports.registerUser = async (req, res, next) => {
     try {
@@ -37,6 +38,8 @@ module.exports.loginUser = async (req, res, next) => {
 };
 module.exports.getUserAccount = async (req, res, next) => {
     try {
+        normalizeAchievementLevels(req.user);
+        await req.user.save();
         res.status(200).send({ data: req.user });
     } catch (error) {
         next(error);
@@ -65,11 +68,17 @@ module.exports.patchUser = async (req, res, next) => {
         if (updateData.password) {
             updateData.password = await bcrypt.hash(updateData.password, 10);
         }
-        const updateUser = await User.findByIdAndUpdate(req.params.idUser, updateData, { new: true });
-        if (!updateUser) {
-            throw createError(404, "User not found")
+
+        const currentUser = await User.findById(req.params.idUser);
+        if (!currentUser) {
+            throw createError(404, "User not found");
         }
-        res.status(200).send({ data: updateUser });
+
+        Object.assign(currentUser, updateData);
+        normalizeAchievementLevels(currentUser);
+        await currentUser.save();
+
+        res.status(200).send({ data: currentUser });
     } catch (error) {
         if (error.code === 11000) {
             return next(createError(409, 'Email is already exists'));

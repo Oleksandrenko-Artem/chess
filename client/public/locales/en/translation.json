@@ -89,7 +89,8 @@
     "change_photo": "Change photo",
     "remove_photo": "Remove photo",
     "delete_user": "Do you really want to delete the profile?",
-    "achievements": "Achievements"
+    "achievements": "Achievements",
+    "collections": "Collections"
   },
   "captured_pieces": {
     "white": "White",
@@ -116,6 +117,25 @@
     "gold": "Gold",
     "platinum": "Platinum",
     "iridium": "Iridium"
+  },
+  "achievements_panel": {
+    "soldier": "The badge is updated after 1, 5, 10 and 50 captures with this piece",
+    "horse": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "bishop": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "rook": "The badge is updated after 5, 50, 100 and 250 captures with this piece",
+    "ferz": "The badge is updated after 5, 50, 100 and 250 captures with this piece",
+    "king": "The badge is updated after 1, 5, 10 and 50 captures with this piece",
+    "elephant": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "firzan": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "knight": "The badge is updated after 5, 50, 100 and 250 captures with this piece",
+    "prince": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "duke": "The badge is updated after 3, 12, 26 and 68 captures with this piece",
+    "achievements": "Achievements",
+    "unlocked": "Unlocked",
+    "not_unlocked": "Not unlocked",
+    "all_unlocked": "All unlocked",
+    "claim": "Claim",
+    "checkmates": "Checkmates"
   },
   "form_panel": {
     "name": "Name",

@@ -410,3 +410,37 @@
     }
   }
 }
+.collections-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  .collections-grid {
+    display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  margin: 0 10px 0 10px;
+  .collection-card {
+    @extend %panel-style;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 250px;
+    height: 250px;
+    padding: 10px;
+    h3 {
+      margin: 0;
+      font-size: 1.2em;
+      text-align: center;
+    }
+    button {
+      @extend %btn-style;
+      @include button-style(120px, 35px, 10px);
+    }
+  }
+}
+}

@@ -3,9 +3,9 @@ const User = require("../models/User");
 const ACHIEVEMENTS = {
     bishop: [3, 12, 26, 68],
     rook: [5, 50, 100, 250],
-    horse: [3, 12, 26, 68],
+    horse: [2, 10, 22, 45],
     ferz: [5, 50, 100, 250],
-    soldier: [1, 5, 10, 50],
+    soldier: [1, 6, 14, 32],
     king: [1, 5, 10, 50],
     elephant: [3, 12, 26, 68],
     firzan: [3, 12, 26, 68],
@@ -21,6 +21,23 @@ function getLevel(count, levels) {
     if (count >= levels[0]) return 1;
     return 0;
 }
+
+function normalizeAchievementLevels(user) {
+    if (!user?.achievements) return user;
+
+    const stats = user.achievements.stats || {};
+    const icons = user.achievements.icons || {};
+
+    Object.keys(ACHIEVEMENTS).forEach((piece) => {
+        const count = Number(stats[piece] || 0);
+        const levels = ACHIEVEMENTS[piece] || [0, 0, 0, 0];
+        icons[piece] = getLevel(count, levels);
+    });
+
+    user.achievements.icons = icons;
+    return user;
+}
+
 async function unlockPieceSets(user) {
 
     const icons = user.achievements.icons;
@@ -78,15 +95,12 @@ async function updateAchievements(userId, matePiece) {
 
     user.achievements.stats[matePiece]++;
 
-    user.achievements.icons[matePiece] = getLevel(
-        user.achievements.stats[matePiece],
-        ACHIEVEMENTS[matePiece]
-    );
-
+    normalizeAchievementLevels(user);
     await unlockPieceSets(user);
     await user.save();
 }
 
 module.exports = {
     updateAchievements,
+    normalizeAchievementLevels,
 };

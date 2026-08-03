@@ -19,47 +19,76 @@ const PIECES = [
 ];
 
 const AchievementsPage = () => {
-    const { user } = useSelector((state) => state.users);
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
-    const handleSelectIcon = async (piece) => {
-      await fetch(`/users/${user._id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+  const { user } = useSelector((state) => state.users);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const claimNextIcon = (piece) => {
+    if (!user?._id) {
+      return;
+    }
+
+    const pieceLevel = user?.achievements?.icons?.[piece] ?? 0;
+    const styles = ["bronze", "silver", "gold", "platinum"];
+    const unlocked = user?.achievements?.unlockedIcons?.[piece] || [];
+    const nextStyle = styles.find((style, index) => {
+      if (pieceLevel <= index) {
+        return false;
+      }
+      return !unlocked.includes(style);
+    });
+
+    if (!nextStyle) {
+      navigate("/collections");
+      return;
+    }
+
+    const updatedUnlocked = {
+      ...(user?.achievements?.unlockedIcons || {}),
+      [piece]: Array.from(
+        new Set([
+          ...(user?.achievements?.unlockedIcons?.[piece] || []),
+          nextStyle,
+        ]),
+      ),
+    };
+
+    dispatch(
+      updateUserThunk({
+        id: user._id,
+        values: {
           achievements: {
             ...user.achievements,
-            selectedIcon: piece,
+            selectedIcon: `${nextStyle}_${piece}`,
+            unlockedIcons: updatedUnlocked,
           },
-        }),
-      });
+        },
+      }),
+    );
 
-      dispatch(
-        updateUserThunk({
-          id: user._id,
-          values: {
-            achievements: {
-              ...user.achievements,
-              selectedIcon: piece,
-            },
-          },
-        }),
-        );
-        navigate('/account');
-    };
+    navigate("/collections");
+  };
+
   return (
     <div>
-      {PIECES.map((piece) => (
-        <AchievementCard
-          key={piece}
-          piece={piece}
-          level={user?.achievements?.icons[piece] ?? 0}
-          count={user?.achievements?.stats[piece] ?? 0}
-          onSelect={() => handleSelectIcon(piece)}
-        />
-      ))}
+      {PIECES.map((piece) => {
+        const pieceLevel = user?.achievements?.icons?.[piece] ?? 0;
+        const unlocked = user?.achievements?.unlockedIcons?.[piece] || [];
+        const isUnlocked = unlocked.length > 0;
+        const isAllUnlocked = pieceLevel >= 4 && isUnlocked;
+
+        return (
+          <AchievementCard
+            key={piece}
+            piece={piece}
+            level={pieceLevel}
+            count={user?.achievements?.stats[piece] ?? 0}
+            onSelect={() => claimNextIcon(piece)}
+            isUnlocked={isUnlocked}
+            isAllUnlocked={isAllUnlocked}
+          />
+        );
+      })}
     </div>
   );
 };

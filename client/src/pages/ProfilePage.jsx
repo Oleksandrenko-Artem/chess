@@ -5,8 +5,8 @@ import { useTranslation } from "react-i18next";
 import { deleteUserThunk, findUserAccountThunk } from "../store/usersSlice";
 import { updateUser } from "../api";
 import styles from "./Pages.module.scss";
-import { updateUserThunk } from './../store/usersSlice';
-import UpdateForm from './../components/forms/UpdateForm';
+import { updateUserThunk } from "./../store/usersSlice";
+import UpdateForm from "./../components/forms/UpdateForm";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -116,7 +116,7 @@ const ProfilePage = () => {
     }
   };
   const handleNavigateAchievements = () => {
-    navigate('/achievements');
+    navigate("/achievements");
   };
 
   return (
@@ -183,11 +183,26 @@ const ProfilePage = () => {
             <b>{t("profile.name")}:</b> {user?.name}{" "}
             {user?.achievements?.selectedIcon && (
               <img
-                src={`/src/assets/icons/${
-                  ["", "bronze", "silver", "gold", "platinum"][
-                    user.achievements.icons[user.achievements.selectedIcon]
-                  ]
-                }_${user.achievements.selectedIcon}.png`}
+                src={`/src/assets/icons/${(() => {
+                  const selected = user.achievements.selectedIcon;
+                  if (selected.includes("_")) {
+                    const [style] = selected.split("_");
+                    return style;
+                  }
+
+                  const level = user.achievements.icons[selected] ?? 0;
+                  return (
+                    ["", "bronze", "silver", "gold", "platinum"][
+                      Math.min(level, 4)
+                    ] || "bronze"
+                  );
+                })()}_${(() => {
+                  const selected = user.achievements.selectedIcon;
+                  if (selected.includes("_")) {
+                    return selected.split("_").slice(1).join("_");
+                  }
+                  return selected;
+                })()}.png`}
                 width={24}
                 height={24}
                 alt=""
@@ -202,6 +217,9 @@ const ProfilePage = () => {
           </p>
           <button onClick={handleNavigateAchievements}>
             {t("profile.achievements")}
+          </button>
+          <button onClick={() => navigate("/collections")}>
+            {t("profile.collections")}
           </button>
           <div className={styles["stats-section"]}>
             <h3>{t("statistic_panel.bot")}</h3>
@@ -246,6 +264,6 @@ const ProfilePage = () => {
       </div>
     </div>
   );
-};;
+};
 
 export default ProfilePage;

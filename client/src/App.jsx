@@ -48,6 +48,7 @@ import CheckersPage from "./pages/CheckersPage";
 import NewVariantChessPage from "./pages/NewVariantChessPage";
 import NewVariantChess960Page from "./pages/NewVariantChess960Page";
 import AchievementsPage from "./pages/AchievementsPage";
+import CollectionsPage from "./pages/CollectionsPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -455,8 +456,12 @@ function App() {
           {user && (
             <Route path="/create-position" element={<CreatePositionPage />} />
           )}
-          <Route path="/achievements" element={<AchievementsPage />} />
-
+          {user && (
+            <Route path="/achievements" element={<AchievementsPage />} />
+          )}
+          {user && (
+            <Route path="/collections" element={<CollectionsPage />} />
+          )}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Footer />
