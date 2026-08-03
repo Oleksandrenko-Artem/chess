@@ -6,13 +6,13 @@ const CONSTANTS = require('../constants');
 
 module.exports.registerUser = async (req, res, next) => {
     try {
-        const { name, rating, email, password } = req.body;
+        const { name, rating, email, password, role } = req.body;
         const exists = await User.findOne({ email });
         if (exists) {
             throw createError(409, 'Email already registeres');
         }
         const hash = await bcrypt.hash(password, 10);
-        const user = await User.create({ name, rating, email, password: hash });
+        const user = await User.create({ name, rating, email, password: hash, role });
         res.status(201).send({ data: user });
     } catch (error) {
         next(error);
@@ -53,6 +53,15 @@ module.exports.getAllUsers = async (req, res, next) => {
 module.exports.patchUser = async (req, res, next) => {
     try {
         const updateData = req.body;
+
+        if (updateData?.achievements?.selectedPieceSet === 'iridium' && req.user?.role !== 'admin') {
+            throw createError(403, 'Only admin can select Iridium');
+        }
+
+        if (updateData?.achievements?.pieceSets?.iridium === true && req.user?.role !== 'admin') {
+            throw createError(403, 'Only admin can unlock Iridium');
+        }
+
         if (updateData.password) {
             updateData.password = await bcrypt.hash(updateData.password, 10);
         }

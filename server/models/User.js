@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const CONSTANTS = require('../constants');
 
 const userSchema = mongoose.Schema({
     name: {
@@ -50,6 +51,7 @@ const userSchema = mongoose.Schema({
             silver: { type: Boolean, default: false },
             gold: { type: Boolean, default: false },
             platinum: { type: Boolean, default: false },
+            iridium: { type: Boolean, default: false },
         },
         stats: {
             bishop: { type: Number, default: 0 },
@@ -125,6 +127,10 @@ const userSchema = mongoose.Schema({
     multiLoses: {
         type: Number,
         default: 0,
+    },
+    role: {
+        type: String,
+        enum: CONSTANTS.USER_ROLES, default: CONSTANTS.USER_ROLES[0],
     }
 });
 

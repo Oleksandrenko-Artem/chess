@@ -361,8 +361,14 @@ function App() {
       return;
     }
 
-    if (user?.selectedPieceSet) {
-      localStorage.setItem("pieceStyle", user.selectedPieceSet);
+    const savedUserPieceStyle =
+      user?.achievements?.selectedPieceSet ||
+      localStorage.getItem("pieceStyle");
+
+    if (savedUserPieceStyle === "iridium" && user?.role !== "admin") {
+      localStorage.setItem("pieceStyle", "standart");
+    } else if (savedUserPieceStyle) {
+      localStorage.setItem("pieceStyle", savedUserPieceStyle);
     }
 
     try {
@@ -410,10 +416,12 @@ function App() {
               />
             }
           />
-          {user && <Route
-            path="/games"
-            element={<GamesListPage start={start} setStart={setStart} />}
-          />}
+          {user && (
+            <Route
+              path="/games"
+              element={<GamesListPage start={start} setStart={setStart} />}
+            />
+          )}
           <Route
             path="/play-chess"
             element={<ChessPage start={start} setStart={setStart} />}
@@ -444,7 +452,9 @@ function App() {
               <NewVariantChess960Page start={start} setStart={setStart} />
             }
           />
-          {user && <Route path="/create-position" element={<CreatePositionPage />} />}
+          {user && (
+            <Route path="/create-position" element={<CreatePositionPage />} />
+          )}
           <Route path="/achievements" element={<AchievementsPage />} />
 
           <Route path="*" element={<NotFoundPage />} />

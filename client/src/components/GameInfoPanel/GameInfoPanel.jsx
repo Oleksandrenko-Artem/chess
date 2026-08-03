@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
@@ -37,6 +37,23 @@ const GameInfoPanel = (props) => {
     localStorage.getItem("pieceStyle") || "standart",
   );
   const [selectedColor, setSelectedColor] = useState(null);
+
+  useEffect(() => {
+    if (!user) {
+      const savedStyle = localStorage.getItem("pieceStyle") || "standart";
+      setPieceStyle(savedStyle);
+      return;
+    }
+
+    const savedUserStyle = user?.achievements?.selectedPieceSet || "standart";
+    const normalizedStyle =
+      savedUserStyle === "iridium" && user?.role !== "admin"
+        ? "standart"
+        : savedUserStyle;
+
+    setPieceStyle(normalizedStyle);
+    localStorage.setItem("pieceStyle", normalizedStyle);
+  }, [user]);
 
   const getEarlyExitLossUpdate = () => {
     if (!user?._id) return null;
@@ -265,8 +282,17 @@ const GameInfoPanel = (props) => {
   };
   const handlePieceStyleChange = (event) => {
     const style = event.target.value;
+    const isAdmin = user?.role === "admin";
 
-    if (style !== "standart" && !user?.achievements?.pieceSets?.[style]) {
+    if (style === "iridium" && !isAdmin) {
+      return;
+    }
+
+    if (
+      style !== "standart" &&
+      style !== "iridium" &&
+      !user?.achievements?.pieceSets?.[style]
+    ) {
       return;
     }
 
@@ -312,9 +338,13 @@ const GameInfoPanel = (props) => {
     localStorage.setItem("bot_level", level.toString());
   };
   const unlockedSets = user?.achievements?.pieceSets || {};
+  const isAdmin = user?.role === "admin";
 
   const pieceOptions = [
     { value: "standart", label: t("style_panel.standart"), unlocked: true },
+    ...(isAdmin
+      ? [{ value: "iridium", label: t("style_panel.iridium"), unlocked: true }]
+      : []),
     {
       value: "bronze",
       label: t("style_panel.bronze"),

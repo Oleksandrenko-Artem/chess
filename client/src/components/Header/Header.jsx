@@ -18,8 +18,14 @@ const Header = (props) => {
   const [theme, setTheme] = useState(initialTheme);
   const [style, setStyle] = useState(initialStyle);
   const logout = () => {
-    dispatch(logoutUserThunk());
-    navigate('/');
+    dispatch(logoutUserThunk())
+      .unwrap()
+      .then(() => {
+        navigate("/");
+      })
+      .catch(() => {
+        navigate("/");
+      });
   };
   const handleChangeTheme = () => {
     setTheme((theme) => (theme === "light" ? "dark" : "light"));
@@ -155,6 +161,6 @@ const Header = (props) => {
       )}
     </header>
   );
-};;
+};
 
 export default Header;

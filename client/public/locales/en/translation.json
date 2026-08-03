@@ -114,7 +114,8 @@
     "bronze": "Bronze",
     "silver": "Silver",
     "gold": "Gold",
-    "platinum": "Platinum"
+    "platinum": "Platinum",
+    "iridium": "Iridium"
   },
   "form_panel": {
     "name": "Name",

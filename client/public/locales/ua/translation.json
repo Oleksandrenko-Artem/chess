@@ -110,7 +110,8 @@
     "bronze": "Бронза",
     "silver": "Срібло",
     "gold": "Золото",
-    "platinum": "Платина"
+    "platinum": "Платина",
+    "iridium": "Іридій"
   },
   "form_panel": {
     "name": "І'мя",

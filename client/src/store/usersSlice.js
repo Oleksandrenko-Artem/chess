@@ -11,7 +11,22 @@ export const updateUserThunk = createAsyncThunk('users/updateUserThunk', async (
     }
 });
 export const logoutUserThunk = createAsyncThunk('users/logoutUserThunk', async () => {
-    localStorage.removeItem('token');
+    const authKeys = [
+        'token',
+        'pieceStyle',
+        'boardStyle',
+        'chess_mode',
+        'chess_variant',
+        'botGameState',
+        'roomId',
+        'gameMode',
+        'chess_side',
+        'replaceRook',
+        'boardSize',
+        'promotion_options',
+    ];
+
+    authKeys.forEach((key) => localStorage.removeItem(key));
 });
 export const findAllUsersThunk = createAsyncThunk('users/findAllUsers', async (values, thunkAPI) => {
     try {

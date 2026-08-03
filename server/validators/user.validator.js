@@ -1,4 +1,5 @@
 const Yup = require('yup');
+const CONSTANTS = require('../constants');
 
 const nameSchema = Yup.string().trim().min(5).max(64);
 const emailSchema = Yup.string().trim().email();
@@ -12,6 +13,7 @@ module.exports.registerSchema = Yup.object({
     email: emailSchema.required(),
     password: passwordSchema.required(),
     rating: ratingSchema.required(),
+    role: Yup.string().oneOf(CONSTANTS.USER_ROLES),
 });
 
 module.exports.loginSchema = Yup.object({

@@ -14,6 +14,10 @@ export const getPieceStyle = (piece, isOwnPiece, user) => {
             "standart";
     }
 
+    if (style === "iridium" && user?.role !== "admin") {
+        style = "standart";
+    }
+
     if (style === "standart") {
         return `/src/assets/icons/${piece}.png`;
     }
