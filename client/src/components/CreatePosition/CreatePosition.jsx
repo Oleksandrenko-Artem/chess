@@ -418,7 +418,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     grand_chess: initialGrandChessState,
   };
  const deletePreset = (id) => {
-    if (!window.confirm("Удалить этот пресет?")) return;
+    if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
 
     const presets = JSON.parse(
         localStorage.getItem("custom_position_presets") || "[]"
@@ -445,7 +445,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     });
 };
   const handleSaveCustomPreset = () => {
-    const name = prompt("Введите название позиции:");
+    const name = prompt(t("custom_panel.enter_position"));
 
     if (!name) return;
     const currentPosition = JSON.parse(
@@ -456,7 +456,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     );
     const nextPreset = {
       id: `saved_custom_${Date.now()}`,
-      label: name ? name : `Saved ${savedPresetList.length + 1}`,
+      label: name,
       boardSize: appState?.boardSize || 8,
       position: currentPosition,
       playerTurn: appState?.playerTurn || "white",
@@ -619,14 +619,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <option value="grand_chess">{t("header.grand-chess")}</option>
           </select>
           <button type="button" onClick={handleSaveCustomPreset}>
-            Save position
+            {t("custom_panel.save_position")}
           </button>
           <button
             type="button"
             onClick={() => deletePreset(preset)}
             disabled={!preset.startsWith("saved_custom_")}
           >
-            Delete position
+            {t("custom_panel.delete_position")}
           </button>
           <select
             value={appState.boardSize}

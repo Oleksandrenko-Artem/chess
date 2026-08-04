@@ -79,7 +79,11 @@
     "king_message": "На доске уже есть",
     "white": "белый",
     "black": "черный",
-    "king": "король"
+    "king": "король",
+    "enter_position": "Введите название позиции:",
+    "delete_preset": "Удалить эту позицию?",
+    "delete_position": "Удалить позицию",
+    "save_position": "Сохранить позицию"
   },
   "profile": {
     "profile": "Профиль",

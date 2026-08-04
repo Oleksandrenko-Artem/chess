@@ -78,7 +78,11 @@
     "king_message": "There is already a",
     "white": "white",
     "black": "black",
-    "king": "king"
+    "king": "king",
+    "enter_position": "Enter position name:",
+    "delete_preset": "Delete this position?",
+    "delete_position": "Delete position",
+    "save_position": "Save position"
   },
   "profile": {
     "profile": "Profile",

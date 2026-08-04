@@ -76,7 +76,11 @@
     "king_message": "На дошці вже є",
     "white": "білий",
     "black": "чорний",
-    "king": "король"
+    "king": "король",
+    "enter_position": "Введіть назву позиції:",
+    "delete_preset": "Видалити цю позицію?",
+    "delete_position": "Видалити позицію",
+    "save_position": "Зберегти позицію"
   },
   "profile": {
     "profile": "Профіль",
