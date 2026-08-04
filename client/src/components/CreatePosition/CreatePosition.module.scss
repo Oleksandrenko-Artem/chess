@@ -82,7 +82,7 @@
   .piece-list {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     gap: 8px;
     min-height: 56px;
     padding: 4px 0;

@@ -5,11 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUserThunk } from "../../store/usersSlice";
 import {
   BOARD_STYLES,
-  initialAmazonState,
-  initialArenaGameState,
-  initialDinoGameState,
   initialExtendedGameState,
-  initialFerzVsRukhGameState,
   initialGameState,
   initialGrandAceDrexState,
   initialGrandChessState,
@@ -18,7 +14,6 @@ import {
   initialOldGameState,
   initialOldVariantGameState,
   initialSpecialGameState,
-  initialWallsGameState,
   piecesArrayPromotion,
 } from "../../constants";
 import { Icon } from "@mdi/react";
@@ -117,6 +112,17 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const [color, setColor] = useState("white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
   const [preset, setPreset] = useState("custom");
+  const [savedPresets, setSavedPresets] = useState(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const storedPresets = JSON.parse(
+        localStorage.getItem("custom_position_presets") || "[]",
+      );
+      return Array.isArray(storedPresets) ? storedPresets : [];
+    } catch (error) {
+      return [];
+    }
+  });
   const [pieceSailBoat, setPieceSailBoat] = useState(() =>
     user ? user.rookType === "sailboat" : false,
   );
@@ -410,15 +416,98 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     grand_ace_drex: initialGrandAceDrexState,
     great_chess: initialGreatChessState,
     grand_chess: initialGrandChessState,
-    amazon: initialAmazonState,
-    walls: initialWallsGameState,
-    arena: initialArenaGameState,
-    ferz_vs_rukh: initialFerzVsRukhGameState,
-    dinozavr_chess: initialDinoGameState,
+  };
+ const deletePreset = (id) => {
+    if (!window.confirm("Удалить этот пресет?")) return;
+
+    const presets = JSON.parse(
+        localStorage.getItem("custom_position_presets") || "[]"
+    );
+
+    const newPresets = presets.filter(p => p.id !== id);
+
+    localStorage.setItem(
+        "custom_position_presets",
+        JSON.stringify(newPresets)
+    );
+
+    setSavedPresets(newPresets);
+
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: {
+        initialState: {
+          ...initialSpecialGameState,
+          position: [createSpecialPosition(appState.boardSize)],
+          boardSize: appState.boardSize,
+        },
+      },
+    });
+};
+  const handleSaveCustomPreset = () => {
+    const name = prompt("Введите название позиции:");
+
+    if (!name) return;
+    const currentPosition = JSON.parse(
+      JSON.stringify(appState?.position || []),
+    );
+    const savedPresetList = JSON.parse(
+      localStorage.getItem("custom_position_presets") || "[]",
+    );
+    const nextPreset = {
+      id: `saved_custom_${Date.now()}`,
+      label: name ? name : `Saved ${savedPresetList.length + 1}`,
+      boardSize: appState?.boardSize || 8,
+      position: currentPosition,
+      playerTurn: appState?.playerTurn || "white",
+      orientation: appState?.orientation || "white",
+    };
+    const updatedPresets = [...savedPresetList, nextPreset];
+    localStorage.setItem(
+      "custom_position_presets",
+      JSON.stringify(updatedPresets),
+    );
+    setSavedPresets(updatedPresets);
+    setPreset(nextPreset.id);
   };
   const handleChangePreset = (e) => {
     const val = e.target.value;
     setPreset(val);
+
+    if (val.startsWith("saved_custom_")) {
+      const savedPreset = savedPresets.find(
+        (presetItem) => presetItem.id === val,
+      );
+      if (!savedPreset) return;
+
+      const restoredState = {
+        ...initialSpecialGameState,
+        boardSize: savedPreset.boardSize,
+        position: JSON.parse(JSON.stringify(savedPreset.position || [])),
+        playerTurn: savedPreset.playerTurn || "white",
+        orientation: savedPreset.orientation || "white",
+        validMoves: [],
+        selected: null,
+        promotionSquare: null,
+        status: initialSpecialGameState.status,
+        movesList: [],
+        captured: {
+          white: [],
+          black: [],
+        },
+      };
+
+      localStorage.setItem("chess_side", savedPreset.playerTurn || "white");
+      setSelectedColor(savedPreset.playerTurn || "white");
+      localStorage.setItem("chess_mode", "editor");
+      setStart("no");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: { initialState: restoredState },
+      });
+      return;
+    }
+
     const initialState = presetsMap[val] || initialSpecialGameState;
     if (val !== "amazon") {
       localStorage.setItem("chess_side", "white");
@@ -515,6 +604,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             disabled={start === "yes"}
           >
             <option value="custom">{t("header.custom_position")}</option>
+            {savedPresets.map((presetItem) => (
+              <option key={presetItem.id} value={presetItem.id}>
+                {presetItem.label}
+              </option>
+            ))}
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
             <option value="new_chess">{t("header.new_chess")}</option>
@@ -523,12 +617,17 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <option value="grand_ace_drex">{t("header.grand-ace-drex")}</option>
             <option value="great_chess">{t("header.great-chess")}</option>
             <option value="grand_chess">{t("header.grand-chess")}</option>
-            <option value="amazon">{t("header.amazon")}</option>
-            <option value="walls">{t("header.walls_chess")}</option>
-            <option value="arena">{t("header.arena")}</option>
-            <option value="ferz_vs_rukh">{t("header.ferz_vs_rukh")}</option>
-            <option value="dinozavr_chess">{t("header.dinozavr_chess")}</option>
           </select>
+          <button type="button" onClick={handleSaveCustomPreset}>
+            Save position
+          </button>
+          <button
+            type="button"
+            onClick={() => deletePreset(preset)}
+            disabled={!preset.startsWith("saved_custom_")}
+          >
+            Delete position
+          </button>
           <select
             value={appState.boardSize}
             onChange={handleChangeBoardSize}

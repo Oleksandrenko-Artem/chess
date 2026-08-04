@@ -175,33 +175,6 @@ export const createNewVariantPosition = (size = 8) => {
 
     return position;
 }
-export const createDinoPosition = (size = 8) => {
-    const position = createEmptyPosition(size);
-    const cols = Math.min(size, 8);
-
-    for (let i = 0; i < cols; i++) {
-        position[6][i] = 'white_pawn';
-        position[1][i] = 'black_pawn';
-    }
-    position[7][0] = 'white_dinozavr';
-    position[7][1] = 'white_dinozavr';
-    position[7][2] = 'white_dinozavr';
-    position[7][3] = 'white_dinozavr';
-    position[7][4] = 'white_king';
-    position[7][5] = 'white_dinozavr';
-    position[7][6] = 'white_dinozavr';
-    position[7][7] = 'white_dinozavr';
-    position[0][0] = 'black_dinozavr';
-    position[0][1] = 'black_dinozavr';
-    position[0][2] = 'black_dinozavr';
-    position[0][3] = 'black_dinozavr';
-    position[0][4] = 'black_king';
-    position[0][5] = 'black_dinozavr';
-    position[0][6] = 'black_dinozavr';
-    position[0][7] = 'black_dinozavr';
-
-    return position;
-}
 export const createExtendedPosition = (size = 8) => {
     const position = createEmptyPosition(size);
     const cols = Math.min(size, 8);
@@ -248,145 +221,6 @@ export const createExtendedPosition = (size = 8) => {
 
     return position;
 }
-export const createFerzVsRukhPosition = (size = 8) => {
-    const position = createEmptyPosition(size);
-    const cols = Math.min(size, 8);
-
-    for (let i = 0; i < cols; i++) {
-        position[5][i] = 'white_ferz';
-        position[6][i] = 'white_ferz';
-        position[2][i] = 'black_rukh';
-        position[1][i] = 'black_rukh';
-    }
-    position[7][0] = 'white_ferz';
-    position[7][1] = 'white_ferz';
-    position[7][2] = 'white_ferz';
-    position[7][3] = 'white_king';
-    position[7][4] = 'white_ferz';
-    position[7][5] = 'white_ferz';
-    position[7][6] = 'white_ferz';
-    position[7][7] = 'white_ferz';
-
-    position[0][0] = 'black_rukh';
-    position[0][1] = 'black_rukh';
-    position[0][2] = 'black_rukh';
-    position[0][3] = 'black_king';
-    position[0][4] = 'black_rukh';
-    position[0][5] = 'black_rukh';
-    position[0][6] = 'black_rukh';
-    position[0][7] = 'black_rukh';
-
-    return position;
-}
-export const createWallsPosition = (size = 8) => {
-    const position = createEmptyPosition(size);
-    const cols = Math.min(size, 8);
-
-    for (let i = 0; i < cols; i++) {
-        position[1][i] = 'brick';
-    }
-
-    position[7][0] = 'white_king';
-    position[7][1] = 'white_zebra';
-    position[7][2] = 'brick';
-    position[7][3] = 'white_camel';
-    position[7][4] = 'white_rhino';
-    position[7][5] = 'brick';
-    position[7][6] = 'brick';
-    position[7][7] = 'brick';
-
-    position[6][0] = 'brick';
-    position[6][1] = 'brick';
-    position[6][2] = 'brick';
-    position[6][3] = 'white_horse';
-    position[6][4] = 'brick';
-    position[6][5] = 'brick';
-    position[6][6] = 'white_tank';
-    position[6][7] = 'white_horse';
-
-    position[5][2] = 'brick';
-    position[5][4] = 'brick';
-    position[5][5] = 'brick';
-    position[5][6] = 'brick';
-    position[5][7] = 'brick';
-
-    position[4][5] = 'brick';
-    position[4][7] = 'brick';
-
-    position[3][0] = 'brick';
-    position[3][1] = 'brick';
-    position[3][2] = 'brick';
-    position[3][3] = 'brick';
-    position[3][5] = 'brick';
-
-    position[2][0] = 'brick';
-    position[2][5] = 'brick';
-
-    position[0][0] = 'black_zebra';
-    position[0][1] = 'black_horse';
-    position[0][2] = 'black_tank';
-    position[0][3] = 'black_rhino';
-    position[0][4] = 'black_king';
-    position[0][5] = 'brick';
-    position[0][6] = 'black_horse';
-    position[0][7] = 'black_camel';
-
-    return position;
-}
-export const createArenaPosition = (size = 8) => {
-    const position = createEmptyPosition(size);
-
-    position[7][0] = 'brick';
-    position[7][1] = 'white_horse';
-    position[7][2] = 'brick';
-    position[7][3] = 'white_king';
-    position[7][4] = 'white_man';
-    position[7][5] = 'brick';
-    position[7][6] = 'white_horse';
-    position[7][7] = 'brick';
-
-    position[6][0] = 'brick';
-    position[6][1] = 'brick';
-    position[6][2] = 'brick';
-    position[6][3] = 'brick';
-    position[6][5] = 'brick';
-    position[6][6] = 'brick';
-    position[6][7] = 'brick';
-
-    position[5][0] = 'white_rook';
-    position[5][7] = 'white_rook';
-
-    position[4][0] = 'brick';
-    position[4][1] = 'brick';
-    position[4][6] = 'brick';
-    position[4][7] = 'brick';
-
-    position[3][0] = 'brick';
-    position[3][1] = 'brick';
-    position[3][6] = 'brick';
-    position[3][7] = 'brick';
-
-    position[2][0] = 'black_rook';
-    position[2][7] = 'black_rook';
-
-    position[1][0] = 'brick';
-    position[1][1] = 'brick';
-    position[1][2] = 'brick';
-    position[1][4] = 'brick';
-    position[1][5] = 'brick';
-    position[1][6] = 'brick';
-    position[1][7] = 'brick';
-
-    position[0][0] = 'brick';
-    position[0][1] = 'black_horse';
-    position[0][2] = 'brick';
-    position[0][3] = 'black_man';
-    position[0][4] = 'black_king';
-    position[0][5] = 'brick';
-    position[0][6] = 'black_horse';
-    position[0][7] = 'brick';
-    return position;
-}
 export const createGrandAceDrexPosition = (size = 12) => {
     const position = createEmptyPosition(size);
     const cols = Math.min(size, 12);
@@ -421,28 +255,6 @@ export const createGrandAceDrexPosition = (size = 12) => {
     position[11][9] = 'white_rhino';
     position[11][10] = 'white_lion';
     position[11][11] = 'white_rook';
-
-    return position;
-}
-export const createAmazonPosition = (size = 8) => {
-    const position = createEmptyPosition(size);
-    const cols = Math.min(size, 8);
-
-    for (let i = 0; i < cols; i++) {
-        position[1][i] = 'black_pawn';
-    }
-
-    position[0][0] = 'black_rook';
-    position[0][1] = 'black_horse';
-    position[0][2] = 'black_bishop';
-    position[0][3] = 'black_ferz';
-    position[0][4] = 'black_king';
-    position[0][5] = 'black_bishop';
-    position[0][6] = 'black_horse';
-    position[0][7] = 'black_rook';
-
-    position[7][3] = 'white_amazon';
-    position[7][4] = 'white_king';
 
     return position;
 }

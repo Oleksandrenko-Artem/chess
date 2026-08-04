@@ -1,4 +1,4 @@
-import { createDinoPosition, createExtendedPosition, createFerzVsRukhPosition, createArenaPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createWallsPosition, createGrandAceDrexPosition, createAmazonPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
+import { createExtendedPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createGrandAceDrexPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
 
 export const BOARD_STYLES = {
     standart: {
@@ -196,88 +196,8 @@ export const initialOldVariantGameState = {
     isVsBot: false,
     botDifficulty: 'easy',
 };
-export const initialDinoGameState = {
-    position: [createDinoPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
 export const initialExtendedGameState = {
     position: [createExtendedPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialFerzVsRukhGameState = {
-    position: [createFerzVsRukhPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialWallsGameState = {
-    position: [createWallsPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialArenaGameState = {
-    position: [createArenaPosition()],
     playerTurn: 'white',
     movesList: [],
     validMoves: [],
@@ -313,29 +233,6 @@ export const initialGrandAceDrexState = {
     },
     orientation: 'white',
     boardSize: 12,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialAmazonState = {
-    position: [createAmazonPosition()],
-    playerTurn: 'black',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'black',
-    whiteTime: 1200,
-    blackTime: 1200,
-    timerActive: false,
-    boardSize: 8,
     isVsBot: false,
     botDifficulty: 'easy',
 };
