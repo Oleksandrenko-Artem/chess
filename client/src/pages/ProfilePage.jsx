@@ -213,6 +213,9 @@ const ProfilePage = () => {
             <b>{t("profile.rating")}:</b> {user?.rating}
           </p>
           <p>
+            <b>{t("profile.role")}:</b> {user?.role}
+          </p>
+          <p>
             <b>{t("profile.email")}:</b> {user?.email}
           </p>
           <button onClick={handleNavigateAchievements}>

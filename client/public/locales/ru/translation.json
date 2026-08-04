@@ -91,7 +91,8 @@
     "remove_photo": "Удалить фото",
     "delete_user": "Вы действительно хотите удалить профиль?",
     "achievements": "Достижения",
-    "collections": "Коллекции"
+    "collections": "Коллекции",
+    "role": "Роль"
   },
   "captured_pieces": {
     "white": "Белые",

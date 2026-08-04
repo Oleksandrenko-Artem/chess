@@ -3,9 +3,16 @@
 
 .wrapper {
   width: 100%;
-  height: 22vh;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: auto;
+  padding-bottom: 8px;
+  overflow: visible;
   .btns-div {
     display: flex;
+    flex-direction: column;
+    gap: 10px;
     justify-content: space-between;
     flex-wrap: wrap;
     padding: 5px;
@@ -23,7 +30,8 @@
     button {
       width: 15vh;
     }
-    select:disabled, button:disabled {
+    select:disabled,
+    button:disabled {
       opacity: 0.5;
       cursor: not-allowed;
       pointer-events: none;
@@ -57,7 +65,10 @@
   .replace-pieces {
     display: flex;
     flex-direction: row;
-    margin-top: 10px;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-top: 0;
     .pieces-variants {
       @extend %btn-style;
       display: flex;
@@ -67,6 +78,14 @@
         height: 4.5vh;
       }
     }
+  }
+  .piece-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    min-height: 56px;
+    padding: 4px 0;
   }
   img {
     cursor: grab;
@@ -101,6 +120,7 @@
   .promotion-options {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     padding: 5px;
     gap: 10px;
     button,
@@ -126,9 +146,9 @@
     --btn-style-color: rgb(100, 185, 255);
   }
   @media screen and (max-width: $x) {
-    height: 30vh;
+    min-height: auto;
   }
   @media screen and (max-width: $m) {
-    height: 35vh;
+    min-height: auto;
   }
 }

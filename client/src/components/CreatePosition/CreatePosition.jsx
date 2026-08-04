@@ -161,7 +161,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
       } else if (arrowStyle) {
         document.documentElement.style.setProperty("--arrow-color", arrowStyle);
       } else if (squareStyle) {
-        document.documentElement.style.setProperty("--square-color", squareStyle);
+        document.documentElement.style.setProperty(
+          "--square-color",
+          squareStyle,
+        );
       } else {
         if (user.boardColor.light !== lightSquareColor) {
           const newLight = user.boardColor.light || DEFAULT_LIGHT_COLOR;
@@ -258,7 +261,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         dispatchRedux(
           updateUserThunk({
             id: user._id,
-            values: { boardColor: { light: lightHex, dark: darkHex }, arrowColor: arrowHex, squareColor: squareHex },
+            values: {
+              boardColor: { light: lightHex, dark: darkHex },
+              arrowColor: arrowHex,
+              squareColor: squareHex,
+            },
           }),
         );
       } else {
@@ -268,7 +275,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         localStorage.setItem("squareColor", squareHex);
       }
     }, 500);
-  }, [lightSquareColor, darkSquareColor, arrowColor, squareColor, user, dispatchRedux]);
+  }, [
+    lightSquareColor,
+    darkSquareColor,
+    arrowColor,
+    squareColor,
+    user,
+    dispatchRedux,
+  ]);
   useEffect(() => {
     const initLight =
       lightSquareColor && lightSquareColor.trim().startsWith("rgb")
@@ -388,19 +402,19 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     setPiecesStyle(event.target.value);
   };
   const presetsMap = {
-    "chess": initialGameState,
-    "shatranj": initialOldGameState,
-    "new_chess": initialNewVariantGameState,
-    "old_chess": initialOldVariantGameState,
-    "extended_chess": initialExtendedGameState,
-    "grand_ace_drex": initialGrandAceDrexState,
-    "great_chess": initialGreatChessState,
-    "grand_chess": initialGrandChessState,
-    "amazon": initialAmazonState,
-    "walls": initialWallsGameState,
-    "arena": initialArenaGameState,
-    "ferz_vs_rukh": initialFerzVsRukhGameState,
-    "dinozavr_chess": initialDinoGameState,
+    chess: initialGameState,
+    shatranj: initialOldGameState,
+    new_chess: initialNewVariantGameState,
+    old_chess: initialOldVariantGameState,
+    extended_chess: initialExtendedGameState,
+    grand_ace_drex: initialGrandAceDrexState,
+    great_chess: initialGreatChessState,
+    grand_chess: initialGrandChessState,
+    amazon: initialAmazonState,
+    walls: initialWallsGameState,
+    arena: initialArenaGameState,
+    ferz_vs_rukh: initialFerzVsRukhGameState,
+    dinozavr_chess: initialDinoGameState,
   };
   const handleChangePreset = (e) => {
     const val = e.target.value;
@@ -725,9 +739,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         </div>
       </div>
       {color === "white" && !promotion && (
-        <div>
+        <div className={styles["piece-list"]}>
           {piecesStyle === "standart" && (
-            <div>
+            <div className={styles["piece-list"]}>
               <img
                 src={white_pawn}
                 alt="white_pawn"
@@ -987,9 +1001,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         </div>
       )}
       {color === "black" && !promotion && (
-        <div>
+        <div className={styles["piece-list"]}>
           {piecesStyle === "standart" && (
-            <div>
+            <div className={styles["piece-list"]}>
               <img
                 src={black_pawn}
                 alt="black_pawn"
@@ -1249,7 +1263,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         </div>
       )}
       {piecesStyle === "other" && (
-        <div>
+        <div className={styles["piece-list"]}>
           <img
             src={brick}
             alt="brick"

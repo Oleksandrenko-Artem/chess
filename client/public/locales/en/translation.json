@@ -90,7 +90,8 @@
     "remove_photo": "Remove photo",
     "delete_user": "Do you really want to delete the profile?",
     "achievements": "Achievements",
-    "collections": "Collections"
+    "collections": "Collections",
+    "role": "Role"
   },
   "captured_pieces": {
     "white": "White",
