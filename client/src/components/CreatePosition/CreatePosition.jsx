@@ -1097,6 +1097,24 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
               />
             </div>
           )}
+          {piecesStyle === "other" && (
+            <div className={styles["piece-list"]}>
+              <img
+                src={brick}
+                alt="brick"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `brick,isNew`)
+                }
+              />
+              <img
+                src={delete_icon}
+                alt="delete"
+                draggable={editorMode}
+                onDragStart={(e) => e.dataTransfer.setData("text", `,isNew`)}
+              />
+            </div>
+          )}
         </div>
       )}
       {color === "black" && !promotion && (
@@ -1359,22 +1377,24 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
               />
             </div>
           )}
-        </div>
-      )}
-      {piecesStyle === "other" && (
-        <div className={styles["piece-list"]}>
-          <img
-            src={brick}
-            alt="brick"
-            draggable={editorMode}
-            onDragStart={(e) => e.dataTransfer.setData("text", `brick,isNew`)}
-          />
-          <img
-            src={delete_icon}
-            alt="delete"
-            draggable={editorMode}
-            onDragStart={(e) => e.dataTransfer.setData("text", `,isNew`)}
-          />
+          {piecesStyle === "other" && (
+            <div className={styles["piece-list"]}>
+              <img
+                src={brick}
+                alt="brick"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `brick,isNew`)
+                }
+              />
+              <img
+                src={delete_icon}
+                alt="delete"
+                draggable={editorMode}
+                onDragStart={(e) => e.dataTransfer.setData("text", `,isNew`)}
+              />
+            </div>
+          )}
         </div>
       )}
       {promotion && (

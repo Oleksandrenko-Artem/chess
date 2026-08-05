@@ -713,38 +713,23 @@ export const getDinozavrMoves = ({ position, piece, rank, file }) => {
 };
 export const getElephantLongRangeMoves = ({ position, piece, rank, file }) => {
     const moves = [];
-    const us = piece.startsWith('white') ? 'white' : 'black';
-    const enemy = us === 'white' ? 'black' : 'white';
-    const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-
-    const boardSize = getBoardSize(position);
-
-    directions.forEach(([dr, df]) => {
-        let hasJumped = false;
-
-        for (let i = 1; i < boardSize; i++) {
-            const r = rank + i * dr;
-            const f = file + i * df;
-
-            if (!isInBounds(position, r, f)) break;
-            const target = position[r][f];
-
-            if (target === '') {
-                moves.push([r, f]);
-            } else {
-                if (!hasJumped) {
-                    if (target.startsWith(enemy)) {
-                        moves.push([r, f]);
-                    }
-                    hasJumped = true;
-                    continue;
-                } else {
-                    if (target.startsWith(enemy)) {
-                        moves.push([r, f]);
-                    }
-                    break;
-                }
-            }
+    const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
+    const valid = [
+        [-2, -2],
+        [-2, 2],
+        [2, -2],
+        [2, 2],
+        [-3, 0],
+        [3, 0],
+        [0, -3],
+        [0, 3],
+    ];
+    valid.forEach(val => {
+        const x = rank + val[0];
+        const y = file + val[1];
+        const cell = position?.[rank + val[0]]?.[file + val[1]];
+        if (cell !== undefined && (cell.startsWith(enemy) || cell === '')) {
+            moves.push([x, y]);
         }
     });
     return moves;

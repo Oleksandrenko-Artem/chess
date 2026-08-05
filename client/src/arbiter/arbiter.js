@@ -220,29 +220,14 @@ const arbiter = {
                 }
             });
         } else if (piece.endsWith('elephant_long_range')) {
-            const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
-
-            directions.forEach(([dr, df]) => {
-                let hasJumped = false;
-
-                for (let i = 1; i < boardSize; i++) {
-                    const r = rank + i * dr;
-                    const f = file + i * df;
-
-                    if (position?.[r]?.[f] === undefined) break;
-
-                    const target = position[r][f];
-
+            const jumps = [
+                [-2, -2], [-2, 2], [2, -2], [2, 2],
+                [-3, 0], [3, 0], [0, -3], [0, 3],
+            ];
+            jumps.forEach(([dr, df]) => {
+                const [r, f] = [rank + dr, file + df];
+                if (position?.[r]?.[f] !== undefined) {
                     attacks.push([r, f]);
-
-                    if (target !== '') {
-                        if (!hasJumped) {
-                            hasJumped = true;
-                            continue;
-                        } else {
-                            break;
-                        }
-                    }
                 }
             });
         } else if (piece.endsWith('horse')) {
