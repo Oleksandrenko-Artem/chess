@@ -92,6 +92,10 @@ const userSchema = mongoose.Schema({
         type: String,
         default: 'rook',
     },
+    horseType: {
+        type: String,
+        default: 'horse',
+    },
     avatar: {
         type: String,
         default: null,

@@ -28,6 +28,7 @@ import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
 import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
 import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
+import black_faras from "../../assets/icons/black_faras.png";
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
@@ -59,6 +60,7 @@ import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
 import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
+import white_faras from "../../assets/icons/white_faras.png";
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
@@ -93,6 +95,7 @@ const imageMap = {
   black_amazon,
   black_knight,
   black_elephant_long_range,
+  black_faras,
   black_rhino,
   black_wildebeest,
   black_man,
@@ -125,6 +128,7 @@ const imageMap = {
   white_amazon,
   white_knight,
   white_elephant_long_range,
+  white_faras,
   white_rhino,
   white_wildebeest,
   white_man,
@@ -138,7 +142,7 @@ const getPieceType = (pieceName) => {
   const parts = pieceName.split("_");
   if (parts.length > 1) {
     const type = parts[1];
-    if (type === "sailboat" || type === "chariot") {
+    if (type === "sailboat" || type === "chariot" || type === "faras") {
       return type;
     }
     return type;

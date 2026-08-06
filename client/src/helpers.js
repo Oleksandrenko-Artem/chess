@@ -478,7 +478,7 @@ export const createNewChess960Position = (size = 8) => {
 
     return position;
 };
-export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, isCapture = null }) => {
+export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, horseType, isCapture = null }) => {
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
         if (isCheckmate) return castling + '#';

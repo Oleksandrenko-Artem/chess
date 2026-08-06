@@ -230,7 +230,7 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('horse')) {
+        } else if (piece.endsWith('horse') || piece.endsWith('faras')) {
             const jumps = [
                 [-2, -1], [-2, 1], [-1, -2], [-1, 2],
                 [1, -2], [1, 2], [2, -1], [2, 1],
@@ -805,7 +805,7 @@ const arbiter = {
             moves = getZebraMoves({ position, piece, rank, file });
         } else if (piece.endsWith('lion')) {
             moves = getLionMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('horse')) {
+        } else if (piece.endsWith('horse') || piece.endsWith('faras')) {
             moves = getHorseMoves({ position, rank, file });
         } else if (piece.endsWith('archbishop')) {
             moves = getArchbishopMoves({ position, piece, rank, file });

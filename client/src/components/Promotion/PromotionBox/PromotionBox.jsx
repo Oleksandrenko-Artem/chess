@@ -29,6 +29,7 @@ import black_duke from "../../../assets/icons/black_duke.png";
 import black_prince from "../../../assets/icons/black_prince.png";
 import black_alibaba from "../../../assets/icons/black_alibaba.png";
 import black_checker_long_range from "../../../assets/icons/black_checker_long_range.png";
+import black_faras from "../../../assets/icons/black_faras.png";
 import black_knight from "../../../assets/icons/black_knight.png";
 import black_dinozavr from "../../../assets/icons/black_dinozavr.png";
 import black_checkers from "../../../assets/icons/black_checkers.png";
@@ -60,6 +61,7 @@ import white_duke from "../../../assets/icons/white_duke.png";
 import white_prince from "../../../assets/icons/white_prince.png";
 import white_alibaba from "../../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../../assets/icons/white_checker_long_range.png";
+import white_faras from "../../../assets/icons/white_faras.png";
 import white_knight from "../../../assets/icons/white_knight.png";
 import white_dinozavr from "../../../assets/icons/white_dinozavr.png";
 import white_checkers from "../../../assets/icons/white_checkers.png";
@@ -95,6 +97,7 @@ const promoImageMap = {
   black_sailboat,
   black_chariot,
   black_checker_long_range,
+  black_faras,
   white_ferz,
   white_rook,
   white_bishop,
@@ -121,6 +124,7 @@ const promoImageMap = {
   white_duke,
   white_prince,
   white_checker_long_range,
+  white_faras,
   white_knight,
   white_dinozavr,
   white_checkers,
@@ -150,7 +154,7 @@ const PromotionBox = ({ onClosePromotion }) => {
       : "chess";
   const color = promotionSquare?.targetRank === 0 ? "white" : "black";
   const replaceSetting =
-    typeof window !== "undefined" ? localStorage.getItem("replaceRook") : null;
+    typeof window !== "undefined" ? localStorage.getItem("replaceRook") : typeof window !== "undefined" ? localStorage.getItem ("replaceHorse") : null;
   const processedPromotionRef = useRef(null);
   const handlePromotion = useCallback(
     (pieceName) => {
@@ -168,6 +172,13 @@ const PromotionBox = ({ onClosePromotion }) => {
               : null;
           if (rep === "sailboat") finalPieceName = "sailboat";
           else if (rep === "chariot") finalPieceName = "chariot";
+        } catch (e) {}
+      }
+      if (pieceName === "horse") {
+        try {
+          const rep = 
+          typeof window !== "undefined" ? localStorage.getItem("replaceHorse") : null;
+          if (rep === "faras") finalPieceName = "faras";
         } catch (e) {}
       }
       newPosition[promotionSquare.targetRank][promotionSquare.targetFile] =
@@ -276,7 +287,9 @@ const PromotionBox = ({ onClosePromotion }) => {
               : replaceSetting === "chariot"
                 ? "chariot"
                 : "rook"
-            : option;
+            : option === "horse"
+              ? replaceSetting === "faras"
+                ? "faras" : "horse" : option;
         const keyName = `${color}_${displayOption}`;
         const imageSrc = getPieceStyle(keyName, true, user);
         const style = {

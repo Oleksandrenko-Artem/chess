@@ -51,6 +51,7 @@ import white_duke from "../../assets/icons/white_duke.png";
 import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
+import white_faras from "../../assets/icons/white_faras.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -82,6 +83,7 @@ import black_duke from "../../assets/icons/black_duke.png";
 import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
 import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
+import black_faras from "../../assets/icons/black_faras.png";
 import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
@@ -128,6 +130,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   );
   const [pieceChariot, setPieceChariot] = useState(() =>
     user ? user.rookType === "chariot" : false,
+  );
+  const [pieceFaras, setPieceFaras] = useState(() =>
+    user ? user.horseType === "faras" : false,
   );
   const DEFAULT_LIGHT_COLOR = "#F0D8B7";
   const DEFAULT_DARK_COLOR = "#7e5539";
@@ -208,6 +213,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
       }
       if ((user.rookType === "chariot") !== pieceChariot) {
         setPieceChariot(user.rookType === "chariot");
+      }
+      if ((user.horseType === "faras") !== pieceFaras) {
+        setPieceFaras(user.horseType === "faras");
       }
       if (localStorage.getItem("chess_side") === appState.playerTurn) {
         const newSide = appState.playerTurn;
@@ -383,24 +391,45 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     );
   };
   const handleReplacePieceChariot = () => {
-    const newVal = !pieceChariot;
-    setPieceChariot(newVal);
+    const newValRook = !pieceChariot;
+    setPieceChariot(newValRook);
     setPieceSailBoat(false);
-    const newReplacement = newVal ? "chariot" : "rook";
+    const newRookReplacement = newValRook ? "chariot" : "rook";
     if (user) {
       dispatchRedux(
-        updateUserThunk({ id: user._id, values: { rookType: newReplacement } }),
+        updateUserThunk({ id: user._id, values: { rookType: newRookReplacement } }),
       );
     } else {
       try {
         if (typeof window !== "undefined") {
-          localStorage.setItem("replaceRook", newReplacement);
+          localStorage.setItem("replaceRook", newRookReplacement);
         }
       } catch (e) {}
     }
     window.dispatchEvent(
       new CustomEvent("rook-replacement-changed", {
-        detail: { replacement: newReplacement },
+        detail: { replacement: newRookReplacement },
+      }),
+    );
+  };
+  const handleReplacePieceFaras = () => {
+    const newValHorse = !pieceFaras;
+    setPieceFaras(newValHorse);
+    const newHorseReplacement = newValHorse ? "faras" : "horse";
+    if (user) {
+      dispatchRedux(
+        updateUserThunk({ id: user._id, values: { horseType: newHorseReplacement } }),
+      );
+    } else {
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem("replaceHorse", newHorseReplacement);
+        }
+      } catch (e) {}
+    }
+    window.dispatchEvent(
+      new CustomEvent("horse-replacement-changed", {
+        detail: { replacement: newHorseReplacement },
       }),
     );
   };
@@ -795,6 +824,34 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
               )}
             </div>
           </div>
+          <div>
+            <div
+              onClick={handleReplacePieceFaras}
+              className={`${styles["pieces-variants"]} ${pieceFaras ? styles["active"] : ""}`}
+            >
+              {color === "white" ? (
+                <div className={styles["pieces-variants"]}>
+                  <img src={white_horse} alt="white_horse" draggable={false} />
+                  <Icon path={mdiArrowRightThin} size={1.5} />
+                  <img
+                    src={white_faras}
+                    alt="white_faras"
+                    draggable={false}
+                  />
+                </div>
+              ) : (
+                <div className={styles["pieces-variants"]}>
+                  <img src={black_horse} alt="black_horse" draggable={false} />
+                  <Icon path={mdiArrowRightThin} size={1.5} />
+                  <img
+                    src={black_faras}
+                    alt="black_faras"
+                    draggable={false}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
           <div className={styles["img-div"]}>
             <img
               src={black_king}
@@ -851,11 +908,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 className={styles.pawn}
               />
               <img
-                src={white_horse}
+                src={(pieceFaras && white_faras) || white_horse}
                 alt="white_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `white_horse,isNew`)
+                  e.dataTransfer.setData("text", `${pieceFaras ? "white_faras" : "white_horse"},isNew`,)
                 }
               />
               <img
@@ -1131,11 +1188,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 className={styles.pawn}
               />
               <img
-                src={black_horse}
+                src={(pieceFaras && black_faras) || black_horse}
                 alt="black_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `black_horse,isNew`)
+                  e.dataTransfer.setData("text", `${pieceFaras ? "black_faras" : "black_horse"},isNew`,)
                 }
               />
               <img

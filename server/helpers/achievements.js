@@ -66,6 +66,7 @@ const PIECE_ALIASES = {
     sailboat: "rook",
 
     horse: "horse",
+    faras: "horse",
     knight: "knight",
 
     ferz: "ferz",
