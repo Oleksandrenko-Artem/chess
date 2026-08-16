@@ -67,6 +67,8 @@
     "reset_board_colors": "Скинути колір дошки",
     "reset_arrow_colors": "Скинути колір стрілок",
     "reset_square_colors": "Скинути колір полів",
+    "sounds_on": "Звуки: ВКЛ",
+    "sounds_off": "Звуки: ВИКЛ",
     "change_color": "Змінити колір",
     "rotate_board": "Повернути дошку",
     "play_vs_bot": "Грати проти бота",
@@ -117,7 +119,9 @@
     "silver": "Срібло",
     "gold": "Золото",
     "platinum": "Платина",
-    "iridium": "Іридій"
+    "iridium": "Іридій",
+    "piece_style": "Стиль фігур",
+    "board_style": "Стиль дошки"
   },
   "achievements_panel": {
     "soldier": "Значок оновлюється після 1, 5, 10 та 50 матів цією фігурою",

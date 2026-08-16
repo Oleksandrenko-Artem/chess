@@ -1,5 +1,7 @@
+import arbiter from "../arbiter/arbiter";
 import { status } from "../constants";
 import { createSpecialPosition } from "../helpers";
+import { playMoveSound } from "../helpers/playMoveSound";
 import actionTypes from "./actionTypes";
 
 export const reducer = (state, action) => {
@@ -17,6 +19,26 @@ export const reducer = (state, action) => {
                 ...movesList,
                 action.payload.newMove
             ];
+            const newCaptured = action.payload.captured || {
+                white: [],
+                black: [],
+            };
+
+            const oldCaptured = captured || {
+                white: [],
+                black: [],
+            };
+
+            const wasCapture =
+                newCaptured.white.length > oldCaptured.white.length ||
+                newCaptured.black.length > oldCaptured.black.length;
+
+            const currentPosition = position[position.length - 1];
+
+            const isCheck = arbiter.isKingInCheck({
+                position: currentPosition,
+                playerColor: playerTurn,
+            });
             if (action.payload.lastMove) {
                 lastMove = action.payload.lastMove;
             }
@@ -27,6 +49,12 @@ export const reducer = (state, action) => {
                 captured = action.payload.captured;
             }
             gameStatus = action.payload.gameStatus || status.ongoing;
+            console.log("CURRENT MOVE CAPTURED:", action.payload.captured);
+            playMoveSound({
+                captured: wasCapture,
+                isCheck: isCheck,
+                gameStatus,
+            });
             return {
                 ...state,
                 playerTurn,
@@ -147,10 +175,19 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.TIME_UP: {
-            const winner = action.payload.player === 'white' ? 'black' : 'white';
+            const winner =
+                action.payload.player === 'white' ? 'black' : 'white';
+
+            const newStatus = status[winner];
+
+            playMoveSound({
+                captured: null,
+                gameStatus: newStatus,
+            });
+
             return {
                 ...state,
-                status: status[winner],
+                status: newStatus,
                 timerActive: false,
             };
         };

@@ -69,6 +69,8 @@
     "reset_board_colors": "Reset board color",
     "reset_arrow_colors": "Reset arrow color",
     "reset_square_colors": "Reset square color",
+    "sounds_on": "Sounds: On",
+    "sounds_off": "Sounds: Off",
     "change_color": "Change color",
     "rotate_board": "Rotate board",
     "play_vs_bot": "Play vs Bot",
@@ -121,7 +123,9 @@
     "silver": "Silver",
     "gold": "Gold",
     "platinum": "Platinum",
-    "iridium": "Iridium"
+    "iridium": "Iridium",
+    "piece_style": "Piece style",
+    "board_style": "Board style"
   },
   "achievements_panel": {
     "soldier": "The badge is updated after 1, 5, 10 and 50 captures with this piece",

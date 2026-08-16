@@ -70,6 +70,8 @@
     "reset_board_colors": "Сбросить цвет доски",
     "reset_arrow_colors": "Сбросить цвет стрелок",
     "reset_square_colors": "Сбросить цвет полей",
+    "sounds_on": "Звуки: ВКЛ",
+    "sounds_off": "Звуки: ВЫКЛ",
     "change_color": "Изменить цвет",
     "rotate_board": "Повернуть доску",
     "play_vs_bot": "Играть против бота",
@@ -122,7 +124,9 @@
     "silver": "Серебро",
     "gold": "Золото",
     "platinum": "Платина",
-    "iridium": "Иридий"
+    "iridium": "Иридий",
+    "piece_style": "Стиль фигур",
+    "board_style": "Стиль доски"
   },
   "achievements_panel": {
     "soldier": "Значок обновляется после 1, 5, 10 та 50 матов этой фигурой",

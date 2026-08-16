@@ -15,6 +15,7 @@ import {
 } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
 import { updateUserThunk } from "../../store/usersSlice";
+import { setSoundEnabled, isSoundEnabled } from "../../helpers/playMoveSound";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import styles from "./GameInfoPanel.module.scss";
@@ -27,6 +28,7 @@ const GameInfoPanel = (props) => {
   const [botLevel, setBotLevel] = useState(
     parseInt(localStorage.getItem("bot_level") || "1", 10),
   );
+  const [soundEnabled, setSoundEnabledState] = useState(isSoundEnabled());
   const reduxDispatch = useDispatch();
   const user = useSelector((state) => state.users.user);
   const { t } = useTranslation();
@@ -416,7 +418,7 @@ const GameInfoPanel = (props) => {
             </div>
             <Timer />
             <div className={styles["buttons-div"]}>
-              <h3>Board style</h3>
+              <h3>{t("style_panel.board_style")}</h3>
               <select value={boardStyle} onChange={handleBoardStyleChange}>
                 <option value="standart">{t("style_panel.standart")}</option>
                 <option value="classic">{t("style_panel.classic")}</option>
@@ -434,7 +436,7 @@ const GameInfoPanel = (props) => {
                 </option>
                 <option value="onix">{t("style_panel.onix")}</option>
               </select>
-              <h3>Piece style</h3>
+              <h3>{t("style_panel.piece_style")}</h3>
               <select
                 value={pieceStyle}
                 onChange={handlePieceStyleChange}
@@ -451,6 +453,16 @@ const GameInfoPanel = (props) => {
                   </option>
                 ))}
               </select>
+              <button
+                  onClick={() => {
+                      const newValue = !soundEnabled;
+
+                      setSoundEnabledState(newValue);
+                      setSoundEnabled(newValue);
+                  }}
+              >
+                  {soundEnabled ? `🔊 ${t("custom_panel.sounds_on")}` : `🔇 ${t("custom_panel.sounds_off")}`}
+              </button>
               <button onClick={handleToggle}>
                 {t("custom_panel.rotate_board")}
               </button>
