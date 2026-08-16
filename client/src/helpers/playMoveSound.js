@@ -20,7 +20,7 @@ const play = (audio) => {
 };
 
 export const playMoveSound = ({ captured, isCheck, gameStatus }) => {
-    if (gameStatus === "White wins" || gameStatus === "Black wins") {
+    if (gameStatus === "White wins" || gameStatus === "Black wins" || gameStatus === "Draw") {
         play(sounds.gameEnd);
         return;
     }
