@@ -12,7 +12,7 @@ const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user, error } = useSelector((state) => state.users);
+  const { user } = useSelector((state) => state.users);
   const fileInputRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
   const [isUploading, setIsUploading] = useState(false);

@@ -98,6 +98,7 @@
     "delete_user": "Вы действительно хотите удалить профиль?",
     "achievements": "Достижения",
     "collections": "Коллекции",
+    "collections_none": "Нет коллекции",
     "role": "Роль"
   },
   "captured_pieces": {

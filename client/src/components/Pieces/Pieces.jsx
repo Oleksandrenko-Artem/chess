@@ -12,6 +12,7 @@ import { makeNewMove } from "../../reducers/actions/move";
 import { status, PIECE_VALUES } from "../../constants";
 import { updateUserThunk } from "../../store/usersSlice";
 import { getKingPosition } from "../../arbiter/getMoves";
+import Spinner from "../Spinner/Spinner";
 import arbiter from "../../arbiter/arbiter";
 import Piece from "./Piece";
 import black_imperator from "../../assets/icons/black_king.png";
@@ -913,7 +914,7 @@ const Pieces = ({ flipped = false }) => {
   };
   const onDragOver = (e) => e.preventDefault();
   if (!imagesLoaded) {
-    return <div>Loading pieces...</div>;
+    return <Spinner />
   }
   const position =
     appState.position && appState.position.length > 0

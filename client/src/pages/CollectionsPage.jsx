@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
 import { updateUserThunk } from "../store/usersSlice";
 import styles from "./Pages.module.scss";
+import { useTranslation } from "react-i18next";
 
 const PIECES = [
   "soldier",
@@ -25,6 +26,7 @@ const CollectionsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
   const selectedPiece = location.state?.selectedPiece;
   const isAdmin = user?.role === "admin";
 
@@ -79,9 +81,9 @@ const CollectionsPage = () => {
 
   return (
     <div className={styles["collections-page"]}>
-      <h2>Коллекция</h2>
+      <h2>{t('profile.collections')}</h2>
       {isCollectionEmpty ? (
-        <div className={styles["empty-state"]}>Коллекция отсутствует</div>
+        <div className={styles["empty-state"]}>{t('profile.collections_none')}</div>
       ) : (
         <div className={styles["collections-grid"]}>
           {visiblePieces.flatMap((piece) => {

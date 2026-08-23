@@ -1,0 +1,39 @@
+@use '/src/common/styles/colors' as *;
+@use '/src/common/styles/widths' as *;
+@use '/src/common/styles/templates' as *;
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.loader {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-block;
+    position: relative;
+    background: linear-gradient(0deg, rgb(45, 111, 255) 47%  33%, rgb(15, 0, 218) 100%);
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+}
+.loader::after {
+    content: '';
+    box-sizing: border-box;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: white;
+}
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}

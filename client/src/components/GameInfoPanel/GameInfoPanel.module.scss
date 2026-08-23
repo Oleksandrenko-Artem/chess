@@ -117,7 +117,7 @@
   @media screen and (max-width: $x) {
     .game-status {
       width: clamp(380px, 90vw, 480px);
-      height: 220px;
+      height: 260px;
       .buttons-div {
         flex-direction: row;
         flex-wrap: wrap;
@@ -136,7 +136,7 @@
   }
   @media screen and (max-width: $s) {
     .game-status {
-      height: 220px;
+      height: 260px;
       .game-message-text {
         flex-direction: row;
       }

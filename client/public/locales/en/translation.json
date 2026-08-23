@@ -97,6 +97,7 @@
     "delete_user": "Do you really want to delete the profile?",
     "achievements": "Achievements",
     "collections": "Collections",
+    "collections_none": "No collections",
     "role": "Role"
   },
   "captured_pieces": {
