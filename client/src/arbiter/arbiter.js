@@ -1007,22 +1007,32 @@ const arbiter = {
                 return true;
             }
             if (pieces.length === 3) {
-                return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse'));
+                return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse') || p.endsWith('faras') || p.endsWith('elephant_long_range'));
             }
             if (pieces.length === 4) {
-                const whiteHorse = pieceCounts['white_horse'] || 0;
-                const blackHorse = pieceCounts['black_horse'] || 0;
-                if (whiteHorse === 1 && blackHorse === 1) {
+                const whitePiece = (pieceCounts['white_horse'] || pieceCounts['white_faras'] || pieceCounts['white_elephant_long_range']) || 0;
+                const blackPiece = (pieceCounts['black_horse'] || pieceCounts['black_faras'] || pieceCounts['black_elephant_long_range']) || 0;
+                if (whitePiece === 1 && blackPiece === 1) {
                     return true;
-                } else if (whiteHorse === 2 && blackHorse === 0) {
+                } else if (whitePiece === 2 && blackPiece === 0) {
                     return true;
-                } else if (whiteHorse === 0 && blackHorse === 2) {
+                } else if (whitePiece === 0 && blackPiece === 2) {
                     return true;
                 }
                 const whiteBishop = findPieceCoords(position, 'white_bishop');
                 const blackBishop = findPieceCoords(position, 'black_bishop');
                 if (whiteBishop.length === 1 && blackBishop.length === 1) {
                     if (areSameColorBishops(whiteBishop[0], blackBishop[0])) {
+                        return true;
+                    }
+                }
+                if (whiteBishop.length === 2) {
+                    if (areSameColorBishops(whiteBishop[0], whiteBishop[1])) {
+                        return true;
+                    }
+                }
+                if (blackBishop.length === 2) {
+                    if (areSameColorBishops(blackBishop[0], blackBishop[1])) {
                         return true;
                     }
                 }
