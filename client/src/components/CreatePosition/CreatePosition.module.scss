@@ -73,9 +73,10 @@
       @extend %btn-style;
       display: flex;
       align-items: center;
+      padding: 2.5px;
       img {
-        width: 5vh;
-        height: 4.5vh;
+        width: 6vh;
+        height: 5vh;
       }
     }
   }

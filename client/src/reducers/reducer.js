@@ -49,7 +49,6 @@ export const reducer = (state, action) => {
                 captured = action.payload.captured;
             }
             gameStatus = action.payload.gameStatus || status.ongoing;
-            console.log("CURRENT MOVE CAPTURED:", action.payload.captured);
             playMoveSound({
                 captured: wasCapture,
                 isCheck: isCheck,

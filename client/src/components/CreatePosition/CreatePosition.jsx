@@ -19,6 +19,8 @@ import {
 import { Icon } from "@mdi/react";
 import { mdiArrowRightThin } from "@mdi/js";
 import { rgbStringToHex } from "../../utils/color";
+import { createSpecialPosition } from "../../helpers";
+import { isSoundEnabled, setSoundEnabled } from "../../helpers/playMoveSound";
 import actionTypes from "../../reducers/actionTypes";
 import white_pawn from "../../assets/icons/white_soldier.png";
 import white_horse from "../../assets/icons/white_horse.png";
@@ -87,7 +89,6 @@ import black_faras from "../../assets/icons/black_faras.png";
 import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
-import { createSpecialPosition } from "../../helpers";
 
 const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const { appState, dispatch, socket } = useAppContext();
@@ -95,6 +96,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();
+  const [soundEnabled, setSoundEnabledState] = useState(isSoundEnabled());
   const [start, setStart] = useState("no");
   const [promotion, setPromotion] = useState(false);
   const storedOptions = JSON.parse(
@@ -397,7 +399,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     const newRookReplacement = newValRook ? "chariot" : "rook";
     if (user) {
       dispatchRedux(
-        updateUserThunk({ id: user._id, values: { rookType: newRookReplacement } }),
+        updateUserThunk({
+          id: user._id,
+          values: { rookType: newRookReplacement },
+        }),
       );
     } else {
       try {
@@ -418,7 +423,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     const newHorseReplacement = newValHorse ? "faras" : "horse";
     if (user) {
       dispatchRedux(
-        updateUserThunk({ id: user._id, values: { horseType: newHorseReplacement } }),
+        updateUserThunk({
+          id: user._id,
+          values: { horseType: newHorseReplacement },
+        }),
       );
     } else {
       try {
@@ -446,19 +454,16 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
     great_chess: initialGreatChessState,
     grand_chess: initialGrandChessState,
   };
- const deletePreset = (id) => {
+  const deletePreset = (id) => {
     if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
 
     const presets = JSON.parse(
-        localStorage.getItem("custom_position_presets") || "[]"
+      localStorage.getItem("custom_position_presets") || "[]",
     );
 
-    const newPresets = presets.filter(p => p.id !== id);
+    const newPresets = presets.filter((p) => p.id !== id);
 
-    localStorage.setItem(
-        "custom_position_presets",
-        JSON.stringify(newPresets)
-    );
+    localStorage.setItem("custom_position_presets", JSON.stringify(newPresets));
 
     setSavedPresets(newPresets);
 
@@ -472,7 +477,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         },
       },
     });
-};
+  };
   const handleSaveCustomPreset = () => {
     const name = prompt(t("custom_panel.enter_position"));
 
@@ -766,6 +771,18 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
           >
             {t("custom_panel.reset_square_colors")}
           </button>
+          <button
+            onClick={() => {
+              const newValue = !soundEnabled;
+
+              setSoundEnabledState(newValue);
+              setSoundEnabled(newValue);
+            }}
+          >
+            {soundEnabled
+              ? `🔊 ${t("custom_panel.sounds_on")}`
+              : `🔇 ${t("custom_panel.sounds_off")}`}
+          </button>
         </div>
         <div className={styles["replace-pieces"]}>
           <div>
@@ -833,21 +850,13 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 <div className={styles["pieces-variants"]}>
                   <img src={white_horse} alt="white_horse" draggable={false} />
                   <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={white_faras}
-                    alt="white_faras"
-                    draggable={false}
-                  />
+                  <img src={white_faras} alt="white_faras" draggable={false} />
                 </div>
               ) : (
                 <div className={styles["pieces-variants"]}>
                   <img src={black_horse} alt="black_horse" draggable={false} />
                   <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={black_faras}
-                    alt="black_faras"
-                    draggable={false}
-                  />
+                  <img src={black_faras} alt="black_faras" draggable={false} />
                 </div>
               )}
             </div>
@@ -856,7 +865,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <img
               src={black_king}
               alt="black"
-              className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
+              className={`${styles["img-style"]} ${appState.playerTurn === "black" ? styles["active"] : ""}`}
               onClick={() => {
                 setSelectedColor("black");
                 onClickBlack();
@@ -865,7 +874,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
             <img
               src={white_king}
               alt="white"
-              className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
+              className={`${styles["img-style"]} ${appState.playerTurn === "white" ? styles["active"] : ""}`}
               onClick={() => {
                 setSelectedColor("white");
                 onClickWhite();
@@ -912,7 +921,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 alt="white_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `${pieceFaras ? "white_faras" : "white_horse"},isNew`,)
+                  e.dataTransfer.setData(
+                    "text",
+                    `${pieceFaras ? "white_faras" : "white_horse"},isNew`,
+                  )
                 }
               />
               <img
@@ -1192,7 +1204,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
                 alt="black_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text", `${pieceFaras ? "black_faras" : "black_horse"},isNew`,)
+                  e.dataTransfer.setData(
+                    "text",
+                    `${pieceFaras ? "black_faras" : "black_horse"},isNew`,
+                  )
                 }
               />
               <img
