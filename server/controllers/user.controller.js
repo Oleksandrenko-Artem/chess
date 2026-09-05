@@ -53,6 +53,17 @@ module.exports.getAllUsers = async (req, res, next) => {
         next(error);
     }
 };
+module.exports.getUserById = async (req, res, next) => {
+    try {
+        const user = await User.findById(req.params.idUser);
+        if (!user) {
+            throw createError(404, 'User not found');
+        }
+        res.status(200).send({ data: user });
+    } catch (error) {
+        next(error);
+    }
+};
 module.exports.patchUser = async (req, res, next) => {
     try {
         const updateData = req.body;

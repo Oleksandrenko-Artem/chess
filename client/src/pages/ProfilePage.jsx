@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { deleteUserThunk, findUserAccountThunk } from "../store/usersSlice";
-import { updateUser } from "../api";
+import { findUserById, updateUser } from "../api";
 import styles from "./Pages.module.scss";
 import { updateUserThunk } from "./../store/usersSlice";
 import UpdateForm from "./../components/forms/UpdateForm";
@@ -11,26 +11,30 @@ import UpdateForm from "./../components/forms/UpdateForm";
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { userId } = useParams();
   const { t } = useTranslation();
   const { user } = useSelector((state) => state.users);
+  const [viewedUser, setViewedUser] = useState(null);
   const fileInputRef = useRef(null);
   const [avatar, setAvatar] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [isUpdate, setIsUpdate] = useState(false);
   useEffect(() => {
-    if (!user) {
+    if (userId) {
+      findUserById(userId)
+        .then((response) => setViewedUser(response.data.data))
+        .catch(() => setViewedUser(null));
+    } else if (!user) {
       dispatch(findUserAccountThunk());
-    } else {
-      setAvatar(user.avatar);
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, userId]);
+
+  const profileUser = userId ? viewedUser : user;
+  const isOwnProfile = !userId;
+
   useEffect(() => {
-    if (!user) {
-      dispatch(findUserAccountThunk());
-    } else if (user) {
-      setAvatar(user.avatar);
-    }
-  }, [dispatch, user]);
+    setAvatar(profileUser?.avatar || null);
+  }, [profileUser]);
 
   const handleFileSelect = (e) => {
     const file = e.target.files[0];
@@ -131,60 +135,72 @@ const ProfilePage = () => {
                 alt="Profile Avatar"
                 className={styles["profile-avatar"]}
               />
-              <div className={styles["buttons-div"]}>
-                <div>
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isUploading}
-                  >
-                    {isUploading
-                      ? `${t("profile.upload_photo")}`
-                      : `${t("profile.change_photo")}`}
-                  </button>
-                  <button onClick={removeAvatar} disabled={isUploading}>
-                    {t("profile.remove_photo")}
-                  </button>
+              {isOwnProfile && (
+                <div className={styles["buttons-div"]}>
+                  <div>
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      {isUploading
+                        ? `${t("profile.upload_photo")}`
+                        : `${t("profile.change_photo")}`}
+                    </button>
+                    <button onClick={removeAvatar} disabled={isUploading}>
+                      {t("profile.remove_photo")}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           )}
           {!avatar && (
             <div className={styles["avatar-div"]}>
               <img
-                src="src/assets/icons/account.png"
+                src="/src/assets/icons/account.png"
                 alt="Default Avatar"
                 className={styles["default-avatar"]}
               />
-              <button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={isUploading}
-                className={styles["upload-btn"]}
-              >
-                {isUploading
-                  ? `${t("profile.upload_photo")}`
-                  : `${t("profile.change_photo")}`}
-              </button>
+              {isOwnProfile && (
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                  className={styles["upload-btn"]}
+                >
+                  {isUploading
+                    ? `${t("profile.upload_photo")}`
+                    : `${t("profile.change_photo")}`}
+                </button>
+              )}
             </div>
           )}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*,.ico,.svg"
-            onChange={handleFileSelect}
-            style={{ display: "none" }}
-          />
-          <div className={styles["account-btns"]}>
-            <button onClick={handleUpdateForm}>{t("form_panel.update")}</button>
-            <button onClick={handleDeleteUser}>{t("form_panel.delete")}</button>
-          </div>
+          {isOwnProfile && (
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*,.ico,.svg"
+                onChange={handleFileSelect}
+                style={{ display: "none" }}
+              />
+              <div className={styles["account-btns"]}>
+                <button onClick={handleUpdateForm}>
+                  {t("form_panel.update")}
+                </button>
+                <button onClick={handleDeleteUser}>
+                  {t("form_panel.delete")}
+                </button>
+              </div>
+            </>
+          )}
         </div>
         <div className={styles["profile-info"]}>
           <p>
-            <b>{t("profile.name")}:</b> {user?.name}{" "}
-            {user?.achievements?.selectedIcon && (
+            <b>{t("profile.name")}:</b> {profileUser?.name}{" "}
+            {profileUser?.achievements?.selectedIcon && (
               <img
                 src={`/src/assets/icons/${(() => {
-                  const selected = user.achievements.selectedIcon;
+                  const selected = profileUser.achievements.selectedIcon;
                   if (selected.includes("_")) {
                     const [style] = selected.split("_");
                     return style;
@@ -197,7 +213,7 @@ const ProfilePage = () => {
                     ] || "bronze"
                   );
                 })()}_${(() => {
-                  const selected = user.achievements.selectedIcon;
+                  const selected = profileUser.achievements.selectedIcon;
                   if (selected.includes("_")) {
                     return selected.split("_").slice(1).join("_");
                   }
@@ -210,20 +226,24 @@ const ProfilePage = () => {
             )}
           </p>
           <p>
-            <b>{t("profile.rating")}:</b> {user?.rating}
+            <b>{t("profile.rating")}:</b> {profileUser?.rating}
           </p>
           <p>
-            <b>{t("profile.role")}:</b> {user?.role}
+            <b>{t("profile.role")}:</b> {profileUser?.role}
           </p>
-          <p>
-            <b>{t("profile.email")}:</b> {user?.email}
-          </p>
-          <button onClick={handleNavigateAchievements}>
-            {t("profile.achievements")}
-          </button>
-          <button onClick={() => navigate("/collections")}>
-            {t("profile.collections")}
-          </button>
+          {isOwnProfile && (
+            <>
+              <p>
+                <b>{t("profile.email")}:</b> {profileUser?.email}
+              </p>
+              <button onClick={handleNavigateAchievements}>
+                {t("profile.achievements")}
+              </button>
+              <button onClick={() => navigate("/collections")}>
+                {t("profile.collections")}
+              </button>
+            </>
+          )}
           <div className={styles["stats-section"]}>
             <h3>{t("statistic_panel.bot")}</h3>
             <table className={styles.users}>
@@ -236,9 +256,9 @@ const ProfilePage = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{user?.botWins || 0}</td>
-                  <td>{user?.botDraws || 0}</td>
-                  <td>{user?.botLoses || 0}</td>
+                  <td>{profileUser?.botWins || 0}</td>
+                  <td>{profileUser?.botDraws || 0}</td>
+                  <td>{profileUser?.botLoses || 0}</td>
                 </tr>
               </tbody>
             </table>
@@ -255,9 +275,9 @@ const ProfilePage = () => {
               </thead>
               <tbody>
                 <tr>
-                  <td>{user?.multiWins || 0}</td>
-                  <td>{user?.multiDraws || 0}</td>
-                  <td>{user?.multiLoses || 0}</td>
+                  <td>{profileUser?.multiWins || 0}</td>
+                  <td>{profileUser?.multiDraws || 0}</td>
+                  <td>{profileUser?.multiLoses || 0}</td>
                 </tr>
               </tbody>
             </table>

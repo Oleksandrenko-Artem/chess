@@ -1,29 +1,30 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useTranslation } from 'react-i18next';
-import { findAllUsersThunk } from '../store/usersSlice';
-import Spinner from '../components/Spinner/Spinner';
-import styles from './Pages.module.scss';
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { findAllUsersThunk } from "../store/usersSlice";
+import Spinner from "../components/Spinner/Spinner";
+import styles from "./Pages.module.scss";
 
 const Homepage = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
-    const { users, isLoading } = useSelector((state) => state.users);
-    useEffect(() => {
-        dispatch(findAllUsersThunk());  
-    }, [dispatch]);
-    return (
-      <div className={styles.home}>
-        <h2>{t("home.home_caption")}</h2>
-        {isLoading ? (
-          <Spinner />
-        ) : (
-          <table className={styles.users}>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>{t("profile.rating")}</th>
-                <th>{t("home.photo")}</th>
+  const { users, isLoading } = useSelector((state) => state.users);
+  useEffect(() => {
+    dispatch(findAllUsersThunk());
+  }, [dispatch]);
+  return (
+    <div className={styles.home}>
+      <h2>{t("home.home_caption")}</h2>
+      {isLoading ? (
+        <Spinner />
+      ) : (
+        <table className={styles.users}>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>{t("profile.rating")}</th>
+              <th>{t("home.photo")}</th>
               <th>{t("home.name")}</th>
               <th>{t("statistic_panel.wins")}</th>
               <th>{t("statistic_panel.draws")}</th>
@@ -43,16 +44,19 @@ const Homepage = () => {
                       alt="avatar"
                     />
                   </td>
-                  <td>{user.name}</td>
+                  <td>
+                    <Link to={`/profile/${user._id}`}>{user.name}</Link>
+                  </td>
                   <td>{user.multiWins || 0}</td>
                   <td>{user.multiDraws || 0}</td>
                   <td>{user.multiLoses || 0}</td>
                 </tr>
               ))}
           </tbody>
-        </table>)}
-      </div>
-    );
+        </table>
+      )}
+    </div>
+  );
 };
 
 export default Homepage;

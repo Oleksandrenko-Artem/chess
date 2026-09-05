@@ -2,7 +2,7 @@ const express = require('express');
 const { validate } = require('../middlewares/validate.mw');
 const { registerSchema, loginSchema, updateSchema } = require('../validators/user.validator');
 const { auth, isOwner } = require('../middlewares/auth.mw');
-const { registerUser, loginUser, getUserAccount, getAllUsers, patchUser, deleteUser } = require('../controllers/user.controller');
+const { registerUser, loginUser, getUserAccount, getAllUsers, getUserById, patchUser, deleteUser } = require('../controllers/user.controller');
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router.post('/register', validate(registerSchema), registerUser);
 router.post('/login', validate(loginSchema), loginUser);
 router.get('/account', auth, getUserAccount);
 router.get('/', getAllUsers);
+router.get('/:idUser', getUserById);
 router.patch('/:idUser', auth, isOwner, validate(updateSchema), patchUser);
 router.delete('/:idUser', auth, deleteUser);
 

@@ -403,6 +403,7 @@ function App() {
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/account" element={<ProfilePage />} />
+          <Route path="/profile/:userId" element={<ProfilePage />} />
           <Route
             path="/play"
             element={
@@ -459,9 +460,7 @@ function App() {
           {user && (
             <Route path="/achievements" element={<AchievementsPage />} />
           )}
-          {user && (
-            <Route path="/collections" element={<CollectionsPage />} />
-          )}
+          {user && <Route path="/collections" element={<CollectionsPage />} />}
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
         <Footer />
