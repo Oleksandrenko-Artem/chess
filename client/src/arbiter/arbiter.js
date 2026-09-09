@@ -26,7 +26,14 @@ const arbiter = {
                         const captureMoves = getCheckersCaptures({ position, piece, rank: r, file: f });
                         const checkerMoves = captureMoves.length > 0 ? captureMoves : simpleMoves;
                         checkerMoves.forEach(([tr, tf]) => {
-                            allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
+                            allMoves.push({
+                                piece,
+                                rank: r,
+                                file: f,
+                                targetRank: tr,
+                                targetFile: tf,
+                                isCapture: captureMoves.length > 0,
+                            });
                         });
                     } else if (isPawn) {
                         const direction = playerColor === 'white' ? -1 : 1;
@@ -108,7 +115,27 @@ const arbiter = {
                 }
             }
         }
-        return allMoves;
+        const legalMoves = allMoves.filter(move => this.isMoveLegal({
+            position,
+            piece: move.piece,
+            fromRank: move.rank,
+            fromFile: move.file,
+            toRank: move.targetRank,
+            toFile: move.targetFile,
+            castleDirection: currentCastleDir,
+            playerColor,
+        }));
+        const variant = gameVariant || (typeof localStorage !== 'undefined'
+            ? localStorage.getItem('chess_variant')
+            : null);
+        if (variant === 'checkers_v2') {
+            const checkerCaptures = legalMoves.filter(move =>
+                (move.piece.endsWith('checkers') || move.piece.endsWith('checker_long_range')) &&
+                move.isCapture
+            );
+            if (checkerCaptures.length > 0) return checkerCaptures;
+        }
+        return legalMoves;
     },
     isSquareAttacked: function ({ position, rank, file, byPlayer }) {
         try {

@@ -10,7 +10,9 @@ export const reducer = (state, action) => {
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive } = state;
-            playerTurn = playerTurn === 'white' ? 'black' : 'white';
+            if (!action.payload.keepTurn) {
+                playerTurn = playerTurn === 'white' ? 'black' : 'white';
+            }
             position = [
                 ...position,
                 action.payload.newPosition

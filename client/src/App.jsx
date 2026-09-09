@@ -249,7 +249,7 @@ function App() {
       localStorage.removeItem("botGameState");
     }
     const newInitialState = {
-      ...initialOldGameState,
+      ...initialCheckersGameState,
       boardSize: 8,
       position: [createCheckersPosition(8)],
       isVsBot: true,

@@ -65,6 +65,30 @@ const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
   const currentPosition = position[position.length - 1];
 
   const prevBoard = position.length > 1 ? position[position.length - 2] : null;
+  const getSelectableMoves = () => {
+    const gameVariant = localStorage.getItem("chess_variant");
+    if (gameVariant !== "checkers_v2") {
+      return arbiter.getRegularMoves({
+        position: currentPosition,
+        prevPosition: prevBoard,
+        castleDirection: castleDirection[playerTurn],
+        piece,
+        rank,
+        file,
+      });
+    }
+
+    return arbiter
+      .getBoardValidMoves({
+        position: currentPosition,
+        playerColor: playerTurn,
+        prevPosition: prevBoard,
+        castleDirection,
+        gameVariant,
+      })
+      .filter((move) => move.rank === rank && move.file === file)
+      .map((move) => [move.targetRank, move.targetFile]);
+  };
   const onDragStart = (e) => {
     const userSide = localStorage.getItem("chess_side");
     const isHuman = appState.playerTurn === userSide;
@@ -90,14 +114,7 @@ const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
       e.target.classList.add(styles.dragging);
     }, 0);
     if (piece.startsWith(playerTurn)) {
-      const validMoves = arbiter.getRegularMoves({
-        position: currentPosition,
-        prevPosition: prevBoard,
-        castleDirection: castleDirection[playerTurn],
-        piece,
-        rank,
-        file,
-      });
+      const validMoves = getSelectableMoves();
       dispatch(
         generateValidMoves({
           validMoves,
@@ -115,14 +132,7 @@ const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
       return;
 
     if (piece.startsWith(playerTurn)) {
-      const validMoves = arbiter.getRegularMoves({
-        position: currentPosition,
-        prevPosition: prevBoard,
-        castleDirection: castleDirection[playerTurn],
-        piece,
-        rank,
-        file,
-      });
+      const validMoves = getSelectableMoves();
 
       dispatch(
         generateValidMoves({

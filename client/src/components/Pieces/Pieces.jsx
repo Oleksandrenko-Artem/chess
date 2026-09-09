@@ -8,10 +8,10 @@ import {
   getNewMoveNotation,
 } from "../../helpers";
 import { useAppContext } from "../../contexts/Context";
-import { makeNewMove } from "../../reducers/actions/move";
+import { generateValidMoves, makeNewMove } from "../../reducers/actions/move";
 import { status, PIECE_VALUES } from "../../constants";
 import { updateUserThunk } from "../../store/usersSlice";
-import { getKingPosition } from "../../arbiter/getMoves";
+import { getCheckersCaptures, getKingPosition } from "../../arbiter/getMoves";
 import Spinner from "../Spinner/Spinner";
 import arbiter from "../../arbiter/arbiter";
 import Piece from "./Piece";
@@ -356,7 +356,12 @@ const Pieces = ({ flipped = false }) => {
     if (appState.playerTurn !== userSide) {
       makeBotMove();
     }
-  }, [appState.playerTurn, appState.isVsBot, appState.status]);
+  }, [
+    appState.playerTurn,
+    appState.position,
+    appState.isVsBot,
+    appState.status,
+  ]);
 
   useEffect(() => {
     const loadImage = (src) =>
@@ -430,12 +435,12 @@ const Pieces = ({ flipped = false }) => {
 
       worker.onmessage = (e) => {
         const { chosenMove } = e.data;
+        isBotThinking.current = false;
 
         if (chosenMove && statusRef.current === status.ongoing) {
           makeMove({ ...chosenMove, isBot: true });
         }
 
-        isBotThinking.current = false;
         worker.terminate();
       };
 
@@ -445,7 +450,7 @@ const Pieces = ({ flipped = false }) => {
         worker.terminate();
       };
     }
-  }, [appState.playerTurn, appState.status]);
+  }, [appState.playerTurn, appState.position, appState.status]);
 
   if (!appState || !appState.position) {
     return null;
@@ -680,13 +685,29 @@ const Pieces = ({ flipped = false }) => {
         newPosition[rank][newRookFile] = rook;
       }
     }
-    const nextPlayer = isEditorMode
-      ? appState.playerTurn
-      : appState.playerTurn === "white"
-        ? "black"
-        : "white";
-    const newCastleDirection = { ...appState.castleDirection };
     const currentPlayer = appState.playerTurn;
+    const continuedChecker =
+      !isEditorMode &&
+      isCaptureMove &&
+      (newPosition[targetRank][targetFile]?.endsWith("checkers") ||
+        newPosition[targetRank][targetFile]?.endsWith("checker_long_range"));
+    const continuationMoves = continuedChecker
+      ? getCheckersCaptures({
+          position: newPosition,
+          piece: newPosition[targetRank][targetFile],
+          rank: targetRank,
+          file: targetFile,
+        })
+      : [];
+    const hasContinuation = continuationMoves.length > 0;
+    const opponentColor = currentPlayer === "white" ? "black" : "white";
+    const nextPlayer =
+      isEditorMode || hasContinuation
+        ? appState.playerTurn
+        : appState.playerTurn === "white"
+          ? "black"
+          : "white";
+    const newCastleDirection = { ...appState.castleDirection };
     const boardSize = appState.boardSize;
     const homeRank = currentPlayer === "white" ? boardSize - 1 : 0;
 
@@ -751,6 +772,13 @@ const Pieces = ({ flipped = false }) => {
 
     if (isEditorMode) {
       gameStatus = status.ongoing;
+    } else if (hasContinuation) {
+      gameStatus = arbiter.hasCheckers({
+        position: newPosition,
+        playerColor: opponentColor,
+      })
+        ? status.ongoing
+        : currentPlayer;
     } else {
       gameStatus = arbiter.getGameStatus({
         position: newPosition,
@@ -788,6 +816,7 @@ const Pieces = ({ flipped = false }) => {
         castleDirection: newCastleDirection,
         gameStatus,
         captured: isEditorMode ? appState.captured : newCaptured,
+        keepTurn: hasContinuation,
         lastMove: isEditorMode
           ? null
           : {
@@ -825,6 +854,7 @@ const Pieces = ({ flipped = false }) => {
           castleDirection: newCastleDirection,
           gameStatus,
           captured: isEditorMode ? appState.captured : newCaptured,
+          keepTurn: hasContinuation,
           lastMove: isEditorMode
             ? null
             : {
@@ -837,7 +867,19 @@ const Pieces = ({ flipped = false }) => {
         },
       });
     }
-    dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+    if (hasContinuation) {
+      dispatch(
+        generateValidMoves({
+          validMoves: continuationMoves,
+          selected: {
+            piece: newPosition[targetRank][targetFile],
+            from: [targetRank, targetFile],
+          },
+        }),
+      );
+    } else {
+      dispatch({ type: actionTypes.CLEAR_VALID_MOVES });
+    }
   };
 
   const makeBotMove = () => {
@@ -914,7 +956,7 @@ const Pieces = ({ flipped = false }) => {
   };
   const onDragOver = (e) => e.preventDefault();
   if (!imagesLoaded) {
-    return <Spinner />
+    return <Spinner />;
   }
   const position =
     appState.position && appState.position.length > 0
@@ -1044,7 +1086,7 @@ const Pieces = ({ flipped = false }) => {
         : null;
 
   const isLoserPiece = (piece) => loserColor && piece?.startsWith(loserColor);
-  
+
   return (
     <div
       ref={ref}
@@ -1194,9 +1236,9 @@ const Pieces = ({ flipped = false }) => {
                       file={realFile}
                       piece={f}
                       imageSrc={getPieceStyle(
-                          f,
-                          f.startsWith(localStorage.getItem("chess_side")),
-                          user
+                        f,
+                        f.startsWith(localStorage.getItem("chess_side")),
+                        user,
                       )}
                       className={
                         isLoserPiece(f) ? pieceStyles["loser-piece"] : ""

@@ -5,7 +5,7 @@
     "single-player-chess960": "Variation of chess, pieces of the first and eighth rows are placed randomly.",
     "single-player-shatranj": "Ancient slow-paced positional game, old version of chess which was played until 1475.",
     "single-player-shatranj960": "Variation of shatranj, pieces of the first and eighth rows are placed randomly.",
-    "single-player-checkers": "Pieces are placed on light and dark squares of the board, checkers and kings can capture no more than 1 opponent's piece per turn.",
+    "single-player-checkers": "Pieces are placed on light and dark squares of the board, also there is a king on the board, the game ends when it is captured or when there are no checkers left for one of the sides.",
     "single-player-new-chess": "Try the variant of chess created by our developer - Artem Oleksandrenko.",
     "single-player-new-chess960": "Variation of new chess, pieces of the first and eighth rows are placed randomly.",
     "choose-mode": "Choose Game Mode",

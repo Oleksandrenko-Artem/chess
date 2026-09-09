@@ -528,29 +528,24 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
         return moves;
     }
 
-    const directions = piece.startsWith('white') ? [-1, 1] : [1, -1];
-    directions.forEach((direction) => {
-        const adjRank = rank + direction;
-        const landRank = rank + 2 * direction;
+    const directions = [-1, 1];
+    directions.forEach((rankDirection) => {
+        [-1, 1].forEach((fileDirection) => {
+            const adjRank = rank + rankDirection;
+            const adjFile = file + fileDirection;
+            const landRank = rank + 2 * rankDirection;
+            const landFile = file + 2 * fileDirection;
 
-        if (isInBounds(position, landRank, file - 2)) {
-            if (
-                isInBounds(position, adjRank, file - 1) &&
-                position[adjRank][file - 1].startsWith(enemy) &&
-                position[landRank][file - 2] === ''
-            ) {
-                moves.push([landRank, file - 2]);
+            if (isInBounds(position, landRank, landFile)) {
+                if (
+                    isInBounds(position, adjRank, adjFile) &&
+                    position[adjRank][adjFile].startsWith(enemy) &&
+                    position[landRank][landFile] === ''
+                ) {
+                    moves.push([landRank, landFile]);
+                }
             }
-        }
-        if (isInBounds(position, landRank, file + 2)) {
-            if (
-                isInBounds(position, adjRank, file + 1) &&
-                position[adjRank][file + 1].startsWith(enemy) &&
-                position[landRank][file + 2] === ''
-            ) {
-                moves.push([landRank, file + 2]);
-            }
-        }
+        });
     });
 
     return moves;
