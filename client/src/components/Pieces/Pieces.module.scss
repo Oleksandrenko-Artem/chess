@@ -1,9 +1,12 @@
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/widths" as *;
+
 .piece {
   cursor: grab;
   width: 80%;
   height: 80%;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: $containerWidth;
+  max-height: $containerWidth;
   object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
@@ -15,8 +18,8 @@
 .piece-any {
   width: 80%;
   height: 80%;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: $containerWidth;
+  max-height: $containerWidth;
   object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
@@ -29,8 +32,8 @@
   width: 60%;
   height: 60%;
   margin-top: 20%;
-  max-width: 100%;
-  max-height: 100%;
+  max-width: $containerWidth;
+  max-height: $containerWidth;
   object-fit: contain;
   background-size: contain;
   background-repeat: no-repeat;
@@ -45,13 +48,13 @@
   background-repeat: no-repeat;
   background-position: center;
   pointer-events: none;
-  transform: translate(0, 0);
+  transform: translate($zero, $zero);
   animation: pieceTravel 220ms ease forwards;
 }
 
 @keyframes pieceTravel {
   from {
-    transform: translate(0, 0);
+    transform: translate($zero, $zero);
     opacity: 1;
   }
   to {
@@ -77,10 +80,10 @@
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.25));
 }
 .piece-brick {
-  width: 100%;
-  height: 100%;
-  max-width: 100%;
-  max-height: 100%;
+  width: $containerWidth;
+  height: $containerWidth;
+  max-width: $containerWidth;
+  max-height: $containerWidth;
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -89,17 +92,15 @@
   cursor: grabbing;
 }
 .dragging {
-  opacity: 0;
+  opacity: $zero;
 }
 .promotion {
-  display: flex;
+  @extend %flex-center;
   flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  width: 100%;
-  max-width: 100%;
+  gap: $buttonPadding;
+  padding: $containerGap;
+  width: $containerWidth;
+  max-width: $containerWidth;
 }
 
 .selected {
@@ -108,13 +109,13 @@
   align-items: center;
   width: 48px;
   height: 48px;
-  min-width: 40px;
-  min-height: 40px;
+  min-width: $imgHeight;
+  min-height: $imgHeight;
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
 }
 .loser-piece {
-  filter: grayscale(100%) brightness(0.35) contrast(0.8);
+  filter: grayscale($containerWidth) brightness(0.35) contrast(0.8);
   transition: filter .4s ease;
 }

@@ -1,18 +1,19 @@
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/breakpoints" as *;
+@use "/src/common/styles/widths" as *;
 
 .wrapper {
   @extend %panel-style;
-  width: 100%;
+  width: $containerWidth;
   height: 60%;
-  padding: 14px;
+  padding: $fontSizeFirst;
   overflow-y: auto;
 }
 .moves-list {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: $padding;
   font-weight: 800;
 }
 .moves-list div[data-number]:nth-child(odd)::before {
@@ -20,7 +21,7 @@
   font-weight: 600;
 }
 .moves-List:not([data-number]) {
-  padding-left: 0;
+  padding-left: $zero;
   &::before {
     display: none;
   }

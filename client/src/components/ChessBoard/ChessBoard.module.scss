@@ -1,17 +1,18 @@
 @use "/src/common/styles/templates" as *;
+@use "/src/common/styles/widths" as *;
+@use "/src/common/styles/colors" as *;
 
 @keyframes gradientFlow {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% $containerWidthSecond;
   }
   50% {
-    background-position: 95% 50%;
+    background-position: 95% $containerWidthSecond;
   }
   100% {
-    background-position: 0% 50%;
+    background-position: 0% $containerWidthSecond;
   }
 }
-
 %gradient-text {
   background-size: 400% 400%;
   animation: gradientFlow 8s ease infinite;
@@ -20,11 +21,8 @@
   color: transparent;
   display: inline-block;
 }
-
 .wrapper {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
+  @extend %flex-row;
   justify-content: center;
   h1 {
     text-align: center;
@@ -43,22 +41,22 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    width: clamp(380px, 90vw, 480px);
-    max-width: 100%;
-    height: clamp(380px, 90vw, 580px);
-    max-height: 100%;
+    width: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+    max-width: $containerWidth;
+    height: clamp($boardWidth, $roomHeight, 580px);
+    max-height: $containerWidth;
     position: relative;
     .players-container {
       display: flex;
       justify-content: center;
-      width: 100%;
+      width: $containerWidth;
     }
     .player-card {
       display: flex;
       align-items: center;
-      gap: 12px;
-      width: 100%;
-      padding: 3px 8px;
+      gap: $containerPadding;
+      width: $containerWidth;
+      padding: 3px $containerGap;
     }
     .player-card.black-player {
       @extend %panel-style;
@@ -76,7 +74,7 @@
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      min-width: 0;
+      min-width: $zero;
     }
     .player-color {
       font-size: 0.7rem;
@@ -94,58 +92,50 @@
       max-width: 320px;
     }
     .chess-div {
-      display: flex;
-      align-items: center;
-      flex-direction: column;
-      width: 100%;
+      @extend %flex-column;
+      width: $containerWidth;
       position: relative;
       .chess-board {
         display: grid;
         position: relative;
         grid-template-columns: repeat(var(--board-size, 8), 1fr);
         grid-template-rows: repeat(var(--board-size, 8), 1fr);
-        width: clamp(380px, 90vw, 480px);
-        max-width: 100%;
-        height: clamp(380px, 90vw, 480px);
-        max-height: 100%;
+        width: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+        max-width: $containerWidth;
+        height: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+        max-height: $containerWidth;
         aspect-ratio: 1 / 1;
-        --cell-size: calc(100% / var(--board-size, 8));
+        --cell-size: calc($containerWidth / var(--board-size, 8));
         border: 1px solid black;
         .black-tile {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          @extend %flex-center;
+          @extend %border-style;
           position: relative;
-          width: 100%;
-          height: 100%;
+          width: $containerWidth;
+          height: $containerWidth;
           background: var(--dark-square-color);
           background-size: 400% 400%;
           animation: gradientFlow 8s ease infinite;
           transition: transform 0.6s;
-          border: 2px solid black;
         }
         .white-tile {
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          @extend %flex-center;
+          @extend %border-style;
           position: relative;
-          width: 100%;
-          height: 100%;
+          width: $containerWidth;
+          height: $containerWidth;
           background: var(--light-square-color);
           background-size: 400% 400%;
           animation: gradientFlow 8s ease infinite;
           transition: transform 0.6s;
-          border: 2px solid black;
         }
       }
       .promotion-div {
+        @extend %flex-center;
         position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        inset: $zero;
         pointer-events: none;
-        padding: 0;
+        padding: $zero;
       }
       .promotion-div > * {
         pointer-events: auto;
@@ -154,120 +144,108 @@
   }
 }
 .attacking::after {
-  display: block;
-  position: absolute;
   content: "";
-  width: calc(100% + 1px);
-  height: calc(100% + 1px);
-  border: 2px solid black;
-  background-color: red;
+  @extend %border-style;
+  @extend %block-absolute;
+  width: calc($containerWidth + 1px);
+  height: calc($containerWidth + 1px);
+  background-color: $errorColor;
   z-index: 1;
 }
 .highlight::after {
-  display: block;
-  position: absolute;
   content: "";
-  width: calc(100% + 1px);
-  height: calc(100% + 1px);
-  border: 2px solid black;
+  @extend %border-style;
+  @extend %block-absolute;
+  width: calc($containerWidth + 1px);
+  height: calc($containerWidth + 1px);
   background-color: green;
   z-index: 5;
 }
 .check::after {
-  display: block;
-  position: absolute;
   content: "";
-  width: calc(100% + 1px);
-  height: calc(100% + 1px);
-  border: 2px solid black;
+  @extend %border-style;
+  @extend %block-absolute;
+  width: calc($containerWidth + 1px);
+  height: calc($containerWidth + 1px);
   background-color: rgb(60, 0, 0);
   z-index: 1;
 }
 .previous::after {
-  display: block;
-  position: absolute;
   content: "";
-  width: calc(100% + 1px);
-  height: calc(100% + 1px);
-  border: 2px solid black;
+  @extend %border-style;
+  @extend %block-absolute;
+  width: calc($containerWidth + 1px);
+  height: calc($containerWidth + 1px);
   background-color: yellow;
   z-index: 1;
 }
-
 .coordinate-number {
   position: absolute;
-  font-size: 12px;
+  font-size: $containerPadding;
   font-weight: bold;
   z-index: 15;
   @extend %gradient-text;
   &.white-orientation {
-    top: 2px;
-    left: 2px;
+    top: $letterOrientation;
+    left: $letterOrientation;
   }
   &.black-orientation {
-    top: 2px;
-    left: 2px;
+    top: $letterOrientation;
+    left: $letterOrientation;
   }
 }
-
 .coordinate-letter {
   position: absolute;
-  font-size: 12px;
+  font-size: $containerPadding;
   font-weight: bold;
   z-index: 15;
   @extend %gradient-text;
   &.white-orientation {
-    bottom: 2px;
-    right: 2px;
+    bottom: $letterOrientation;
+    right: $letterOrientation;
   }
   &.black-orientation {
-    bottom: 2px;
-    right: 2px;
+    bottom: $letterOrientation;
+    right: $letterOrientation;
   }
 }
-
 .player-name {
-  display: flex;
-    align-items: center;
+    @extend %flex-align-center;
     gap: 6px;
     flex-wrap: nowrap;
     font-weight: 600;
 }
-
 .player-rating {
     color: #bbb;
 }
-
 .achievement-icon {
-    width: 22px;
-    height: 22px;
-    flex-shrink: 0;
+    width: $iconWidth;
+    height: $iconWidth;
+    flex-shrink: $zero;
 }
 .achievement-icon {
-    width: 22px;
-    height: 22px;
+    width: $iconWidth;
+    height: $iconWidth;
     object-fit: contain;
 }
 .game-status-text {
   @extend %panel-style;
-  display: flex;
-  align-items: center;
+  @extend %flex-column;
   justify-content: center;
-  flex-direction: column;
-  gap: 20px;
+  gap: $cardGap;
   position: absolute;
-  width: 100%;
-  height: 100%;
+  width: $containerWidth;
+  height: $containerWidth;
   z-index: 20;
   transition: 1s;
   img {
-    width: 80px;
-    height: 80px;
-    padding: 10px;
+    width: $cardHeight;
+    height: $cardHeight;
+    padding: $buttonPadding;
   }
   button {
     @extend %btn-style;
-    padding: 10px;
+    padding: $buttonPadding;
   }
   h2 {
     font-size: 3em;
@@ -277,7 +255,6 @@
   background-image: var(--dark-square-color);
   background-color: var(--dark-square-color);
 }
-
 .dark-text {
   background-image: var(--light-square-color);
   background-color: var(--light-square-color);

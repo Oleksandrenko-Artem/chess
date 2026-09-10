@@ -3,17 +3,15 @@
 @use '/src/common/styles/templates' as *;
 
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    @extend %flex-justify-center;
 }
 .loader {
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
+    width: $linkHeight;
+    height: $linkHeight;
+    border-radius: $containerWidthSecond;
     display: inline-block;
     position: relative;
-    background: linear-gradient(0deg, rgb(45, 111, 255) 47%  33%, rgb(15, 0, 218) 100%);
+    background: linear-gradient(0deg, rgb(45, 111, 255) 47%  33%, rgb(15, 0, 218) $containerWidth);
     box-sizing: border-box;
     animation: rotation 1s linear infinite;
 }
@@ -21,12 +19,12 @@
     content: '';
     box-sizing: border-box;
     position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    left: $containerWidthSecond;
+    top: $containerWidthSecond;
+    transform: translate($containerWidthMinus, $containerWidthMinus);
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-radius: $containerWidthSecond;
     background: white;
 }
 @keyframes rotation {

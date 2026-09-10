@@ -4,17 +4,17 @@
 
 .wrapper {
     @extend %panel-style;
-        width: clamp(240px, 90vw, 340px);
-        max-width: 100%;
-        height: clamp(240px, 90vw, 340px);
-        max-height: 100%;
+        width: clamp(240px, $roomHeight, 340px);
+        max-width: $containerWidth;
+        height: clamp(240px, $roomHeight, 340px);
+        max-height: $containerWidth;
         z-index: 25;
     div {
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        gap: 8px;
+        gap: $containerGap;
         select {
             @extend %panel-style;
             @include button-style(80%, 35px, $buttonPadding);

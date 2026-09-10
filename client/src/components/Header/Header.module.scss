@@ -6,17 +6,16 @@
 .header {
   display: flex;
   flex-direction: column;
-  padding: 5px;
+  padding: $padding;
   .header-logo {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 5px;
+    @extend %flex-between;
+    gap: $padding;
     a {
       font-size: 1.8em;
       font-weight: 700;
       img {
-        width: 40px;
+        width: $imgHeight;
+        height: $imgHeight;
       }
     }
     .logo {
@@ -28,12 +27,10 @@
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 5px;
+      gap: $padding;
       .user-image {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 30px;
+        @extend %flex-center;
+        width: $linkLineHeight;
         img {
           width: 26px;
           height: 26px;
@@ -53,9 +50,7 @@
     }
   }
   .header-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    @extend %flex-between;
     flex-wrap: wrap;
     .disabledLink {
       opacity: 0.5;
@@ -66,8 +61,8 @@
       display: flex;
       flex-direction: row;
       flex-wrap: wrap;
-      gap: 10px;
-      padding: 0;
+      gap: $buttonPadding;
+      padding: $zero;
       .active-nav {
         --btn-style-color: rgb(100, 185, 255);
       }
@@ -79,13 +74,11 @@
     .style-panel {
       display: flex;
       flex-direction: row;
-      gap: 10px;
+      gap: $buttonPadding;
       .btn {
-        @include button-style(40px, $buttonHeight, $buttonPadding);
+        @include button-style($imgHeight, $buttonHeight, $buttonPadding);
         @extend %btn-style;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        @extend %flex-center;
         img {
           width: 35px;
           height: 25px;
@@ -93,14 +86,14 @@
         }
       }
       .btn-second {
-        @include button-style(120px, $buttonHeight, $buttonPadding);
+        @include button-style($buttonWidthSecond, $buttonHeight, $buttonPadding);
         @extend %btn-style;
       }
     }
   }
   @media screen and (max-width: $x) {
     .style-panel {
-      padding-top: 10px;
+      padding-top: $buttonPadding;
     }
   }
 }

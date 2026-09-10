@@ -1,4 +1,6 @@
+@use "/src/common/styles/colors" as *;
+
 .error {
-    color: red;
+    color: $errorColor;
     text-transform: capitalize;
 }

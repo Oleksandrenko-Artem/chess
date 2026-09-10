@@ -1,18 +1,16 @@
-@use '/src/common/styles/templates' as *;
+@use "/src/common/styles/templates" as *;
+@use "/src/common/styles/widths" as *;
 
 .timer {
-  display: flex;
-  justify-content: space-between;
+  @extend %flex-between;
 }
-
 .time {
-    @extend %btn-style;
-    font-size: 15px;
+  @extend %btn-style;
+  font-size: $cardPadding;
   font-weight: bold;
-    width: 76px;
-    height: 50px;
+  width: 76px;
+  height: 50px;
 }
-
 .active {
   background-color: #4caf50;
 }

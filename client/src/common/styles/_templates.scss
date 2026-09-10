@@ -1,4 +1,51 @@
 @use "/src/common/styles/colors" as *;
+@use "/src/common/styles/widths" as *;
+
+%flex-column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+%flex-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+%flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+%flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+%flex-justify-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+%flex-align-center {
+  display: flex;
+  align-items: center;
+}
+
+%flex-start {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+%block-absolute {
+  display: block;
+  position: absolute;
+}
 
 %btn-style {
   cursor: pointer;
@@ -19,10 +66,10 @@
   &::before {
     content: "";
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    top: $zero;
+    left: $zero;
+    right: $zero;
+    bottom: $zero;
     background: var(--btn-style-color);
     background-size: 400% 400%;
     animation: gradientFlow 8s ease infinite;
@@ -34,9 +81,13 @@
   &:hover {
     background-color: var(--btn-hover);
     &::before {
-      opacity: 0;
+      opacity: $zero;
     }
   }
+}
+
+%border-style {
+  border: $letterOrientation solid black;
 }
 
 %panel-style {
@@ -54,14 +105,14 @@
 
 @keyframes gradientFlow {
   0% {
-    background-position: 0% 50%;
+    background-position: 0% $containerWidthSecond;
   }
 
   50% {
-    background-position: 100% 50%;
+    background-position: $containerWidth $containerWidthSecond;
   }
 
   100% {
-    background-position: 0% 50%;
+    background-position: 0% $containerWidthSecond;
   }
 }

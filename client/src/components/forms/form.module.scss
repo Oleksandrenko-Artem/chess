@@ -1,13 +1,13 @@
 @use '/src/common/styles/templates' as *;
 @use "/src/common/styles/breakpoints" as *;
+@use "/src/common/styles/widths" as *;
+@use "/src/common/styles/colors" as *;
 
 .form {
+    @extend %flex-column;
     width: 70%;
     margin: auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
+    gap: $padding;
     h2 {
         text-align: center;
     }
@@ -17,15 +17,15 @@
             @extend %panel-style;
             width: 400px;
             height: 35px;
-            padding-left: 10px;
+            padding-left: $buttonPadding;
         }
         .show-password {
             cursor: pointer;
             display: flex;
             position: absolute;
-            right: 0;
+            right: $zero;
             bottom: 0.5vh;
-            margin: 0px 15px;
+            margin: $zero $cardPadding;
         }
     }
     button {
@@ -39,16 +39,16 @@
         height: 35px;
     }
     .error {
-        color: red;
+        color: $errorColor;
         text-transform: capitalize;
     }
     @media screen and (max-width: $s) {
         button {
-            width: 250px;
+            width: $formWidth;
         }
         label {
             input {
-                width: 250px;
+                width: $formWidth;
             }
         }
     }

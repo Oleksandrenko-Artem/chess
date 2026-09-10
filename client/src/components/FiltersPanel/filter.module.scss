@@ -1,9 +1,9 @@
 @use "/src/common/styles/templates" as *;
+@use "/src/common/styles/widths" as *;
 
 .filter-form {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    @extend %flex-align-center;
+    gap: $buttonPadding;
     select {
         @extend %btn-style;
     }

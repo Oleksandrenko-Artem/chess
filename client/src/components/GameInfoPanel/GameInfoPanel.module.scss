@@ -4,33 +4,27 @@
 @use "/src/common/styles/breakpoints" as *;
 
 .wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  @extend %flex-center;
   flex-wrap: wrap;
-  gap: 0;
-  margin: 0;
-  padding: 0;
+  gap: $zero;
+  margin: $zero;
+  padding: $zero;
   .start-panel {
     @extend %panel-style;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @extend %flex-column;
     justify-content: center;
-    gap: 8px;
-    width: clamp(380px, 90vw, 480px);
-    max-width: 100%;
-    height: clamp(380px, 90vw, 480px);
-    max-height: 100%;
-    padding: 12px;
+    gap: $containerGap;
+    width: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+    max-width: $containerWidth;
+    height: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+    max-height: $containerWidth;
+    padding: $containerPadding;
     button {
       @extend %btn-style;
-      @include button-style(60px, 30px, 5px);
+      @include button-style($capturesHeight, $linkLineHeight, $padding);
     }
     .img-div {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+      @extend %flex-row;
       justify-content: center;
       .img-style {
         @extend %btn-style;
@@ -38,7 +32,7 @@
         align-items: center;
         justify-content: center;
         border-radius: 0%;
-        padding: 20px;
+        padding: $cardGap;
         background: var(--btn-style-color);
         background-size: 400% 400%;
         animation: gradientFlow 7s ease infinite;
@@ -50,19 +44,17 @@
       }
     }
     .bot-level-div {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+      @extend %flex-row;
       justify-content: center;
-      gap: 5px;
+      gap: $padding;
       select {
         @extend %btn-style;
         height: 5vh;
         width: 7vh;
       }
       select, p {
-        margin: 0;
-        font-size: 14px;
+        margin: $zero;
+        font-size: $fontSizeFirst;
       }
     }
     .active {
@@ -72,52 +64,46 @@
   .game-status {
     @extend %panel-style;
     text-align: center;
-    width: 200px;
-    height: 582px;
-    margin: 0;
-    padding: 12px;
+    width: $gameStatusWidth;
+    height: $gameStatusWidthSecond;
+    margin: $zero;
+    padding: $containerPadding;
     .game-message {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      @extend %flex-column;
       flex-wrap: wrap;
     }
     .game-message-text {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      @extend %flex-center;
       flex-direction: column;
     }
     .buttons-div {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 5px;
+      @extend %flex-column;
+      gap: $padding;
     }
     select {
       @extend %btn-style;
-      @include button-style(140px, 30px, 5px);
+      @include button-style($buttonWidthThird, $linkLineHeight, $padding);
     }
     span {
       color: black;
       font-weight: bold;
-      font-size: 12px;
+      font-size: $containerPadding;
     }
     img {
       margin: 1px;
       padding: 2px;
       width: 35px;
-      height: 40px;
+      height: $imgHeight;
     }
     button {
       @extend %btn-style;
-      @include button-style(140px, 30px, 5px);
+      @include button-style($buttonWidthThird, $linkLineHeight, $padding);
     }
   }
   @media screen and (max-width: $x) {
     .game-status {
-      width: clamp(380px, 90vw, 480px);
-      height: 260px;
+      width: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+      height: $gameStatusHeight;
       .buttons-div {
         flex-direction: row;
         flex-wrap: wrap;
@@ -130,13 +116,13 @@
   }
   @media screen and (max-width: $l) {
       .start-panel {
-      width: 300px;
-      height: 300px;
+      width: $gameInfoPanelWidth;
+      height: $gameInfoPanelWidth;
     }
   }
   @media screen and (max-width: $s) {
     .game-status {
-      height: 260px;
+      height: $gameStatusHeight;
       .game-message-text {
         flex-direction: row;
       }

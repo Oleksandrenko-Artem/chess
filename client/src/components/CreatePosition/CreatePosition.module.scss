@@ -1,26 +1,28 @@
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/breakpoints" as *;
+@use "/src/common/styles/widths" as *;
+@use "/src/common/styles/colors" as *;
 
 .wrapper {
-  width: 100%;
+  width: $containerWidth;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $buttonPadding;
   min-height: auto;
-  padding-bottom: 8px;
+  padding-bottom: $containerGap;
   overflow: visible;
   .btns-div {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: $buttonPadding;
     justify-content: space-between;
     flex-wrap: wrap;
-    padding: 5px;
+    padding: $padding;
     div {
       display: flex;
       align-items: center;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: $buttonPadding;
     }
     button,
     select {
@@ -28,7 +30,7 @@
       height: 5vh;
     }
     button {
-      width: 15vh;
+      width: $buttonWidth;
     }
     select:disabled,
     button:disabled {
@@ -52,10 +54,10 @@
       @extend %btn-style;
     }
     .validation-error {
-      color: #ff6b6b;
+      color: $errorColor;
       font-size: 0.95rem;
-      margin-top: 8px;
-      width: 100%;
+      margin-top: $containerGap;
+      width: $containerWidth;
       text-align: center;
     }
     .board-size-select {
@@ -63,12 +65,10 @@
     }
   }
   .replace-pieces {
-    display: flex;
-    flex-direction: row;
+    @extend %flex-row;
     flex-wrap: wrap;
-    gap: 10px;
-    align-items: center;
-    margin-top: 0;
+    gap: $buttonPadding;
+    margin-top: $zero;
     .pieces-variants {
       @extend %btn-style;
       display: flex;
@@ -84,15 +84,15 @@
     display: flex;
     flex-wrap: wrap;
     align-items: flex-end;
-    gap: 8px;
+    gap: $containerGap;
     min-height: 56px;
-    padding: 4px 0;
+    padding: 4px $zero;
   }
   img {
     cursor: grab;
     width: 7vh;
     height: 6vh;
-    padding: 0 5px;
+    padding: $zero $padding;
     &:active {
       cursor: grabbing;
     }
@@ -115,22 +115,20 @@
     }
   }
   .promotion-div {
-    display: flex;
-    align-items: center;
+    @extend %flex-align-center;
   }
   .promotion-options {
-    display: flex;
-    align-items: center;
+    @extend %flex-align-center;
     flex-wrap: wrap;
-    padding: 5px;
-    gap: 10px;
+    padding: $padding;
+    gap: $buttonPadding;
     button,
     select {
       @extend %btn-style;
       height: 5vh;
     }
     button {
-      width: 15vh;
+      width: $buttonWidth;
     }
     select {
       width: 25vh;

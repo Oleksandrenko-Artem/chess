@@ -1,29 +1,25 @@
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/mixins" as *;
+@use "/src/common/styles/widths" as *;
 
 .card {
     @extend %panel-style;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    @extend %flex-between;
     flex-direction: row;
-    gap: 20px;
-    padding: 15px;
-    margin: 10px;
-    height: 80px;
+    gap: $cardGap;
+    padding: $cardPadding;
+    margin: $buttonPadding;
+    height: $cardHeight;
     .image-style {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 20px;
+        @extend %flex-row;
+        gap: $cardGap;
     }
     .level-div {
-        display: flex;
-        align-items: center;
-        gap: 10px;
+        @extend %flex-align-center;
+        gap: $buttonPadding;
         button {
             @extend %btn-style;
-            @include button-style(140px, 30px, 5px);
+            @include button-style($buttonWidthThird, $linkLineHeight, $padding);
         }
     }
 }

@@ -2,50 +2,46 @@
 @use "/src/common/styles/templates" as *;
 @use "/src/common/styles/mixins" as *;
 @use "/src/common/styles/breakpoints" as *;
+@use "/src/common/styles/colors" as *;
 
 .home {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  @extend %flex-column;
 }
 .profile {
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: $cardGap;
   h2 {
     text-align: center;
   }
   .profile-wrapper {
     display: flex;
     flex-direction: row;
-    gap: 20px;
+    gap: $cardGap;
     width: 70%;
     align-items: flex-start;
-
     > div {
       flex: 1 1 0;
-      min-width: 0;
+      min-width: $zero;
     }
     .buttons-div {
       div {
-        margin-top: 5px;
+        margin-top: $padding;
         button {
-          @include button-style(140px, $buttonHeight, $buttonPadding);
+          @include button-style($buttonWidthThird, $buttonHeight, $buttonPadding);
           @extend %btn-style;
-          margin: 0 10px 10px 0;
+          margin: $zero $buttonPadding $buttonPadding $zero;
         }
       }
     }
     .default-avatar,
     .profile-avatar {
-      width: 100%;
+      @extend %flex-center;
+      width: $containerWidth;
       max-width: 350px;
       height: auto;
-      max-height: 250px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 15px;
+      max-height: $formWidth;
+      margin-bottom: $cardPadding;
     }
     .profile-avatar {
       object-fit: cover;
@@ -53,13 +49,13 @@
     .profile-info {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: $buttonPadding;
       p {
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: $padding;
         font-size: 1.1em;
-        margin: 0;
+        margin: $zero;
       }
       button {
         @include button-style(200px, $buttonHeight, $buttonPadding);
@@ -67,22 +63,21 @@
       }
     }
     .upload-btn {
-      @include button-style(140px, $buttonHeight, $buttonPadding);
+      @include button-style($buttonWidthThird, $buttonHeight, $buttonPadding);
           @extend %btn-style;
-          margin-bottom: 10px;
+          margin-bottom: $buttonPadding;
     }
     .account-btns {
       button {
-        @include button-style(140px, $buttonHeight, $buttonPadding);
+        @include button-style($buttonWidthThird, $buttonHeight, $buttonPadding);
           @extend %btn-style;
-          margin-right: 10px;
+          margin-right: $buttonPadding;
       }
     }
   }
   @media screen and (max-width: $l) {
     flex-direction: column;
     align-items: center;
-
     .profile-wrapper {
       flex-direction: column;
       align-items: center;
@@ -90,32 +85,28 @@
   }
 }
 .wrapper {
-  display: flex;
-  flex-direction: row;
+  @extend %flex-row;
   justify-content: center;
-  align-items: center;
   flex-wrap: nowrap;
-  width: 100%;
-  gap: 0;
-  margin: 0;
-  padding: 0;
+  width: $containerWidth;
+  gap: $zero;
+  margin: $zero;
+  padding: $zero;
   .chess-wrapper {
-    display: flex;
+    @extend %flex-start;
     flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
     flex-wrap: nowrap;
-    gap: 0;
-    margin: 0;
-    padding: 0;
+    gap: $zero;
+    margin: $zero;
+    padding: $zero;
     .control {
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
       align-items: stretch;
-      width: clamp(380px, 90vw, 480px);
-      height: clamp(380px, 90vw, 582px);
-      margin: 0;
+      width: clamp($boardWidth, $roomHeight, $boardWidthSecond);
+      height: clamp($boardWidth, $roomHeight, $gameStatusWidthSecond);
+      margin: $zero;
     }
   }
   @media screen and (max-width: $x) {
@@ -124,52 +115,46 @@
     .chess-wrapper {
       flex-direction: column;
       align-items: center;
-      width: 100%;
+      width: $containerWidth;
       .control {
-        padding-left: 0;
-        margin: 0;
+        padding-left: $zero;
+        margin: $zero;
       }
     }
   }
 }
 .single-wrapper {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  @extend %flex-column;
   .slider-container {
-    display: flex;
-    align-items: center;
+    @extend %flex-align-center;
     justify-content: center;
-    gap: 20px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
+    gap: $cardGap;
+    width: $containerWidth;
+    max-width: $x;
+    margin: $zero auto;
   }
   .single-player-options {
-    display: flex;
-    flex-direction: row;
+    @extend %flex-row;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px;
+    gap: $buttonPadding;
     div {
       @extend %panel-style;
-      display: flex;
-      flex-direction: column;
+      @extend %flex-column;
       justify-content: space-around;
-      align-items: center;
-      gap: 20px;
-      width: 300px;
-      height: 300px;
-      padding: 10px;
+      gap: $cardGap;
+      width: $gameInfoPanelWidth;
+      height: $gameInfoPanelWidth;
+      padding: $buttonPadding;
       p {
-        margin: 0;
+        margin: $zero;
       }
       img {
         width: 8vh;
         height: 8vh;
       }
       a {
-        @include button-style(160px, 40px, 10px);
+        @include button-style(160px, $imgHeight, $buttonPadding);
         @extend %btn-style;
       }
     }
@@ -182,7 +167,7 @@
   }
   .nav-button {
     @extend %btn-style;
-    @include button-style(40px, 40px, 0px);
+    @include button-style($imgHeight, $imgHeight, 0px);
     font-size: 1.1em;
     &:disabled {
       opacity: 0.3;
@@ -191,19 +176,17 @@
   }
 }
 .position-wrapper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  @extend %flex-column;
 }
 .users {
   @extend %btn-style;
   width: 95%;
-  padding: 5px;
+  padding: $padding;
   th,
   td {
     @extend %btn-style;
-    width: 100px;
-    height: 30px;
+    width: $minWrapperHeight;
+    height: $linkLineHeight;
     text-align: center;
   }
   @media screen and (max-width: $m) {
@@ -212,8 +195,7 @@
     }
   }
   .home-page-user-photo {
-    display: flex;
-    align-items: center;
+    @extend %flex-align-center;
     justify-content: center;
     width: inherit;
     img {
@@ -223,43 +205,37 @@
     }
   }
 }
-
 .games-list-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  @extend %flex-column;
   h2 {
     text-align: center;
-    margin-bottom: 30px;
+    margin-bottom: $linkLineHeight;
     font-size: 2em;
   }
 }
 .games-list-content {
-  width: 100%;
+  width: $containerWidth;
 }
 .mode-selection {
   @extend %panel-style;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+  @extend %flex-between;
   flex-wrap: wrap;
   flex-direction: row;
   div {
-    display: flex;
-    align-items: center;
+    @extend %flex-align-center;
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 5px 20px;
+    gap: $buttonPadding;
+    padding: $padding $cardGap;
     h3 {
-      margin: 0 10px 0 5px;
+      margin: $zero $buttonPadding $zero $padding;
     }
     input {
-      @include button-style(220px, 35px, 0px);
+      @include button-style(220px, 35px, $zero);
       @extend %panel-style;
     }
     select,
     button {
-      @include button-style(130px, 35px, 0px);
+      @include button-style(130px, 35px, $zero);
       @extend %btn-style;
     }
   }
@@ -272,65 +248,55 @@
 }
 .games-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 20px;
-  width: 100%;
-  max-width: 1200px;
+  grid-template-columns: repeat(auto-fit, minmax($gameInfoPanelWidth, 1fr));
+  gap: $cardGap;
+  width: $containerWidth;
+  max-width: $x;
 }
-
 .game-card {
   @extend %btn-style;
   display: flex;
   flex-direction: column;
-  padding: 20px;
+  padding: $cardGap;
   cursor: pointer;
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 $containerGap 16px rgba(0, 0, 0, 0.2);
   }
-
   .game-card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-
+    @extend %flex-between;
+    margin-bottom: $buttonPadding;
     h3 {
-      margin: 0;
+      margin: $zero;
       font-size: 1.3em;
     }
-
     .game-type {
       background-color: var(--light-square-color);
       color: var(--dark-square-color);
-      padding: 4px 12px;
+      padding: 4px $containerPadding;
       border-radius: 16px;
       font-size: 0.8em;
       font-weight: 600;
       text-transform: uppercase;
     }
   }
-
   .game-description {
-    margin: 10px 0 15px 0;
-    color: var(--text-secondary, #666);
+    margin: $buttonPadding $zero $cardPadding $zero;
+    color: var(--text-secondary, $disabledColor);
     font-size: 0.95em;
     flex-grow: 1;
   }
-
   .game-button {
-    @include button-style(100%, 40px, 10px);
+    @include button-style($containerWidth, $imgHeight, $buttonPadding);
     @extend %btn-style;
     align-self: flex-start;
-    width: 100%;
+    width: $containerWidth;
     margin-top: auto;
   }
 }
-
 .join-game-section {
   input {
     @extend %panel-style;
@@ -342,104 +308,89 @@
 .active-rooms-list {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  margin: 0 auto;
+  width: $containerWidth;
+  margin: $zero auto;
 }
 .create-room-window {
   display: flex;
   justify-content: center;
-  margin: 20px 0;
+  margin: $cardGap $zero;
 }
 .no-active-games {
   text-align: center;
-  color: var(--text-secondary, #666);
+  color: var(--text-secondary, $disabledColor);
 }
 .room-waiting {
   @extend %panel-style;
-  width: clamp(180px, 90vw, 380px);
-  max-width: 100%;
-  height: clamp(100px, 90vw, 200px);
-  max-height: 100%;
-  display: flex;
-  flex-direction: column;
+  @extend %flex-column;
+  width: clamp($roomWidth, $roomHeight, $boardWidth);
+  max-width: $containerWidth;
+  height: clamp($minWrapperHeight, $roomHeight, $gameStatusWidth);
+  max-height: $containerWidth;
   justify-content: center;
-  align-items: center;
   p {
     font-size: 1.5em;
   }
   button {
-    @include button-style(150px, 35px, 10px);
+    @include button-style(150px, 35px, $buttonPadding);
     @extend %btn-style;
   }
 }
 .room-card {
   @extend %btn-style;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 5px;
-  padding: 15px;
-
+  @extend %flex-between;
+  margin-top: $padding;
+  padding: $cardPadding;
   .room-info {
-    display: flex;
-    align-items: center;
-    flex-direction: row;
+    @extend %flex-row;
     justify-content: space-between;
     flex-grow: 1;
-    gap: 20px;
+    gap: $cardGap;
     div {
-      display: flex;
-      align-items: center;
-      flex-direction: row;
-      gap: 20px;
+      @extend %flex-row;
+      gap: $cardGap;
       img {
-        width: 30px;
-        height: 30px;
+        width: $linkLineHeight;
+        height: $linkLineHeight;
       }
       h4 {
-        margin: 4px 0;
+        margin: 4px $zero;
         font-size: 1.1em;
-        color: white;
+        color: $white;
       }
-
       p {
-        margin: 4px 0;
+        margin: 4px $zero;
         font-size: 0.9em;
-        color: white;
+        color: $white;
       }
     }
   }
 }
 .collections-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
+  @extend %flex-column;
+  gap: $cardGap;
   .collections-grid {
-    display: flex;
-  flex-direction: row;
+    @extend %flex-row;
   flex-wrap: wrap;
   justify-content: flex-start;
-  gap: 20px;
-  margin: 0 10px 0 10px;
+  gap: $cardGap;
+  margin: $zero $buttonPadding $zero $buttonPadding;
   .collection-card {
     @extend %panel-style;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    @extend %flex-column;
     justify-content: center;
-    gap: 10px;
-    width: 250px;
-    height: 250px;
-    padding: 10px;
+    gap: $buttonPadding;
+    width: $formWidth;
+    height: $formWidth;
+    padding: $buttonPadding;
     h3 {
-      margin: 0;
+      margin: $zero;
       font-size: 1.2em;
       text-align: center;
     }
     button {
       @extend %btn-style;
-      @include button-style(120px, 35px, 10px);
+      @include button-style($buttonWidthSecond, 35px, $buttonPadding);
     }
   }
 }
