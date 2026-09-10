@@ -79,24 +79,6 @@ export const createCheckersPosition = (size = 8) => {
     position[6][6] = 'white_checkers';
     position[6][7] = 'white_checkers';
 
-    position[5][0] = 'white_checkers';
-    position[5][1] = 'white_checkers';
-    position[5][2] = 'white_checkers';
-    position[5][3] = 'white_checkers';
-    position[5][4] = 'white_checkers';
-    position[5][5] = 'white_checkers';
-    position[5][6] = 'white_checkers';
-    position[5][7] = 'white_checkers';
-
-    position[2][0] = 'black_checkers';
-    position[2][1] = 'black_checkers';
-    position[2][2] = 'black_checkers';
-    position[2][3] = 'black_checkers';
-    position[2][4] = 'black_checkers';
-    position[2][5] = 'black_checkers';
-    position[2][6] = 'black_checkers';
-    position[2][7] = 'black_checkers';
-
     position[1][0] = 'black_checkers';
     position[1][1] = 'black_checkers';
     position[1][2] = 'black_checkers';
