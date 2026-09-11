@@ -90,7 +90,7 @@ import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
 
-const CreatePosition = ({ roomWindow, setRoomWindow }) => {
+const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
@@ -443,6 +443,25 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
   };
   const handlePiecesChange = (event) => {
     setPiecesStyle(event.target.value);
+  };
+  const handlePieceClick = (event) => {
+    const image = event.target.closest("img");
+    if (!image) return;
+
+    let piece = image.alt;
+    if (!piece) return;
+
+    if (piece.endsWith("_rook")) {
+      const colorPrefix = piece.startsWith("white") ? "white" : "black";
+      piece = `${colorPrefix}_${pieceSailBoat ? "sailboat" : pieceChariot ? "chariot" : "rook"}`;
+    } else if (piece.endsWith("_horse")) {
+      const colorPrefix = piece.startsWith("white") ? "white" : "black";
+      piece = `${colorPrefix}_${pieceFaras ? "faras" : "horse"}`;
+    } else if (piece === "delete") {
+      piece = "";
+    }
+
+    onSelectPiece?.(piece);
   };
   const presetsMap = {
     chess: initialGameState,
@@ -904,7 +923,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         </div>
       </div>
       {color === "white" && !promotion && (
-        <div className={styles["piece-list"]}>
+        <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
             <div className={styles["piece-list"]}>
               <img
@@ -1187,7 +1206,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow }) => {
         </div>
       )}
       {color === "black" && !promotion && (
-        <div className={styles["piece-list"]}>
+        <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
             <div className={styles["piece-list"]}>
               <img

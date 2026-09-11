@@ -182,7 +182,7 @@ const getActualPiece = (piece) => {
   return piece;
 };
 
-const Pieces = ({ flipped = false }) => {
+const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
   const ref = useRef(null);
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
@@ -545,6 +545,32 @@ const Pieces = ({ flipped = false }) => {
     const p = piece;
     const userSide = localStorage.getItem("chess_side");
     const isHuman = appState.playerTurn === userSide;
+    const mode = localStorage.getItem("chess_mode");
+    const isEditorMode = mode === "editor";
+
+    if (
+      isNew &&
+      isEditorMode &&
+      (p?.endsWith("king") || p?.endsWith("imperator"))
+    ) {
+      const color = p.startsWith("white") ? "white" : "black";
+      const hasKingOfThisColor = currentPosition
+        .flat()
+        .some(
+          (currentPiece) =>
+            currentPiece &&
+            currentPiece.startsWith(color) &&
+            (currentPiece.endsWith("king") ||
+              currentPiece.endsWith("imperator")),
+        );
+
+      if (hasKingOfThisColor) {
+        alert(
+          `${t("custom_panel.king_message")} ${color === "white" ? t("custom_panel.white") : t("custom_panel.black")} ${t("custom_panel.king")}!`,
+        );
+        return;
+      }
+    }
 
     const { isBot = false } = moveData;
 
@@ -606,8 +632,6 @@ const Pieces = ({ flipped = false }) => {
         : "white";
       newCaptured[opponentColor].push(capturedPiece);
     }
-    const mode = localStorage.getItem("chess_mode");
-    const isEditorMode = mode === "editor";
     if (
       p.endsWith("pawn") &&
       file !== targetFile &&
@@ -922,26 +946,6 @@ const Pieces = ({ flipped = false }) => {
     const [p, rankStr, fileStr] = e.dataTransfer.getData("text").split(",");
     const isNew = rankStr === "isNew";
 
-    if (isNew && (p.endsWith("king") || p.endsWith("imperator"))) {
-      const color = p.startsWith("white") ? "white" : "black";
-
-      const hasKingOfThisColor = currentPosition
-        .flat()
-        .some(
-          (piece) =>
-            piece &&
-            piece.startsWith(color) &&
-            (piece.endsWith("king") || piece.endsWith("imperator")),
-        );
-
-      if (hasKingOfThisColor) {
-        alert(
-          `${t("custom_panel.king_message")} ${color === "white" ? t("custom_panel.white") : t("custom_panel.black")} ${t("custom_panel.king")}!`,
-        );
-        return;
-      }
-    }
-
     const coords = calculateCoords(e);
     if (coords.x === -1 || coords.y === -1) return;
 
@@ -1009,6 +1013,20 @@ const Pieces = ({ flipped = false }) => {
     }
   })();
   const handleSquareClick = (targetRank, targetFile) => {
+    if (
+      selectedPiece !== null &&
+      localStorage.getItem("chess_mode") === "editor"
+    ) {
+      makeMove({
+        piece: selectedPiece,
+        targetRank,
+        targetFile,
+        isNew: true,
+      });
+      onPiecePlaced?.();
+      return;
+    }
+
     if (appState.selected) {
       const isValidMove = appState.validMoves?.find(
         (m) => m[0] === targetRank && m[1] === targetFile,

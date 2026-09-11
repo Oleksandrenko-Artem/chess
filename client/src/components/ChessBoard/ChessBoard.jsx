@@ -352,7 +352,11 @@ const ChessBoard = (props) => {
                     </button>
                   </div>
                 )}
-              <Pieces flipped={orientation === "black"} />
+              <Pieces
+                flipped={orientation === "black"}
+                selectedPiece={props.selectedPiece}
+                onPiecePlaced={props.onPiecePlaced}
+              />
             </div>
             <svg
               style={{
