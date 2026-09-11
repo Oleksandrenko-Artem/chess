@@ -461,11 +461,13 @@ export const createNewChess960Position = (size = 8) => {
     return position;
 };
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, horseType, isCapture = null }) => {
+    const piece = p.replace(/^(white|black)_/, '');
+    const createMove = (text) => ({ text, piece });
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
         let castling = targetFile > file ? 'O-O' : 'O-O-O';
-        if (isCheckmate) return castling + '#';
-        if (isInCheck) return castling + '+';
-        return castling;
+        if (isCheckmate) return createMove(castling + '#');
+        if (isInCheck) return createMove(castling + '+');
+        return createMove(castling);
     }
     let note = '';
     const princeType = p[6].toLowerCase() === 'p' && p[7].toLowerCase() === 'r';
@@ -499,9 +501,9 @@ export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isIn
         note += '+';
     }
     if (isStalemate) {
-        return note + '1/2-1/2';
+        return createMove(note + '1/2-1/2');
     }
-    return note;
+    return createMove(note);
 };
 export const copyPosition = (position) => {
     const size = position?.length || 8;

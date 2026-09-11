@@ -10,11 +10,17 @@
   overflow-y: auto;
 }
 .moves-list {
-  display: flex;
-  flex-direction: row;
+  @extend %flex-row;
   flex-wrap: wrap;
   gap: $padding;
   font-weight: 800;
+}
+.piece-icon {
+  width: 1.1em;
+  height: 1.1em;
+  margin-right: 0.12em;
+  vertical-align: -0.2em;
+  object-fit: contain;
 }
 .moves-list div[data-number]:nth-child(odd)::before {
   content: attr(data-number);

@@ -14,7 +14,7 @@
 @media screen and (max-width: $m) {
   .captured-container {
     gap: $containerGap;
-    padding: 18px;
+    margin-top: 37px;
     min-height: auto;
   }
 }
@@ -32,6 +32,7 @@
 
 .captures {
   @extend %flex-start;
+  align-items: baseline;
   flex-wrap: wrap;
   gap: $containerGap;
   margin-bottom: $buttonPadding;
