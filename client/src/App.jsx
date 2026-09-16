@@ -109,23 +109,36 @@ function App() {
   } else {
     initialStateAtLoad = {
       ...initialStateAtLoad,
-      boardSize: 8,
+      boardSize:
+        savedVariant === "special" && savedEditorState?.boardSize
+          ? savedEditorState.boardSize
+          : 8,
       position:
-        savedVariant === "shatranj"
-          ? [createOldPosition(8)]
-          : savedVariant === "special"
-            ? [createSpecialPosition(8)]
-            : savedVariant === "chess960"
-              ? [createChess960Position(8)]
-              : savedVariant === "shatranj960"
-                ? [createShatranj960Position(8)]
-                : savedVariant === "checkers_v2"
-                  ? [createCheckersPosition()]
-                  : savedVariant === "new_chess"
-                    ? [createNewVariantPosition(8)]
-                    : savedVariant === "new_chess960"
-                      ? [createNewChess960Position(8)]
-                      : [createPosition(8)],
+        savedVariant === "special" && savedEditorState?.position
+          ? savedEditorState.position
+          : savedVariant === "shatranj"
+            ? [createOldPosition(8)]
+            : savedVariant === "special"
+              ? [createSpecialPosition(8)]
+              : savedVariant === "chess960"
+                ? [createChess960Position(8)]
+                : savedVariant === "shatranj960"
+                  ? [createShatranj960Position(8)]
+                  : savedVariant === "checkers_v2"
+                    ? [createCheckersPosition()]
+                    : savedVariant === "new_chess"
+                      ? [createNewVariantPosition(8)]
+                      : savedVariant === "new_chess960"
+                        ? [createNewChess960Position(8)]
+                        : [createPosition(8)],
+      playerTurn:
+        savedVariant === "special" && savedEditorState?.playerTurn
+          ? savedEditorState.playerTurn
+          : initialStateAtLoad.playerTurn,
+      orientation:
+        savedVariant === "special" && savedEditorState?.orientation
+          ? savedEditorState.orientation
+          : initialStateAtLoad.orientation,
     };
   }
 
@@ -177,7 +190,6 @@ function App() {
     const isActiveBotGame =
       appState?.isVsBot &&
       !appState?.isMultiplayer &&
-      start &&
       (appState.status === status.ongoing ||
         appState.status === status.promotion);
 
@@ -187,7 +199,7 @@ function App() {
     } else {
       localStorage.removeItem("botGameState");
     }
-  }, [appState, start]);
+  }, [appState]);
 
   useEffect(() => {
     const serverUrl =
