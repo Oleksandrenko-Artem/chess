@@ -65,6 +65,19 @@ function App() {
     typeof window !== "undefined"
       ? parseInt(localStorage.getItem("boardSize") || "8", 10)
       : 8;
+  const savedEditorState =
+    typeof window !== "undefined"
+      ? (() => {
+          try {
+            const value = JSON.parse(
+              localStorage.getItem("editor_position_state") || "null",
+            );
+            return value?.position ? value : null;
+          } catch {
+            return null;
+          }
+        })()
+      : null;
   let initialStateAtLoad =
     savedVariant === "shatranj"
       ? initialOldGameState
@@ -85,8 +98,13 @@ function App() {
   if (savedMode === "editor") {
     initialStateAtLoad = {
       ...initialStateAtLoad,
-      boardSize: savedBoardSize,
-      position: [createSpecialPosition(savedBoardSize)],
+      boardSize: savedEditorState?.boardSize || savedBoardSize,
+      position: savedEditorState?.position || [
+        createSpecialPosition(savedBoardSize),
+      ],
+      playerTurn: savedEditorState?.playerTurn || initialStateAtLoad.playerTurn,
+      orientation:
+        savedEditorState?.orientation || initialStateAtLoad.orientation,
     };
   } else {
     initialStateAtLoad = {
@@ -134,6 +152,24 @@ function App() {
 
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
   const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      localStorage.getItem("chess_mode") !== "editor"
+    )
+      return;
+
+    localStorage.setItem(
+      "editor_position_state",
+      JSON.stringify({
+        position: appState.position,
+        boardSize: appState.boardSize,
+        playerTurn: appState.playerTurn,
+        orientation: appState.orientation,
+      }),
+    );
+  }, [appState]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
