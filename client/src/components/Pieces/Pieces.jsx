@@ -653,6 +653,7 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       newPosition[captureRank][captureFile] = "";
     }
 
+    let promotesTo = null;
     if (newPosition[targetRank] !== undefined) {
       newPosition[targetRank][targetFile] = piece;
     }
@@ -689,6 +690,7 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
             .sort((a, b) => b.value - a.value)[0].piece;
         }
 
+        promotesTo = promotionPiece;
         newPosition[targetRank][targetFile] =
           p.split("_")[0] + "_" + promotionPiece;
       } else {
@@ -826,6 +828,7 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         targetRank,
         targetFile,
         position: currentPosition,
+        promotesTo,
         isInCheck,
         isCheckmate: gameStatus.includes("wins"),
         isStalemate: gameStatus === "Draw",

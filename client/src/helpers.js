@@ -463,35 +463,17 @@ export const createNewChess960Position = (size = 8) => {
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, horseType, isCapture = null }) => {
     const piece = p.replace(/^(white|black)_/, '');
     const createMove = (text) => ({ text, piece });
+    const boardSize = position?.length || 8;
+    const getSquare = (squareRank, squareFile) => `${getCharacter(squareFile)}${boardSize - squareRank}`;
+    const fromSquare = getSquare(rank, file);
+    const toSquare = getSquare(targetRank, targetFile);
     if (p[6].toLowerCase() === 'k' && p[7].toLowerCase() === 'i' && Math.abs(file - targetFile) === 2) {
-        let castling = targetFile > file ? 'O-O' : 'O-O-O';
+        let castling = `${fromSquare}-${toSquare}`;
         if (isCheckmate) return createMove(castling + '#');
         if (isInCheck) return createMove(castling + '+');
         return createMove(castling);
     }
-    let note = '';
-    const princeType = p[6].toLowerCase() === 'p' && p[7].toLowerCase() === 'r';
-    const pieceType = p[6].toLowerCase();
-    const hasCapture = isCapture ?? !!position?.[targetRank]?.[targetFile];
-    const isSailboat = (pieceType === 's' && rookType === 'sailboat');
-    const isPawnType = pieceType === 'p' && !princeType || (pieceType === 's' && !isSailboat);
-    if (!isPawnType) {
-        if (pieceType === 'i') {
-            note += 'K'
-        } else if (isSailboat) {
-            note += 'S';
-        } else {
-            note += pieceType.toUpperCase();
-        }
-        if (hasCapture) note += 'x';
-    } else {
-        if (file !== targetFile) {
-            note += getCharacter(file) + 'x';
-        }
-    }
-    const boardSize = position?.length || 8;
-    const displayRank = boardSize - targetRank;
-    note += getCharacter(targetFile) + displayRank;
+    let note = `${fromSquare}${(isCapture ?? !!position?.[targetRank]?.[targetFile]) ? 'x' : '-'}${toSquare}`;
     if (promotesTo) {
         note += '=' + promotesTo[0].toUpperCase();
     }
