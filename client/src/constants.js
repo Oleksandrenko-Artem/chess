@@ -71,6 +71,7 @@ export const status = {
     'black': 'Black wins',
     'draw': 'Draw',
 };
+export const FIFTY_MOVE_HALFMOVES = 100;
 export const pieces = {
     pawn: 'pawn',
     horse: 'horse',
@@ -94,6 +95,7 @@ export const initialGameState = {
         white: [],
         black: [],
     },
+    halfmoveClock: 0,
     orientation: 'white',
     whiteTime: 3600,
     blackTime: 3600,

@@ -1,5 +1,5 @@
 import arbiter from "../arbiter/arbiter";
-import { status } from "../constants";
+import { FIFTY_MOVE_HALFMOVES, status } from "../constants";
 import { createSpecialPosition } from "../helpers";
 import { playMoveSound } from "../helpers/playMoveSound";
 import actionTypes from "./actionTypes";
@@ -9,7 +9,9 @@ export const reducer = (state, action) => {
         case actionTypes.NEW_MOVE:
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
-            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive } = state;
+            let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive, halfmoveClock = 0 } = state;
+            const previousPosition = position[position.length - 1];
+            gameStatus = action.payload.gameStatus || status.ongoing;
             if (!action.payload.keepTurn) {
                 playerTurn = playerTurn === 'white' ? 'black' : 'white';
             }
@@ -35,6 +37,18 @@ export const reducer = (state, action) => {
                 newCaptured.white.length > oldCaptured.white.length ||
                 newCaptured.black.length > oldCaptured.black.length;
 
+            const movedPiece = action.payload.lastMove
+                ? previousPosition?.[action.payload.lastMove.fromRank]?.[action.payload.lastMove.fromFile]
+                : null;
+            const isPawnMove = movedPiece?.endsWith('pawn') || movedPiece?.endsWith('soldier');
+            const isCountableMove = Boolean(action.payload.lastMove);
+            if (isCountableMove) {
+                halfmoveClock = wasCapture || isPawnMove ? 0 : halfmoveClock + 1;
+            }
+            if (isCountableMove && gameStatus === status.ongoing && halfmoveClock >= FIFTY_MOVE_HALFMOVES) {
+                gameStatus = status.draw;
+            }
+
             const currentPosition = position[position.length - 1];
 
             const isCheck = arbiter.isKingInCheck({
@@ -50,7 +64,6 @@ export const reducer = (state, action) => {
             if (action.payload.captured) {
                 captured = action.payload.captured;
             }
-            gameStatus = action.payload.gameStatus || status.ongoing;
             playMoveSound({
                 captured: wasCapture,
                 isCheck: isCheck,
@@ -67,6 +80,7 @@ export const reducer = (state, action) => {
                 promotionSquare: isPromotion ? null : state.promotionSquare,
                 castleDirection,
                 captured,
+                halfmoveClock,
                 lastMove,
                 timerActive: gameStatus === status.ongoing ? true : false,
             };
@@ -147,6 +161,7 @@ export const reducer = (state, action) => {
                     white: [],
                     black: [],
                 },
+                halfmoveClock: 0,
             };
         case actionTypes.TOGGLE_ORIENTATION:
             return {
