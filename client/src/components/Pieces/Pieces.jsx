@@ -87,7 +87,19 @@ import brick from "../../assets/icons/brick.png";
 import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
 import pieceStyles from "./Pieces.module.scss";
 import { useTranslation } from "react-i18next";
-import { getPieceStyle } from "../../helpers/getPieceImage";
+import { getPieceStyle, hasGrayPieceIcon } from "../../helpers/getPieceImage";
+import {
+  FOUR_PLAYER_COLORS,
+  getFourPlayerDisplaySquare,
+  getFourPlayerGameStatus,
+  getFourPlayerRealSquare,
+  hasFourPlayerNativeIcon,
+  hasFourPlayerKing,
+  isFourPlayerPromotionSquare,
+  isPawnCaptureSquare,
+  normalizeFourPlayerPiece,
+  getNextFourPlayerTurn,
+} from "../../helpers/fourPlayer";
 
 const imageMap = {
   black_imperator,
@@ -182,17 +194,30 @@ const getActualPiece = (piece) => {
   return piece;
 };
 
-const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
+const Pieces = ({
+  flipped = false,
+  orientation,
+  selectedPiece = null,
+  onPiecePlaced,
+}) => {
   const ref = useRef(null);
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
+  const boardOrientation = orientation || appState.orientation;
+  const appStateRef = useRef(appState);
+  const fourPlayerBotTimerRef = useRef(null);
   const [imagesLoaded, setImagesLoaded] = useState(false);
   const [positionHistory, setPositionHistory] = useState([]);
   const [movingPiece, setMovingPiece] = useState(null);
   const prevPositionRef = useRef(null);
   const lastResultStatusRef = useRef(null);
+
+  useEffect(() => {
+    appStateRef.current = appState;
+  }, [appState]);
 
   const getUserResultUpdate = (gameStatus) => {
     const userSide = localStorage.getItem("chess_side");
@@ -238,14 +263,10 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       return result;
     }
 
-    const winnerColor =
-      gameStatus === status.white
-        ? "white"
-        : gameStatus === status.black
-          ? "black"
-          : null;
+    const winnerColor = gameStatus.replace(" wins", "").toLowerCase();
 
-    if (!winnerColor) return null;
+    if (!["white", "black", ...FOUR_PLAYER_COLORS].includes(winnerColor))
+      return null;
 
     const isUserWin = winnerColor === userSide;
     if (isUserWin) {
@@ -344,18 +365,30 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
 
   useEffect(() => {
     const mode = localStorage.getItem("chess_mode");
+    const gameVariant = localStorage.getItem("chess_variant");
     if (
       !appState.isVsBot ||
       appState.status !== status.ongoing ||
-      mode === "game"
+      (mode === "game" && gameVariant !== "four_player")
     ) {
       return;
     }
 
     const userSide = localStorage.getItem("chess_side");
-    if (appState.playerTurn !== userSide) {
-      makeBotMove();
+    if (appState.playerTurn === userSide) return;
+
+    if (gameVariant === "four_player") {
+      const timer = makeBotMove();
+      return () => {
+        if (timer) clearTimeout(timer);
+        if (fourPlayerBotTimerRef.current === timer) {
+          fourPlayerBotTimerRef.current = null;
+          isBotThinking.current = false;
+        }
+      };
     }
+
+    makeBotMove();
   }, [
     appState.playerTurn,
     appState.position,
@@ -402,10 +435,12 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
     } = appState;
     const userSide = localStorage.getItem("chess_side");
     const mode = localStorage.getItem("chess_mode");
+    const gameVariant = localStorage.getItem("chess_variant");
     const isGameMode = mode === "game";
 
     if (
       isGameMode &&
+      gameVariant !== "four_player" &&
       currentStatus === status.ongoing &&
       playerTurn !== userSide &&
       !isBotThinking.current
@@ -420,7 +455,6 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         type: "module",
       });
 
-      const gameVariant = localStorage.getItem("chess_variant");
       const botLevel = parseInt(localStorage.getItem("bot_level") || "1", 10);
 
       worker.postMessage({
@@ -471,8 +505,16 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
     )
       return { x: -1, y: -1 };
 
-    const realFile = flipped ? appState.boardSize - 1 - dispFile : dispFile;
-    const realRank = flipped ? appState.boardSize - 1 - dispRank : dispRank;
+    const [realRank, realFile] = isFourPlayer
+      ? getFourPlayerRealSquare(
+          dispRank,
+          dispFile,
+          boardOrientation,
+          appState.boardSize,
+        )
+      : flipped
+        ? [appState.boardSize - 1 - dispRank, appState.boardSize - 1 - dispFile]
+        : [dispRank, dispFile];
     return { x: realRank, y: realFile };
   };
   const openPromotionBox = ({ rank, file, targetRank, targetFile }) => {
@@ -546,7 +588,23 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
     const userSide = localStorage.getItem("chess_side");
     const isHuman = appState.playerTurn === userSide;
     const mode = localStorage.getItem("chess_mode");
+    const gameVariant = localStorage.getItem("chess_variant");
     const isEditorMode = mode === "editor";
+    const isFourPlayer =
+      localStorage.getItem("chess_variant") === "four_player";
+    const previousEliminatedColors = appState.eliminatedColors || [];
+    const checkedColorsBefore = isFourPlayer
+      ? FOUR_PLAYER_COLORS.filter(
+          (color) =>
+            hasFourPlayerKing(currentPosition, color) &&
+            !previousEliminatedColors.includes(color) &&
+            arbiter.isKingInCheck({
+              position: currentPosition,
+              playerColor: color,
+              gameVariant: "four_player",
+            }),
+        )
+      : [];
 
     if (
       isNew &&
@@ -571,8 +629,8 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         return;
       }
     }
-
     const { isBot = false } = moveData;
+    if (isBot && isHuman) return;
 
     if (appState.isMultiplayer && !isNew) {
       if (appState.playerTurn !== userSide) {
@@ -590,18 +648,25 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         return;
       }
 
-      if (
-        (p.endsWith("pawn") || p.endsWith("soldier")) &&
-        (targetRank === 0 || targetRank === appState.boardSize - 1)
-      ) {
+      const promotionSquare = isFourPlayer
+        ? isFourPlayerPromotionSquare(
+            p.split("_")[0],
+            targetRank,
+            targetFile,
+            appState.boardSize,
+          )
+        : targetRank === 0 || targetRank === appState.boardSize - 1;
+      if ((p.endsWith("pawn") || p.endsWith("soldier")) && promotionSquare) {
         openPromotionBox({ rank, file, targetRank, targetFile });
         return;
       }
     }
 
-    const newPosition = copyPosition(currentPosition);
+    let newPosition = copyPosition(currentPosition);
     const newCaptured = JSON.parse(
-      JSON.stringify(appState.captured || { white: [], black: [] }),
+      JSON.stringify(
+        appState.captured || { yellow: [], blue: [], green: [], red: [] },
+      ),
     );
     const checkerCaptureInfo = getCheckerCaptureInfo({
       piece: p,
@@ -627,15 +692,15 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       let capturedPiece = getActualPiece(
         currentPosition[captureRank][captureFile],
       );
-      const opponentColor = capturedPiece.startsWith("white")
-        ? "black"
-        : "white";
+      const opponentColor = capturedPiece.split("_")[0];
+      newCaptured[opponentColor] ||= [];
       newCaptured[opponentColor].push(capturedPiece);
     }
     if (
       p.endsWith("pawn") &&
       file !== targetFile &&
       !currentPosition[targetRank][targetFile] &&
+      !isFourPlayer &&
       !isEditorMode
     ) {
       newPosition[rank][targetFile] = "";
@@ -661,6 +726,14 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       localStorage.getItem("promotion_options"),
     ) || ["ferz", "rook", "bishop", "horse"];
     const gameMode = localStorage.getItem("chess_variant");
+    const promotionSquare = isFourPlayer
+      ? isFourPlayerPromotionSquare(
+          p.split("_")[0],
+          targetRank,
+          targetFile,
+          appState.boardSize,
+        )
+      : targetRank === 0 || targetRank === appState.boardSize - 1;
     const shouldPromoteChecker =
       p.endsWith("checkers") &&
       ((p.startsWith("white") && targetRank === 0) ||
@@ -670,12 +743,16 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         p.split("_")[0] + "_checker_long_range";
     } else if (
       (p.endsWith("pawn") || p.endsWith("soldier")) &&
-      (targetRank === 0 || targetRank === appState.boardSize - 1)
+      promotionSquare
     ) {
       if (!isHuman) {
         let promotionPiece;
 
-        if (gameMode === "chess" || gameMode === "chess960") {
+        if (
+          gameMode === "four_player" ||
+          gameMode === "chess" ||
+          gameMode === "chess960"
+        ) {
           promotionPiece = "ferz";
         } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
           promotionPiece = "firzan";
@@ -712,6 +789,41 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       }
     }
     const currentPlayer = appState.playerTurn;
+    let wasCheckmate = false;
+    let eliminatedColors = appState.eliminatedColors || [];
+    if (isFourPlayer) {
+      const capturedKing = currentPosition[targetRank]?.[targetFile];
+      if (
+        capturedKing?.endsWith("_king") &&
+        !eliminatedColors.includes(capturedKing.split("_")[0])
+      ) {
+        eliminatedColors = [...eliminatedColors, capturedKing.split("_")[0]];
+      }
+
+      FOUR_PLAYER_COLORS.forEach((color) => {
+        if (
+          !hasFourPlayerKing(newPosition, color) ||
+          eliminatedColors.includes(color)
+        )
+          return;
+        const isInCheck = arbiter.isKingInCheck({
+          position: newPosition,
+          playerColor: color,
+          gameVariant: "four_player",
+        });
+        const legalMoves = arbiter.getBoardValidMoves({
+          position: newPosition,
+          playerColor: color,
+          prevPosition: currentPosition,
+          castleDirection: appState.castleDirection,
+          gameVariant: "four_player",
+        });
+        if (legalMoves.length === 0) {
+          wasCheckmate ||= isInCheck;
+          eliminatedColors = [...eliminatedColors, color];
+        }
+      });
+    }
     const continuedChecker =
       !isEditorMode &&
       isCaptureMove &&
@@ -726,13 +838,23 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         })
       : [];
     const hasContinuation = continuationMoves.length > 0;
-    const opponentColor = currentPlayer === "white" ? "black" : "white";
     const nextPlayer =
       isEditorMode || hasContinuation
         ? appState.playerTurn
-        : appState.playerTurn === "white"
-          ? "black"
-          : "white";
+        : isFourPlayer
+          ? getNextFourPlayerTurn(
+              newPosition,
+              appState.playerTurn,
+              eliminatedColors,
+            )
+          : appState.playerTurn === "white"
+            ? "black"
+            : "white";
+    const opponentColor = isFourPlayer
+      ? nextPlayer
+      : currentPlayer === "white"
+        ? "black"
+        : "white";
     const newCastleDirection = { ...appState.castleDirection };
     const boardSize = appState.boardSize;
     const homeRank = currentPlayer === "white" ? boardSize - 1 : 0;
@@ -744,7 +866,7 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       return direction;
     };
 
-    if (!isEditorMode) {
+    if (!isEditorMode && !isFourPlayer) {
       if (p.endsWith("_king")) {
         newCastleDirection[currentPlayer] = "none";
       }
@@ -805,6 +927,11 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       })
         ? status.ongoing
         : currentPlayer;
+    } else if (isFourPlayer) {
+      gameStatus = getFourPlayerGameStatus(newPosition, eliminatedColors);
+      if (appState.isVsBot && eliminatedColors.includes(userSide)) {
+        gameStatus = `${currentPlayer} wins`;
+      }
     } else {
       gameStatus = arbiter.getGameStatus({
         position: newPosition,
@@ -814,10 +941,26 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         positionHistory: [...positionHistory, newHash],
       });
     }
-    const isInCheck = arbiter.isKingInCheck({
-      position: newPosition,
-      playerColor: nextPlayer,
-    });
+    const checkedColorsAfter = isFourPlayer
+      ? FOUR_PLAYER_COLORS.filter(
+          (color) =>
+            color !== currentPlayer &&
+            hasFourPlayerKing(newPosition, color) &&
+            !eliminatedColors.includes(color) &&
+            arbiter.isKingInCheck({
+              position: newPosition,
+              playerColor: color,
+              gameVariant: "four_player",
+            }),
+        )
+      : [];
+    const isInCheck = isFourPlayer
+      ? checkedColorsAfter.some((color) => !checkedColorsBefore.includes(color))
+      : arbiter.isKingInCheck({
+          position: newPosition,
+          playerColor: nextPlayer,
+          gameVariant,
+        });
     let newMove = null;
 
     if (!isEditorMode) {
@@ -830,7 +973,7 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         position: currentPosition,
         promotesTo,
         isInCheck,
-        isCheckmate: gameStatus.includes("wins"),
+        isCheckmate: wasCheckmate || gameStatus.includes("wins"),
         isStalemate: gameStatus === "Draw",
         isCapture: isCaptureMove,
       });
@@ -842,6 +985,8 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         newMove,
         castleDirection: newCastleDirection,
         gameStatus,
+        nextPlayer,
+        eliminatedColors,
         captured: isEditorMode ? appState.captured : newCaptured,
         keepTurn: hasContinuation,
         lastMove: isEditorMode
@@ -854,11 +999,15 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
             },
       }),
     );
-    if (user && (gameStatus === status.white || gameStatus === status.black)) {
-      const winnerColor = gameStatus === status.white ? "white" : "black";
-
+    const winnerColor = gameStatus.endsWith(" wins")
+      ? gameStatus.replace(" wins", "").toLowerCase()
+      : null;
+    if (user && winnerColor) {
       if (winnerColor === localStorage.getItem("chess_side")) {
-        const matePiece = piece.replace("white_", "").replace("black_", "");
+        const matePiece = piece.replace(
+          /^(white|yellow|blue|black|green|red)_/,
+          "",
+        );
 
         fetch("http://localhost:3000/achievements", {
           method: "POST",
@@ -880,6 +1029,8 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
           newMove,
           castleDirection: newCastleDirection,
           gameStatus,
+          nextPlayer,
+          eliminatedColors,
           captured: isEditorMode ? appState.captured : newCaptured,
           keepTurn: hasContinuation,
           lastMove: isEditorMode
@@ -911,9 +1062,15 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
 
   const makeBotMove = () => {
     if (appState.status !== status.ongoing || !appState.isVsBot) return;
+    const gameVariant = localStorage.getItem("chess_variant") || "chess";
+    const isFourPlayer = gameVariant === "four_player";
+    if (
+      isFourPlayer &&
+      (isBotThinking.current || fourPlayerBotTimerRef.current)
+    )
+      return;
 
     const botColor = appState.playerTurn;
-    const gameVariant = localStorage.getItem("chess_variant") || "chess";
 
     const allMoves = arbiter.getBoardValidMoves({
       position: currentPosition,
@@ -927,19 +1084,42 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
 
     const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
 
-    setTimeout(
-      () => {
-        makeMove({
-          piece: randomMove.piece,
-          rank: randomMove.rank,
-          file: randomMove.file,
-          targetRank: randomMove.targetRank,
-          targetFile: randomMove.targetFile,
-          isBot: true,
-        });
-      },
-      500 + Math.random() * 1000,
-    );
+    const makeChosenMove = () => {
+      if (isFourPlayer) {
+        const latestState = appStateRef.current;
+        if (
+          latestState.status !== status.ongoing ||
+          latestState.playerTurn !== botColor ||
+          latestState.position.at(-1) !== currentPosition ||
+          localStorage.getItem("chess_side") === botColor
+        ) {
+          isBotThinking.current = false;
+          fourPlayerBotTimerRef.current = null;
+          return;
+        }
+      }
+      isBotThinking.current = false;
+      fourPlayerBotTimerRef.current = null;
+      makeMove({
+        piece: randomMove.piece,
+        rank: randomMove.rank,
+        file: randomMove.file,
+        targetRank: randomMove.targetRank,
+        targetFile: randomMove.targetFile,
+        isBot: true,
+      });
+    };
+
+    if (isFourPlayer) {
+      isBotThinking.current = true;
+      fourPlayerBotTimerRef.current = setTimeout(
+        makeChosenMove,
+        500 + Math.random() * 1000,
+      );
+      return fourPlayerBotTimerRef.current;
+    }
+
+    setTimeout(makeChosenMove, 500 + Math.random() * 1000);
   };
 
   const onDrop = (e) => {
@@ -971,6 +1151,19 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
       : Array.from({ length: appState.boardSize }, () =>
           Array.from({ length: appState.boardSize }, () => null),
         );
+  const displayPosition = isFourPlayer
+    ? Array.from({ length: appState.boardSize }, (_, displayRank) =>
+        Array.from({ length: appState.boardSize }, (_, displayFile) => {
+          const [realRank, realFile] = getFourPlayerRealSquare(
+            displayRank,
+            displayFile,
+            boardOrientation,
+            appState.boardSize,
+          );
+          return position[realRank]?.[realFile];
+        }),
+      )
+    : null;
 
   const numberFileByRank = [...Array(appState.boardSize)].map((_, r) => {
     const direction = appState.orientation === "white" ? 1 : -1;
@@ -1006,15 +1199,45 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
     return null;
   });
 
-  const isChecked = (() => {
-    const isInCheck = arbiter.isKingInCheck({
-      position,
-      playerColor: appState.playerTurn,
-    });
-    if (isInCheck) {
-      return getKingPosition({ position, playerColor: appState.playerTurn });
-    }
-  })();
+  const displayNumberFileByRank = isFourPlayer
+    ? displayPosition.map((rank) =>
+        rank.findIndex((piece) => piece !== "brick"),
+      )
+    : null;
+  const displayLetterRankByFile = isFourPlayer
+    ? Array.from({ length: appState.boardSize }, (_, file) => {
+        for (let rank = appState.boardSize - 1; rank >= 0; rank -= 1) {
+          if (displayPosition[rank][file] !== "brick") return rank;
+        }
+        return null;
+      })
+    : null;
+
+  const checkedKingPositions = isFourPlayer
+    ? FOUR_PLAYER_COLORS.filter(
+        (color) =>
+          hasFourPlayerKing(position, color) &&
+          !(appState.eliminatedColors || []).includes(color) &&
+          arbiter.isKingInCheck({
+            position,
+            playerColor: color,
+            gameVariant: "four_player",
+          }),
+      )
+        .map((color) => getKingPosition({ position, playerColor: color }))
+        .filter(Boolean)
+    : (() => {
+        if (
+          !arbiter.isKingInCheck({ position, playerColor: appState.playerTurn })
+        ) {
+          return [];
+        }
+        const kingPosition = getKingPosition({
+          position,
+          playerColor: appState.playerTurn,
+        });
+        return kingPosition ? [kingPosition] : [];
+      })();
   const handleSquareClick = (targetRank, targetFile) => {
     if (
       selectedPiece !== null &&
@@ -1067,19 +1290,32 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
             ? cellSize * 0.3
             : (cellSize - pieceHeight) / 2;
 
-          const displayFromFile = flipped
-            ? appState.boardSize - 1 - movingPiece.fromFile
-            : movingPiece.fromFile;
-          const displayFromRank = flipped
-            ? appState.boardSize - 1 - movingPiece.fromRank
-            : movingPiece.fromRank;
-
-          const displayToFile = flipped
-            ? appState.boardSize - 1 - movingPiece.toFile
-            : movingPiece.toFile;
-          const displayToRank = flipped
-            ? appState.boardSize - 1 - movingPiece.toRank
-            : movingPiece.toRank;
+          const [displayFromRank, displayFromFile] = isFourPlayer
+            ? getFourPlayerDisplaySquare(
+                movingPiece.fromRank,
+                movingPiece.fromFile,
+                boardOrientation,
+                appState.boardSize,
+              )
+            : flipped
+              ? [
+                  appState.boardSize - 1 - movingPiece.fromRank,
+                  appState.boardSize - 1 - movingPiece.fromFile,
+                ]
+              : [movingPiece.fromRank, movingPiece.fromFile];
+          const [displayToRank, displayToFile] = isFourPlayer
+            ? getFourPlayerDisplaySquare(
+                movingPiece.toRank,
+                movingPiece.toFile,
+                boardOrientation,
+                appState.boardSize,
+              )
+            : flipped
+              ? [
+                  appState.boardSize - 1 - movingPiece.toRank,
+                  appState.boardSize - 1 - movingPiece.toFile,
+                ]
+              : [movingPiece.toRank, movingPiece.toFile];
 
           const left = displayFromFile * cellSize + offsetX;
           const top = displayFromRank * cellSize + offsetY;
@@ -1099,14 +1335,17 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         })()
       : null;
 
-  const loserColor =
-    appState.status === status.white
-      ? "black"
-      : appState.status === status.black
-        ? "white"
-        : null;
-
-  const isLoserPiece = (piece) => loserColor && piece?.startsWith(loserColor);
+  const winnerColor = appState.status.endsWith(" wins")
+    ? appState.status.replace(" wins", "").toLowerCase()
+    : null;
+  const eliminatedColors =
+    localStorage.getItem("chess_variant") === "four_player"
+      ? appState.eliminatedColors || []
+      : winnerColor
+        ? ["white", "black"].filter((color) => color !== winnerColor)
+        : [];
+  const isEliminatedPiece = (piece) =>
+    eliminatedColors.some((color) => piece?.startsWith(`${color}_`));
 
   return (
     <div
@@ -1126,12 +1365,19 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
         return (
           <React.Fragment key={dispRank}>
             {[...Array(appState.boardSize)].map((__, dispFile) => {
-              const realRank = flipped
-                ? appState.boardSize - 1 - dispRank
-                : dispRank;
-              const realFile = flipped
-                ? appState.boardSize - 1 - dispFile
-                : dispFile;
+              const [realRank, realFile] = isFourPlayer
+                ? getFourPlayerRealSquare(
+                    dispRank,
+                    dispFile,
+                    boardOrientation,
+                    appState.boardSize,
+                  )
+                : flipped
+                  ? [
+                      appState.boardSize - 1 - dispRank,
+                      appState.boardSize - 1 - dispFile,
+                    ]
+                  : [dispRank, dispFile];
               const f = currentPosition?.[realRank]?.[realFile];
               const tileColor = (realRank + realFile) % 2;
               let tileClass =
@@ -1139,17 +1385,21 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
                   ? boardStyles["white-tile"]
                   : boardStyles["black-tile"];
 
-              const showNumber =
-                numberFileByRank[realRank] === realFile &&
-                numberFileByRank[realRank] !== null;
-              const showLetter =
-                letterRankByFile[realFile] === realRank &&
-                letterRankByFile[realFile] !== null;
+              const showNumber = isFourPlayer
+                ? displayNumberFileByRank[dispRank] === dispFile &&
+                  displayNumberFileByRank[dispRank] !== -1
+                : numberFileByRank[realRank] === realFile &&
+                  numberFileByRank[realRank] !== null;
+              const showLetter = isFourPlayer
+                ? displayLetterRankByFile[dispFile] === dispRank
+                : letterRankByFile[realFile] === realRank &&
+                  letterRankByFile[realFile] !== null;
 
               if (
-                isChecked &&
-                isChecked[0] === realRank &&
-                isChecked[1] === realFile
+                checkedKingPositions.some(
+                  ([checkedRank, checkedFile]) =>
+                    checkedRank === realRank && checkedFile === realFile,
+                )
               ) {
                 tileClass += ` ${boardStyles["check"]}`;
               } else {
@@ -1182,10 +1432,15 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
                   isAttack = !!position[realRank][realFile];
 
                   if (!isAttack && selected?.piece?.endsWith("pawn")) {
-                    const fromFile = selected.from?.[1];
-                    if (fromFile !== undefined && fromFile !== realFile) {
-                      isAttack = true;
-                    }
+                    const [fromRank, fromFile] = selected.from || [];
+                    isAttack = isPawnCaptureSquare(
+                      selected.piece,
+                      fromRank,
+                      fromFile,
+                      realRank,
+                      realFile,
+                      localStorage.getItem("chess_variant"),
+                    );
                   }
 
                   if (
@@ -1233,7 +1488,9 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
                           : boardStyles["dark-text"]
                       }`}
                     >
-                      {appState.boardSize - realRank}
+                      {isFourPlayer
+                        ? appState.boardSize - dispRank
+                        : appState.boardSize - realRank}
                     </span>
                   )}
                   {showLetter && (
@@ -1248,7 +1505,9 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
                           : boardStyles["dark-text"]
                       }`}
                     >
-                      {String.fromCharCode(97 + realFile)}
+                      {String.fromCharCode(
+                        97 + (isFourPlayer ? dispFile : realFile),
+                      )}
                     </span>
                   )}
                   {f ? (
@@ -1260,10 +1519,20 @@ const Pieces = ({ flipped = false, selectedPiece = null, onPiecePlaced }) => {
                         f,
                         f.startsWith(localStorage.getItem("chess_side")),
                         user,
+                        isEliminatedPiece(f),
                       )}
-                      className={
-                        isLoserPiece(f) ? pieceStyles["loser-piece"] : ""
-                      }
+                      className={[
+                        isEliminatedPiece(f) && !hasGrayPieceIcon(f)
+                          ? pieceStyles["loser-piece"]
+                          : "",
+                        localStorage.getItem("chess_variant") ===
+                          "four_player" &&
+                        !hasFourPlayerNativeIcon(normalizeFourPlayerPiece(f))
+                          ? pieceStyles[`piece-${f.split("_")[0]}`]
+                          : "",
+                      ]
+                        .filter(Boolean)
+                        .join(" ")}
                     />
                   ) : null}
                 </div>

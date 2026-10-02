@@ -12,6 +12,7 @@ import {
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
+  initialFourPlayerGameState,
   status,
 } from "../constants";
 import {
@@ -24,6 +25,7 @@ import {
   createNewVariantPosition,
   createNewChess960Position,
 } from "../helpers";
+import { createFourPlayerPosition } from "../helpers/fourPlayer";
 import styles from "./Pages.module.scss";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
@@ -44,6 +46,7 @@ const MODE_LABELS = {
   new_chess: "New Chess",
   new_chess960: "New Chess960",
   custom: "Custom",
+  four_player: "Four-player chess",
 };
 const MODE_ICONS = {
   chess: "/src/assets/icons/white_ferz.png",
@@ -54,9 +57,17 @@ const MODE_ICONS = {
   new_chess: "/src/assets/icons/white_knight.png",
   new_chess960: "/src/assets/icons/chess_960.png",
   custom: "/src/assets/icons/custom.png",
+  four_player: "/src/assets/icons/four_players.png",
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
+  if (mode === "four_player") {
+    return {
+      ...initialFourPlayerGameState,
+      position: [createFourPlayerPosition()],
+      boardSize: 14,
+    };
+  }
   if (mode === "shatranj") {
     return {
       ...initialOldGameState,
@@ -221,13 +232,15 @@ const GamesListPage = ({ start, setStart }) => {
         localStorage.setItem("chess_mode", "multiplayer");
       }
 
-      if (info.playersCount === 2) {
+      const requiredPlayers =
+        info.maxPlayers || (info.gameMode === "four_player" ? 4 : 2);
+      if (info.playersCount >= requiredPlayers) {
         setGameReady(true);
       }
     };
 
     const onPlayersReady = (data) => {
-      setPlayersCount(2);
+      setPlayersCount(data.playersCount || 2);
       setGameReady(true);
       setTimeout(() => {
         setStart(true);
@@ -244,6 +257,9 @@ const GamesListPage = ({ start, setStart }) => {
           payload: { opponent: data.opponent },
         });
       }
+      if (data.players) {
+        dispatch({ type: actionTypes.SET_ROOM_PLAYERS, payload: data.players });
+      }
     };
 
     const onPlayerWaiting = (data) => {
@@ -256,14 +272,17 @@ const GamesListPage = ({ start, setStart }) => {
       setPlayersCount(1);
     };
 
-    const onOpponentDisconnected = () => {
-      setPlayersCount(1);
+    const onOpponentDisconnected = (data) => {
+      setPlayersCount(data?.playersCount || 1);
       setGameReady(false);
     };
 
     const onPlayerReconnected = (data) => {
       setPlayersCount(data?.playersCount || 1);
-      if (data?.playersCount === 2) {
+      if (
+        data?.playersCount >=
+        (localStorage.getItem("chess_variant") === "four_player" ? 4 : 2)
+      ) {
         setGameReady(true);
       } else {
         setGameReady(false);
@@ -282,6 +301,16 @@ const GamesListPage = ({ start, setStart }) => {
     };
 
     const onPlayerTimedOut = (data) => {
+      if (
+        data?.loser &&
+        localStorage.getItem("chess_variant") === "four_player"
+      ) {
+        dispatch({
+          type: actionTypes.TIME_UP,
+          payload: { player: data.loser },
+        });
+        return;
+      }
       if (data?.winner && appState?.status === status.ongoing) {
         dispatch({
           type: actionTypes.SET_STATUS,
@@ -333,7 +362,7 @@ const GamesListPage = ({ start, setStart }) => {
         type: actionTypes.SET_ORIENTATION,
         payload: currentOrientation,
       });
-      setGameReady(data?.playersCount === 2);
+      setGameReady(data?.playersCount >= (data?.maxPlayers || 2));
     };
 
     socket.on("gameInfo", onGameInfo);
@@ -513,7 +542,11 @@ const GamesListPage = ({ start, setStart }) => {
           },
         });
         localStorage.setItem("roomId", room.roomId);
-        localStorage.setItem("chess_side", "black");
+        const joinedSide =
+          response.side ||
+          (room.gameMode === "four_player" ? "yellow" : "black");
+        localStorage.setItem("chess_side", joinedSide);
+        dispatch({ type: actionTypes.SET_ORIENTATION, payload: joinedSide });
         localStorage.setItem("chess_variant", room.gameMode);
         localStorage.setItem("chess_mode", "multiplayer");
       },
@@ -654,7 +687,8 @@ const GamesListPage = ({ start, setStart }) => {
                         {MODE_LABELS[room.gameMode] || room.gameMode}
                       </p>
                       <p>
-                        {t("header.game-players")} {room.playersCount}/2
+                        {t("header.game-players")} {room.playersCount}/
+                        {room.maxPlayers || 2}
                       </p>
                       <p>
                         {t("header.game-created-at")}{" "}
@@ -680,9 +714,9 @@ const GamesListPage = ({ start, setStart }) => {
       {!start && appState?.isMultiplayer && (
         <div className={styles["room-waiting"]}>
           <p>
-            {playersCount === 2
+            {gameReady
               ? `${t("header.game-player-ready")}`
-              : `${t("header.game-player-waiting")}`}
+              : `${t("header.game-player-waiting")} (${playersCount}/${gameMode === "four_player" ? 4 : 2})`}
           </p>
           <button onClick={handleExitGame}>{t("header.game-exit")}</button>
         </div>
@@ -699,7 +733,11 @@ const GamesListPage = ({ start, setStart }) => {
             <div className={styles.control}>
               <CapturedPieces
                 whiteCaptures={appState?.captured?.white || []}
+                yellowCaptures={appState?.captured?.yellow || []}
+                blueCaptures={appState?.captured?.blue || []}
                 blackCaptures={appState?.captured?.black || []}
+                greenCaptures={appState?.captured?.green || []}
+                redCaptures={appState?.captured?.red || []}
               />
               <MovesList />
             </div>

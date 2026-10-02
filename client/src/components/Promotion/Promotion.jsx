@@ -7,10 +7,7 @@ import { closePromotion } from '../../reducers/actions/promotion';
 
 const Promotion = () => {
     const { appState, dispatch } = useAppContext();
-    if (appState.status === status.ongoing) {
-        return null;
-    }
-    if (appState.status === status.white || appState.status === status.black || appState.status === status.draw) {
+    if (appState.status !== status.promotion) {
         return null;
     }
     const onClosePromotion = () => {

@@ -32,7 +32,11 @@ const ChessPage = (props) => {
           <div className={styles.control}>
             <CapturedPieces
               whiteCaptures={appState?.captured?.white || []}
+              yellowCaptures={appState?.captured?.yellow || []}
+              blueCaptures={appState?.captured?.blue || []}
               blackCaptures={appState?.captured?.black || []}
+              greenCaptures={appState?.captured?.green || []}
+              redCaptures={appState?.captured?.red || []}
             />
             <MovesList />
           </div>

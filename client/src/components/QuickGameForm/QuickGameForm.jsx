@@ -16,6 +16,7 @@ import {
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
+  initialFourPlayerGameState,
 } from "../../constants";
 import {
   createPosition,
@@ -27,6 +28,7 @@ import {
   createNewVariantPosition,
   createNewChess960Position,
 } from "../../helpers";
+import { createFourPlayerPosition } from "../../helpers/fourPlayer";
 
 const MODE_LABELS = {
   chess: "Chess",
@@ -37,208 +39,219 @@ const MODE_LABELS = {
   shatranj960: "Shatranj960",
   new_chess960: "New Chess960",
   custom: "Custom",
+  four_player: "Four-player chess",
 };
 
-const QuickGameForm = ({ setWindowMode, setStart = () => { } }) => {
-    const storedVariant = localStorage.getItem("chess_variant");
-    const [gameMode, setGameMode] = useState(
-        storedVariant === "special" ? "custom" : storedVariant || "chess",
-    );
-    const [type, setType] = useState("password");
-    const [showPassword, setShowPassword] = useState(mdiEyeOutline);
-    const [roomName, setRoomName] = useState("");
-    const [roomPassword, setRoomPassword] = useState("");
-    const [timeType, setTimeType] = useState(1200);
-    const navigate = useNavigate();
-    const { appState, dispatch, socket } = useAppContext();
-    const { t } = useTranslation();
-    const user = useSelector((state) => state.users.user);
-    const changeType = () => {
-        if (type === "password") {
-            setType("text");
-            setShowPassword(mdiEyeOffOutline);
-        } else {
-            setType("password");
-            setShowPassword(mdiEyeOutline);
-        }
+const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
+  const storedVariant = localStorage.getItem("chess_variant");
+  const [gameMode, setGameMode] = useState(
+    storedVariant === "special" ? "custom" : storedVariant || "chess",
+  );
+  const [type, setType] = useState("password");
+  const [showPassword, setShowPassword] = useState(mdiEyeOutline);
+  const [roomName, setRoomName] = useState("");
+  const [roomPassword, setRoomPassword] = useState("");
+  const [timeType, setTimeType] = useState(1200);
+  const navigate = useNavigate();
+  const { appState, dispatch, socket } = useAppContext();
+  const { t } = useTranslation();
+  const user = useSelector((state) => state.users.user);
+  const changeType = () => {
+    if (type === "password") {
+      setType("text");
+      setShowPassword(mdiEyeOffOutline);
+    } else {
+      setType("password");
+      setShowPassword(mdiEyeOutline);
+    }
+  };
+  const getInitialStateByMode = (
+    mode,
+    boardSize = 8,
+    whiteTime = timeType,
+    blackTime = timeType,
+  ) => {
+    if (mode === "four_player") {
+      return {
+        ...initialFourPlayerGameState,
+        position: [createFourPlayerPosition()],
+        boardSize: 14,
+        yellowTime: whiteTime,
+        blueTime: whiteTime,
+        greenTime: blackTime,
+        redTime: blackTime,
+      };
+    }
+    if (mode === "shatranj") {
+      return {
+        ...initialOldGameState,
+        boardSize,
+        position: [createOldPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "chess960") {
+      return {
+        ...initialChess960State,
+        boardSize,
+        position: [createChess960Position(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "shatranj960") {
+      return {
+        ...initialShatranj960State,
+        boardSize,
+        position: [createShatranj960Position(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "checkers_v2") {
+      return {
+        ...initialCheckersGameState,
+        boardSize,
+        position: [createCheckersPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "new_chess") {
+      return {
+        ...initialNewVariantGameState,
+        boardSize,
+        position: [createNewVariantPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "new_chess960") {
+      return {
+        ...initialNewChess960State,
+        boardSize,
+        position: [createNewChess960Position(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    return {
+      ...initialGameState,
+      boardSize,
+      position: [createPosition(boardSize)],
+      whiteTime,
+      blackTime,
     };
-    const getInitialStateByMode = (
-        mode,
-        boardSize = 8,
-        whiteTime = timeType,
-        blackTime = timeType,
-    ) => {
-        if (mode === "shatranj") {
-            return {
-                ...initialOldGameState,
-                boardSize,
-                position: [createOldPosition(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        if (mode === "chess960") {
-            return {
-                ...initialChess960State,
-                boardSize,
-                position: [createChess960Position(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        if (mode === "shatranj960") {
-            return {
-                ...initialShatranj960State,
-                boardSize,
-                position: [createShatranj960Position(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        if (mode === "checkers_v2") {
-            return {
-                ...initialCheckersGameState,
-                boardSize,
-                position: [createCheckersPosition(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        if (mode === "new_chess") {
-            return {
-                ...initialNewVariantGameState,
-                boardSize,
-                position: [createNewVariantPosition(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        if (mode === "new_chess960") {
-            return {
-                ...initialNewChess960State,
-                boardSize,
-                position: [createNewChess960Position(boardSize)],
-                whiteTime,
-                blackTime,
-            };
-        }
-        return {
-            ...initialGameState,
-            boardSize,
-            position: [createPosition(boardSize)],
-            whiteTime,
-            blackTime,
-        };
-    };
+  };
 
-    const getRoomInitialState = () => {
-        return getInitialStateByMode(gameMode, appState?.boardSize || 8);
-    };
+  const getRoomInitialState = () => {
+    return getInitialStateByMode(gameMode, appState?.boardSize || 8);
+  };
 
-    const applyRoomStateFromResponse = (response, roomId, roomName) => {
-        if (response?.initialState) {
-            dispatch({
-                type: actionTypes.RESET_GAME,
-                payload: {
-                    initialState: {
-                        ...response.initialState,
-                        isMultiplayer: true,
-                        roomId,
-                        roomName,
-                        isVsBot: false,
-                        whiteTime: response.initialState?.whiteTime ?? timeType,
-                        blackTime: response.initialState?.blackTime ?? timeType,
-                    },
-                },
-            });
-        }
-        if (Array.isArray(response?.moves) && response.moves.length > 0) {
-            response.moves.forEach((move) => {
-                dispatch({ type: actionTypes.NEW_MOVE, payload: move });
-            });
-        }
-    };
+  const applyRoomStateFromResponse = (response, roomId, roomName) => {
+    if (response?.initialState) {
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...response.initialState,
+            isMultiplayer: true,
+            roomId,
+            roomName,
+            isVsBot: false,
+            whiteTime: response.initialState?.whiteTime ?? timeType,
+            blackTime: response.initialState?.blackTime ?? timeType,
+          },
+        },
+      });
+    }
+    if (Array.isArray(response?.moves) && response.moves.length > 0) {
+      response.moves.forEach((move) => {
+        dispatch({ type: actionTypes.NEW_MOVE, payload: move });
+      });
+    }
+  };
 
-    const handlePlayInRoom = () => {
-        const roomInitialState = getRoomInitialState();
+  const handlePlayInRoom = () => {
+    const roomInitialState = getRoomInitialState();
 
-        if (!socket) return;
+    if (!socket) return;
+
+    socket.emit(
+      "findQuickGame",
+      {
+        gameMode,
+        whiteTime: timeType,
+        blackTime: timeType,
+        userRating: user.rating,
+      },
+      (response) => {
+        if (!response.success) return;
+
+        const roomId = response.create
+          ? Math.random().toString(36).substring(7)
+          : response.roomId;
 
         socket.emit(
-          "findQuickGame",
+          "joinGame",
+          roomId,
           {
             gameMode,
+            initialState: roomInitialState,
+            userName: user.name,
+            userAvatar: user.avatar,
+            userId: user._id,
+            userRating: user.rating,
+            userSelectedAchievement: user?.achievements,
             whiteTime: timeType,
             blackTime: timeType,
-            userRating: user.rating,
+            isQuickGame: true,
           },
-          (response) => {
-            if (!response.success) return;
+          (joinResponse) => {
+            if (!joinResponse?.success) {
+              alert(
+                joinResponse?.error || "Не удалось присоединиться к комнате",
+              );
+              return;
+            }
 
-            const roomId = response.create
-              ? Math.random().toString(36).substring(7)
-              : response.roomId;
+            applyRoomStateFromResponse(joinResponse, roomId, null);
 
-            socket.emit(
-              "joinGame",
-              roomId,
-              {
-                gameMode,
-                initialState: roomInitialState,
-                userName: user.name,
-                userAvatar: user.avatar,
-                userId: user._id,
-                userRating: user.rating,
-                userSelectedAchievement: user?.achievements,
+            dispatch({
+              type: actionTypes.SET_ROOM_NAME,
+              payload: null,
+            });
+            setStart(false);
+            setWindowMode(false);
+
+            dispatch({
+              type: actionTypes.SET_ORIENTATION,
+              payload: joinResponse.side,
+            });
+
+            dispatch({
+              type: actionTypes.SET_MULTIPLAYER,
+              payload: {
+                isMultiplayer: true,
+                roomId,
                 whiteTime: timeType,
                 blackTime: timeType,
-                isQuickGame: true,
               },
-              (joinResponse) => {
-                if (!joinResponse?.success) {
-                  alert(
-                    joinResponse?.error ||
-                      "Не удалось присоединиться к комнате",
-                  );
-                  return;
-                }
+            });
 
-                applyRoomStateFromResponse(joinResponse, roomId, null);
+            localStorage.setItem("chess_side", joinResponse.side);
+            localStorage.setItem("chess_mode", "multiplayer");
+            localStorage.setItem("chess_variant", gameMode);
+            localStorage.setItem("gameMode", gameMode);
+            localStorage.setItem("roomId", roomId);
 
-                dispatch({
-                  type: actionTypes.SET_ROOM_NAME,
-                  payload: null,
-                });
-                setStart(false);
-                setWindowMode(false);
-
-                dispatch({
-                  type: actionTypes.SET_ORIENTATION,
-                  payload: joinResponse.side,
-                });
-
-                dispatch({
-                  type: actionTypes.SET_MULTIPLAYER,
-                  payload: {
-                    isMultiplayer: true,
-                    roomId,
-                    whiteTime: timeType,
-                    blackTime: timeType,
-                  },
-                });
-
-                localStorage.setItem("chess_side", joinResponse.side);
-                localStorage.setItem("chess_mode", "multiplayer");
-                localStorage.setItem("chess_variant", gameMode);
-                localStorage.setItem("gameMode", gameMode);
-                localStorage.setItem("roomId", roomId);
-
-                navigate("/games");
-              },
-            );
+            navigate("/games");
           },
         );
-    }
+      },
+    );
+  };
   return (
     <div className={styles.wrapper}>
       <div>
@@ -255,6 +268,7 @@ const QuickGameForm = ({ setWindowMode, setStart = () => { } }) => {
             <option value="chess960">{MODE_LABELS.chess960}</option>
             <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
             <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
+            <option value="four_player">{MODE_LABELS.four_player}</option>
           </select>
         )}
         {localStorage.getItem("chess_variant") === "special" && (
@@ -277,6 +291,6 @@ const QuickGameForm = ({ setWindowMode, setStart = () => { } }) => {
         <button onClick={handlePlayInRoom}>{t("header.find-game")}</button>
       </div>
     </div>
-);
+  );
 };
 export default QuickGameForm;

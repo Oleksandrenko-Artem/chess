@@ -67,7 +67,7 @@ const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
   const prevBoard = position.length > 1 ? position[position.length - 2] : null;
   const getSelectableMoves = () => {
     const gameVariant = localStorage.getItem("chess_variant");
-    if (gameVariant !== "checkers_v2") {
+    if (gameVariant !== "checkers_v2" && gameVariant !== "four_player") {
       return arbiter.getRegularMoves({
         position: currentPosition,
         prevPosition: prevBoard,

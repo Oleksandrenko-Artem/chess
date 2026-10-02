@@ -15,6 +15,7 @@ import {
   status,
   initialNewVariantGameState,
   initialNewChess960State,
+  initialFourPlayerGameState,
 } from "./constants";
 import { findUserAccountThunk } from "./store/usersSlice";
 import actionTypes from "./reducers/actionTypes";
@@ -41,6 +42,11 @@ import {
   createNewVariantPosition,
   createNewChess960Position,
 } from "./helpers";
+import {
+  createFourPlayerPosition,
+  migrateFourPlayerState,
+  normalizeFourPlayerColor,
+} from "./helpers/fourPlayer";
 import SinglePlayerPage from "./pages/SinglePlayerPage";
 import Chess960Page from "./pages/Chess960Page";
 import Shatranj960Page from "./pages/Shatranj960Page";
@@ -93,7 +99,9 @@ function App() {
                 ? initialNewVariantGameState
                 : savedVariant === "new_chess960"
                   ? initialNewChess960State
-                  : initialGameState;
+                  : savedVariant === "four_player"
+                    ? initialFourPlayerGameState
+                    : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -110,9 +118,11 @@ function App() {
     initialStateAtLoad = {
       ...initialStateAtLoad,
       boardSize:
-        savedVariant === "special" && savedEditorState?.boardSize
-          ? savedEditorState.boardSize
-          : 8,
+        savedVariant === "four_player"
+          ? 14
+          : savedVariant === "special" && savedEditorState?.boardSize
+            ? savedEditorState.boardSize
+            : 8,
       position:
         savedVariant === "special" && savedEditorState?.position
           ? savedEditorState.position
@@ -130,7 +140,9 @@ function App() {
                       ? [createNewVariantPosition(8)]
                       : savedVariant === "new_chess960"
                         ? [createNewChess960Position(8)]
-                        : [createPosition(8)],
+                        : savedVariant === "four_player"
+                          ? [createFourPlayerPosition()]
+                          : [createPosition(8)],
       playerTurn:
         savedVariant === "special" && savedEditorState?.playerTurn
           ? savedEditorState.playerTurn
@@ -152,7 +164,20 @@ function App() {
           parsedBotState.status === status.promotion);
 
       if (isActiveBotState) {
-        initialStateAtLoad = parsedBotState;
+        initialStateAtLoad =
+          savedVariant === "four_player"
+            ? migrateFourPlayerState(parsedBotState)
+            : parsedBotState;
+        if (savedVariant === "four_player") {
+          localStorage.setItem(
+            "chess_side",
+            normalizeFourPlayerColor(localStorage.getItem("chess_side")),
+          );
+          localStorage.setItem(
+            "botGameState",
+            JSON.stringify(initialStateAtLoad),
+          );
+        }
       } else if (typeof window !== "undefined") {
         localStorage.removeItem("botGameState");
       }
@@ -165,6 +190,14 @@ function App() {
 
   const [appState, dispatch] = useReducer(reducer, initialStateAtLoad);
   const [socket, setSocket] = useState(null);
+
+  useEffect(() => {
+    if (savedVariant !== "four_player" || typeof window === "undefined") return;
+    const savedSide = localStorage.getItem("chess_side");
+    if (savedSide) {
+      localStorage.setItem("chess_side", normalizeFourPlayerColor(savedSide));
+    }
+  }, [savedVariant]);
 
   useEffect(() => {
     if (
@@ -183,10 +216,8 @@ function App() {
       }),
     );
   }, [appState]);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
-
     const isActiveBotGame =
       appState?.isVsBot &&
       !appState?.isMultiplayer &&
@@ -343,6 +374,24 @@ function App() {
       payload: { initialState: newInitialState },
     });
   };
+  const handlePlayFourPlayer = () => {
+    setStart(false);
+    localStorage.setItem("chess_variant", "four_player");
+    localStorage.removeItem("chess_mode");
+    localStorage.removeItem("botGameState");
+    localStorage.setItem("chess_side", "yellow");
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: {
+        initialState: {
+          ...initialFourPlayerGameState,
+          position: [createFourPlayerPosition()],
+          boardSize: 14,
+          isVsBot: true,
+        },
+      },
+    });
+  };
   const handlePlaySpecial = () => {
     if (typeof window !== "undefined") {
       localStorage.setItem("chess_variant", "special");
@@ -463,6 +512,7 @@ function App() {
                 onPlayCheckers={handlePlayCheckers}
                 onPlayNewVariantChess={handlePlayNewVariantChess}
                 onPlayNewVariantChess960={handlePlayNewVariantChess960}
+                onPlayFourPlayer={handlePlayFourPlayer}
               />
             }
           />
@@ -501,6 +551,10 @@ function App() {
             element={
               <NewVariantChess960Page start={start} setStart={setStart} />
             }
+          />
+          <Route
+            path="/play-four-player"
+            element={<ChessPage start={start} setStart={setStart} />}
           />
           {user && (
             <Route path="/create-position" element={<CreatePositionPage />} />

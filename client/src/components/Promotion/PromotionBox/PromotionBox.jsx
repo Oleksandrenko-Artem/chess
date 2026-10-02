@@ -5,6 +5,12 @@ import { promoteAndMove } from "../../../reducers/actions/promotion";
 import { getPieceStyle } from "../../../helpers/getPieceImage";
 import { useSelector } from "react-redux";
 import arbiter from "../../../arbiter/arbiter";
+import {
+  FOUR_PLAYER_COLORS,
+  getFourPlayerGameStatus,
+  getNextFourPlayerTurn,
+  hasFourPlayerKing,
+} from "../../../helpers/fourPlayer";
 import black_ferz from "../../../assets/icons/black_ferz.png";
 import black_rook from "../../../assets/icons/black_rook.png";
 import black_bishop from "../../../assets/icons/black_bishop.png";
@@ -140,11 +146,9 @@ const PromotionBox = ({ onClosePromotion }) => {
           "bishop",
           "horse",
         ]
-      : localStorage.getItem("chess_variant") === "new_chess" || localStorage.getItem("chess_variant") === "new_chess960"
-        ? [
-            "duke",
-            "prince",
-          ]
+      : localStorage.getItem("chess_variant") === "new_chess" ||
+          localStorage.getItem("chess_variant") === "new_chess960"
+        ? ["duke", "prince"]
         : ["ferz", "rook", "bishop", "horse"];
   const { appState, dispatch, socket } = useAppContext();
   const { promotionSquare } = appState;
@@ -152,16 +156,47 @@ const PromotionBox = ({ onClosePromotion }) => {
     typeof window !== "undefined"
       ? window.localStorage.getItem("chess_variant")
       : "chess";
-  const color = promotionSquare?.targetRank === 0 ? "white" : "black";
+  const isFourPlayer = variant === "four_player";
+  const promotionPosition = appState.position[appState.position.length - 1];
+  const color = promotionSquare
+    ? promotionPosition[promotionSquare.rank]?.[promotionSquare.file]?.split(
+        "_",
+      )[0]
+    : "white";
   const replaceSetting =
-    typeof window !== "undefined" ? localStorage.getItem("replaceRook") : typeof window !== "undefined" ? localStorage.getItem ("replaceHorse") : null;
+    typeof window !== "undefined"
+      ? localStorage.getItem("replaceRook")
+      : typeof window !== "undefined"
+        ? localStorage.getItem("replaceHorse")
+        : null;
   const processedPromotionRef = useRef(null);
   const handlePromotion = useCallback(
     (pieceName) => {
       if (!promotionSquare) return;
-      const newPosition = copyPosition(
-        appState.position[appState.position.length - 1],
+      const currentPosition = appState.position[appState.position.length - 1];
+      const newPosition = copyPosition(currentPosition);
+      const newCaptured = JSON.parse(
+        JSON.stringify(
+          appState.captured || { yellow: [], blue: [], green: [], red: [] },
+        ),
       );
+      let eliminatedColors = appState.eliminatedColors || [];
+      const capturedPiece =
+        currentPosition[promotionSquare.targetRank]?.[
+          promotionSquare.targetFile
+        ];
+      if (capturedPiece) {
+        const capturedColor = capturedPiece.split("_")[0];
+        newCaptured[capturedColor] ||= [];
+        newCaptured[capturedColor].push(capturedPiece);
+        if (
+          isFourPlayer &&
+          capturedPiece.endsWith("_king") &&
+          !eliminatedColors.includes(capturedColor)
+        ) {
+          eliminatedColors = [...eliminatedColors, capturedColor];
+        }
+      }
       newPosition[promotionSquare.rank][promotionSquare.file] = "";
       let finalPieceName = pieceName;
       if (pieceName === "rook") {
@@ -176,8 +211,10 @@ const PromotionBox = ({ onClosePromotion }) => {
       }
       if (pieceName === "horse") {
         try {
-          const rep = 
-          typeof window !== "undefined" ? localStorage.getItem("replaceHorse") : null;
+          const rep =
+            typeof window !== "undefined"
+              ? localStorage.getItem("replaceHorse")
+              : null;
           if (rep === "faras") finalPieceName = "faras";
         } catch (e) {}
       }
@@ -185,10 +222,8 @@ const PromotionBox = ({ onClosePromotion }) => {
         `${color}_${finalPieceName}`;
       const newCastleDirection = { ...appState.castleDirection };
       const piece =
-        appState.position[appState.position.length - 1][
-          promotionSquare.targetRank
-        ]?.[promotionSquare.targetFile];
-      if (piece && piece.endsWith("rook")) {
+        currentPosition[promotionSquare.rank]?.[promotionSquare.file];
+      if (!isFourPlayer && piece?.endsWith("rook")) {
         const playerColor = piece.startsWith("white") ? "white" : "black";
         const currentDir = newCastleDirection[playerColor];
         if (promotionSquare.targetFile === 0) {
@@ -199,17 +234,71 @@ const PromotionBox = ({ onClosePromotion }) => {
             currentDir === "both" ? "left" : "none";
         }
       }
-      const nextPlayer = appState.playerTurn === "white" ? "black" : "white";
-      const gameStatus = arbiter.getGameStatus({
-        position: newPosition,
-        playerColor: nextPlayer,
-        castleDirection: newCastleDirection,
-      });
+      let wasCheckmate = false;
+      if (isFourPlayer) {
+        FOUR_PLAYER_COLORS.forEach((playerColor) => {
+          if (
+            eliminatedColors.includes(playerColor) ||
+            !hasFourPlayerKing(newPosition, playerColor)
+          )
+            return;
+          const isInCheck = arbiter.isKingInCheck({
+            position: newPosition,
+            playerColor,
+            gameVariant: "four_player",
+          });
+          const legalMoves = arbiter.getBoardValidMoves({
+            position: newPosition,
+            playerColor,
+            prevPosition: currentPosition,
+            castleDirection: newCastleDirection,
+            gameVariant: "four_player",
+          });
+          if (legalMoves.length === 0) {
+            wasCheckmate ||= isInCheck;
+            eliminatedColors = [...eliminatedColors, playerColor];
+          }
+        });
+      }
+      const nextPlayer = isFourPlayer
+        ? getNextFourPlayerTurn(
+            newPosition,
+            appState.playerTurn,
+            eliminatedColors,
+          )
+        : appState.playerTurn === "white"
+          ? "black"
+          : "white";
+      let gameStatus = isFourPlayer
+        ? getFourPlayerGameStatus(newPosition, eliminatedColors)
+        : arbiter.getGameStatus({
+            position: newPosition,
+            playerColor: nextPlayer,
+            castleDirection: newCastleDirection,
+          });
+      if (
+        isFourPlayer &&
+        appState.isVsBot &&
+        eliminatedColors.includes(localStorage.getItem("chess_side")) &&
+        gameStatus === "Ongoing"
+      ) {
+        gameStatus = `${nextPlayer} wins`;
+      }
+      const isInCheck =
+        isFourPlayer && hasFourPlayerKing(newPosition, nextPlayer)
+          ? arbiter.isKingInCheck({
+              position: newPosition,
+              playerColor: nextPlayer,
+              gameVariant: "four_player",
+            })
+          : false;
       const newMove = getNewMoveNotation({
         ...promotionSquare,
         p: color + "_pawn",
         promotesTo: pieceName,
-        position: appState.position[appState.position.length - 1],
+        position: currentPosition,
+        isInCheck,
+        isCheckmate: wasCheckmate || gameStatus.endsWith(" wins"),
       });
       dispatch(
         promoteAndMove({
@@ -217,6 +306,9 @@ const PromotionBox = ({ onClosePromotion }) => {
           newMove,
           castleDirection: newCastleDirection,
           gameStatus,
+          nextPlayer,
+          eliminatedColors,
+          captured: newCaptured,
           lastMove: {
             fromRank: promotionSquare.rank,
             fromFile: promotionSquare.file,
@@ -233,6 +325,9 @@ const PromotionBox = ({ onClosePromotion }) => {
             newMove,
             castleDirection: newCastleDirection,
             gameStatus,
+            nextPlayer,
+            eliminatedColors,
+            captured: newCaptured,
             lastMove: {
               fromRank: promotionSquare.rank,
               fromFile: promotionSquare.file,
@@ -248,6 +343,10 @@ const PromotionBox = ({ onClosePromotion }) => {
       promotionSquare,
       appState.position,
       appState.castleDirection,
+      appState.playerTurn,
+      appState.eliminatedColors,
+      appState.isVsBot,
+      variant,
       dispatch,
       color,
       socket,
@@ -256,7 +355,10 @@ const PromotionBox = ({ onClosePromotion }) => {
     ],
   );
   useEffect(() => {
-    if (promotionSquare && (variant === "shatranj" || variant === "shatranj960")) {
+    if (
+      promotionSquare &&
+      (variant === "shatranj" || variant === "shatranj960")
+    ) {
       const promotionKey = `${promotionSquare.rank}-${promotionSquare.file}-${promotionSquare.targetRank}-${promotionSquare.targetFile}`;
       if (processedPromotionRef.current === promotionKey) {
         return;
@@ -289,7 +391,9 @@ const PromotionBox = ({ onClosePromotion }) => {
                 : "rook"
             : option === "horse"
               ? replaceSetting === "faras"
-                ? "faras" : "horse" : option;
+                ? "faras"
+                : "horse"
+              : option;
         const keyName = `${color}_${displayOption}`;
         const imageSrc = getPieceStyle(keyName, true, user);
         const style = {

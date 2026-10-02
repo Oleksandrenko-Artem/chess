@@ -3,6 +3,8 @@
 
 .timer {
   @extend %flex-between;
+  flex-wrap: wrap;
+  gap: 4px;
 }
 .time {
   @extend %btn-style;

@@ -26,6 +26,8 @@ const io = new Server(server, {
 });
 
 const rooms = {};
+const FOUR_PLAYER_SIDES = ['yellow', 'blue', 'green', 'red'];
+const getRoomCapacity = (room) => room.gameMode === 'four_player' ? 4 : 2;
 
 async function updateRating(whiteId, blackId, result) {
     const white = await User.findById(whiteId);
@@ -36,7 +38,7 @@ async function updateRating(whiteId, blackId, result) {
     if (!white || !black) {
         return;
     }
-    
+
     const expectedWhite =
         1 / (1 + Math.pow(10, (black.rating - white.rating) / 400));
 
@@ -75,7 +77,7 @@ async function finishGame(roomId, result) {
 
     room.finished = true;
 
-    if (room.gameMode === "custom") {
+    if (room.gameMode === "custom" || room.gameMode === "four_player") {
         return;
     }
 
@@ -113,10 +115,11 @@ io.on('connection', (socket) => {
                 playersCount: activePlayers,
                 createdAt: room.createdAt || Date.now(),
                 gameMode: room.gameMode,
+                maxPlayers: getRoomCapacity(room),
                 hasPassword: !!room.password,
                 hasDisconnected,
             };
-        }).filter(room => room.playersCount === 1 && !room.hasDisconnected &&
+        }).filter(room => room.playersCount < room.maxPlayers && !rooms[room.roomId].started && !room.hasDisconnected &&
             !rooms[room.roomId].isQuickGame);
 
         socket.emit('activeRooms', activeRooms);
@@ -125,10 +128,11 @@ io.on('connection', (socket) => {
     socket.on("findQuickGame", (gameData, callback) => {
         const roomId = Object.keys(rooms).find((id) => {
             const room = rooms[id];
+            if (room.started) return false;
 
             const activePlayers = room.players.filter(p => !p.disconnected).length;
 
-            if (activePlayers !== 1) return false;
+            if (activePlayers >= getRoomCapacity(room)) return false;
             if (room.password) return false;
 
             const waitTime = Date.now() - room.createdAt;
@@ -174,7 +178,7 @@ io.on('connection', (socket) => {
             const room = rooms[roomId];
             const activePlayers = room.players.filter(p => !p.disconnected).length;
             const hasDisconnected = room.players.some(p => p.disconnected);
-            return !hasDisconnected && activePlayers === 1 &&
+            return !hasDisconnected && !room.started && activePlayers < getRoomCapacity(room) &&
                 room.roomName && room.roomName.trim() === trimmedRoomName;
         });
 
@@ -183,7 +187,7 @@ io.on('connection', (socket) => {
                 const room = rooms[roomId];
                 const activePlayers = room.players.filter(p => !p.disconnected).length;
                 const hasDisconnected = room.players.some(p => p.disconnected);
-                return !hasDisconnected && activePlayers === 1 && roomId === trimmedRoomName;
+                return !hasDisconnected && !room.started && activePlayers < getRoomCapacity(room) && roomId === trimmedRoomName;
             });
         }
 
@@ -215,6 +219,7 @@ io.on('connection', (socket) => {
                 roomId,
                 side: player.side,
                 playersCount: room.players.filter(p => !p.disconnected).length,
+                maxPlayers: getRoomCapacity(room),
                 gameMode: room.gameMode,
             });
 
@@ -225,21 +230,19 @@ io.on('connection', (socket) => {
 
             io.to(roomId).emit("playerReconnected", {
                 playersCount: room.players.filter(p => !p.disconnected).length,
+                maxPlayers: getRoomCapacity(room),
                 message: 'The player has been reinstated',
             });
 
             const activePlayers = room.players.filter(p => !p.disconnected);
-            if (activePlayers.length === 2) {
-                activePlayers.forEach((player, index) => {
+            if (activePlayers.length === getRoomCapacity(room)) {
+                activePlayers.forEach((player) => {
                     const opponent = activePlayers.find(p => p.socketId !== player.socketId);
-                    if (!opponent) {
-                        console.warn(`Opponent not found for player ${player.socketId} in room ${roomId}`);
-                        return;
-                    }
                     io.to(player.socketId).emit('playersReady', {
-                        playersCount: 2,
+                        playersCount: activePlayers.length,
                         yourSide: player.side,
-                        opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel },
+                        opponent: opponent ? { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel } : null,
+                        players: activePlayers.map(({ side, name, avatar, rating, selectedAchievement, achievementLevel }) => ({ side, name, avatar, rating, selectedAchievement, achievementLevel })),
                         message: 'Players ready',
                     });
                 });
@@ -279,17 +282,20 @@ io.on('connection', (socket) => {
         if (room.password && room.password !== (gameData.password && gameData.password.trim())) {
             if (callback) {
                 callback({
-                    success: false, error: 'Incorrect room password' });
+                    success: false, error: 'Incorrect room password'
+                });
             }
             return;
         }
 
         const activePlayerCount = room.players.filter(p => !p.disconnected).length;
         const hasDisconnected = room.players.some(p => p.disconnected);
-        if (hasDisconnected || activePlayerCount >= 2) {
+        const roomCapacity = getRoomCapacity(room);
+        if (hasDisconnected || room.started || activePlayerCount >= roomCapacity) {
             if (callback) {
                 callback({
-                    success: false, error: 'The room is temporarily unavailable or already full' });
+                    success: false, error: 'The room is temporarily unavailable or already full'
+                });
             }
             return;
         }
@@ -300,7 +306,11 @@ io.on('connection', (socket) => {
             rooms[roomId].initialState = gameData.initialState;
         }
 
-        const side = rooms[roomId].players.length === 0 ? 'white' : 'black';
+        const side = room.gameMode === 'four_player'
+            ? FOUR_PLAYER_SIDES.find(candidate =>
+                !rooms[roomId].players.some(player => player.side === candidate)
+            )
+            : rooms[roomId].players.length === 0 ? 'white' : 'black';
         rooms[roomId].players.push({
             socketId: socket.id,
             userId: gameData.userId,
@@ -317,6 +327,7 @@ io.on('connection', (socket) => {
             roomId,
             side,
             playersCount: rooms[roomId].players.length,
+            maxPlayers: roomCapacity,
             gameMode: rooms[roomId].gameMode,
             roomName: rooms[roomId].roomName || null,
         });
@@ -332,33 +343,33 @@ io.on('connection', (socket) => {
         }
 
         const activePlayers = rooms[roomId].players.filter(p => !p.disconnected);
-        if (activePlayers.length === 2) {
+        if (activePlayers.length === roomCapacity) rooms[roomId].started = true;
+        if (activePlayers.length === roomCapacity) {
             io.to(roomId).emit('gameInfo', {
                 roomId,
-                playersCount: 2,
+                playersCount: roomCapacity,
+                maxPlayers: roomCapacity,
                 side: 'both',
                 message: 'Both players have joined!',
                 gameMode: rooms[roomId].gameMode,
                 roomName: rooms[roomId].roomName,
             });
 
-            activePlayers.forEach((player, index) => {
+            activePlayers.forEach((player) => {
                 const opponent = activePlayers.find(p => p.socketId !== player.socketId);
-                if (!opponent) {
-                    console.warn(`Opponent not found for player ${player.socketId} in room ${roomId}`);
-                    return;
-                }
                 io.to(player.socketId).emit('playersReady', {
-                    playersCount: 2,
+                    playersCount: roomCapacity,
                     yourSide: player.side,
-                    opponent: { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel },
+                    opponent: opponent ? { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel } : null,
+                    players: activePlayers.map(({ side, name, avatar, rating, selectedAchievement, achievementLevel }) => ({ side, name, avatar, rating, selectedAchievement, achievementLevel })),
                     message: 'Players ready',
                 });
             });
         } else {
             socket.emit('playerWaiting', {
-                playersCount: 1,
-                message: 'Waiting for the second player...',
+                playersCount: activePlayers.length,
+                maxPlayers: roomCapacity,
+                message: `Waiting for ${roomCapacity - activePlayers.length} more player(s)...`,
             });
         }
     });
@@ -372,26 +383,13 @@ io.on('connection', (socket) => {
 
         socket.to(roomId).emit("moveMade", move);
 
-        if (move.gameStatus === "White wins") {
-            await finishGame(roomId, "white");
-
-            const winner = room.players.find(p => p.side === "white");
-
-            await updateAchievements(
-                winner.userId,
-                move.lastMovePiece
-            );
-        }
-
-        if (move.gameStatus === "Black wins") {
-            await finishGame(roomId, "black");
-
-            const winner = room.players.find(p => p.side === "black");
-
-            await updateAchievements(
-                winner.userId,
-                move.lastMovePiece
-            );
+        const winnerSide = move.gameStatus?.match(/^(White|Blue|Black|Red|Yellow|Green) wins$/)?.[1]?.toLowerCase();
+        if (winnerSide) {
+            await finishGame(roomId, winnerSide);
+            const winner = room.players.find(p => p.side === winnerSide);
+            if (winner?.userId && move.lastMovePiece) {
+                await updateAchievements(winner.userId, move.lastMovePiece);
+            }
         }
 
         if (move.gameStatus === "Draw") {
@@ -402,6 +400,11 @@ io.on('connection', (socket) => {
     socket.on('playerTimedOut', async ({ roomId, loser }) => {
         const room = rooms[roomId];
         if (!room) return;
+
+        if (room.gameMode === 'four_player') {
+            io.to(roomId).emit('playerTimedOut', { loser });
+            return;
+        }
 
         const winnerSide = loser === 'white' ? 'black' : 'white';
         const winner = room.players.find(
@@ -435,6 +438,11 @@ io.on('connection', (socket) => {
         if (!room) return;
 
         const leaver = room.players.find(p => p.socketId === socket.id);
+        if (room.gameMode === 'four_player' && leaver) {
+            io.to(roomId).emit('playerTimedOut', { loser: leaver.side, reason: 'left' });
+            room.players = room.players.filter(p => p.socketId !== socket.id);
+            return;
+        }
         const winner = room.players.find(p => p.socketId !== socket.id);
 
         if (winner) {
@@ -480,6 +488,13 @@ io.on('connection', (socket) => {
                 player.disconnected = true;
                 player.disconnectTime = Date.now();
 
+                if (rooms[roomId].gameMode === 'four_player') {
+                    io.to(roomId).emit('opponentDisconnected', {
+                        message: 'A player disconnected. Waiting to reconnect...',
+                        playersCount: rooms[roomId].players.filter(p => !p.disconnected).length,
+                    });
+                }
+
                 const remaining = rooms[roomId].players.find(p => !p.disconnected);
                 if (remaining) {
                     io.to(remaining.socketId).emit('opponentDisconnected', {
@@ -488,6 +503,11 @@ io.on('connection', (socket) => {
                 }
 
                 rooms[roomId].timeout = setTimeout(async () => {
+                    if (rooms[roomId]?.gameMode === 'four_player') {
+                        io.to(roomId).emit('playerTimedOut', { loser: player.side, reason: 'disconnected' });
+                        rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
+                        return;
+                    }
                     const winner = rooms[roomId]?.players.find(p => !p.disconnected);
                     if (winner) {
                         io.to(winner.socketId).emit('opponentLeft', {

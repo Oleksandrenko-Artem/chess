@@ -3,12 +3,14 @@ import { useSelector } from "react-redux";
 import { useAppContext } from "../../contexts/Context";
 import Pieces from "../Pieces/Pieces";
 import Promotion from "../Promotion/Promotion";
-import black_king from "../../assets/icons/black_king.png";
-import white_king from "../../assets/icons/white_king.png";
 import accountIcon from "../../assets/icons/account.png";
 import computerIcon from "../../assets/icons/computer.png";
 import styles from "./ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
+import {
+  getFourPlayerDisplaySquare,
+  getFourPlayerRealSquare,
+} from "../../helpers/fourPlayer";
 
 const ChessBoard = (props) => {
   const { status } = props;
@@ -18,6 +20,7 @@ const ChessBoard = (props) => {
   const boardSize = appState.boardSize;
   const [window, setWindow] = useState(false);
   const orientation = appState.orientation;
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
 
   const [arrows, setArrows] = useState([]);
   const [startSquare, setStartSquare] = useState(null);
@@ -48,20 +51,33 @@ const ChessBoard = (props) => {
     colIdx = Math.max(0, Math.min(boardSize - 1, colIdx));
     rowIdx = Math.max(0, Math.min(boardSize - 1, rowIdx));
 
-    if (orientation === "black") {
+    if (isFourPlayer) {
+      [rowIdx, colIdx] = getFourPlayerRealSquare(
+        rowIdx,
+        colIdx,
+        orientation,
+        boardSize,
+      );
+    } else if (orientation === "black") {
       colIdx = boardSize - 1 - colIdx;
       rowIdx = boardSize - 1 - rowIdx;
     }
 
     return `${colIdx},${rowIdx}`;
   };
-
   const getSquareCenter = (square) => {
     if (!square) return { x: 0, y: 0 };
 
     let [colIdx, rowIdx] = square.split(",").map(Number);
 
-    if (orientation === "black") {
+    if (isFourPlayer) {
+      [rowIdx, colIdx] = getFourPlayerDisplaySquare(
+        rowIdx,
+        colIdx,
+        orientation,
+        boardSize,
+      );
+    } else if (orientation === "black") {
       colIdx = boardSize - 1 - colIdx;
       rowIdx = boardSize - 1 - rowIdx;
     }
@@ -119,9 +135,11 @@ const ChessBoard = (props) => {
     setWindow(false);
   };
   const gameStatusMessage = () => {
-    if (status === "White wins") return t("game_info_panel.white_wins");
-    if (status === "Black wins") return t("game_info_panel.black_wins");
     if (status === "Draw") return t("game_info_panel.draw");
+    if (status.endsWith(" wins")) {
+      const winner = status.replace(" wins", "").toLowerCase();
+      return `${t(`captured_pieces.${winner}`)} ${t("game_info_panel.wins")}`;
+    }
     if (
       (status === "Draw" &&
         localStorage.getItem("chess_variant") === "shatranj") ||
@@ -278,6 +296,46 @@ const ChessBoard = (props) => {
       </div>
     </div>
   );
+  const fourPlayerRoster = ["yellow", "blue", "green", "red"].map((color) => {
+    const roomPlayer = appState.roomPlayers?.find(
+      (player) => player.side === color,
+    );
+    const isCurrentSide = userSide === color;
+    return {
+      color,
+      name:
+        roomPlayer?.name ||
+        (appState.isVsBot
+          ? isCurrentSide
+            ? user?.name || "Player"
+            : botName
+          : isCurrentSide
+            ? user?.name || "Player"
+            : "Waiting for player"),
+      avatar:
+        roomPlayer?.avatar ||
+        (appState.isVsBot && !isCurrentSide
+          ? computerIcon
+          : isCurrentSide
+            ? user?.avatar || accountIcon
+            : accountIcon),
+    };
+  });
+  const renderFourPlayerCard = (player) => (
+    <div
+      key={player.color}
+      className={`${styles["player-card"]} ${styles["four-player-card"]}`}
+      style={{ "--player-color": player.color }}
+    >
+      <img className={styles["player-avatar"]} src={player.avatar} alt="" />
+      <div className={styles["player-info"]}>
+        <span className={styles["player-color"]}>
+          {t(`captured_pieces.${player.color}`)}
+        </span>
+        <span className={styles["player-name"]}>{player.name}</span>
+      </div>
+    </div>
+  );
   const LEVEL_NAMES = {
     1: "bronze",
     2: "silver",
@@ -324,9 +382,15 @@ const ChessBoard = (props) => {
       style={{ "--board-size": boardSize }}
     >
       <div className={styles["coordinates"]}>
-        <div className={styles["players-container"]}>
-          {renderPlayerCard(topPlayer)}
-        </div>
+        {isFourPlayer ? (
+          <div className={styles["four-player-roster"]}>
+            {fourPlayerRoster.map(renderFourPlayerCard)}
+          </div>
+        ) : (
+          <div className={styles["players-container"]}>
+            {renderPlayerCard(topPlayer)}
+          </div>
+        )}
         <div className={styles["chess-div"]}>
           <div
             className={styles["board-wrapper"]}
@@ -342,11 +406,12 @@ const ChessBoard = (props) => {
                 window && (
                   <div className={styles["game-status-text"]}>
                     <h2>{gameStatusMessage()}</h2>
-                    {status === "White wins" ? (
-                      <img src={white_king} alt="white" />
-                    ) : status === "Black wins" ? (
-                      <img src={black_king} alt="black" />
-                    ) : null}
+                    {status.endsWith(" wins") && (
+                      <img
+                        src={`/src/assets/icons/${status.replace(" wins", "").toLowerCase()}_king.png`}
+                        alt={status.replace(" wins", "")}
+                      />
+                    )}
                     <button onClick={onClickStartNew}>
                       {t("game_info_panel.close")}
                     </button>
@@ -354,6 +419,7 @@ const ChessBoard = (props) => {
                 )}
               <Pieces
                 flipped={orientation === "black"}
+                orientation={orientation}
                 selectedPiece={props.selectedPiece}
                 onPiecePlaced={props.onPiecePlaced}
               />
@@ -423,9 +489,11 @@ const ChessBoard = (props) => {
             <Promotion />
           </div>
         </div>
-        <div className={styles["players-container"]}>
-          {renderPlayerCard(bottomPlayer)}
-        </div>
+        {!isFourPlayer && (
+          <div className={styles["players-container"]}>
+            {renderPlayerCard(bottomPlayer)}
+          </div>
+        )}
       </div>
     </article>
   );

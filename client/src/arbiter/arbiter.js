@@ -1,14 +1,25 @@
 import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
+import {
+    FOUR_PLAYER_COLORS,
+    getFourPlayerPawnDoubleMove,
+} from "../helpers/fourPlayer";
 
 const getBoardSize = (position) => position?.length || 8;
 const isInBounds = (position, x, y) => x >= 0 && y >= 0 && x < getBoardSize(position) && y < getBoardSize(position);
+const fourPlayerPawnDirection = {
+    yellow: [-1, 0],
+    blue: [0, -1],
+    green: [1, 0],
+    red: [0, 1],
+};
 
 const arbiter = {
     getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
         const allMoves = [];
         const boardSize = position?.length || 8;
+        const isFourPlayer = gameVariant === 'four_player';
         const currentCastleDir = castleDirection?.[playerColor] || 'both';
         for (let r = 0; r < boardSize; r++) {
             for (let f = 0; f < boardSize; f++) {
@@ -17,7 +28,13 @@ const arbiter = {
                     const isPawn = piece.endsWith('pawn') || piece.endsWith('soldier');
 
                     if (piece.endsWith('king')) {
-                        const kingMoves = getKingMoves({ position, piece, castleDirection: currentCastleDir, rank: r, file: f });
+                        const kingMoves = isFourPlayer
+                            ? [[-1, -1], [-1, 0], [-1, 1], [0, -1], [0, 1], [1, -1], [1, 0], [1, 1]]
+                                .map(([dr, df]) => [r + dr, f + df])
+                                .filter(([tr, tf]) => isInBounds(position, tr, tf) &&
+                                    position[tr][tf] !== 'brick' &&
+                                    !position[tr][tf].startsWith(playerColor))
+                            : getKingMoves({ position, piece, castleDirection: currentCastleDir, rank: r, file: f });
                         kingMoves.forEach(([tr, tf]) => {
                             allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
@@ -36,30 +53,60 @@ const arbiter = {
                             });
                         });
                     } else if (isPawn) {
-                        const direction = playerColor === 'white' ? -1 : 1;
                         const boardSize = getBoardSize(position);
-                        const pawnStartRank = playerColor === 'white' ? boardSize - 2 : 1;
-
-                        const nextR = r + direction;
-                        if (isInBounds(position, nextR, f) && position[nextR][f] === '') {
-                            allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: f });
+                        const [directionRank, directionFile] = isFourPlayer
+                            ? fourPlayerPawnDirection[playerColor]
+                            : [playerColor === 'white' ? -1 : 1, 0];
+                        const nextR = r + directionRank;
+                        const nextF = f + directionFile;
+                        if (isInBounds(position, nextR, nextF) && position[nextR][nextF] === '') {
+                            allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: nextF });
                             const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : 'chess');
-                            if (variant === "chess") {
-                                const doubleNextR = r + 2 * direction;
+                            if (variant === "four_player") {
+                                const doubleTarget = getFourPlayerPawnDoubleMove(
+                                    position,
+                                    playerColor,
+                                    r,
+                                    f,
+                                );
+                                if (doubleTarget) {
+                                    allMoves.push({
+                                        piece,
+                                        rank: r,
+                                        file: f,
+                                        targetRank: doubleTarget[0],
+                                        targetFile: doubleTarget[1],
+                                    });
+                                }
+                            } else if (variant === "chess" && directionFile === 0) {
+                                const pawnStartRank = playerColor === 'white' ? boardSize - 2 : 1;
+                                const doubleNextR = r + 2 * directionRank;
                                 if (r === pawnStartRank && isInBounds(position, doubleNextR, f) && position[doubleNextR][f] === '') {
                                     allMoves.push({ piece, rank: r, file: f, targetRank: doubleNextR, targetFile: f });
                                 }
                             }
                         }
 
-                        const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
-                        attacks.forEach(([tr, tf]) => {
-                            const targetPiece = position[tr][tf];
-                            if (targetPiece !== '' && !targetPiece.startsWith(playerColor) && !targetPiece.endsWith('brick')) {
-                                allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
-                            }
-                        });
-                        if (prevPosition) {
+                        if (isFourPlayer) {
+                            const [sideRank, sideFile] = directionFile === 0 ? [0, 1] : [1, 0];
+                            [-1, 1].forEach((side) => {
+                                const targetRank = r + directionRank + side * sideRank;
+                                const targetFile = f + directionFile + side * sideFile;
+                                const targetPiece = position?.[targetRank]?.[targetFile];
+                                if (targetPiece && targetPiece !== 'brick' && !targetPiece.startsWith(playerColor)) {
+                                    allMoves.push({ piece, rank: r, file: f, targetRank, targetFile });
+                                }
+                            });
+                        } else {
+                            const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
+                            attacks.forEach(([tr, tf]) => {
+                                const targetPiece = position[tr][tf];
+                                if (targetPiece !== '' && !targetPiece.startsWith(playerColor) && !targetPiece.endsWith('brick')) {
+                                    allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf });
+                                }
+                            });
+                        }
+                        if (!isFourPlayer && prevPosition) {
                             const direction = playerColor === 'white' ? -1 : 1;
 
                             [1, -1].forEach(fOffset => {
@@ -124,6 +171,7 @@ const arbiter = {
             toFile: move.targetFile,
             castleDirection: currentCastleDir,
             playerColor,
+            gameVariant,
         }));
         const variant = gameVariant || (typeof localStorage !== 'undefined'
             ? localStorage.getItem('chess_variant')
@@ -157,16 +205,23 @@ const arbiter = {
         return false;
     },
     getAttackSquares: function ({ position, piece, rank, file }) {
-        const us = piece.startsWith('white') ? 'white' : 'black';
+        const us = piece.split('_')[0];
         const enemy = us === 'white' ? 'black' : 'white';
         const boardSize = getBoardSize(position);
         const attacks = [];
 
         if (piece.endsWith('pawn')) {
-            const direction = us === 'white' ? -1 : 1;
+            const directions = {
+                yellow: [-1, 0],
+                blue: [0, -1],
+                green: [1, 0],
+                red: [0, 1],
+            };
+            const [dr, df] = directions[us] || [us === 'white' ? -1 : 1, 0];
+            const [sideRank, sideFile] = df === 0 ? [0, 1] : [1, 0];
             const captureSquares = [
-                [rank + direction, file - 1],
-                [rank + direction, file + 1],
+                [rank + dr - sideRank, file + df - sideFile],
+                [rank + dr + sideRank, file + df + sideFile],
             ];
             captureSquares.forEach(([r, f]) => {
                 if (position?.[r]?.[f] !== undefined) {
@@ -737,16 +792,20 @@ const arbiter = {
         }
         return attacks;
     },
-    isKingInCheck: function ({ position, playerColor }) {
-        const enemy = playerColor === 'white' ? 'black' : 'white';
+    isKingInCheck: function ({ position, playerColor, gameVariant }) {
+        const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : null);
+        const attackers = variant === 'four_player'
+            ? FOUR_PLAYER_COLORS.filter((color) => color !== playerColor)
+            : [playerColor === 'white' ? 'black' : 'white'];
         const boardSize = getBoardSize(position);
         for (let r = 0; r < boardSize; r++) {
             for (let f = 0; f < boardSize; f++) {
                 const piece = position[r][f];
                 if (piece && piece !== '' && piece.startsWith(playerColor)) {
                     if (piece.endsWith('king') || piece.endsWith('imperator')) {
-                        const attacked = this.isSquareAttacked({ position, rank: r, file: f, byPlayer: enemy });
-                        if (attacked) return true;
+                        if (attackers.some((attacker) =>
+                            this.isSquareAttacked({ position, rank: r, file: f, byPlayer: attacker })
+                        )) return true;
                     }
                 }
             }
@@ -761,13 +820,13 @@ const arbiter = {
             }
         }
     },
-    isMoveLegal: function ({ position, piece, fromRank, fromFile, toRank, toFile, playerColor }) {
+    isMoveLegal: function ({ position, piece, fromRank, fromFile, toRank, toFile, playerColor, gameVariant }) {
         const newPosition = position.map(row => [...row]);
 
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
-        if (piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
+        if (gameVariant !== 'four_player' && piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
             newPosition[fromRank][toFile] = '';
         }
 
@@ -788,7 +847,7 @@ const arbiter = {
             }
         }
 
-        if (piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
+        if (gameVariant !== 'four_player' && piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
             if (toFile === 2) {
                 newPosition[fromRank][0] = '';
                 newPosition[fromRank][3] = piece.replace('king', 'rook');
@@ -797,13 +856,13 @@ const arbiter = {
                 newPosition[fromRank][5] = piece.replace('king', 'rook');
             }
         }
-        if (piece.endsWith('king') || piece.endsWith('imperator')) {
+        if (gameVariant !== 'four_player' && (piece.endsWith('king') || piece.endsWith('imperator'))) {
             const enemy = playerColor === 'white' ? 'black' : 'white';
             if (this.isSquareAttacked({ position: newPosition, rank: toRank, file: toFile, byPlayer: enemy })) {
                 return false;
             }
         }
-        return !this.isKingInCheck({ position: newPosition, playerColor });
+        return !this.isKingInCheck({ position: newPosition, playerColor, gameVariant });
     },
 
     getRegularMoves: function ({ position, prevPosition, castleDirection, piece, rank, file }) {

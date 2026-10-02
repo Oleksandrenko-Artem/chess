@@ -9,8 +9,14 @@ const Timer = () => {
   const intervalRef = useRef(null);
   const moveTimeoutRef = useRef(null);
   const currentPlayerRef = useRef(appState.playerTurn);
-  const whiteTimeRef = useRef(appState.whiteTime);
-  const blackTimeRef = useRef(appState.blackTime);
+  const timeRef = useRef({
+    white: appState.whiteTime,
+    black: appState.blackTime,
+    yellow: appState.yellowTime,
+    blue: appState.blueTime,
+    green: appState.greenTime,
+    red: appState.redTime,
+  });
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -18,28 +24,47 @@ const Timer = () => {
   }, [appState.playerTurn]);
 
   useEffect(() => {
-    whiteTimeRef.current = appState.whiteTime;
-  }, [appState.whiteTime]);
-
-  useEffect(() => {
-    blackTimeRef.current = appState.blackTime;
-  }, [appState.blackTime]);
+    timeRef.current = {
+      white: appState.whiteTime,
+      black: appState.blackTime,
+      yellow: appState.yellowTime,
+      blue: appState.blueTime,
+      green: appState.greenTime,
+      red: appState.redTime,
+    };
+  }, [
+    appState.whiteTime,
+    appState.blackTime,
+    appState.yellowTime,
+    appState.blueTime,
+    appState.greenTime,
+    appState.redTime,
+  ]);
 
   useEffect(() => {
     if (appState.timerActive && appState.status === "Ongoing") {
       intervalRef.current = setInterval(() => {
         const currentPlayer = currentPlayerRef.current;
-        const currentTime =
-          currentPlayer === "white"
-            ? whiteTimeRef.current
-            : blackTimeRef.current;
+        const currentTime = timeRef.current[currentPlayer] ?? 0;
         const newTime = currentTime - 1;
 
         if (newTime < 0) {
-          dispatch({
-            type: actionTypes.TIME_UP,
-            payload: { player: currentPlayer },
-          });
+          if (
+            localStorage.getItem("chess_variant") === "four_player" &&
+            appState.isMultiplayer
+          ) {
+            if (currentPlayer === localStorage.getItem("chess_side")) {
+              socket.emit("playerTimedOut", {
+                roomId: appState.roomId,
+                loser: currentPlayer,
+              });
+            }
+          } else {
+            dispatch({
+              type: actionTypes.TIME_UP,
+              payload: { player: currentPlayer },
+            });
+          }
         } else {
           dispatch({
             type: actionTypes.UPDATE_TIME,
@@ -51,19 +76,31 @@ const Timer = () => {
       if (moveTimeoutRef.current) {
         clearTimeout(moveTimeoutRef.current);
       }
-      moveTimeoutRef.current = setTimeout(() => {
-        const currentPlayer = currentPlayerRef.current;
-        dispatch({
-          type: actionTypes.TIME_UP,
-          payload: { player: currentPlayer },
-        });
-        if (socket && appState?.isMultiplayer && appState?.roomId) {
-          socket.emit("playerTimedOut", {
-            roomId: appState.roomId,
-            loser: currentPlayer,
+      if (localStorage.getItem("chess_variant") !== "four_player") {
+        moveTimeoutRef.current = setTimeout(() => {
+          const currentPlayer = currentPlayerRef.current;
+          if (
+            appState.isMultiplayer &&
+            localStorage.getItem("chess_variant") === "four_player"
+          ) {
+            socket.emit("playerTimedOut", {
+              roomId: appState.roomId,
+              loser: currentPlayer,
+            });
+            return;
+          }
+          dispatch({
+            type: actionTypes.TIME_UP,
+            payload: { player: currentPlayer },
           });
-        }
-      }, 300000);
+          if (socket && appState?.isMultiplayer && appState?.roomId) {
+            socket.emit("playerTimedOut", {
+              roomId: appState.roomId,
+              loser: currentPlayer,
+            });
+          }
+        }, 300000);
+      }
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -98,6 +135,22 @@ const Timer = () => {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
+
+  if (localStorage.getItem("chess_variant") === "four_player") {
+    return (
+      <div className={styles.timer}>
+        {["yellow", "blue", "green", "red"].map((color) => (
+          <div
+            key={color}
+            className={`${styles.time} ${appState.playerTurn === color ? styles.active : ""}`}
+          >
+            <div>{t(`captured_pieces.${color}`)}</div>
+            <div>{formatTime(timeRef.current[color] ?? 0)}</div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className={styles.timer}>

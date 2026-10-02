@@ -461,8 +461,9 @@ export const createNewChess960Position = (size = 8) => {
     return position;
 };
 export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, horseType, isCapture = null }) => {
-    const piece = p.replace(/^(white|black)_/, '');
-    const createMove = (text) => ({ text, piece });
+    const color = p.match(/^(white|black|yellow|blue|green|red)_/)?.[1];
+    const piece = p.replace(/^(white|black|yellow|blue|green|red)_/, '');
+    const createMove = (text) => ({ text, piece, color });
     const boardSize = position?.length || 8;
     const getSquare = (squareRank, squareFile) => `${getCharacter(squareFile)}${boardSize - squareRank}`;
     const fromSquare = getSquare(rank, file);

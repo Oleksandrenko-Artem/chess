@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppContext } from "../../contexts/Context";
 import styles from "./MovesList.module.scss";
+import { getPieceStyle } from "../../helpers/getPieceImage";
 
 const notationPieceImages = {
   K: "king",
@@ -16,7 +17,20 @@ const notationPieceImages = {
 const renderMove = (move, isWhiteMove) => {
   const text = typeof move === "string" ? move : move.text;
   const pieceImage =
-    typeof move === "string" ? notationPieceImages[text[0]] : move.piece;
+    typeof move === "string"
+      ? notationPieceImages[text[0]]
+      : move.piece?.split("_").at(-1);
+  const pieceColor =
+    typeof move === "string"
+      ? isWhiteMove
+        ? "white"
+        : "black"
+      : move.color ||
+        (move.piece?.includes("_")
+          ? move.piece.split("_")[0]
+          : isWhiteMove
+            ? "white"
+            : "black");
 
   if (!pieceImage || !text) return text || move;
 
@@ -24,7 +38,7 @@ const renderMove = (move, isWhiteMove) => {
     <>
       <img
         className={styles["piece-icon"]}
-        src={`/src/assets/icons/${isWhiteMove ? "white" : "black"}_${pieceImage}.png`}
+        src={getPieceStyle(`${pieceColor}_${pieceImage}`, false, null)}
         alt=""
         aria-hidden="true"
       />

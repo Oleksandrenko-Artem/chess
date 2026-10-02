@@ -117,5 +117,21 @@
 }
 .loser-piece {
   filter: grayscale($containerWidth) brightness(0.35) contrast(0.8);
-  transition: filter .4s ease;
+  transition: filter 0.4s ease;
+}
+.piece-blue {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(92%) saturate(1260%)
+    hue-rotate(177deg) brightness(96%) contrast(101%);
+}
+.piece-yellow {
+  filter: brightness(0) saturate(100%) invert(77%) sepia(99%) saturate(727%)
+    hue-rotate(358deg) brightness(101%) contrast(105%);
+}
+.piece-green {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(98%) saturate(1071%)
+    hue-rotate(75deg) brightness(96%) contrast(106%);
+}
+.piece-red {
+  filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(2190%)
+    hue-rotate(337deg) brightness(96%) contrast(102%);
 }

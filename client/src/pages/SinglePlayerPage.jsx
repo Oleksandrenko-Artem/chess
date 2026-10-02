@@ -12,6 +12,7 @@ const SinglePlayerPage = (props) => {
     onPlayCheckers,
     onPlayNewVariantChess,
     onPlayNewVariantChess960,
+    onPlayFourPlayer,
   } = props;
 
   const { t } = useTranslation();
@@ -76,6 +77,14 @@ const SinglePlayerPage = (props) => {
       link: "/play-new-variant-chess960",
       action: onPlayNewVariantChess960,
     },
+    {
+      id: "four_player",
+      img: "/src/assets/icons/four_players.png",
+      title: "header.four-player-chess",
+      desc: "header.single-player-four-player",
+      link: "/play-four-player",
+      action: onPlayFourPlayer,
+    },
   ];
 
   const [windowWidth, setWindowWidth] = useState(
@@ -124,7 +133,6 @@ const SinglePlayerPage = (props) => {
         >
           ❮
         </button>
-
         <div className={styles["single-player-options"]}>
           {visibleGames.map((game) => (
             <div key={game.id}>

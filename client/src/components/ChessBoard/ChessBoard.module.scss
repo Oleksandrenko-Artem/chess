@@ -91,6 +91,23 @@
       text-overflow: ellipsis;
       max-width: 320px;
     }
+    .four-player-roster {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 4px;
+      width: 100%;
+      padding: 4px;
+      .player-card {
+        border-left: 4px solid var(--player-color);
+        background: rgba(255, 255, 255, 0.82);
+      }
+    }
+    .four-player-card {
+      min-width: 0;
+      .player-name {
+        max-width: 180px;
+      }
+    }
     .chess-div {
       @extend %flex-column;
       width: $containerWidth;
@@ -210,23 +227,23 @@
   }
 }
 .player-name {
-    @extend %flex-align-center;
-    gap: 6px;
-    flex-wrap: nowrap;
-    font-weight: 600;
+  @extend %flex-align-center;
+  gap: 6px;
+  flex-wrap: nowrap;
+  font-weight: 600;
 }
 .player-rating {
-    color: #bbb;
+  color: #bbb;
 }
 .achievement-icon {
-    width: $iconWidth;
-    height: $iconWidth;
-    flex-shrink: $zero;
+  width: $iconWidth;
+  height: $iconWidth;
+  flex-shrink: $zero;
 }
 .achievement-icon {
-    width: $iconWidth;
-    height: $iconWidth;
-    object-fit: contain;
+  width: $iconWidth;
+  height: $iconWidth;
+  object-fit: contain;
 }
 .game-status-text {
   @extend %panel-style;

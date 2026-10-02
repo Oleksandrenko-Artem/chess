@@ -2,12 +2,13 @@ import arbiter from "./arbiter";
 
 const getBoardSize = (position) => (position?.length || 8);
 const isInBounds = (position, x, y) => x >= 0 && y >= 0 && x < getBoardSize(position) && y < getBoardSize(position);
+const isEnemyPiece = (piece, target) =>
+    target && target !== '' && !target.startsWith(piece.split('_')[0]) && !target.endsWith('brick');
 
 export const getRookMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const boardSize = getBoardSize(position);
-    const us = piece.startsWith('white') ? 'white' : 'black';
-    const enemy = us === 'white' ? 'black' : 'white';
+    const us = piece.split('_')[0];
     const direction = [
         [-1, 0],
         [1, 0],
@@ -21,7 +22,7 @@ export const getRookMoves = ({ position, piece, rank, file }) => {
             if (!isInBounds(position, x, y)) {
                 break;
             }
-            if (position[x][y].startsWith(enemy)) {
+            if (isEnemyPiece(piece, position[x][y])) {
                 moves.push([x, y]);
                 break;
             }
@@ -38,7 +39,6 @@ export const getRookMoves = ({ position, piece, rank, file }) => {
 };
 export const getHorseMoves = ({ position, rank, file }) => {
     const moves = [];
-    const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
     const valid = [
         [-2, -1],
         [-2, 1],
@@ -53,7 +53,7 @@ export const getHorseMoves = ({ position, rank, file }) => {
         const x = rank + val[0];
         const y = file + val[1];
         const cell = position?.[rank + val[0]]?.[file + val[1]];
-        if (cell !== undefined && (cell.startsWith(enemy) || cell === '')) {
+        if (cell !== undefined && (isEnemyPiece(position[rank][file], cell) || cell === '')) {
             moves.push([x, y]);
         }
     });
@@ -123,8 +123,7 @@ export const getCamelMoves = ({ position, rank, file }) => {
 export const getBishopMoves = ({ position, piece, rank, file }) => {
     const moves = [];
     const boardSize = getBoardSize(position);
-    const us = piece.startsWith('white') ? 'white' : 'black';
-    const enemy = us === 'white' ? 'black' : 'white';
+    const us = piece.split('_')[0];
     const direction = [
         [-1, -1],
         [-1, 1],
@@ -138,7 +137,7 @@ export const getBishopMoves = ({ position, piece, rank, file }) => {
             if (!isInBounds(position, x, y)) {
                 break;
             }
-            if (position[x][y].startsWith(enemy)) {
+            if (isEnemyPiece(piece, position[x][y])) {
                 moves.push([x, y]);
                 break;
             }

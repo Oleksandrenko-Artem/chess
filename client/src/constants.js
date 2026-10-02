@@ -1,4 +1,5 @@
 import { createExtendedPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createGrandAceDrexPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
+import { createFourPlayerPosition } from "./helpers/fourPlayer";
 
 export const BOARD_STYLES = {
     standart: {
@@ -62,6 +63,7 @@ export const GAME_MODES = [
     "chess960",
     "shatranj960",
     "new_chess960",
+    "four_player",
     "custom",
 ];
 export const status = {
@@ -69,6 +71,10 @@ export const status = {
     'promotion': 'Promotion',
     'white': 'White wins',
     'black': 'Black wins',
+    'yellow': 'Yellow wins',
+    'green': 'Green wins',
+    'blue': 'Blue wins',
+    'red': 'Red wins',
     'draw': 'Draw',
 };
 export const FIFTY_MOVE_HALFMOVES = 100;
@@ -105,6 +111,19 @@ export const initialGameState = {
     roomId: null,
     isVsBot: false,
     botDifficulty: 'easy',
+};
+export const initialFourPlayerGameState = {
+    ...initialGameState,
+    position: [createFourPlayerPosition()],
+    playerTurn: 'yellow',
+    boardSize: 14,
+    yellowTime: 1200,
+    blueTime: 1200,
+    greenTime: 1200,
+    redTime: 1200,
+    castleDirection: { yellow: 'none', blue: 'none', green: 'none', red: 'none' },
+    captured: { yellow: [], blue: [], green: [], red: [] },
+    eliminatedColors: [],
 };
 export const initialOldGameState = {
     position: [createOldPosition()],

@@ -8,6 +8,8 @@
     "single-player-checkers": "Pieces are placed on light and dark squares of the board, also there is a king on the board, the game ends when it is captured or when there are no checkers left for one of the sides.",
     "single-player-new-chess": "Try the variant of chess created by our developer - Artem Oleksandrenko.",
     "single-player-new-chess960": "Variation of new chess, pieces of the first and eighth rows are placed randomly.",
+    "four-player-chess": "Four-player chess",
+    "single-player-four-player": "Four players meet on a cross-shaped board. The last one standing will win.",
     "choose-mode": "Choose Game Mode",
     "chess": "Chess",
     "chess960": "Chess 960",
@@ -102,7 +104,11 @@
   },
   "captured_pieces": {
     "white": "White",
+    "yellow": "Yellow",
+    "blue": "Blue",
     "black": "Black",
+    "green": "Green",
+    "red": "Red",
     "white_captures": "White captures",
     "black_captures": "Black captures"
   },
@@ -168,6 +174,7 @@
     "start_again": "Surrender",
     "choose_color": "Choose color",
     "game_over": "Game Over",
+    "wins": "wins",
     "close": "Close",
     "exit": "Exit",
     "bot_level": "Bot Level: "

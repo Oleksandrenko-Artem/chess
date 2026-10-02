@@ -14,7 +14,7 @@
 @media screen and (max-width: $m) {
   .captured-container {
     gap: $containerGap;
-    margin-top: 37px;
+    margin-top: 93px;
     min-height: auto;
   }
 }
@@ -52,4 +52,20 @@
     max-width: $capturedPieceWidth;
     max-height: $capturedPieceHeight;
   }
+}
+.piece-yellow {
+  filter: brightness(0) saturate(100%) invert(77%) sepia(99%) saturate(727%)
+    hue-rotate(358deg) brightness(101%) contrast(105%);
+}
+.piece-green {
+  filter: brightness(0) saturate(100%) invert(42%) sepia(98%) saturate(1071%)
+    hue-rotate(75deg) brightness(96%) contrast(106%);
+}
+.piece-blue {
+  filter: brightness(0) saturate(100%) invert(38%) sepia(92%) saturate(1260%)
+    hue-rotate(177deg) brightness(96%) contrast(101%);
+}
+.piece-red {
+  filter: brightness(0) saturate(100%) invert(27%) sepia(95%) saturate(2190%)
+    hue-rotate(337deg) brightness(96%) contrast(102%);
 }

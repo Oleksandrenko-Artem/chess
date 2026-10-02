@@ -26,6 +26,8 @@
     .img-div {
       @extend %flex-row;
       justify-content: center;
+      flex-wrap: wrap;
+      padding: 10px;
       .img-style {
         @extend %btn-style;
         display: inline-flex;
@@ -52,7 +54,8 @@
         height: 5vh;
         width: 7vh;
       }
-      select, p {
+      select,
+      p {
         margin: $zero;
         font-size: $fontSizeFirst;
       }
@@ -115,9 +118,9 @@
     }
   }
   @media screen and (max-width: $l) {
-      .start-panel {
+    .start-panel {
       width: $gameInfoPanelWidth;
-      height: $gameInfoPanelWidth;
+      height: $gameInfoPanelHeight;
     }
   }
   @media screen and (max-width: $s) {

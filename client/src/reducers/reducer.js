@@ -3,6 +3,10 @@ import { FIFTY_MOVE_HALFMOVES, status } from "../constants";
 import { createSpecialPosition } from "../helpers";
 import { playMoveSound } from "../helpers/playMoveSound";
 import actionTypes from "./actionTypes";
+import {
+    getFourPlayerGameStatus,
+    getNextFourPlayerTurn,
+} from "../helpers/fourPlayer";
 
 export const reducer = (state, action) => {
     switch (action.type) {
@@ -10,10 +14,11 @@ export const reducer = (state, action) => {
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive, halfmoveClock = 0 } = state;
+            const isFourPlayer = typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player';
             const previousPosition = position[position.length - 1];
             gameStatus = action.payload.gameStatus || status.ongoing;
             if (!action.payload.keepTurn) {
-                playerTurn = playerTurn === 'white' ? 'black' : 'white';
+                playerTurn = action.payload.nextPlayer || (playerTurn === 'white' ? 'black' : 'white');
             }
             position = [
                 ...position,
@@ -23,19 +28,16 @@ export const reducer = (state, action) => {
                 ...movesList,
                 action.payload.newMove
             ];
-            const newCaptured = action.payload.captured || {
-                white: [],
-                black: [],
-            };
+            const newCaptured = action.payload.captured || { white: [], black: [] };
 
             const oldCaptured = captured || {
                 white: [],
                 black: [],
             };
 
-            const wasCapture =
-                newCaptured.white.length > oldCaptured.white.length ||
-                newCaptured.black.length > oldCaptured.black.length;
+            const wasCapture = Object.keys(newCaptured).some(
+                (color) => newCaptured[color].length > (oldCaptured[color]?.length || 0),
+            );
 
             const movedPiece = action.payload.lastMove
                 ? previousPosition?.[action.payload.lastMove.fromRank]?.[action.payload.lastMove.fromFile]
@@ -54,6 +56,7 @@ export const reducer = (state, action) => {
             const isCheck = arbiter.isKingInCheck({
                 position: currentPosition,
                 playerColor: playerTurn,
+                gameVariant: isFourPlayer ? 'four_player' : undefined,
             });
             if (action.payload.lastMove) {
                 lastMove = action.payload.lastMove;
@@ -72,6 +75,7 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 playerTurn,
+                eliminatedColors: action.payload.eliminatedColors ?? state.eliminatedColors ?? [],
                 position,
                 movesList,
                 status: gameStatus,
@@ -191,6 +195,27 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.TIME_UP: {
+            if (typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player') {
+                const position = state.position[state.position.length - 1].map(row => [...row]);
+                const loser = action.payload.player;
+                if ((state.eliminatedColors || []).includes(loser)) return state;
+                const eliminatedColors = [...(state.eliminatedColors || []), loser];
+                const nextPlayer = state.playerTurn === loser
+                    ? getNextFourPlayerTurn(position, loser, eliminatedColors)
+                    : state.playerTurn;
+                let gameStatus = getFourPlayerGameStatus(position, eliminatedColors);
+                if (state.isVsBot && loser === localStorage.getItem('chess_side') && gameStatus === status.ongoing) {
+                    gameStatus = `${nextPlayer} wins`;
+                }
+                return {
+                    ...state,
+                    position: [...state.position, position],
+                    eliminatedColors,
+                    playerTurn: nextPlayer,
+                    status: gameStatus,
+                    timerActive: gameStatus === status.ongoing,
+                };
+            }
             const winner =
                 action.payload.player === 'white' ? 'black' : 'white';
 
@@ -243,6 +268,11 @@ export const reducer = (state, action) => {
                         rating: action.payload,
                     }
                     : null,
+            };
+        case actionTypes.SET_ROOM_PLAYERS:
+            return {
+                ...state,
+                roomPlayers: action.payload,
             };
         default:
             return state;

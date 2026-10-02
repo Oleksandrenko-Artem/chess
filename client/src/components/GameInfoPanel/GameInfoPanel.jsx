@@ -11,6 +11,7 @@ import {
   initialNewVariantGameState,
   initialOldGameState,
   initialShatranj960State,
+  initialFourPlayerGameState,
   status as statusMap,
 } from "../../constants";
 import actionTypes from "../../reducers/actionTypes";
@@ -18,9 +19,14 @@ import { updateUserThunk } from "../../store/usersSlice";
 import { setSoundEnabled, isSoundEnabled } from "../../helpers/playMoveSound";
 import black_king from "../../assets/icons/black_king.png";
 import white_king from "../../assets/icons/white_king.png";
+import yellow_king from "../../assets/icons/yellow_king.png";
+import blue_king from "../../assets/icons/blue_king.png";
+import green_king from "../../assets/icons/green_king.png";
+import red_king from "../../assets/icons/red_king.png";
 import styles from "./GameInfoPanel.module.scss";
 import arbiter from "../../arbiter/arbiter";
 import Timer from "../Timer/Timer";
+import { FOUR_PLAYER_COLORS } from "../../helpers/fourPlayer";
 
 const GameInfoPanel = (props) => {
   const { status, turn, start, setStart } = props;
@@ -95,6 +101,11 @@ const GameInfoPanel = (props) => {
   const onClickBlack = () => {
     localStorage.setItem("chess_side", "black");
     dispatch({ type: actionTypes.SET_ORIENTATION, payload: "black" });
+  };
+  const onSelectFourPlayerColor = (color) => {
+    setSelectedColor(color);
+    localStorage.setItem("chess_side", color);
+    dispatch({ type: actionTypes.SET_ORIENTATION, payload: color });
   };
   const onClickStart = () => {
     localStorage.setItem("chess_mode", "game");
@@ -248,6 +259,17 @@ const GameInfoPanel = (props) => {
         },
       });
     }
+    if (window.localStorage.getItem("chess_variant") === "four_player") {
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...initialFourPlayerGameState,
+            isVsBot: appState.isVsBot,
+          },
+        },
+      });
+    }
     if (
       appState?.isMultiplayer ||
       window.localStorage.getItem("chess_mode") === "multiplayer"
@@ -265,22 +287,30 @@ const GameInfoPanel = (props) => {
     }
   };
   const handleToggle = () => {
+    if (localStorage.getItem("chess_variant") === "four_player") {
+      const currentIndex = FOUR_PLAYER_COLORS.indexOf(appState.orientation);
+      const nextOrientation =
+        FOUR_PLAYER_COLORS[
+          (currentIndex + 1 + FOUR_PLAYER_COLORS.length) %
+            FOUR_PLAYER_COLORS.length
+        ];
+      dispatch({ type: actionTypes.SET_ORIENTATION, payload: nextOrientation });
+      return;
+    }
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
   };
   const gameStatusMessage = () => {
-    if (status === statusMap.white) {
-      return t("game_info_panel.white_wins");
-    }
-    if (status === statusMap.black) {
-      return t("game_info_panel.black_wins");
-    }
     if (status === statusMap.draw) {
       return t("game_info_panel.draw");
+    }
+    if (status.endsWith(" wins")) {
+      const winnerColor = status.replace(" wins", "").toLowerCase();
+      return `${t(`captured_pieces.${winnerColor}`)} ${t("game_info_panel.wins")}`;
     }
     if (status !== statusMap.ongoing && status !== statusMap.promotion) {
       return t("game_info_panel.game_over");
     }
-    return `${t("game_info_panel.turn")} ${appState?.playerTurn === "white" ? t("captured_pieces.white") : t("captured_pieces.black")}`;
+    return `${t("game_info_panel.turn")} ${t(`captured_pieces.${appState?.playerTurn}`)}`;
   };
   const handlePieceStyleChange = (event) => {
     const style = event.target.value;
@@ -341,6 +371,7 @@ const GameInfoPanel = (props) => {
   };
   const unlockedSets = user?.achievements?.pieceSets || {};
   const isAdmin = user?.role === "admin";
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
 
   const pieceOptions = [
     { value: "standart", label: t("style_panel.standart"), unlocked: true },
@@ -375,26 +406,55 @@ const GameInfoPanel = (props) => {
         window.localStorage.getItem("chess_mode") !== "multiplayer" && (
           <div className={styles["start-panel"]}>
             <h1>{t("game_info_panel.choose_color")}</h1>
-            <div className={styles["img-div"]}>
-              <img
-                src={black_king}
-                alt="black"
-                className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
-                onClick={() => {
-                  setSelectedColor("black");
-                  onClickBlack();
-                }}
-              />
-              <img
-                src={white_king}
-                alt="white"
-                className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
-                onClick={() => {
-                  setSelectedColor("white");
-                  onClickWhite();
-                }}
-              />
-            </div>
+            {isFourPlayer ? (
+              <div className={styles["img-div"]}>
+                <img
+                  src={yellow_king}
+                  alt="yellow"
+                  className={`${styles["img-style"]} ${selectedColor === "yellow" ? styles["active"] : ""}`}
+                  onClick={() => onSelectFourPlayerColor('yellow')}
+                />
+                <img
+                  src={blue_king}
+                  alt="blue"
+                  className={`${styles["img-style"]} ${selectedColor === "blue" ? styles["active"] : ""}`}
+                  onClick={() => onSelectFourPlayerColor('blue')}
+                />
+                <img
+                  src={green_king}
+                  alt="green"
+                  className={`${styles["img-style"]} ${selectedColor === "green" ? styles["active"] : ""}`}
+                  onClick={() => onSelectFourPlayerColor('green')}
+                />
+                <img
+                  src={red_king}
+                  alt="red"
+                  className={`${styles["img-style"]} ${selectedColor === "red" ? styles["active"] : ""}`}
+                  onClick={() => onSelectFourPlayerColor('red')}
+                />
+              </div>
+            ) : (
+              <div className={styles["img-div"]}>
+                <img
+                  src={black_king}
+                  alt="black"
+                  className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
+                  onClick={() => {
+                    setSelectedColor("black");
+                    onClickBlack();
+                  }}
+                />
+                <img
+                  src={white_king}
+                  alt="white"
+                  className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
+                  onClick={() => {
+                    setSelectedColor("white");
+                    onClickWhite();
+                  }}
+                />
+              </div>
+            )}
             <div className={styles["bot-level-div"]}>
               <p>{t("game_info_panel.bot_level")}</p>
               <select value={botLevel} onChange={handleBotLevelChange}>
@@ -454,14 +514,16 @@ const GameInfoPanel = (props) => {
                 ))}
               </select>
               <button
-                  onClick={() => {
-                      const newValue = !soundEnabled;
+                onClick={() => {
+                  const newValue = !soundEnabled;
 
-                      setSoundEnabledState(newValue);
-                      setSoundEnabled(newValue);
-                  }}
+                  setSoundEnabledState(newValue);
+                  setSoundEnabled(newValue);
+                }}
               >
-                  {soundEnabled ? `🔊 ${t("custom_panel.sounds_on")}` : `🔇 ${t("custom_panel.sounds_off")}`}
+                {soundEnabled
+                  ? `🔊 ${t("custom_panel.sounds_on")}`
+                  : `🔇 ${t("custom_panel.sounds_off")}`}
               </button>
               <button onClick={handleToggle}>
                 {t("custom_panel.rotate_board")}
