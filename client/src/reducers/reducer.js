@@ -4,6 +4,7 @@ import { createSpecialPosition } from "../helpers";
 import { playMoveSound } from "../helpers/playMoveSound";
 import actionTypes from "./actionTypes";
 import {
+    FOUR_PLAYER_COLORS,
     getFourPlayerGameStatus,
     getNextFourPlayerTurn,
 } from "../helpers/fourPlayer";
@@ -53,11 +54,29 @@ export const reducer = (state, action) => {
 
             const currentPosition = position[position.length - 1];
 
-            const isCheck = arbiter.isKingInCheck({
-                position: currentPosition,
-                playerColor: playerTurn,
-                gameVariant: isFourPlayer ? 'four_player' : undefined,
-            });
+            const isCheck = isFourPlayer
+                ? FOUR_PLAYER_COLORS.some((color) => {
+                    const wasInCheck = arbiter.isKingInCheck({
+                        position: previousPosition,
+                        playerColor: color,
+                        gameVariant: 'four_player',
+                    });
+
+                    const isNowInCheck = arbiter.isKingInCheck({
+                        position: currentPosition,
+                        playerColor: color,
+                        gameVariant: 'four_player',
+                    });
+
+                    return !wasInCheck && isNowInCheck;
+                })
+                : arbiter.isKingInCheck({
+                    position: currentPosition,
+                    playerColor: playerTurn,
+                    gameVariant: undefined,
+                });
+
+
             if (action.payload.lastMove) {
                 lastMove = action.payload.lastMove;
             }
