@@ -7,7 +7,7 @@ const ACHIEVEMENTS = {
     ferz: [5, 50, 100, 250],
     soldier: [1, 6, 14, 32],
     king: [1, 5, 10, 50],
-    elephant: [3, 12, 26, 68],
+    alfil: [3, 12, 26, 68],
     firzan: [3, 12, 26, 68],
     knight: [5, 50, 100, 250],
     prince: [3, 12, 26, 68],
@@ -66,14 +66,13 @@ const PIECE_ALIASES = {
     sailboat: "rook",
 
     horse: "horse",
-    faras: "horse",
     knight: "knight",
 
     ferz: "ferz",
     firzan: "firzan",
 
     bishop: "bishop",
-    elephant: "elephant",
+    alfil: "alfil",
 
     king: "king",
     king: "imperator",

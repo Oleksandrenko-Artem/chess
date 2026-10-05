@@ -59,7 +59,7 @@ export const getHorseMoves = ({ position, rank, file }) => {
     });
     return moves;
 };
-export const getElephantMoves = ({ position, rank, file }) => {
+export const getAlfilMoves = ({ position, rank, file }) => {
     const moves = [];
     const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
     const valid = [
@@ -705,7 +705,7 @@ export const getDinozavrMoves = ({ position, piece, rank, file }) => {
     ];
     return moves;
 };
-export const getElephantLongRangeMoves = ({ position, piece, rank, file }) => {
+export const getElephantMoves = ({ position, rank, file }) => {
     const moves = [];
     const enemy = position[rank][file].startsWith('white') ? 'black' : 'white';
     const valid = [
@@ -791,7 +791,7 @@ export const getManMoves = ({ position, piece, rank, file }) => {
 };
 export const getAlibabaMoves = ({ position, rank, file }) => {
     const moves = [
-        ...getElephantMoves({ position, rank, file }),
+        ...getAlfilMoves({ position, rank, file }),
         ...getTankMoves({ position, rank, file }),
     ];
     return moves;

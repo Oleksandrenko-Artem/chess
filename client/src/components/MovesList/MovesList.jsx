@@ -9,7 +9,7 @@ const notationPieceImages = {
   B: "bishop",
   R: "rook",
   F: "ferz",
-  E: "elephant",
+  E: "alfil",
   C: "chariot",
   S: "sailboat",
 };

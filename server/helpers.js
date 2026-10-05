@@ -83,11 +83,11 @@ const createShatranj960Position = (size = 8) => {
     const evenSquares = [0, 2, 4, 6];
     const oddSquares = [1, 3, 5, 7];
 
-    const bishop1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
-    const bishop2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
+    const alfil1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
+    const alfil2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
 
-    backRank[bishop1] = 'elephant';
-    backRank[bishop2] = 'elephant';
+    backRank[alfil1] = 'alfil';
+    backRank[alfil2] = 'alfil';
 
     let emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
     const queen = emptySquares[Math.floor(Math.random() * emptySquares.length)];

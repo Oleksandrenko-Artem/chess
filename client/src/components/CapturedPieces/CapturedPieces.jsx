@@ -13,7 +13,7 @@ import black_bishop from "../../assets/icons/black_bishop.png";
 import black_firzan from "../../assets/icons/black_firzan.png";
 import black_tank from "../../assets/icons/black_tank.png";
 import black_camel from "../../assets/icons/black_camel.png";
-import black_elephant from "../../assets/icons/black_elephant.png";
+import black_alfil from "../../assets/icons/black_alfil.png";
 import black_rook from "../../assets/icons/black_rook.png";
 import black_sailboat from "../../assets/icons/black_sailboat.png";
 import black_rukh from "../../assets/icons/black_rukh.png";
@@ -30,9 +30,8 @@ import black_archbishop from "../../assets/icons/black_archbishop.png";
 import black_marshal from "../../assets/icons/black_marshal.png";
 import black_amazon from "../../assets/icons/black_amazon.png";
 import black_knight from "../../assets/icons/black_knight.png";
-import black_elephant_long_range from "../../assets/icons/black_elephant_long_range.png";
+import black_elephant from "../../assets/icons/black_elephant.png";
 import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
-import black_faras from "../../assets/icons/black_faras.png";
 import black_rhino from "../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../assets/icons/black_wildebeest.png";
 import black_man from "../../assets/icons/black_man.png";
@@ -46,7 +45,7 @@ import white_bishop from "../../assets/icons/white_bishop.png";
 import white_firzan from "../../assets/icons/white_firzan.png";
 import white_tank from "../../assets/icons/white_tank.png";
 import white_camel from "../../assets/icons/white_camel.png";
-import white_elephant from "../../assets/icons/white_elephant.png";
+import white_alfil from "../../assets/icons/white_alfil.png";
 import white_rook from "../../assets/icons/white_rook.png";
 import white_sailboat from "../../assets/icons/white_sailboat.png";
 import white_rukh from "../../assets/icons/white_rukh.png";
@@ -63,8 +62,7 @@ import white_archbishop from "../../assets/icons/white_archbishop.png";
 import white_marshal from "../../assets/icons/white_marshal.png";
 import white_amazon from "../../assets/icons/white_amazon.png";
 import white_knight from "../../assets/icons/white_knight.png";
-import white_elephant_long_range from "../../assets/icons/white_elephant_long_range.png";
-import white_faras from "../../assets/icons/white_faras.png";
+import white_elephant from "../../assets/icons/white_elephant.png";
 import white_rhino from "../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../assets/icons/white_wildebeest.png";
 import white_man from "../../assets/icons/white_man.png";
@@ -81,7 +79,7 @@ const imageMap = {
   black_firzan,
   black_tank,
   black_camel,
-  black_elephant,
+  black_alfil,
   black_rook,
   black_sailboat,
   black_rukh,
@@ -98,8 +96,7 @@ const imageMap = {
   black_marshal,
   black_amazon,
   black_knight,
-  black_elephant_long_range,
-  black_faras,
+  black_elephant,
   black_rhino,
   black_wildebeest,
   black_man,
@@ -114,7 +111,7 @@ const imageMap = {
   white_firzan,
   white_tank,
   white_camel,
-  white_elephant,
+  white_alfil,
   white_rook,
   white_sailboat,
   white_rukh,
@@ -131,8 +128,7 @@ const imageMap = {
   white_marshal,
   white_amazon,
   white_knight,
-  white_elephant_long_range,
-  white_faras,
+  white_elephant,
   white_rhino,
   white_wildebeest,
   white_man,

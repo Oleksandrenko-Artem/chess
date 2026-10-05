@@ -15,7 +15,7 @@ import black_ferz from "../../../assets/icons/black_ferz.png";
 import black_rook from "../../../assets/icons/black_rook.png";
 import black_bishop from "../../../assets/icons/black_bishop.png";
 import black_horse from "../../../assets/icons/black_horse.png";
-import black_elephant from "../../../assets/icons/black_elephant.png";
+import black_alfil from "../../../assets/icons/black_alfil.png";
 import black_firzan from "../../../assets/icons/black_firzan.png";
 import black_wazir from "../../../assets/icons/black_wazir.png";
 import black_tank from "../../../assets/icons/black_tank.png";
@@ -27,7 +27,7 @@ import black_rukh from "../../../assets/icons/black_rukh.png";
 import black_archbishop from "../../../assets/icons/black_archbishop.png";
 import black_marshal from "../../../assets/icons/black_marshal.png";
 import black_amazon from "../../../assets/icons/black_amazon.png";
-import black_elephant_long_range from "../../../assets/icons/black_elephant_long_range.png";
+import black_elephant from "../../../assets/icons/black_elephant.png";
 import black_rhino from "../../../assets/icons/black_rhino.png";
 import black_wildebeest from "../../../assets/icons/black_wildebeest.png";
 import black_man from "../../../assets/icons/black_man.png";
@@ -35,7 +35,6 @@ import black_duke from "../../../assets/icons/black_duke.png";
 import black_prince from "../../../assets/icons/black_prince.png";
 import black_alibaba from "../../../assets/icons/black_alibaba.png";
 import black_checker_long_range from "../../../assets/icons/black_checker_long_range.png";
-import black_faras from "../../../assets/icons/black_faras.png";
 import black_knight from "../../../assets/icons/black_knight.png";
 import black_dinozavr from "../../../assets/icons/black_dinozavr.png";
 import black_checkers from "../../../assets/icons/black_checkers.png";
@@ -47,7 +46,7 @@ import white_bishop from "../../../assets/icons/white_bishop.png";
 import white_horse from "../../../assets/icons/white_horse.png";
 import white_sailboat from "../../../assets/icons/white_sailboat.png";
 import white_chariot from "../../../assets/icons/white_rukh.png";
-import white_elephant from "../../../assets/icons/white_elephant.png";
+import white_alfil from "../../../assets/icons/white_alfil.png";
 import white_firzan from "../../../assets/icons/white_firzan.png";
 import white_wazir from "../../../assets/icons/white_wazir.png";
 import white_tank from "../../../assets/icons/white_tank.png";
@@ -59,7 +58,7 @@ import white_rukh from "../../../assets/icons/white_rukh.png";
 import white_archbishop from "../../../assets/icons/white_archbishop.png";
 import white_marshal from "../../../assets/icons/white_marshal.png";
 import white_amazon from "../../../assets/icons/white_amazon.png";
-import white_elephant_long_range from "../../../assets/icons/white_elephant_long_range.png";
+import white_elephant from "../../../assets/icons/white_elephant.png";
 import white_rhino from "../../../assets/icons/white_rhino.png";
 import white_wildebeest from "../../../assets/icons/white_wildebeest.png";
 import white_man from "../../../assets/icons/white_man.png";
@@ -67,7 +66,6 @@ import white_duke from "../../../assets/icons/white_duke.png";
 import white_prince from "../../../assets/icons/white_prince.png";
 import white_alibaba from "../../../assets/icons/white_alibaba.png";
 import white_checker_long_range from "../../../assets/icons/white_checker_long_range.png";
-import white_faras from "../../../assets/icons/white_faras.png";
 import white_knight from "../../../assets/icons/white_knight.png";
 import white_dinozavr from "../../../assets/icons/white_dinozavr.png";
 import white_checkers from "../../../assets/icons/white_checkers.png";
@@ -78,7 +76,7 @@ const promoImageMap = {
   black_rook,
   black_bishop,
   black_horse,
-  black_elephant,
+  black_alfil,
   black_firzan,
   black_wazir,
   black_tank,
@@ -90,7 +88,7 @@ const promoImageMap = {
   black_archbishop,
   black_marshal,
   black_amazon,
-  black_elephant_long_range,
+  black_elephant,
   black_rhino,
   black_wildebeest,
   black_man,
@@ -103,14 +101,13 @@ const promoImageMap = {
   black_sailboat,
   black_chariot,
   black_checker_long_range,
-  black_faras,
   white_ferz,
   white_rook,
   white_bishop,
   white_horse,
   white_sailboat,
   white_chariot,
-  white_elephant,
+  white_alfil,
   white_firzan,
   white_wazir,
   white_tank,
@@ -122,7 +119,7 @@ const promoImageMap = {
   white_archbishop,
   white_marshal,
   white_amazon,
-  white_elephant_long_range,
+  white_elephant,
   white_rhino,
   white_wildebeest,
   white_man,
@@ -130,7 +127,6 @@ const promoImageMap = {
   white_duke,
   white_prince,
   white_checker_long_range,
-  white_faras,
   white_knight,
   white_dinozavr,
   white_checkers,
@@ -207,15 +203,6 @@ const PromotionBox = ({ onClosePromotion }) => {
               : null;
           if (rep === "sailboat") finalPieceName = "sailboat";
           else if (rep === "chariot") finalPieceName = "chariot";
-        } catch (e) {}
-      }
-      if (pieceName === "horse") {
-        try {
-          const rep =
-            typeof window !== "undefined"
-              ? localStorage.getItem("replaceHorse")
-              : null;
-          if (rep === "faras") finalPieceName = "faras";
         } catch (e) {}
       }
       newPosition[promotionSquare.targetRank][promotionSquare.targetFile] =
@@ -389,10 +376,6 @@ const PromotionBox = ({ onClosePromotion }) => {
               : replaceSetting === "chariot"
                 ? "chariot"
                 : "rook"
-            : option === "horse"
-              ? replaceSetting === "faras"
-                ? "faras"
-                : "horse"
               : option;
         const keyName = `${color}_${displayOption}`;
         const imageSrc = getPieceStyle(keyName, true, user);

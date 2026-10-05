@@ -32,7 +32,7 @@ const userSchema = mongoose.Schema({
             king: { type: Number, default: 0 },
             soldier: { type: Number, default: 0 },
 
-            elephant: { type: Number, default: 0 },
+            alfil: { type: Number, default: 0 },
             firzan: { type: Number, default: 0 },
             knight: { type: Number, default: 0 },
             prince: { type: Number, default: 0 },
@@ -65,7 +65,7 @@ const userSchema = mongoose.Schema({
             soldier: { type: Number, default: 0 },
             king: { type: Number, default: 0 },
 
-            elephant: { type: Number, default: 0 },
+            alfil: { type: Number, default: 0 },
             firzan: { type: Number, default: 0 },
             knight: { type: Number, default: 0 },
             prince: { type: Number, default: 0 },
@@ -74,7 +74,7 @@ const userSchema = mongoose.Schema({
     },
     pieceStyle: {
         type: String,
-        default: "default", // default | bronze | silver | gold | platinum
+        default: "default",
     },
     boardColor: {
         light: { type: String, default: 'linear-gradient(160deg,rgb(255, 255, 255) 0%, rgb(162, 249, 255) 50%, rgb(81, 177, 255) 100%)' },
@@ -91,10 +91,6 @@ const userSchema = mongoose.Schema({
     rookType: {
         type: String,
         default: 'rook',
-    },
-    horseType: {
-        type: String,
-        default: 'horse',
     },
     avatar: {
         type: String,

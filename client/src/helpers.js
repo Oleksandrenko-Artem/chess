@@ -40,18 +40,18 @@ export const createOldPosition = (size = 8) => {
 
     position[7][0] = 'white_chariot';
     position[7][1] = 'white_horse';
-    position[7][2] = 'white_elephant';
+    position[7][2] = 'white_alfil';
     position[7][3] = 'white_imperator';
     position[7][4] = 'white_firzan';
-    position[7][5] = 'white_elephant';
+    position[7][5] = 'white_alfil';
     position[7][6] = 'white_horse';
     position[7][7] = 'white_chariot';
     position[0][0] = 'black_chariot';
     position[0][1] = 'black_horse';
-    position[0][2] = 'black_elephant';
+    position[0][2] = 'black_alfil';
     position[0][3] = 'black_imperator';
     position[0][4] = 'black_firzan';
-    position[0][5] = 'black_elephant';
+    position[0][5] = 'black_alfil';
     position[0][6] = 'black_horse';
     position[0][7] = 'black_chariot';
 
@@ -113,18 +113,18 @@ export const createOldVariantPosition = (size = 8) => {
     }
     position[7][0] = 'white_tank';
     position[7][1] = 'white_horse';
-    position[7][2] = 'white_elephant';
+    position[7][2] = 'white_alfil';
     position[7][3] = 'white_king';
     position[7][4] = 'white_firzan';
-    position[7][5] = 'white_elephant';
+    position[7][5] = 'white_alfil';
     position[7][6] = 'white_horse';
     position[7][7] = 'white_tank';
     position[0][0] = 'black_tank';
     position[0][1] = 'black_horse';
-    position[0][2] = 'black_elephant';
+    position[0][2] = 'black_alfil';
     position[0][3] = 'black_king';
     position[0][4] = 'black_firzan';
-    position[0][5] = 'black_elephant';
+    position[0][5] = 'black_alfil';
     position[0][6] = 'black_horse';
     position[0][7] = 'black_tank';
 
@@ -176,19 +176,19 @@ export const createExtendedPosition = (size = 8) => {
 
     position[6][0] = 'white_tank';
     position[6][1] = 'white_horse';
-    position[6][2] = 'white_elephant';
+    position[6][2] = 'white_alfil';
     position[6][3] = 'white_giraffe';
     position[6][4] = 'white_giraffe';
-    position[6][5] = 'white_elephant';
+    position[6][5] = 'white_alfil';
     position[6][6] = 'white_horse';
     position[6][7] = 'white_tank';
 
     position[1][0] = 'black_tank';
     position[1][1] = 'black_horse';
-    position[1][2] = 'black_elephant';
+    position[1][2] = 'black_alfil';
     position[1][3] = 'black_giraffe';
     position[1][4] = 'black_giraffe';
-    position[1][5] = 'black_elephant';
+    position[1][5] = 'black_alfil';
     position[1][6] = 'black_horse';
     position[1][7] = 'black_tank';
 
@@ -380,11 +380,11 @@ export const createShatranj960Position = (size = 8) => {
     const evenSquares = [0, 2, 4, 6];
     const oddSquares = [1, 3, 5, 7];
 
-    const bishop1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
-    const bishop2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
+    const alfil1 = evenSquares[Math.floor(Math.random() * evenSquares.length)];
+    const alfil2 = oddSquares[Math.floor(Math.random() * oddSquares.length)];
 
-    backRank[bishop1] = 'elephant';
-    backRank[bishop2] = 'elephant';
+    backRank[alfil1] = 'alfil';
+    backRank[alfil2] = 'alfil';
 
     let emptySquares = backRank.map((v, i) => v === null ? i : null).filter(v => v !== null);
     const queen = emptySquares[Math.floor(Math.random() * emptySquares.length)];
@@ -460,7 +460,7 @@ export const createNewChess960Position = (size = 8) => {
 
     return position;
 };
-export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, rookType, horseType, isCapture = null }) => {
+export const getNewMoveNotation = ({ p, rank, file, targetRank, targetFile, isInCheck, isCheckmate, isStalemate, position, promotesTo, isCapture = null }) => {
     const color = p.match(/^(white|black|yellow|blue|green|red)_/)?.[1];
     const piece = p.replace(/^(white|black|yellow|blue|green|red)_/, '');
     const createMove = (text) => ({ text, piece, color });

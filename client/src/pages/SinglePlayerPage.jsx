@@ -31,7 +31,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "shatranj",
-      img: "/src/assets/icons/white_elephant.png",
+      img: "/src/assets/icons/white_alfil.png",
       title: "header.shatranj",
       desc: "header.single-player-shatranj",
       link: "/play-shatranj",

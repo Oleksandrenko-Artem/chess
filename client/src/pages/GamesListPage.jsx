@@ -50,7 +50,7 @@ const MODE_LABELS = {
 };
 const MODE_ICONS = {
   chess: "/src/assets/icons/white_ferz.png",
-  shatranj: "/src/assets/icons/white_elephant.png",
+  shatranj: "/src/assets/icons/white_alfil.png",
   chess960: "/src/assets/icons/chess_960.png",
   shatranj960: "/src/assets/icons/chess_960.png",
   checkers_v2: "/src/assets/icons/white_checkers.png",

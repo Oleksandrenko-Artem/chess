@@ -93,8 +93,8 @@ const evaluatePosition = (position, gameVariant = "") => {
             if (p === "white_king") whiteKingPos = { r, f };
             else if (p === "black_king") blackKingPos = { r, f };
 
-            if (r === 7 && p.startsWith("white") && (p.includes("horse") || p.includes("elephant"))) whiteBacklinePieces++;
-            if (r === 0 && p.startsWith("black") && (p.includes("horse") || p.includes("elephant"))) blackBacklinePieces++;
+            if (r === 7 && p.startsWith("white") && (p.includes("horse") || p.includes("alfil"))) whiteBacklinePieces++;
+            if (r === 0 && p.startsWith("black") && (p.includes("horse") || p.includes("alfil"))) blackBacklinePieces++;
         }
     }
 
@@ -130,7 +130,7 @@ const evaluatePosition = (position, gameVariant = "") => {
             if (isShatranj) {
                 if (isOpening || isMiddlegame) {
                     if (type === "horse") value += 8;
-                    if (type === "elephant") value += 8;
+                    if (type === "alfil") value += 8;
                     if (type === "firzan") value += 4;
                 }
             } else {
@@ -147,7 +147,7 @@ const evaluatePosition = (position, gameVariant = "") => {
                     if (!isWhite && r === 0) value -= 25;
                 }
 
-                if (type === "elephant") {
+                if (type === "alfil") {
                     if (isWhite && r === 7) value -= 15;
                     if (!isWhite && r === 0) value -= 15;
                 }
@@ -176,7 +176,7 @@ const evaluatePosition = (position, gameVariant = "") => {
 
                         value += advanceBonus;
                     }
-                    if ((type === "elephant" || type === "horse") && isCenter) {
+                    if ((type === "alfil" || type === "horse") && isCenter) {
                         value += 12;
                     }
                 } else {
@@ -216,7 +216,7 @@ const evaluatePosition = (position, gameVariant = "") => {
                 }
             }
 
-            if (type === "elephant") {
+            if (type === "alfil") {
                 value += 40;
             }
 

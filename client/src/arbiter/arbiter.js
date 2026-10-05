@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getElephantMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantLongRangeMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getAlfilMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 import {
@@ -301,7 +301,7 @@ const arbiter = {
                     if (position[r][f] !== '') break;
                 }
             });
-        } else if (piece.endsWith('elephant_long_range')) {
+        } else if (piece.endsWith('elephant')) {
             const jumps = [
                 [-2, -2], [-2, 2], [2, -2], [2, 2],
                 [-3, 0], [3, 0], [0, -3], [0, 3],
@@ -312,7 +312,7 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('horse') || piece.endsWith('faras')) {
+        } else if (piece.endsWith('horse')) {
             const jumps = [
                 [-2, -1], [-2, 1], [-1, -2], [-1, 2],
                 [1, -2], [1, 2], [2, -1], [2, 1],
@@ -399,7 +399,7 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('elephant')) {
+        } else if (piece.endsWith('alfil')) {
             const jumps = [[2, 2], [2, -2], [-2, 2], [-2, -2]];
             jumps.forEach(([dr, df]) => {
                 const [r, f] = [rank + dr, file + df];
@@ -877,12 +877,12 @@ const arbiter = {
                 ...getSoldierMoves({ position, piece, rank, file }),
                 ...getSoldierCaptures({ position, piece, rank, file }),
             ];
-        } else if (piece.endsWith('elephant_long_range')) {
-            moves = getElephantLongRangeMoves({ position, piece, rank, file });
+        } else if (piece.endsWith('elephant')) {
+            moves = getElephantMoves({ position, piece, rank, file });
         } else if (piece.endsWith('firzan')) {
             moves = getFirzanMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('elephant')) {
-            moves = getElephantMoves({ position, rank, file });
+        } else if (piece.endsWith('alfil')) {
+            moves = getAlfilMoves({ position, rank, file });
         } else if (piece.endsWith('tank')) {
             moves = getTankMoves({ position, rank, file });
         } else if (piece.endsWith('camel')) {
@@ -891,7 +891,7 @@ const arbiter = {
             moves = getZebraMoves({ position, piece, rank, file });
         } else if (piece.endsWith('lion')) {
             moves = getLionMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('horse') || piece.endsWith('faras')) {
+        } else if (piece.endsWith('horse')) {
             moves = getHorseMoves({ position, rank, file });
         } else if (piece.endsWith('archbishop')) {
             moves = getArchbishopMoves({ position, piece, rank, file });
@@ -1093,11 +1093,11 @@ const arbiter = {
                 return true;
             }
             if (pieces.length === 3) {
-                return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse') || p.endsWith('faras') || p.endsWith('elephant_long_range'));
+                return pieces.some(p => p.endsWith('bishop') || p.endsWith('horse') || p.endsWith('elephant'));
             }
             if (pieces.length === 4) {
-                const whitePiece = (pieceCounts['white_horse'] || pieceCounts['white_faras'] || pieceCounts['white_elephant_long_range']) || 0;
-                const blackPiece = (pieceCounts['black_horse'] || pieceCounts['black_faras'] || pieceCounts['black_elephant_long_range']) || 0;
+                const whitePiece = (pieceCounts['white_horse'] || pieceCounts['white_elephant']) || 0;
+                const blackPiece = (pieceCounts['black_horse'] || pieceCounts['black_elephant']) || 0;
                 if (whitePiece === 1 && blackPiece === 1) {
                     return true;
                 } else if (whitePiece === 2 && blackPiece === 0) {

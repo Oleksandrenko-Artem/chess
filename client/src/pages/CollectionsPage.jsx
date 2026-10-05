@@ -12,7 +12,7 @@ const PIECES = [
   "rook",
   "ferz",
   "king",
-  "elephant",
+  "alfil",
   "firzan",
   "knight",
   "prince",
