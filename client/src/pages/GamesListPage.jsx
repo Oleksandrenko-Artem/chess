@@ -61,13 +61,6 @@ const MODE_ICONS = {
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
-  if (mode === "four_player") {
-    return {
-      ...initialFourPlayerGameState,
-      position: [createFourPlayerPosition()],
-      boardSize: 14,
-    };
-  }
   if (mode === "shatranj") {
     return {
       ...initialOldGameState,
@@ -115,6 +108,13 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       ...initialSpecialGameState,
       boardSize,
       position: [createSpecialPosition(boardSize)],
+    };
+  }
+  if (mode === "four_player") {
+    return {
+      ...initialFourPlayerGameState,
+      position: [createFourPlayerPosition()],
+      boardSize: 14,
     };
   }
   return {

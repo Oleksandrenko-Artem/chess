@@ -52,7 +52,7 @@ import white_man from "../../assets/icons/white_man.png";
 import white_duke from "../../assets/icons/white_duke.png";
 import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
-import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
+import white_crown from "../../assets/icons/white_crown.png";
 import black_pawn from "../../assets/icons/black_soldier.png";
 import black_horse from "../../assets/icons/black_horse.png";
 import black_bishop from "../../assets/icons/black_bishop.png";
@@ -83,7 +83,7 @@ import black_man from "../../assets/icons/black_man.png";
 import black_duke from "../../assets/icons/black_duke.png";
 import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
-import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
+import black_crown from "../../assets/icons/black_crown.png";
 import brick from "../../assets/icons/brick.png";
 import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
@@ -1115,13 +1115,13 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_checker_long_range}
-                alt="white_checker_long_range"
+                src={white_crown}
+                alt="white_crown"
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
-                    `white_checker_long_range,isNew`,
+                    `white_crown,isNew`,
                   )
                 }
               />
@@ -1395,13 +1395,13 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_checker_long_range}
-                alt="black_checker_long_range"
+                src={black_crown}
+                alt="black_crown"
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData(
                     "text",
-                    `black_checker_long_range,isNew`,
+                    `black_crown,isNew`,
                   )
                 }
               />

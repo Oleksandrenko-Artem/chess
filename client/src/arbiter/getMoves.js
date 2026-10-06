@@ -469,7 +469,7 @@ export const getGiraffeMoves = ({ position, rank, file }) => {
 export const getCheckersMoves = ({ position, piece, rank, file }) => {
     const moves = [];
 
-    if (piece.endsWith('checker_long_range')) {
+    if (piece.endsWith('crown')) {
         const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
         directions.forEach(([dr, df]) => {
             let nextRank = rank + dr;
@@ -499,7 +499,7 @@ export const getCheckersCaptures = ({ position, piece, rank, file }) => {
     const moves = [];
     const enemy = piece.startsWith('white') ? 'black' : 'white';
 
-    if (piece.endsWith('checker_long_range')) {
+    if (piece.endsWith('crown')) {
         const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
         directions.forEach(([dr, df]) => {
             let currentRank = rank + dr;

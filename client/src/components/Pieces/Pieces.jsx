@@ -47,7 +47,7 @@ import black_man from "../../assets/icons/black_man.png";
 import black_duke from "../../assets/icons/black_duke.png";
 import black_prince from "../../assets/icons/black_prince.png";
 import black_alibaba from "../../assets/icons/black_alibaba.png";
-import black_checker_long_range from "../../assets/icons/black_checker_long_range.png";
+import black_crown from "../../assets/icons/black_crown.png";
 import white_imperator from "../../assets/icons/white_king.png";
 import white_king from "../../assets/icons/white_king.png";
 import white_ferz from "../../assets/icons/white_ferz.png";
@@ -80,7 +80,7 @@ import white_man from "../../assets/icons/white_man.png";
 import white_duke from "../../assets/icons/white_duke.png";
 import white_prince from "../../assets/icons/white_prince.png";
 import white_alibaba from "../../assets/icons/white_alibaba.png";
-import white_checker_long_range from "../../assets/icons/white_checker_long_range.png";
+import white_crown from "../../assets/icons/white_crown.png";
 import brick from "../../assets/icons/brick.png";
 import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
 import pieceStyles from "./Pieces.module.scss";
@@ -132,7 +132,7 @@ const imageMap = {
   black_duke,
   black_prince,
   black_alibaba,
-  black_checker_long_range,
+  black_crown,
   white_imperator,
   white_king,
   white_ferz,
@@ -165,7 +165,7 @@ const imageMap = {
   white_duke,
   white_prince,
   white_alibaba,
-  white_checker_long_range,
+  white_crown,
   brick,
 };
 
@@ -534,7 +534,7 @@ const Pieces = ({
   }) => {
     if (
       !piece?.endsWith("checkers") &&
-      !piece?.endsWith("checker_long_range")
+      !piece?.endsWith("crown")
     ) {
       return null;
     }
@@ -736,7 +736,7 @@ const Pieces = ({
         (p.startsWith("black") && targetRank === appState.boardSize - 1));
     if (shouldPromoteChecker) {
       newPosition[targetRank][targetFile] =
-        p.split("_")[0] + "_checker_long_range";
+        p.split("_")[0] + "_crown";
     } else if (
       (p.endsWith("pawn") || p.endsWith("soldier")) &&
       promotionSquare
@@ -824,7 +824,7 @@ const Pieces = ({
       !isEditorMode &&
       isCaptureMove &&
       (newPosition[targetRank][targetFile]?.endsWith("checkers") ||
-        newPosition[targetRank][targetFile]?.endsWith("checker_long_range"));
+        newPosition[targetRank][targetFile]?.endsWith("crown"));
     const continuationMoves = continuedChecker
       ? getCheckersCaptures({
           position: newPosition,
@@ -1442,7 +1442,7 @@ const Pieces = ({
                   if (
                     !isAttack &&
                     (selected?.piece?.endsWith("checkers") ||
-                      selected?.piece?.endsWith("checker_long_range"))
+                      selected?.piece?.endsWith("crown"))
                   ) {
                     const fromRank = selected.from?.[0];
                     const fromFile = selected.from?.[1];
@@ -1518,9 +1518,6 @@ const Pieces = ({
                         isEliminatedPiece(f),
                       )}
                       className={[
-                        isEliminatedPiece(f) && !hasGrayPieceIcon(f)
-                          ? pieceStyles["loser-piece"]
-                          : "",
                         localStorage.getItem("chess_variant") ===
                           "four_player" &&
                         !hasFourPlayerNativeIcon(normalizeFourPlayerPiece(f))

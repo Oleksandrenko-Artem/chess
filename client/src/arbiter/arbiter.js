@@ -38,7 +38,7 @@ const arbiter = {
                         kingMoves.forEach(([tr, tf]) => {
                             allMoves.push({ piece, rank: r, file: f, targetRank: tr, targetFile: tf, isCastle: Math.abs(tf - f) === 2 });
                         });
-                    } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
+                    } else if (piece.endsWith('checkers') || piece.endsWith('crown')) {
                         const simpleMoves = getCheckersMoves({ position, piece, rank: r, file: f });
                         const captureMoves = getCheckersCaptures({ position, piece, rank: r, file: f });
                         const checkerMoves = captureMoves.length > 0 ? captureMoves : simpleMoves;
@@ -178,7 +178,7 @@ const arbiter = {
             : null);
         if (variant === 'checkers_v2') {
             const checkerCaptures = legalMoves.filter(move =>
-                (move.piece.endsWith('checkers') || move.piece.endsWith('checker_long_range')) &&
+                (move.piece.endsWith('checkers') || move.piece.endsWith('crown')) &&
                 move.isCapture
             );
             if (checkerCaptures.length > 0) return checkerCaptures;
@@ -740,12 +740,12 @@ const arbiter = {
                     attacks.push([r, f]);
                 }
             });
-        } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
+        } else if (piece.endsWith('checkers') || piece.endsWith('crown')) {
             const us = piece.startsWith('white') ? 'white' : 'black';
             const enemy = us === 'white' ? 'black' : 'white';
             const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
-            if (piece.endsWith('checker_long_range')) {
+            if (piece.endsWith('crown')) {
                 directions.forEach(([dr, df]) => {
                     for (let i = 1; i < boardSize; i++) {
                         const [r, f] = [rank + i * dr, file + i * df];
@@ -830,7 +830,7 @@ const arbiter = {
             newPosition[fromRank][toFile] = '';
         }
 
-        if ((piece.endsWith('checkers') || piece.endsWith('checker_long_range')) && Math.abs(toRank - fromRank) === Math.abs(toFile - fromFile)) {
+        if ((piece.endsWith('checkers') || piece.endsWith('crown')) && Math.abs(toRank - fromRank) === Math.abs(toFile - fromFile)) {
             const stepRank = toRank > fromRank ? 1 : toRank < fromRank ? -1 : 0;
             const stepFile = toFile > fromFile ? 1 : toFile < fromFile ? -1 : 0;
             let currentRank = fromRank + stepRank;
@@ -931,7 +931,7 @@ const arbiter = {
             moves = getWildebeestMoves({ position, rank, file });
         } else if (piece.endsWith('wazir')) {
             moves = getWazirMoves({ position, piece, rank, file });
-        } else if (piece.endsWith('checkers') || piece.endsWith('checker_long_range')) {
+        } else if (piece.endsWith('checkers') || piece.endsWith('crown')) {
             const simpleMoves = getCheckersMoves({ position, piece, rank, file });
             const captureMoves = getCheckersCaptures({ position, piece, rank, file });
             moves = captureMoves.length > 0 ? captureMoves : simpleMoves;
@@ -1055,7 +1055,7 @@ const arbiter = {
                     piece &&
                     piece !== '' &&
                     piece.startsWith(playerColor) &&
-                    (piece.endsWith('checkers') || piece.endsWith('checker_long_range'))
+                    (piece.endsWith('checkers') || piece.endsWith('crown'))
                 ) {
                     return true;
                 }

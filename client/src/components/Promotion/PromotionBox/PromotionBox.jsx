@@ -34,7 +34,7 @@ import black_man from "../../../assets/icons/black_man.png";
 import black_duke from "../../../assets/icons/black_duke.png";
 import black_prince from "../../../assets/icons/black_prince.png";
 import black_alibaba from "../../../assets/icons/black_alibaba.png";
-import black_checker_long_range from "../../../assets/icons/black_checker_long_range.png";
+import black_crown from "../../../assets/icons/black_crown.png";
 import black_knight from "../../../assets/icons/black_knight.png";
 import black_dinozavr from "../../../assets/icons/black_dinozavr.png";
 import black_checkers from "../../../assets/icons/black_checkers.png";
@@ -65,7 +65,7 @@ import white_man from "../../../assets/icons/white_man.png";
 import white_duke from "../../../assets/icons/white_duke.png";
 import white_prince from "../../../assets/icons/white_prince.png";
 import white_alibaba from "../../../assets/icons/white_alibaba.png";
-import white_checker_long_range from "../../../assets/icons/white_checker_long_range.png";
+import white_crown from "../../../assets/icons/white_crown.png";
 import white_knight from "../../../assets/icons/white_knight.png";
 import white_dinozavr from "../../../assets/icons/white_dinozavr.png";
 import white_checkers from "../../../assets/icons/white_checkers.png";
@@ -100,7 +100,7 @@ const promoImageMap = {
   black_checkers,
   black_sailboat,
   black_chariot,
-  black_checker_long_range,
+  black_crown,
   white_ferz,
   white_rook,
   white_bishop,
@@ -126,7 +126,7 @@ const promoImageMap = {
   white_alibaba,
   white_duke,
   white_prince,
-  white_checker_long_range,
+  white_crown,
   white_knight,
   white_dinozavr,
   white_checkers,

@@ -115,10 +115,6 @@
   background-repeat: no-repeat;
   background-position: center;
 }
-.loser-piece {
-  filter: grayscale($containerWidth) brightness(0.35) contrast(0.8);
-  transition: filter 0.4s ease;
-}
 .piece-blue {
   filter: brightness(0) saturate(100%) invert(38%) sepia(92%) saturate(1260%)
     hue-rotate(177deg) brightness(96%) contrast(101%);

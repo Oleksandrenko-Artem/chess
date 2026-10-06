@@ -238,7 +238,7 @@ const evaluatePosition = (position, gameVariant = "") => {
 
 const getCheckerCaptureInfo = (position, move) => {
     const piece = position[move.rank]?.[move.file];
-    if (!piece || (!piece.endsWith("checkers") && !piece.endsWith("checker_long_range"))) {
+    if (!piece || (!piece.endsWith("checkers") && !piece.endsWith("crown"))) {
         return null;
     }
 
