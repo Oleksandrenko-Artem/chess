@@ -107,14 +107,14 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
     return {
       ...initialSpecialGameState,
       boardSize,
-      position: [createSpecialPosition(boardSize)],
+      position: [createSpecialPosition()],
     };
   }
   if (mode === "four_player") {
     return {
       ...initialFourPlayerGameState,
-      position: [createFourPlayerPosition()],
       boardSize: 14,
+      position: [createFourPlayerPosition(14)],
     };
   }
   return {
@@ -440,7 +440,7 @@ const GamesListPage = ({ start, setStart }) => {
   }, [socket, user, reduxDispatch, dispatch]);
 
   const setGameState = (mode) => {
-    const state = getInitialStateByMode(mode, appState?.boardSize || 8);
+    const state = getInitialStateByMode(mode);
     dispatch({
       type: actionTypes.RESET_GAME,
       payload: { initialState: { ...state, isVsBot: false } },
@@ -470,7 +470,6 @@ const GamesListPage = ({ start, setStart }) => {
     }
     const initialState = getInitialStateByMode(
       room.gameMode,
-      appState?.boardSize || 8,
       room.whiteTime || null,
       room.blackTime || null,
     );

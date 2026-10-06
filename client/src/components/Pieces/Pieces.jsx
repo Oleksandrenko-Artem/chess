@@ -85,7 +85,7 @@ import brick from "../../assets/icons/brick.png";
 import boardStyles from "./../ChessBoard/ChessBoard.module.scss";
 import pieceStyles from "./Pieces.module.scss";
 import { useTranslation } from "react-i18next";
-import { getPieceStyle, hasGrayPieceIcon } from "../../helpers/getPieceImage";
+import { getPieceStyle } from "../../helpers/getPieceImage";
 import {
   FOUR_PLAYER_COLORS,
   getFourPlayerDisplaySquare,

@@ -12,8 +12,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://fb776bae414d5fc0-95-47-113-3.serveousercontent.com",
-            "https://94149a2656e6d162-95-47-113-3.serveousercontent.com",
+            "https://ab8e79e062a67de2-95-47-113-222.serveousercontent.com",
+            "https://740a867ab4462269-95-47-113-222.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -28,6 +28,32 @@ const io = new Server(server, {
 const rooms = {};
 const FOUR_PLAYER_SIDES = ['yellow', 'blue', 'green', 'red'];
 const getRoomCapacity = (room) => room.gameMode === 'four_player' ? 4 : 2;
+
+const normalizeInitialState = (gameMode, initialState) => {
+    if (!initialState) return null;
+
+    if (gameMode === 'four_player') {
+        return {
+            ...initialState,
+            gameMode,
+            boardSize: 14,
+        };
+    }
+
+    if (gameMode === 'custom') {
+        return {
+            ...initialState,
+            gameMode,
+            boardSize: initialState.boardSize || 8,
+        };
+    }
+
+    return {
+        ...initialState,
+        gameMode,
+        boardSize: 8,
+    };
+};
 
 async function updateRating(whiteId, blackId, result) {
     const white = await User.findById(whiteId);
@@ -70,7 +96,6 @@ async function updateRating(whiteId, blackId, result) {
     await white.save();
     await black.save();
 }
-
 async function finishGame(roomId, result) {
     const room = rooms[roomId];
     if (!room || room.finished) return;
@@ -251,12 +276,10 @@ io.on('connection', (socket) => {
     });
     socket.on('joinGame', (roomId, gameData = {}, callback) => {
         if (!rooms[roomId]) {
-            let initialState = null;
-            if (gameData.initialState) {
-                initialState = gameData.initialState;
-            } else if (gameData.gameMode === 'chess960' || gameData.gameMode === 'shatranj960') {
-                initialState = getInitialStateByMode(gameData.gameMode, 8);
-            }
+            const initialState = normalizeInitialState(
+                gameData.gameMode,
+                gameData.initialState
+            );
             const roomName = gameData.roomName && gameData.roomName.trim()
                 ? gameData.roomName.trim()
                 : gameData.initialState?.roomName && gameData.initialState.roomName.trim()
@@ -303,7 +326,10 @@ io.on('connection', (socket) => {
         socket.join(roomId);
 
         if (!rooms[roomId].initialState && gameData.initialState) {
-            rooms[roomId].initialState = gameData.initialState;
+            rooms[roomId].initialState = normalizeInitialState(
+                rooms[roomId].gameMode,
+                gameData.initialState
+            );
         }
 
         const side = room.gameMode === 'four_player'
@@ -439,8 +465,20 @@ io.on('connection', (socket) => {
 
         const leaver = room.players.find(p => p.socketId === socket.id);
         if (room.gameMode === 'four_player' && leaver) {
-            io.to(roomId).emit('playerTimedOut', { loser: leaver.side, reason: 'left' });
-            room.players = room.players.filter(p => p.socketId !== socket.id);
+            io.to(roomId).emit('playerTimedOut', {
+                loser: leaver.side,
+                reason: 'left',
+            });
+            room.players = room.players.filter(
+                (p) => p.socketId !== socket.id
+            );
+            if (room.players.length === 0) {
+                if (room.timeout) {
+                    clearTimeout(room.timeout);
+                }
+                delete rooms[roomId];
+                return;
+            }
             return;
         }
         const winner = room.players.find(p => p.socketId !== socket.id);
@@ -501,11 +539,18 @@ io.on('connection', (socket) => {
                         message: 'Opponent disconnected. Waiting to reconnect...'
                     });
                 }
-
                 rooms[roomId].timeout = setTimeout(async () => {
                     if (rooms[roomId]?.gameMode === 'four_player') {
-                        io.to(roomId).emit('playerTimedOut', { loser: player.side, reason: 'disconnected' });
-                        rooms[roomId].players = rooms[roomId].players.filter(p => p.socketId !== socket.id);
+                        io.to(roomId).emit('playerTimedOut', {
+                            loser: player.side,
+                            reason: 'disconnected',
+                        });
+                        rooms[roomId].players = rooms[roomId].players.filter(
+                            p => p.socketId !== socket.id
+                        );
+                        if (rooms[roomId].players.length === 0) {
+                            delete rooms[roomId];
+                        }
                         return;
                     }
                     const winner = rooms[roomId]?.players.find(p => !p.disconnected);
