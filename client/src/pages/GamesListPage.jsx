@@ -14,6 +14,7 @@ import {
   initialSpecialGameState,
   initialFourPlayerGameState,
   status,
+  IMAGE_SRC,
 } from "../constants";
 import {
   createPosition,
@@ -49,15 +50,15 @@ const MODE_LABELS = {
   four_player: "Four-player chess",
 };
 const MODE_ICONS = {
-  chess: "/src/assets/icons/white_ferz.png",
-  shatranj: "/src/assets/icons/white_alfil.png",
-  chess960: "/src/assets/icons/chess_960.png",
-  shatranj960: "/src/assets/icons/chess_960.png",
-  checkers_v2: "/src/assets/icons/white_checkers.png",
-  new_chess: "/src/assets/icons/white_knight.png",
-  new_chess960: "/src/assets/icons/chess_960.png",
-  custom: "/src/assets/icons/custom.png",
-  four_player: "/src/assets/icons/four_players.png",
+  chess: `${IMAGE_SRC.SRC_PIECES}/white_ferz.png`,
+  shatranj: `${IMAGE_SRC.SRC_PIECES}/white_alfil.png`,
+  new_chess: `${IMAGE_SRC.SRC_PIECES}/white_knight.png`,
+  checkers_v2: `${IMAGE_SRC.SRC_PIECES}/white_checkers.png`,
+  chess960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
+  shatranj960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
+  new_chess960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
+  custom: `${IMAGE_SRC.SRC_OTHER}/custom.png`,
+  four_player: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {

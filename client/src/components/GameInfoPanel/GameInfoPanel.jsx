@@ -17,14 +17,8 @@ import {
 import actionTypes from "../../reducers/actionTypes";
 import { updateUserThunk } from "../../store/usersSlice";
 import { setSoundEnabled, isSoundEnabled } from "../../helpers/playMoveSound";
-import black_king from "../../assets/icons/black_king.png";
-import white_king from "../../assets/icons/white_king.png";
-import yellow_king from "../../assets/icons/yellow_king.png";
-import blue_king from "../../assets/icons/blue_king.png";
-import green_king from "../../assets/icons/green_king.png";
-import red_king from "../../assets/icons/red_king.png";
+import { imageMap } from '../../utils/chessIcons';
 import styles from "./GameInfoPanel.module.scss";
-import arbiter from "../../arbiter/arbiter";
 import Timer from "../Timer/Timer";
 import { FOUR_PLAYER_COLORS } from "../../helpers/fourPlayer";
 
@@ -409,34 +403,34 @@ const GameInfoPanel = (props) => {
             {isFourPlayer ? (
               <div className={styles["img-div"]}>
                 <img
-                  src={yellow_king}
+                  src={imageMap.yellow_king}
                   alt="yellow"
                   className={`${styles["img-style"]} ${selectedColor === "yellow" ? styles["active"] : ""}`}
-                  onClick={() => onSelectFourPlayerColor('yellow')}
+                  onClick={() => onSelectFourPlayerColor("yellow")}
                 />
                 <img
-                  src={blue_king}
+                  src={imageMap.blue_king}
                   alt="blue"
                   className={`${styles["img-style"]} ${selectedColor === "blue" ? styles["active"] : ""}`}
-                  onClick={() => onSelectFourPlayerColor('blue')}
+                  onClick={() => onSelectFourPlayerColor("blue")}
                 />
                 <img
-                  src={green_king}
+                  src={imageMap.green_king}
                   alt="green"
                   className={`${styles["img-style"]} ${selectedColor === "green" ? styles["active"] : ""}`}
-                  onClick={() => onSelectFourPlayerColor('green')}
+                  onClick={() => onSelectFourPlayerColor("green")}
                 />
                 <img
-                  src={red_king}
+                  src={imageMap.red_king}
                   alt="red"
                   className={`${styles["img-style"]} ${selectedColor === "red" ? styles["active"] : ""}`}
-                  onClick={() => onSelectFourPlayerColor('red')}
+                  onClick={() => onSelectFourPlayerColor("red")}
                 />
               </div>
             ) : (
               <div className={styles["img-div"]}>
                 <img
-                  src={black_king}
+                  src={imageMap.black_king}
                   alt="black"
                   className={`${styles["img-style"]} ${selectedColor === "black" ? styles["active"] : ""}`}
                   onClick={() => {
@@ -445,7 +439,7 @@ const GameInfoPanel = (props) => {
                   }}
                 />
                 <img
-                  src={white_king}
+                  src={imageMap.white_king}
                   alt="white"
                   className={`${styles["img-style"]} ${selectedColor === "white" ? styles["active"] : ""}`}
                   onClick={() => {

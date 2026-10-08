@@ -7,6 +7,7 @@ import { findUserById, updateUser } from "../api";
 import styles from "./Pages.module.scss";
 import { updateUserThunk } from "./../store/usersSlice";
 import UpdateForm from "./../components/forms/UpdateForm";
+import { IMAGE_SRC } from "../constants";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -157,7 +158,7 @@ const ProfilePage = () => {
           {!avatar && (
             <div className={styles["avatar-div"]}>
               <img
-                src="/src/assets/icons/account.png"
+                src={`${IMAGE_SRC.OTHER}/account.png`}
                 alt="Default Avatar"
                 className={styles["default-avatar"]}
               />
@@ -199,7 +200,7 @@ const ProfilePage = () => {
             <b>{t("profile.name")}:</b> {profileUser?.name}{" "}
             {profileUser?.achievements?.selectedIcon && (
               <img
-                src={`/src/assets/icons/${(() => {
+                src={`${IMAGE_SRC.SRC_ACHIEVEMENTS}/${(() => {
                   const selected = profileUser.achievements.selectedIcon;
                   if (selected.includes("_")) {
                     const [style] = selected.split("_");

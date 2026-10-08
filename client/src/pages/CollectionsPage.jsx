@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { updateUserThunk } from "../store/usersSlice";
 import styles from "./Pages.module.scss";
 import { useTranslation } from "react-i18next";
+import { IMAGE_SRC } from "../constants";
 
 const PIECES = [
   "soldier",
@@ -103,7 +104,7 @@ const CollectionsPage = () => {
                   className={`${styles["collection-card"]} ${isSelected ? styles.selected : ""}`}
                 >
                   <img
-                    src={`/src/assets/icons/${style}_${piece}.png`}
+                    src={`${IMAGE_SRC.SRC_ACHIEVEMENTS}/${style}_${piece}.png`}
                     alt={`${style} ${piece}`}
                     width={64}
                     height={64}

@@ -3,14 +3,15 @@ import { useSelector } from "react-redux";
 import { useAppContext } from "../../contexts/Context";
 import Pieces from "../Pieces/Pieces";
 import Promotion from "../Promotion/Promotion";
-import accountIcon from "../../assets/icons/account.png";
-import computerIcon from "../../assets/icons/computer.png";
+import accountIcon from "../../assets/icons/other/account.png";
+import computerIcon from "../../assets/icons/other/computer.png";
 import styles from "./ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
 import {
   getFourPlayerDisplaySquare,
   getFourPlayerRealSquare,
 } from "../../helpers/fourPlayer";
+import { IMAGE_SRC } from "../../constants";
 
 const ChessBoard = (props) => {
   const { status } = props;
@@ -364,7 +365,7 @@ const ChessBoard = (props) => {
     };
 
     if (player.isOpponent) {
-      return `/src/assets/icons/${
+      return `${IMAGE_SRC.SRC_ACHIEVEMENTS}/${
         LEVEL_NAMES[player.achievementLevel] || "bronze"
       }_${player.achievement}.png`;
     }
@@ -373,7 +374,7 @@ const ChessBoard = (props) => {
     const piece = selected.piece || player.achievement;
     const style = selected.style || "bronze";
 
-    return `/src/assets/icons/${style}_${piece}.png`;
+    return `${IMAGE_SRC.SRC_PIECES}/${style}_${piece}.png`;
   };
 
   return (
@@ -408,7 +409,7 @@ const ChessBoard = (props) => {
                     <h2>{gameStatusMessage()}</h2>
                     {status.endsWith(" wins") && (
                       <img
-                        src={`/src/assets/icons/${status.replace(" wins", "").toLowerCase()}_king.png`}
+                        src={`${IMAGE_SRC.SRC_PIECES}/${status.replace(" wins", "").toLowerCase()}_king.png`}
                         alt={status.replace(" wins", "")}
                       />
                     )}

@@ -34,7 +34,7 @@ const AchievementCard = ({
     <div className={styles.card}>
       <div className={styles["image-style"]}>
         <img
-          src={`/src/assets/icons/${LEVELS[normalizedLevel]}_${piece}.png`}
+          src={`${IMAGE_SRC.SRC_ACHIEVEMENTS}/${LEVELS[normalizedLevel]}_${piece}.png`}
           alt={piece}
         />
         <h3>{t(`achievements_panel.${piece}`)}</h3>

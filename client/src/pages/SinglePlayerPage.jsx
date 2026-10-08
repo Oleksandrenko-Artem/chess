@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
-import styles from "./Pages.module.scss";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import { IMAGE_SRC } from "../constants";
+import styles from "./Pages.module.scss";
 
 const SinglePlayerPage = (props) => {
   const {
@@ -23,7 +24,7 @@ const SinglePlayerPage = (props) => {
   const games = [
     {
       id: "chess",
-      img: "/src/assets/icons/white_ferz.png",
+      img: `${IMAGE_SRC.SRC_PIECES}/white_ferz.png`,
       title: "header.chess",
       desc: "header.single-player-chess",
       link: "/play-chess",
@@ -31,7 +32,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "shatranj",
-      img: "/src/assets/icons/white_alfil.png",
+      img: `${IMAGE_SRC.SRC_PIECES}/white_alfil.png`,
       title: "header.shatranj",
       desc: "header.single-player-shatranj",
       link: "/play-shatranj",
@@ -39,7 +40,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "new_chess",
-      img: "/src/assets/icons/white_knight.png",
+      img: `${IMAGE_SRC.SRC_PIECES}/white_knight.png`,
       title: "header.new_chess",
       desc: "header.single-player-new-chess",
       link: "/play-new-variant-chess",
@@ -47,7 +48,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "checkers",
-      img: "/src/assets/icons/white_checkers.png",
+      img: `${IMAGE_SRC.SRC_PIECES}/white_checkers.png`,
       title: "header.checkers",
       desc: "header.single-player-checkers",
       link: "/play-checkers",
@@ -55,7 +56,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "chess960",
-      img: "/src/assets/icons/chess_960.png",
+      img: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
       title: "header.chess960",
       desc: "header.single-player-chess960",
       link: "/play-chess960",
@@ -63,7 +64,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "shatranj960",
-      img: "/src/assets/icons/chess_960.png",
+      img: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
       title: "header.shatranj960",
       desc: "header.single-player-shatranj960",
       link: "/play-shatranj960",
@@ -71,7 +72,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "new_chess960",
-      img: "/src/assets/icons/chess_960.png",
+      img: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
       title: "header.new_chess960",
       desc: "header.single-player-new-chess960",
       link: "/play-new-variant-chess960",
@@ -79,7 +80,7 @@ const SinglePlayerPage = (props) => {
     },
     {
       id: "four_player",
-      img: "/src/assets/icons/four_players.png",
+      img: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
       title: "header.four-player-chess",
       desc: "header.single-player-four-player",
       link: "/play-four-player",

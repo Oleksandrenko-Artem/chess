@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { findAllUsersThunk } from "../store/usersSlice";
+import { IMAGE_SRC } from "../constants";
 import Spinner from "../components/Spinner/Spinner";
 import styles from "./Pages.module.scss";
 
@@ -40,7 +41,7 @@ const Homepage = () => {
                   <td>{user.rating}</td>
                   <td className={styles["home-page-user-photo"]}>
                     <img
-                      src={user.avatar || "/src/assets/icons/account.png"}
+                      src={user.avatar || `${IMAGE_SRC.SRC_OTHER}/account.png`}
                       alt="avatar"
                     />
                   </td>

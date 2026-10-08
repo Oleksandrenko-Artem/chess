@@ -1,3 +1,4 @@
+import { IMAGE_SRC } from "../constants";
 import {
     hasFourPlayerNativeIcon,
     normalizeFourPlayerPiece,
@@ -50,16 +51,16 @@ export const getPieceStyle = (piece, isOwnPiece, user, isEliminated = false) => 
 
     if (isEliminated) {
         const grayIcon = GRAY_ICON_TYPES[piece.split("_").at(-1)];
-        if (grayIcon) return `/src/assets/icons/${grayIcon}`;
+        if (grayIcon) return `${IMAGE_SRC.SRC_PIECES}/${grayIcon}`;
     }
 
     if (gameVariant === "custom") {
-        return `/src/assets/icons/${piece}.png`;
+        return `${IMAGE_SRC.SRC_PIECES}/${piece}.png`;
     }
 
     if (gameVariant === "four_player") {
         if (hasFourPlayerNativeIcon(piece)) {
-            return `/src/assets/icons/${piece}.png`;
+            return `${IMAGE_SRC.SRC_PIECES}/${piece}.png`;
         }
         piece = piece.replace(/^(yellow|blue)_/, "white_").replace(/^(green|red)_/, "black_");
     }
@@ -78,10 +79,10 @@ export const getPieceStyle = (piece, isOwnPiece, user, isEliminated = false) => 
     }
 
     if (style === "standart") {
-        return `/src/assets/icons/${piece}.png`;
+        return `${IMAGE_SRC.SRC_PIECES}/${piece}.png`;
     }
 
     const pieceName = piece.replace(/^white_|^black_/, "");
 
-    return `/src/assets/icons/${style}_${pieceName}.png`;
+    return `${IMAGE_SRC.SRC_PIECES}/${style}_${pieceName}.png`;
 };

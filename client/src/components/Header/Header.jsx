@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { logoutUserThunk } from "../../store/usersSlice";
-import { useAppContext } from "../../contexts/Context";
+import { IMAGE_SRC } from "../../constants";
 import styles from "./Header.module.scss";
 
 const Header = (props) => {
@@ -11,7 +11,6 @@ const Header = (props) => {
   const navigate = useNavigate();
   const { onPlaySpecial, onPlayMultiplayer, start, setStart } = props;
   const { user } = useSelector((state) => state.users);
-  const { appState } = useAppContext();
   const initialTheme = localStorage.getItem("theme") || "light";
   const initialStyle = localStorage.getItem("style") || "new";
   const { t, i18n } = useTranslation();
@@ -40,17 +39,14 @@ const Header = (props) => {
     localStorage.setItem("style", style);
   }, [theme, style]);
   const langData = {
-    ua: { icon: "/src/assets/icons/ukraine.png", next: "ru" },
-    ru: { icon: "/src/assets/icons/russia.png", next: "en" },
-    en: { icon: "/src/assets/icons/england.png", next: "ua" },
+    ua: { icon: `${IMAGE_SRC.SRC_OTHER}/ukraine.png`, next: "ru" },
+    ru: { icon: `${IMAGE_SRC.SRC_OTHER}/russia.png`, next: "en" },
+    en: { icon: `${IMAGE_SRC.SRC_OTHER}/england.png`, next: "ua" },
   };
   const currentLang = i18n.language.substring(0, 2);
   const handleChangeLang = () => {
     const nextLang = langData[currentLang]?.next || "ua";
     i18n.changeLanguage(nextLang);
-  };
-  const handleNavigation = (e, callback) => {
-    if (callback) callback();
   };
   const token = localStorage.getItem("token");
   return (
@@ -59,11 +55,11 @@ const Header = (props) => {
         <div className={styles.logo} onClick={() => setStart(false)}>
           {theme === "light" ? (
             <NavLink to="/">
-              <img src="/src/assets/icons/black_horse.png" alt="logo" />
+              <img src={`${IMAGE_SRC.SRC_PIECES}/black_horse.png`} alt="logo" />
             </NavLink>
           ) : (
             <NavLink to="/">
-              <img src="/src/assets/icons/white_horse.png" alt="logo" />
+              <img src={`${IMAGE_SRC.SRC_PIECES}/white_horse.png`} alt="logo" />
             </NavLink>
           )}
           <NavLink to="/">{t("header.chess")}</NavLink>
@@ -73,7 +69,7 @@ const Header = (props) => {
             <>
               <Link to="/account" className={styles["user-image"]}>
                 <img
-                  src={user.avatar || "/src/assets/icons/account.png"}
+                  src={user.avatar || `${IMAGE_SRC.SRC_OTHER}/account.png`}
                   alt="avatar"
                 />
               </Link>
@@ -145,9 +141,9 @@ const Header = (props) => {
             </button>
             <button className={styles.btn} onClick={handleChangeTheme}>
               {theme === "light" ? (
-                <img src="/src/assets/icons/light.png" alt="theme" />
+                <img src={`${IMAGE_SRC.SRC_OTHER}/light.png`} alt="theme" />
               ) : (
-                <img src="/src/assets/icons/dark.png" alt="theme" />
+                <img src={`${IMAGE_SRC.SRC_OTHER}/dark.png`} alt="theme" />
               )}
             </button>
             <button className={styles.btn} onClick={handleChangeLang}>

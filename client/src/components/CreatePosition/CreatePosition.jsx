@@ -21,71 +21,9 @@ import { mdiArrowRightThin } from "@mdi/js";
 import { rgbStringToHex } from "../../utils/color";
 import { createSpecialPosition } from "../../helpers";
 import { isSoundEnabled, setSoundEnabled } from "../../helpers/playMoveSound";
+import { imageMap } from '../../utils/chessIcons';
+import delete_icon from '../../assets/icons/other/delete.png';
 import actionTypes from "../../reducers/actionTypes";
-import white_pawn from "../../assets/icons/white_soldier.png";
-import white_horse from "../../assets/icons/white_horse.png";
-import white_bishop from "../../assets/icons/white_bishop.png";
-import white_rook from "../../assets/icons/white_rook.png";
-import white_ferz from "../../assets/icons/white_ferz.png";
-import white_king from "../../assets/icons/white_king.png";
-import white_firzan from "../../assets/icons/white_firzan.png";
-import white_alfil from "../../assets/icons/white_alfil.png";
-import white_tank from "../../assets/icons/white_tank.png";
-import white_camel from "../../assets/icons/white_camel.png";
-import white_dinozavr from "../../assets/icons/white_dinozavr.png";
-import white_giraffe from "../../assets/icons/white_giraffe.png";
-import white_sailboat from "../../assets/icons/white_sailboat.png";
-import white_rukh from "../../assets/icons/white_rukh.png";
-import white_checkers from "../../assets/icons/white_checkers.png";
-import white_chariot from "../../assets/icons/white_chariot.png";
-import white_wazir from "../../assets/icons/white_wazir.png";
-import white_zebra from "../../assets/icons/white_zebra.png";
-import white_lion from "../../assets/icons/white_lion.png";
-import white_archbishop from "../../assets/icons/white_archbishop.png";
-import white_marshal from "../../assets/icons/white_marshal.png";
-import white_amazon from "../../assets/icons/white_amazon.png";
-import white_knight from "../../assets/icons/white_knight.png";
-import white_elephant from "../../assets/icons/white_elephant.png";
-import white_rhino from "../../assets/icons/white_rhino.png";
-import white_wildebeest from "../../assets/icons/white_wildebeest.png";
-import white_man from "../../assets/icons/white_man.png";
-import white_duke from "../../assets/icons/white_duke.png";
-import white_prince from "../../assets/icons/white_prince.png";
-import white_alibaba from "../../assets/icons/white_alibaba.png";
-import white_crown from "../../assets/icons/white_crown.png";
-import black_pawn from "../../assets/icons/black_soldier.png";
-import black_horse from "../../assets/icons/black_horse.png";
-import black_bishop from "../../assets/icons/black_bishop.png";
-import black_rook from "../../assets/icons/black_rook.png";
-import black_ferz from "../../assets/icons/black_ferz.png";
-import black_king from "../../assets/icons/black_king.png";
-import black_firzan from "../../assets/icons/black_firzan.png";
-import black_alfil from "../../assets/icons/black_alfil.png";
-import black_tank from "../../assets/icons/black_tank.png";
-import black_camel from "../../assets/icons/black_camel.png";
-import black_dinozavr from "../../assets/icons/black_dinozavr.png";
-import black_giraffe from "../../assets/icons/black_giraffe.png";
-import black_sailboat from "../../assets/icons/black_sailboat.png";
-import black_rukh from "../../assets/icons/black_rukh.png";
-import black_checkers from "../../assets/icons/black_checkers.png";
-import black_chariot from "../../assets/icons/black_chariot.png";
-import black_wazir from "../../assets/icons/black_wazir.png";
-import black_zebra from "../../assets/icons/black_zebra.png";
-import black_lion from "../../assets/icons/black_lion.png";
-import black_archbishop from "../../assets/icons/black_archbishop.png";
-import black_marshal from "../../assets/icons/black_marshal.png";
-import black_amazon from "../../assets/icons/black_amazon.png";
-import black_knight from "../../assets/icons/black_knight.png";
-import black_elephant from "../../assets/icons/black_elephant.png";
-import black_rhino from "../../assets/icons/black_rhino.png";
-import black_wildebeest from "../../assets/icons/black_wildebeest.png";
-import black_man from "../../assets/icons/black_man.png";
-import black_duke from "../../assets/icons/black_duke.png";
-import black_prince from "../../assets/icons/black_prince.png";
-import black_alibaba from "../../assets/icons/black_alibaba.png";
-import black_crown from "../../assets/icons/black_crown.png";
-import brick from "../../assets/icons/brick.png";
-import delete_icon from "../../assets/icons/delete.png";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
@@ -776,20 +714,28 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             >
               {color === "white" ? (
                 <div className={styles["pieces-variants"]}>
-                  <img src={white_rook} alt="white_rook" draggable={false} />
+                  <img
+                    src={imageMap.white_rook}
+                    alt="white_rook"
+                    draggable={false}
+                  />
                   <Icon path={mdiArrowRightThin} size={1.5} />
                   <img
-                    src={white_sailboat}
+                    src={imageMap.white_sailboat}
                     alt="white_sailboat"
                     draggable={false}
                   />
                 </div>
               ) : (
                 <div className={styles["pieces-variants"]}>
-                  <img src={black_rook} alt="black_rook" draggable={false} />
+                  <img
+                    src={imageMap.black_rook}
+                    alt="black_rook"
+                    draggable={false}
+                  />
                   <Icon path={mdiArrowRightThin} size={1.5} />
                   <img
-                    src={black_sailboat}
+                    src={imageMap.black_sailboat}
                     alt="black_sailboat"
                     draggable={false}
                   />
@@ -804,20 +750,28 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             >
               {color === "white" ? (
                 <div className={styles["pieces-variants"]}>
-                  <img src={white_rook} alt="white_rook" draggable={false} />
+                  <img
+                    src={imageMap.white_rook}
+                    alt="white_rook"
+                    draggable={false}
+                  />
                   <Icon path={mdiArrowRightThin} size={1.5} />
                   <img
-                    src={white_chariot}
+                    src={imageMap.white_chariot}
                     alt="white_chariot"
                     draggable={false}
                   />
                 </div>
               ) : (
                 <div className={styles["pieces-variants"]}>
-                  <img src={black_rook} alt="black_rook" draggable={false} />
+                  <img
+                    src={imageMap.black_rook}
+                    alt="black_rook"
+                    draggable={false}
+                  />
                   <Icon path={mdiArrowRightThin} size={1.5} />
                   <img
-                    src={black_chariot}
+                    src={imageMap.black_chariot}
                     alt="black_chariot"
                     draggable={false}
                   />
@@ -827,7 +781,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           </div>
           <div className={styles["img-div"]}>
             <img
-              src={black_king}
+              src={imageMap.black_king}
               alt="black"
               className={`${styles["img-style"]} ${appState.playerTurn === "black" ? styles["active"] : ""}`}
               onClick={() => {
@@ -836,7 +790,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               }}
             />
             <img
-              src={white_king}
+              src={imageMap.white_king}
               alt="white"
               className={`${styles["img-style"]} ${appState.playerTurn === "white" ? styles["active"] : ""}`}
               onClick={() => {
@@ -846,7 +800,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             />
             {color === "white" && (
               <img
-                src={white_ferz}
+                src={imageMap.white_ferz}
                 alt="white"
                 className={styles["img-style"]}
                 onClick={() => {
@@ -856,7 +810,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             )}
             {color === "black" && (
               <img
-                src={black_ferz}
+                src={imageMap.black_ferz}
                 alt="black"
                 className={styles["img-style"]}
                 onClick={() => {
@@ -872,7 +826,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "standart" && (
             <div className={styles["piece-list"]}>
               <img
-                src={white_pawn}
+                src={imageMap.white_pawn}
                 alt="white_pawn"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -881,15 +835,15 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 className={styles.pawn}
               />
               <img
-                src={white_horse}
+                src={imageMap.white_horse}
                 alt="white_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text","white_horse,isNew")
+                  e.dataTransfer.setData("text", "white_horse,isNew")
                 }
               />
               <img
-                src={white_bishop}
+                src={imageMap.white_bishop}
                 alt="white_bishop"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -898,9 +852,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               />
               <img
                 src={
-                  (pieceSailBoat && white_sailboat) ||
-                  (pieceChariot && white_chariot) ||
-                  white_rook
+                  (pieceSailBoat && imageMap.white_sailboat) ||
+                  (pieceChariot && imageMap.white_chariot) ||
+                  imageMap.white_rook
                 }
                 alt="white_rook"
                 draggable={editorMode}
@@ -912,7 +866,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_ferz}
+                src={imageMap.white_ferz}
                 alt="white_ferz"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -920,7 +874,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_king}
+                src={imageMap.white_king}
                 alt="white_king"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -932,7 +886,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "old" && (
             <div>
               <img
-                src={white_firzan}
+                src={imageMap.white_firzan}
                 alt="white_firzan"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -940,7 +894,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_wazir}
+                src={imageMap.white_wazir}
                 alt="white_wazir"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -948,7 +902,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_man}
+                src={imageMap.white_man}
                 alt="white_man"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -956,7 +910,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_alfil}
+                src={imageMap.white_alfil}
                 alt="white_alfil"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -964,7 +918,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_tank}
+                src={imageMap.white_tank}
                 alt="white_tank"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -972,7 +926,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_alibaba}
+                src={imageMap.white_alibaba}
                 alt="white_alibaba"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -980,7 +934,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_camel}
+                src={imageMap.white_camel}
                 alt="white_camel"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -988,7 +942,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_zebra}
+                src={imageMap.white_zebra}
                 alt="white_zebra"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -996,7 +950,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_lion}
+                src={imageMap.white_lion}
                 alt="white_lion"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1004,7 +958,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_rhino}
+                src={imageMap.white_rhino}
                 alt="white_rhino"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1012,7 +966,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_wildebeest}
+                src={imageMap.white_wildebeest}
                 alt="white_wildebeest"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1020,7 +974,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_giraffe}
+                src={imageMap.white_giraffe}
                 alt="white_giraffe"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1028,7 +982,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_rukh}
+                src={imageMap.white_rukh}
                 alt="white_rukh"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1036,7 +990,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_archbishop}
+                src={imageMap.white_archbishop}
                 alt="white_archbishop"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1044,7 +998,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_marshal}
+                src={imageMap.white_marshal}
                 alt="white_marshal"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1052,7 +1006,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_amazon}
+                src={imageMap.white_amazon}
                 alt="white_amazon"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1064,18 +1018,15 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "special" && (
             <div>
               <img
-                src={white_elephant}
+                src={imageMap.white_elephant}
                 alt="white_elephant"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `white_elephant,isNew`,
-                  )
+                  e.dataTransfer.setData("text", `white_elephant,isNew`)
                 }
               />
               <img
-                src={white_knight}
+                src={imageMap.white_knight}
                 alt="white_knight"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1083,7 +1034,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_prince}
+                src={imageMap.white_prince}
                 alt="white_prince"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1091,7 +1042,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_duke}
+                src={imageMap.white_duke}
                 alt="white_duke"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1099,7 +1050,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_dinozavr}
+                src={imageMap.white_dinozavr}
                 alt="white_dinozavr"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1107,7 +1058,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_checkers}
+                src={imageMap.white_checkers}
                 alt="white_checkers"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1115,14 +1066,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={white_crown}
+                src={imageMap.white_crown}
                 alt="white_crown"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `white_crown,isNew`,
-                  )
+                  e.dataTransfer.setData("text", `white_crown,isNew`)
                 }
               />
             </div>
@@ -1130,7 +1078,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "other" && (
             <div className={styles["piece-list"]}>
               <img
-                src={brick}
+                src={imageMap.brick}
                 alt="brick"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1152,7 +1100,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "standart" && (
             <div className={styles["piece-list"]}>
               <img
-                src={black_pawn}
+                src={imageMap.black_pawn}
                 alt="black_pawn"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1161,15 +1109,15 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 className={styles.pawn}
               />
               <img
-                src={black_horse}
+                src={imageMap.black_horse}
                 alt="black_horse"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData("text","black_horse,isNew")
+                  e.dataTransfer.setData("text", "black_horse,isNew")
                 }
               />
               <img
-                src={black_bishop}
+                src={imageMap.black_bishop}
                 alt="black_bishop"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1178,9 +1126,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               />
               <img
                 src={
-                  (pieceSailBoat && black_sailboat) ||
-                  (pieceChariot && black_chariot) ||
-                  black_rook
+                  (pieceSailBoat && imageMap.black_sailboat) ||
+                  (pieceChariot && imageMap.black_chariot) ||
+                  imageMap.black_rook
                 }
                 alt="black_rook"
                 draggable={editorMode}
@@ -1192,7 +1140,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_ferz}
+                src={imageMap.black_ferz}
                 alt="black_ferz"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1200,7 +1148,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_king}
+                src={imageMap.black_king}
                 alt="black_king"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1212,7 +1160,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "old" && (
             <div>
               <img
-                src={black_firzan}
+                src={imageMap.black_firzan}
                 alt="black_firzan"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1220,7 +1168,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_wazir}
+                src={imageMap.black_wazir}
                 alt="black_wazir"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1228,7 +1176,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_man}
+                src={imageMap.black_man}
                 alt="black_man"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1236,7 +1184,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_alfil}
+                src={imageMap.black_alfil}
                 alt="black_alfil"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1244,7 +1192,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_tank}
+                src={imageMap.black_tank}
                 alt="black_tank"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1252,7 +1200,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_alibaba}
+                src={imageMap.black_alibaba}
                 alt="black_alibaba"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1260,7 +1208,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_camel}
+                src={imageMap.black_camel}
                 alt="black_camel"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1268,7 +1216,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_zebra}
+                src={imageMap.black_zebra}
                 alt="black_zebra"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1276,7 +1224,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_lion}
+                src={imageMap.black_lion}
                 alt="black_lion"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1284,7 +1232,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_rhino}
+                src={imageMap.black_rhino}
                 alt="black_rhino"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1292,7 +1240,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_wildebeest}
+                src={imageMap.black_wildebeest}
                 alt="black_wildebeest"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1300,7 +1248,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_giraffe}
+                src={imageMap.black_giraffe}
                 alt="black_giraffe"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1308,7 +1256,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_rukh}
+                src={imageMap.black_rukh}
                 alt="black_rukh"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1316,7 +1264,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_archbishop}
+                src={imageMap.black_archbishop}
                 alt="black_archbishop"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1324,7 +1272,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_marshal}
+                src={imageMap.black_marshal}
                 alt="black_marshal"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1332,7 +1280,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_amazon}
+                src={imageMap.black_amazon}
                 alt="black_amazon"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1344,18 +1292,15 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "special" && (
             <div>
               <img
-                src={black_elephant}
+                src={imageMap.black_elephant}
                 alt="black_elephant"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `black_elephant,isNew`,
-                  )
+                  e.dataTransfer.setData("text", `black_elephant,isNew`)
                 }
               />
               <img
-                src={black_knight}
+                src={imageMap.black_knight}
                 alt="black_knight"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1363,7 +1308,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_prince}
+                src={imageMap.black_prince}
                 alt="black_prince"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1371,7 +1316,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_duke}
+                src={imageMap.black_duke}
                 alt="black_duke"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1379,7 +1324,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_dinozavr}
+                src={imageMap.black_dinozavr}
                 alt="black_dinozavr"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1387,7 +1332,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_checkers}
+                src={imageMap.black_checkers}
                 alt="black_checkers"
                 draggable={editorMode}
                 onDragStart={(e) =>
@@ -1395,14 +1340,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={black_crown}
+                src={imageMap.black_crown}
                 alt="black_crown"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `black_crown,isNew`,
-                  )
+                  e.dataTransfer.setData("text", `black_crown,isNew`)
                 }
               />
             </div>
@@ -1410,7 +1352,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           {piecesStyle === "other" && (
             <div className={styles["piece-list"]}>
               <img
-                src={brick}
+                src={imageMap.brick}
                 alt="brick"
                 draggable={editorMode}
                 onDragStart={(e) =>

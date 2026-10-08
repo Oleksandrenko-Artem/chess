@@ -434,3 +434,8 @@ export const PIECE_VALUES = {
     knight: 900, prince: 800, duke: 800, checkers: 50, crown: 450, elephant: 500, rhino: 700,
     wildebeest: 550, marshal: 850, archbishop: 600,
 };
+export const IMAGE_SRC = {
+    SRC_OTHER: "/src/assets/icons/other",
+    SRC_PIECES: "/src/assets/icons/pieces",
+    SRC_ACHIEVEMENTS: "/src/assets/icons/achievements",
+};
