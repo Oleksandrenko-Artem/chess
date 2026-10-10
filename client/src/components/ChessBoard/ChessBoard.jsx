@@ -439,13 +439,13 @@ const ChessBoard = (props) => {
               <defs>
                 <marker
                   id="arrowhead"
-                  markerWidth="6"
-                  markerHeight="4"
-                  refX="3.5"
-                  refY="2"
+                  markerWidth="4"
+                  markerHeight="3"
+                  refX="2"
+                  refY="1.5"
                   orient="auto"
                 >
-                  <polygon points="0 0, 6 2, 0 4" fill={arrowColor} />
+                  <polygon points="0 0, 4 1.5, 0 3" fill={arrowColor} />
                 </marker>
               </defs>
               {highlightedSquares.map((square, index) => {
@@ -478,7 +478,7 @@ const ChessBoard = (props) => {
                     x2={endPt.x}
                     y2={endPt.y}
                     stroke={arrowColor}
-                    strokeWidth="6"
+                    strokeWidth="5"
                     markerEnd="url(#arrowhead)"
                   />
                 );

@@ -503,7 +503,6 @@ const GameInfoPanel = (props) => {
                     disabled={!option.unlocked}
                   >
                     {option.label}
-                    {!option.unlocked ? " 🔒" : ""}
                   </option>
                 ))}
               </select>
@@ -516,8 +515,8 @@ const GameInfoPanel = (props) => {
                 }}
               >
                 {soundEnabled
-                  ? `🔊 ${t("custom_panel.sounds_on")}`
-                  : `🔇 ${t("custom_panel.sounds_off")}`}
+                  ? `${t("custom_panel.sounds_on")}`
+                  : `${t("custom_panel.sounds_off")}`}
               </button>
               <button onClick={handleToggle}>
                 {t("custom_panel.rotate_board")}

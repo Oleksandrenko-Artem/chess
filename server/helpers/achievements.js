@@ -62,8 +62,6 @@ const PIECE_ALIASES = {
     soldier: "soldier",
 
     rook: "rook",
-    chariot: "rook",
-    sailboat: "rook",
 
     horse: "horse",
     knight: "knight",

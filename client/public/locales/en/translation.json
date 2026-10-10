@@ -48,6 +48,7 @@
     "game-player-ready": "Player Ready",
     "game-player-waiting": "Waiting for second player...",
     "game-exit": "Exit Room",
+    "game-closed": " | Room with password",
     "no-active-rooms": "No active games at the moment",
     "no-rooms-found": "No rooms found matching your search",
     "room-name": "Name",

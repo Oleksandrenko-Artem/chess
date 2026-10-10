@@ -88,10 +88,6 @@ const userSchema = mongoose.Schema({
         type: String,
         default: "rgba(0, 17, 255, 0.5)",
     },
-    rookType: {
-        type: String,
-        default: 'rook',
-    },
     avatar: {
         type: String,
         default: null,

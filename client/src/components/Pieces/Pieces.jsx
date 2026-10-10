@@ -35,22 +35,6 @@ import {
 
 const getActualPiece = (piece) => {
   if (!piece) return piece;
-  try {
-    if (piece.endsWith("_rook")) {
-      const rep =
-        typeof window !== "undefined"
-          ? localStorage.getItem("replaceRook")
-          : null;
-      if (rep === "sailboat") {
-        return piece.replace("rook", "sailboat");
-      }
-      if (rep === "chariot") {
-        return piece.replace("rook", "chariot");
-      }
-    }
-  } catch (e) {
-    // ignore and return original
-  }
   return piece;
 };
 

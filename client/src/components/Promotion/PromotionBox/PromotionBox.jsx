@@ -76,16 +76,6 @@ const PromotionBox = ({ onClosePromotion }) => {
       }
       newPosition[promotionSquare.rank][promotionSquare.file] = "";
       let finalPieceName = pieceName;
-      if (pieceName === "rook") {
-        try {
-          const rep =
-            typeof window !== "undefined"
-              ? localStorage.getItem("replaceRook")
-              : null;
-          if (rep === "sailboat") finalPieceName = "sailboat";
-          else if (rep === "chariot") finalPieceName = "chariot";
-        } catch (e) {}
-      }
       newPosition[promotionSquare.targetRank][promotionSquare.targetFile] =
         `${color}_${finalPieceName}`;
       const newCastleDirection = { ...appState.castleDirection };
@@ -250,15 +240,7 @@ const PromotionBox = ({ onClosePromotion }) => {
   return (
     <div className={styles["promotion"]}>
       {options.map((option) => {
-        const displayOption =
-          option === "rook"
-            ? replaceSetting === "sailboat"
-              ? "sailboat"
-              : replaceSetting === "chariot"
-                ? "chariot"
-                : "rook"
-              : option;
-        const keyName = `${color}_${displayOption}`;
+        const keyName = `${color}_${option}`;
         const imageSrc = getPieceStyle(keyName, true, user);
         const style = {
           backgroundImage: `url(${imageSrc})`,

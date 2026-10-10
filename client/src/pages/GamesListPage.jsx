@@ -678,7 +678,7 @@ const GamesListPage = ({ start, setStart }) => {
                         {room.roomName && room.roomName.trim()
                           ? room.roomName
                           : `${t("header.game-room")} ${room.roomId}`}
-                        {room.hasPassword ? " 🔒" : ""}
+                        {room.hasPassword ? `${t("header.game-closed")}` : ""}
                       </h4>
                     </div>
                     <div>

@@ -11,7 +11,6 @@ const notationPieceImages = {
   F: "ferz",
   E: "alfil",
   C: "chariot",
-  S: "sailboat",
 };
 
 const renderMove = (move, isWhiteMove) => {

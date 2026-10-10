@@ -2,7 +2,6 @@ const http = require('http');
 const app = require('./app');
 const connectDB = require('./config/db');
 const { Server } = require('socket.io');
-const { getInitialStateByMode } = require('./helpers');
 const { updateAchievements } = require("./helpers/achievements.js");
 const User = require('./models/User');
 
@@ -12,8 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://b7fd441daaa67df7-95-47-113-240.serveousercontent.com",
-            "https://30856b4c5f43dd5b-95-47-113-240.serveousercontent.com",
+            "https://9fdfa14fca9129a0-95-47-113-7.serveousercontent.com",
+            "https://287de0c0b6246f2c-95-47-113-7.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",

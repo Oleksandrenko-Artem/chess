@@ -16,8 +16,6 @@ import {
   initialSpecialGameState,
   piecesArrayPromotion,
 } from "../../constants";
-import { Icon } from "@mdi/react";
-import { mdiArrowRightThin } from "@mdi/js";
 import { rgbStringToHex } from "../../utils/color";
 import { createSpecialPosition } from "../../helpers";
 import { isSoundEnabled, setSoundEnabled } from "../../helpers/playMoveSound";
@@ -27,7 +25,7 @@ import actionTypes from "../../reducers/actionTypes";
 import styles from "./CreatePosition.module.scss";
 
 const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
-  const { appState, dispatch, socket } = useAppContext();
+  const { appState, dispatch } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
@@ -63,14 +61,8 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       return [];
     }
   });
-  const [pieceSailBoat, setPieceSailBoat] = useState(() =>
-    user ? user.rookType === "sailboat" : false,
-  );
-  const [pieceChariot, setPieceChariot] = useState(() =>
-    user ? user.rookType === "chariot" : false,
-  );
-  const DEFAULT_LIGHT_COLOR = "#F0D8B7";
-  const DEFAULT_DARK_COLOR = "#7e5539";
+  const DEFAULT_LIGHT_COLOR = "rgba(240, 216, 183, 1)";
+  const DEFAULT_DARK_COLOR = "rgba(126, 85, 57, 1)";
   const DEFAULT_ARROW_COLOR = "rgba(255, 170, 0, 0.85)";
   const DEFAULT_SQUARE_COLOR = "rgba(0, 17, 255, 0.5)";
   const [lightSquareColor, setLightSquareColor] = useState(() =>
@@ -143,12 +135,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           );
         }
       }
-      if ((user.rookType === "sailboat") !== pieceSailBoat) {
-        setPieceSailBoat(user.rookType === "sailboat");
-      }
-      if ((user.rookType === "chariot") !== pieceChariot) {
-        setPieceChariot(user.rookType === "chariot");
-      }
       if (localStorage.getItem("chess_side") === appState.playerTurn) {
         const newSide = appState.playerTurn;
         localStorage.setItem("chess_side", newSide);
@@ -158,8 +144,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       setDarkSquareColor(DEFAULT_DARK_COLOR);
       setArrowColor(DEFAULT_ARROW_COLOR);
       setSquareColor(DEFAULT_SQUARE_COLOR);
-      setPieceSailBoat(false);
-      setPieceChariot(false);
       localStorage.setItem("lightSquareColor", DEFAULT_LIGHT_COLOR);
       localStorage.setItem("darkSquareColor", DEFAULT_DARK_COLOR);
       localStorage.setItem("arrowColor", DEFAULT_ARROW_COLOR);
@@ -300,53 +284,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       DEFAULT_SQUARE_COLOR,
     );
   };
-  const handleReplacePieceSailBoat = () => {
-    const newVal = !pieceSailBoat;
-    setPieceSailBoat(newVal);
-    setPieceChariot(false);
-    const newReplacement = newVal ? "sailboat" : "rook";
-    if (user) {
-      dispatchRedux(
-        updateUserThunk({ id: user._id, values: { rookType: newReplacement } }),
-      );
-    } else {
-      try {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("replaceRook", newReplacement);
-        }
-      } catch (e) {}
-    }
-    window.dispatchEvent(
-      new CustomEvent("rook-replacement-changed", {
-        detail: { replacement: newReplacement },
-      }),
-    );
-  };
-  const handleReplacePieceChariot = () => {
-    const newValRook = !pieceChariot;
-    setPieceChariot(newValRook);
-    setPieceSailBoat(false);
-    const newRookReplacement = newValRook ? "chariot" : "rook";
-    if (user) {
-      dispatchRedux(
-        updateUserThunk({
-          id: user._id,
-          values: { rookType: newRookReplacement },
-        }),
-      );
-    } else {
-      try {
-        if (typeof window !== "undefined") {
-          localStorage.setItem("replaceRook", newRookReplacement);
-        }
-      } catch (e) {}
-    }
-    window.dispatchEvent(
-      new CustomEvent("rook-replacement-changed", {
-        detail: { replacement: newRookReplacement },
-      }),
-    );
-  };
   const handlePiecesChange = (event) => {
     setPiecesStyle(event.target.value);
   };
@@ -356,13 +293,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
 
     let piece = image.alt;
     if (!piece) return;
-
-    if (piece.endsWith("_rook")) {
-      const colorPrefix = piece.startsWith("white") ? "white" : "black";
-      piece = `${colorPrefix}_${pieceSailBoat ? "sailboat" : pieceChariot ? "chariot" : "rook"}`;
-    } else if (piece === "delete") {
-      piece = "";
-    }
 
     onSelectPiece?.(piece);
   };
@@ -702,83 +632,10 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             }}
           >
             {soundEnabled
-              ? `🔊 ${t("custom_panel.sounds_on")}`
-              : `🔇 ${t("custom_panel.sounds_off")}`}
+              ? `${t("custom_panel.sounds_on")}`
+              : `${t("custom_panel.sounds_off")}`}
           </button>
         </div>
-        <div className={styles["replace-pieces"]}>
-          <div>
-            <div
-              onClick={handleReplacePieceSailBoat}
-              className={`${styles["pieces-variants"]} ${pieceSailBoat ? styles["active"] : ""}`}
-            >
-              {color === "white" ? (
-                <div className={styles["pieces-variants"]}>
-                  <img
-                    src={imageMap.white_rook}
-                    alt="white_rook"
-                    draggable={false}
-                  />
-                  <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={imageMap.white_sailboat}
-                    alt="white_sailboat"
-                    draggable={false}
-                  />
-                </div>
-              ) : (
-                <div className={styles["pieces-variants"]}>
-                  <img
-                    src={imageMap.black_rook}
-                    alt="black_rook"
-                    draggable={false}
-                  />
-                  <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={imageMap.black_sailboat}
-                    alt="black_sailboat"
-                    draggable={false}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
-          <div>
-            <div
-              onClick={handleReplacePieceChariot}
-              className={`${styles["pieces-variants"]} ${pieceChariot ? styles["active"] : ""}`}
-            >
-              {color === "white" ? (
-                <div className={styles["pieces-variants"]}>
-                  <img
-                    src={imageMap.white_rook}
-                    alt="white_rook"
-                    draggable={false}
-                  />
-                  <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={imageMap.white_chariot}
-                    alt="white_chariot"
-                    draggable={false}
-                  />
-                </div>
-              ) : (
-                <div className={styles["pieces-variants"]}>
-                  <img
-                    src={imageMap.black_rook}
-                    alt="black_rook"
-                    draggable={false}
-                  />
-                  <Icon path={mdiArrowRightThin} size={1.5} />
-                  <img
-                    src={imageMap.black_chariot}
-                    alt="black_chariot"
-                    draggable={false}
-                  />
-                </div>
-              )}
-            </div>
-          </div>
           <div className={styles["img-div"]}>
             <img
               src={imageMap.black_king}
@@ -819,12 +676,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               />
             )}
           </div>
-        </div>
       </div>
       {color === "white" && !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
-            <div className={styles["piece-list"]}>
+            <div>
               <img
                 src={imageMap.white_pawn}
                 alt="white_pawn"
@@ -851,18 +707,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={
-                  (pieceSailBoat && imageMap.white_sailboat) ||
-                  (pieceChariot && imageMap.white_chariot) ||
-                  imageMap.white_rook
-                }
+                src={imageMap.white_rook}
                 alt="white_rook"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `${pieceSailBoat ? "white_sailboat" : pieceChariot ? "white_chariot" : "white_rook"},isNew`,
-                  )
+                  e.dataTransfer.setData("text", `white_rook,isNew`)
                 }
               />
               <img
@@ -907,6 +756,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `white_man,isNew`)
+                }
+              />
+              <img
+                src={imageMap.white_chariot}
+                alt="white_chariot"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_chariot"},isNew`)
                 }
               />
               <img
@@ -1076,7 +933,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             </div>
           )}
           {piecesStyle === "other" && (
-            <div className={styles["piece-list"]}>
+            <div>
               <img
                 src={imageMap.brick}
                 alt="brick"
@@ -1098,7 +955,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       {color === "black" && !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
-            <div className={styles["piece-list"]}>
+            <div>
               <img
                 src={imageMap.black_pawn}
                 alt="black_pawn"
@@ -1125,18 +982,11 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
-                src={
-                  (pieceSailBoat && imageMap.black_sailboat) ||
-                  (pieceChariot && imageMap.black_chariot) ||
-                  imageMap.black_rook
-                }
+                src={imageMap.black_rook}
                 alt="black_rook"
                 draggable={editorMode}
                 onDragStart={(e) =>
-                  e.dataTransfer.setData(
-                    "text",
-                    `${pieceSailBoat ? "black_sailboat" : pieceChariot ? "black_chariot" : "black_rook"},isNew`,
-                  )
+                  e.dataTransfer.setData("text", `black_rook"},isNew`)
                 }
               />
               <img
@@ -1181,6 +1031,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_man,isNew`)
+                }
+              />
+              <img
+                src={imageMap.black_chariot}
+                alt="black_chariot"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_chariot"},isNew`)
                 }
               />
               <img
@@ -1350,7 +1208,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             </div>
           )}
           {piecesStyle === "other" && (
-            <div className={styles["piece-list"]}>
+            <div>
               <img
                 src={imageMap.brick}
                 alt="brick"
