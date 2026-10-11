@@ -5,14 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUserThunk } from "../../store/usersSlice";
 import {
   BOARD_STYLES,
-  initialExtendedGameState,
   initialGameState,
-  initialGrandAceDrexState,
-  initialGrandChessState,
-  initialGreatChessState,
   initialNewVariantGameState,
   initialOldGameState,
-  initialOldVariantGameState,
   initialSpecialGameState,
   piecesArrayPromotion,
 } from "../../constants";
@@ -300,11 +295,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     chess: initialGameState,
     shatranj: initialOldGameState,
     new_chess: initialNewVariantGameState,
-    old_chess: initialOldVariantGameState,
-    extended_chess: initialExtendedGameState,
-    grand_ace_drex: initialGrandAceDrexState,
-    great_chess: initialGreatChessState,
-    grand_chess: initialGrandChessState,
   };
   const deletePreset = (id) => {
     if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
@@ -498,11 +488,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
             <option value="new_chess">{t("header.new_chess")}</option>
-            <option value="old_chess">{t("header.old_chess")}</option>
-            <option value="extended_chess">{t("header.extended_chess")}</option>
-            <option value="grand_ace_drex">{t("header.grand-ace-drex")}</option>
-            <option value="great_chess">{t("header.great-chess")}</option>
-            <option value="grand_chess">{t("header.grand-chess")}</option>
           </select>
           <button type="button" onClick={handleSaveCustomPreset}>
             {t("custom_panel.save_position")}

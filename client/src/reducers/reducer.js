@@ -255,7 +255,6 @@ export const reducer = (state, action) => {
             return {
                 ...state,
                 isVsBot: action.payload.isVsBot,
-                botDifficulty: action.payload.botDifficulty || state.botDifficulty || 'easy',
             };
         };
         case actionTypes.SET_MULTIPLAYER: {

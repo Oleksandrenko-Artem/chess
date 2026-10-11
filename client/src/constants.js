@@ -1,4 +1,4 @@
-import { createExtendedPosition, createNewVariantPosition, createOldPosition, createOldVariantPosition, createPosition, createSpecialPosition, createGrandAceDrexPosition, createGreatChessPosition, createGrandChessPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
+import { createNewVariantPosition, createOldPosition, createPosition, createSpecialPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
 import { createFourPlayerPosition } from "./helpers/fourPlayer";
 
 export const BOARD_STYLES = {
@@ -78,11 +78,6 @@ export const status = {
     'draw': 'Draw',
 };
 export const FIFTY_MOVE_HALFMOVES = 100;
-export const pieces = {
-    pawn: 'pawn',
-    horse: 'horse',
-    bishop: 'bishop',
-};
 export const baseUrl = {
     BASE_URL: 'http://localhost:3000',
 };
@@ -110,7 +105,6 @@ export const initialGameState = {
     isMultiplayer: false,
     roomId: null,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialFourPlayerGameState = {
     ...initialGameState,
@@ -146,7 +140,6 @@ export const initialOldGameState = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialNewVariantGameState = {
     position: [createNewVariantPosition()],
@@ -169,7 +162,6 @@ export const initialNewVariantGameState = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialSpecialGameState = {
     position: [createSpecialPosition()],
@@ -192,116 +184,6 @@ export const initialSpecialGameState = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialOldVariantGameState = {
-    position: [createOldVariantPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    whiteTime: 1200,
-    blackTime: 1200,
-    timerActive: false,
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialExtendedGameState = {
-    position: [createExtendedPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 8,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialGrandAceDrexState = {
-    position: [createGrandAceDrexPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    boardSize: 12,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialGreatChessState = {
-    position: [createGreatChessPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    whiteTime: 1200,
-    blackTime: 1200,
-    timerActive: false,
-    boardSize: 10,
-    isVsBot: false,
-    botDifficulty: 'easy',
-};
-export const initialGrandChessState = {
-    position: [createGrandChessPosition()],
-    playerTurn: 'white',
-    movesList: [],
-    validMoves: [],
-    status: status.ongoing,
-    promotionSquare: null,
-    castleDirection: {
-        white: 'both',
-        black: 'both',
-    },
-    captured: {
-        white: [],
-        black: [],
-    },
-    orientation: 'white',
-    whiteTime: 1200,
-    blackTime: 1200,
-    timerActive: false,
-    boardSize: 10,
-    isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialChess960State = {
     position: [createChess960Position()],
@@ -324,7 +206,6 @@ export const initialChess960State = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialShatranj960State = {
     position: [createShatranj960Position()],
@@ -347,7 +228,6 @@ export const initialShatranj960State = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialNewChess960State = {
     position: [createNewChess960Position()],
@@ -370,7 +250,6 @@ export const initialNewChess960State = {
     timerActive: false,
     boardSize: 8,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const initialCheckersGameState = {
     position: [createCheckersPosition()],
@@ -395,7 +274,6 @@ export const initialCheckersGameState = {
     isMultiplayer: false,
     roomId: null,
     isVsBot: false,
-    botDifficulty: 'easy',
 };
 export const piecesArrayPromotion = [
     'horse',
@@ -427,12 +305,12 @@ export const piecesArrayPromotion = [
     'crown',
 ];
 export const PIECE_VALUES = {
-    pawn: 100, soldier: 80, firzan: 150, alfil: 160, horse: 300,
+    pawn: 100, soldier: 80, firzan: 150, alfil: 150, horse: 300,
     bishop: 350, rook: 500, chariot: 500, ferz: 900, imperator: 20000, king: 20000,
-    tank: 150, alibaba: 200, camel: 180, zebra: 150, amazon: 1300, dinozavr: 2200,
-    lion: 310, giraffe: 550, rukh: 1000, wazir: 200, man: 300,
-    knight: 900, prince: 800, duke: 800, checkers: 50, crown: 450, elephant: 500, rhino: 700,
-    wildebeest: 550, marshal: 850, archbishop: 600,
+    tank: 150, alibaba: 200, camel: 200, zebra: 150, amazon: 1300, dinozavr: 2000,
+    lion: 350, giraffe: 550, rukh: 1000, wazir: 200, man: 300,
+    knight: 900, prince: 800, duke: 800, checkers: 50, crown: 350, elephant: 500, rhino: 700,
+    wildebeest: 500, marshal: 850, archbishop: 600,
 };
 export const IMAGE_SRC = {
     SRC_OTHER: "/src/assets/icons/other",
