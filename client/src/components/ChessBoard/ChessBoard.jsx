@@ -21,7 +21,7 @@ const ChessBoard = (props) => {
   const boardSize = appState.boardSize;
   const [window, setWindow] = useState(false);
   const orientation = appState.orientation;
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
 
   const [arrows, setArrows] = useState([]);
   const [startSquare, setStartSquare] = useState(null);

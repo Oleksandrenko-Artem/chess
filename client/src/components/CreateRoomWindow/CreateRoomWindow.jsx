@@ -13,6 +13,7 @@ import {
   initialGameState,
   initialNewChess960State,
   initialNewVariantGameState,
+  initialModernShatranjGameState,
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
@@ -27,19 +28,21 @@ import {
   createCheckersPosition,
   createNewVariantPosition,
   createNewChess960Position,
+  createModernShatranjPosition,
 } from "../../helpers";
 import { createFourPlayerPosition } from "../../helpers/fourPlayer";
 
 const MODE_LABELS = {
   chess: "Chess",
   shatranj: "Shatranj",
-  checkers_v2: "Checkers v2",
   new_chess: "New Chess",
+  shatranj_modern: "Shatranj Modern",
+  checkers_v2: "Checkers v2",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
   new_chess960: "New Chess960",
   custom: "Custom",
-  four_player: "Four-player chess",
+  four_player_chess: "Four-player chess",
 };
 
 const CreateRoomWindow = ({
@@ -74,7 +77,7 @@ const CreateRoomWindow = ({
     whiteTime = timeType,
     blackTime = timeType,
   ) => {
-    if (mode === "four_player") {
+    if (mode === "four_player_chess") {
       return {
         ...initialFourPlayerGameState,
         position: [createFourPlayerPosition()],
@@ -126,6 +129,15 @@ const CreateRoomWindow = ({
         ...initialNewVariantGameState,
         boardSize,
         position: [createNewVariantPosition(boardSize)],
+        whiteTime,
+        blackTime,
+      };
+    }
+    if (mode === "shatranj_modern") {
+      return {
+        ...initialModernShatranjGameState,
+        boardSize,
+        position: [createModernShatranjPosition(boardSize)],
         whiteTime,
         blackTime,
       };
@@ -412,12 +424,15 @@ const CreateRoomWindow = ({
           >
             <option value="chess">{MODE_LABELS.chess}</option>
             <option value="shatranj">{MODE_LABELS.shatranj}</option>
-            <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
             <option value="new_chess">{MODE_LABELS.new_chess}</option>
+            <option value="shatranj_modern">{MODE_LABELS.shatranj_modern}</option>
+            <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
             <option value="chess960">{MODE_LABELS.chess960}</option>
             <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
             <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
-            <option value="four_player">{MODE_LABELS.four_player}</option>
+            <option value="four_player_chess">
+              {MODE_LABELS.four_player_chess}
+            </option>
           </select>
         )}
         {localStorage.getItem("chess_variant") === "special" && (

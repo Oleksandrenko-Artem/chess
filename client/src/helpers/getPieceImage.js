@@ -28,6 +28,7 @@ const GRAY_ICON_TYPES = {
     archbishop: "gray_archbishop.png",
     marshal: "gray_marshal.png",
     amazon: "gray_amazon.png",
+    advisor: "gray_advisor.png",
     firzan: "gray_firzan.png",
     ferz: "gray_ferz.png",
     prince: "gray_prince.png",
@@ -45,7 +46,7 @@ export const hasGrayPieceIcon = (piece) =>
 export const getPieceStyle = (piece, isOwnPiece, user, isEliminated = false) => {
     const gameVariant = localStorage.getItem("chess_variant");
 
-    if (gameVariant === "four_player") {
+    if (gameVariant === "four_player_chess") {
         piece = normalizeFourPlayerPiece(piece);
     }
 
@@ -58,7 +59,7 @@ export const getPieceStyle = (piece, isOwnPiece, user, isEliminated = false) => 
         return `${IMAGE_SRC.SRC_PIECES}/${piece}.png`;
     }
 
-    if (gameVariant === "four_player") {
+    if (gameVariant === "four_player_chess") {
         if (hasFourPlayerNativeIcon(piece)) {
             return `${IMAGE_SRC.SRC_PIECES}/${piece}.png`;
         }

@@ -19,7 +19,7 @@ const arbiter = {
     getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
         const allMoves = [];
         const boardSize = position?.length || 8;
-        const isFourPlayer = gameVariant === 'four_player';
+        const isFourPlayer = gameVariant === 'four_player_chess';
         const currentCastleDir = castleDirection?.[playerColor] || 'both';
         for (let r = 0; r < boardSize; r++) {
             for (let f = 0; f < boardSize; f++) {
@@ -62,7 +62,7 @@ const arbiter = {
                         if (isInBounds(position, nextR, nextF) && position[nextR][nextF] === '') {
                             allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: nextF });
                             const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : 'chess');
-                            if (variant === "four_player") {
+                            if (variant === "four_player_chess") {
                                 const doubleTarget = getFourPlayerPawnDoubleMove(
                                     position,
                                     playerColor,
@@ -808,7 +808,7 @@ const arbiter = {
     },
     isKingInCheck: function ({ position, playerColor, gameVariant }) {
         const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : null);
-        const attackers = variant === 'four_player'
+        const attackers = variant === 'four_player_chess'
             ? FOUR_PLAYER_COLORS.filter((color) => color !== playerColor)
             : [playerColor === 'white' ? 'black' : 'white'];
         const boardSize = getBoardSize(position);
@@ -840,7 +840,7 @@ const arbiter = {
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
-        if (gameVariant !== 'four_player' && piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
+        if (gameVariant !== 'four_player_chess' && piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
             newPosition[fromRank][toFile] = '';
         }
 
@@ -861,7 +861,7 @@ const arbiter = {
             }
         }
 
-        if (gameVariant !== 'four_player' && piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
+        if (gameVariant !== 'four_player_chess' && piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
             if (toFile === 2) {
                 newPosition[fromRank][0] = '';
                 newPosition[fromRank][3] = piece.replace('king', 'rook');
@@ -870,7 +870,7 @@ const arbiter = {
                 newPosition[fromRank][5] = piece.replace('king', 'rook');
             }
         }
-        if (gameVariant !== 'four_player' && (piece.endsWith('king') || piece.endsWith('imperator'))) {
+        if (gameVariant !== 'four_player_chess' && (piece.endsWith('king') || piece.endsWith('imperator'))) {
             const enemy = playerColor === 'white' ? 'black' : 'white';
             if (this.isSquareAttacked({ position: newPosition, rank: toRank, file: toFile, byPlayer: enemy })) {
                 return false;

@@ -49,7 +49,7 @@ const Pieces = ({
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
   const boardOrientation = orientation || appState.orientation;
   const appStateRef = useRef(appState);
   const fourPlayerBotTimerRef = useRef(null);
@@ -213,7 +213,7 @@ const Pieces = ({
     if (
       !appState.isVsBot ||
       appState.status !== status.ongoing ||
-      (mode === "game" && gameVariant !== "four_player")
+      (mode === "game" && gameVariant !== "four_player_chess")
     ) {
       return;
     }
@@ -221,7 +221,7 @@ const Pieces = ({
     const userSide = localStorage.getItem("chess_side");
     if (appState.playerTurn === userSide) return;
 
-    if (gameVariant === "four_player") {
+    if (gameVariant === "four_player_chess") {
       const timer = makeBotMove();
       return () => {
         if (timer) clearTimeout(timer);
@@ -284,7 +284,7 @@ const Pieces = ({
 
     if (
       isGameMode &&
-      gameVariant !== "four_player" &&
+      gameVariant !== "four_player_chess" &&
       currentStatus === status.ongoing &&
       playerTurn !== userSide &&
       !isBotThinking.current
@@ -435,7 +435,7 @@ const Pieces = ({
     const gameVariant = localStorage.getItem("chess_variant");
     const isEditorMode = mode === "editor";
     const isFourPlayer =
-      localStorage.getItem("chess_variant") === "four_player";
+      localStorage.getItem("chess_variant") === "four_player_chess";
     const previousEliminatedColors = appState.eliminatedColors || [];
     const checkedColorsBefore = isFourPlayer
       ? FOUR_PLAYER_COLORS.filter(
@@ -445,7 +445,7 @@ const Pieces = ({
             arbiter.isKingInCheck({
               position: currentPosition,
               playerColor: color,
-              gameVariant: "four_player",
+              gameVariant: "four_player_chess",
             }),
         )
       : [];
@@ -593,7 +593,7 @@ const Pieces = ({
         let promotionPiece;
 
         if (
-          gameMode === "four_player" ||
+          gameMode === "four_player_chess" ||
           gameMode === "chess" ||
           gameMode === "chess960"
         ) {
@@ -653,14 +653,14 @@ const Pieces = ({
         const isInCheck = arbiter.isKingInCheck({
           position: newPosition,
           playerColor: color,
-          gameVariant: "four_player",
+          gameVariant: "four_player_chess",
         });
         const legalMoves = arbiter.getBoardValidMoves({
           position: newPosition,
           playerColor: color,
           prevPosition: currentPosition,
           castleDirection: appState.castleDirection,
-          gameVariant: "four_player",
+          gameVariant: "four_player_chess",
         });
         if (legalMoves.length === 0) {
           wasCheckmate ||= isInCheck;
@@ -794,7 +794,7 @@ const Pieces = ({
             arbiter.isKingInCheck({
               position: newPosition,
               playerColor: color,
-              gameVariant: "four_player",
+              gameVariant: "four_player_chess",
             }),
         )
       : [];
@@ -907,7 +907,7 @@ const Pieces = ({
   const makeBotMove = () => {
     if (appState.status !== status.ongoing || !appState.isVsBot) return;
     const gameVariant = localStorage.getItem("chess_variant") || "chess";
-    const isFourPlayer = gameVariant === "four_player";
+    const isFourPlayer = gameVariant === "four_player_chess";
     if (
       isFourPlayer &&
       (isBotThinking.current || fourPlayerBotTimerRef.current)
@@ -1065,7 +1065,7 @@ const Pieces = ({
           arbiter.isKingInCheck({
             position,
             playerColor: color,
-            gameVariant: "four_player",
+            gameVariant: "four_player_chess",
           }),
       )
         .map((color) => getKingPosition({ position, playerColor: color }))
@@ -1183,7 +1183,7 @@ const Pieces = ({
     ? appState.status.replace(" wins", "").toLowerCase()
     : null;
   const eliminatedColors =
-    localStorage.getItem("chess_variant") === "four_player"
+    localStorage.getItem("chess_variant") === "four_player_chess"
       ? appState.eliminatedColors || []
       : winnerColor
         ? ["white", "black"].filter((color) => color !== winnerColor)
@@ -1367,7 +1367,7 @@ const Pieces = ({
                       )}
                       className={[
                         localStorage.getItem("chess_variant") ===
-                          "four_player" &&
+                          "four_player_chess" &&
                         !hasFourPlayerNativeIcon(normalizeFourPlayerPiece(f))
                           ? pieceStyles[`piece-${f.split("_")[0]}`]
                           : "",

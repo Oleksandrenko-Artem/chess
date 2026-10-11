@@ -8,6 +8,7 @@ import {
   initialGameState,
   initialNewVariantGameState,
   initialOldGameState,
+  initialModernShatranjGameState,
   initialSpecialGameState,
   piecesArrayPromotion,
 } from "../../constants";
@@ -295,6 +296,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     chess: initialGameState,
     shatranj: initialOldGameState,
     new_chess: initialNewVariantGameState,
+    modern_shatranj: initialModernShatranjGameState,
   };
   const deletePreset = (id) => {
     if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
@@ -488,6 +490,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
             <option value="new_chess">{t("header.new_chess")}</option>
+            <option value="modern_shatranj">{t("header.shatranj-modern")}</option>
           </select>
           <button type="button" onClick={handleSaveCustomPreset}>
             {t("custom_panel.save_position")}
@@ -621,46 +624,46 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               : `${t("custom_panel.sounds_off")}`}
           </button>
         </div>
-          <div className={styles["img-div"]}>
+        <div className={styles["img-div"]}>
+          <img
+            src={imageMap.black_king}
+            alt="black"
+            className={`${styles["img-style"]} ${appState.playerTurn === "black" ? styles["active"] : ""}`}
+            onClick={() => {
+              setSelectedColor("black");
+              onClickBlack();
+            }}
+          />
+          <img
+            src={imageMap.white_king}
+            alt="white"
+            className={`${styles["img-style"]} ${appState.playerTurn === "white" ? styles["active"] : ""}`}
+            onClick={() => {
+              setSelectedColor("white");
+              onClickWhite();
+            }}
+          />
+          {color === "white" && (
             <img
-              src={imageMap.black_king}
-              alt="black"
-              className={`${styles["img-style"]} ${appState.playerTurn === "black" ? styles["active"] : ""}`}
-              onClick={() => {
-                setSelectedColor("black");
-                onClickBlack();
-              }}
-            />
-            <img
-              src={imageMap.white_king}
+              src={imageMap.white_ferz}
               alt="white"
-              className={`${styles["img-style"]} ${appState.playerTurn === "white" ? styles["active"] : ""}`}
+              className={styles["img-style"]}
               onClick={() => {
-                setSelectedColor("white");
-                onClickWhite();
+                handleChangePromotion();
               }}
             />
-            {color === "white" && (
-              <img
-                src={imageMap.white_ferz}
-                alt="white"
-                className={styles["img-style"]}
-                onClick={() => {
-                  handleChangePromotion();
-                }}
-              />
-            )}
-            {color === "black" && (
-              <img
-                src={imageMap.black_ferz}
-                alt="black"
-                className={styles["img-style"]}
-                onClick={() => {
-                  handleChangePromotion();
-                }}
-              />
-            )}
-          </div>
+          )}
+          {color === "black" && (
+            <img
+              src={imageMap.black_ferz}
+              alt="black"
+              className={styles["img-style"]}
+              onClick={() => {
+                handleChangePromotion();
+              }}
+            />
+          )}
+        </div>
       </div>
       {color === "white" && !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>

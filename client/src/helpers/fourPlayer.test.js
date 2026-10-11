@@ -127,14 +127,14 @@ describe("four-player chess setup", () => {
   });
 
   it("distinguishes horizontal pawn moves from captures", () => {
-    assert.equal(isPawnCaptureSquare("red_pawn", 5, 3, 5, 4, "four_player"), false);
-    assert.equal(isPawnCaptureSquare("red_pawn", 5, 3, 4, 4, "four_player"), true);
-    assert.equal(isPawnCaptureSquare("blue_pawn", 5, 3, 5, 2, "four_player"), false);
-    assert.equal(isPawnCaptureSquare("blue_pawn", 5, 3, 4, 2, "four_player"), true);
-    assert.equal(isPawnCaptureSquare("yellow_pawn", 8, 3, 7, 3, "four_player"), false);
-    assert.equal(isPawnCaptureSquare("green_pawn", 4, 3, 5, 4, "four_player"), true);
-    assert.equal(isPawnCaptureSquare("white_pawn", 6, 3, 5, 3, "chess"), false);
-    assert.equal(isPawnCaptureSquare("white_pawn", 6, 3, 5, 4, "chess"), true);
+    assert.equal(isPawnCaptureSquare("red_pawn", 5, 3, 5, 4, "four_player_chess"), false);
+    assert.equal(isPawnCaptureSquare("red_pawn", 5, 3, 4, 4, "four_player_chess"), true);
+    assert.equal(isPawnCaptureSquare("blue_pawn", 5, 3, 5, 2, "four_player_chess"), false);
+    assert.equal(isPawnCaptureSquare("blue_pawn", 5, 3, 4, 2, "four_player_chess"), true);
+    assert.equal(isPawnCaptureSquare("yellow_pawn", 8, 3, 7, 3, "four_player_chess"), false);
+    assert.equal(isPawnCaptureSquare("green_pawn", 4, 3, 5, 4, "four_player_chess"), true);
+    assert.equal(isPawnCaptureSquare("white_pawn", 6, 3, 5, 3, "four_player_chess"), false);
+    assert.equal(isPawnCaptureSquare("white_pawn", 6, 3, 5, 4, "four_player_chess"), true);
   });
 
   it("migrates saved white and black sides to yellow and green", () => {

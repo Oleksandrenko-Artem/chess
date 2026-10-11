@@ -14,6 +14,7 @@ import {
   initialCheckersGameState,
   status,
   initialNewVariantGameState,
+  initialModernShatranjGameState,
   initialNewChess960State,
   initialFourPlayerGameState,
 } from "./constants";
@@ -40,6 +41,7 @@ import {
   createShatranj960Position,
   createCheckersPosition,
   createNewVariantPosition,
+  createModernShatranjPosition,
   createNewChess960Position,
 } from "./helpers";
 import {
@@ -55,6 +57,7 @@ import NewVariantChessPage from "./pages/NewVariantChessPage";
 import NewVariantChess960Page from "./pages/NewVariantChess960Page";
 import AchievementsPage from "./pages/AchievementsPage";
 import CollectionsPage from "./pages/CollectionsPage";
+import ModernShatranjPage from "./pages/ModernShatranjPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -99,9 +102,11 @@ function App() {
                 ? initialNewVariantGameState
                 : savedVariant === "new_chess960"
                   ? initialNewChess960State
-                  : savedVariant === "four_player"
+                  : savedVariant === "four_player_chess"
                     ? initialFourPlayerGameState
-                    : initialGameState;
+                    : savedVariant === "shatranj_modern"
+                      ? initialModernShatranjGameState
+                      : initialGameState;
 
   if (savedMode === "editor") {
     initialStateAtLoad = {
@@ -118,7 +123,7 @@ function App() {
     initialStateAtLoad = {
       ...initialStateAtLoad,
       boardSize:
-        savedVariant === "four_player"
+        savedVariant === "four_player_chess"
           ? 14
           : savedVariant === "special" && savedEditorState?.boardSize
             ? savedEditorState.boardSize
@@ -140,9 +145,11 @@ function App() {
                       ? [createNewVariantPosition(8)]
                       : savedVariant === "new_chess960"
                         ? [createNewChess960Position(8)]
-                        : savedVariant === "four_player"
+                        : savedVariant === "four_player_chess"
                           ? [createFourPlayerPosition()]
-                          : [createPosition(8)],
+                          : savedVariant === "shatranj_modern"
+                            ? [createModernShatranjPosition]
+                            : [createPosition(8)],
       playerTurn:
         savedVariant === "special" && savedEditorState?.playerTurn
           ? savedEditorState.playerTurn
@@ -165,10 +172,10 @@ function App() {
 
       if (isActiveBotState) {
         initialStateAtLoad =
-          savedVariant === "four_player"
+          savedVariant === "four_player_chess"
             ? migrateFourPlayerState(parsedBotState)
             : parsedBotState;
-        if (savedVariant === "four_player") {
+        if (savedVariant === "four_player_chess") {
           localStorage.setItem(
             "chess_side",
             normalizeFourPlayerColor(localStorage.getItem("chess_side")),
@@ -192,7 +199,7 @@ function App() {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    if (savedVariant !== "four_player" || typeof window === "undefined") return;
+    if (savedVariant !== "four_player_chess" || typeof window === "undefined") return;
     const savedSide = localStorage.getItem("chess_side");
     if (savedSide) {
       localStorage.setItem("chess_side", normalizeFourPlayerColor(savedSide));
@@ -234,7 +241,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://287de0c0b6246f2c-95-47-113-7.serveousercontent.com";
+      "https://49e6c008279d4c11-95-47-113-29.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -356,6 +363,24 @@ function App() {
       payload: { initialState: newInitialState },
     });
   };
+  const handlePlayModernShatranj = () => {
+    setStart(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("chess_variant", "shatranj_modern");
+      localStorage.removeItem("chess_mode");
+      localStorage.removeItem("botGameState");
+    }
+    const newInitialState = {
+      ...initialModernShatranjGameState,
+      boardSize: 8,
+      position: [createModernShatranjPosition(8)],
+      isVsBot: true,
+    };
+    dispatch({
+      type: actionTypes.RESET_GAME,
+      payload: { initialState: newInitialState },
+    });
+  };
   const handlePlayNewVariantChess960 = () => {
     setStart(false);
     if (typeof window !== "undefined") {
@@ -376,7 +401,7 @@ function App() {
   };
   const handlePlayFourPlayer = () => {
     setStart(false);
-    localStorage.setItem("chess_variant", "four_player");
+    localStorage.setItem("chess_variant", "four_player_chess");
     localStorage.removeItem("chess_mode");
     localStorage.removeItem("botGameState");
     localStorage.setItem("chess_side", "yellow");
@@ -511,6 +536,7 @@ function App() {
                 onPlayShatranj960={handlePlayShatranj960}
                 onPlayCheckers={handlePlayCheckers}
                 onPlayNewVariantChess={handlePlayNewVariantChess}
+                onPlayModernShatranj={handlePlayModernShatranj}
                 onPlayNewVariantChess960={handlePlayNewVariantChess960}
                 onPlayFourPlayer={handlePlayFourPlayer}
               />
@@ -545,6 +571,10 @@ function App() {
           <Route
             path="/play-new-variant-chess"
             element={<NewVariantChessPage start={start} setStart={setStart} />}
+          />
+          <Route
+            path="/play-shatranj-modern"
+            element={<ModernShatranjPage start={start} setStart={setStart} />}
           />
           <Route
             path="/play-new-variant-chess960"

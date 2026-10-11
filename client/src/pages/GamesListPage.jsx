@@ -9,6 +9,7 @@ import {
   initialGameState,
   initialNewChess960State,
   initialNewVariantGameState,
+  initialModernShatranjGameState,
   initialOldGameState,
   initialShatranj960State,
   initialSpecialGameState,
@@ -24,6 +25,7 @@ import {
   createShatranj960Position,
   createCheckersPosition,
   createNewVariantPosition,
+  createModernShatranjPosition,
   createNewChess960Position,
 } from "../helpers";
 import { createFourPlayerPosition } from "../helpers/fourPlayer";
@@ -41,24 +43,26 @@ import QuickGameForm from "../components/QuickGameForm/QuickGameForm";
 const MODE_LABELS = {
   chess: "Chess",
   shatranj: "Shatranj",
+  new_chess: "New Chess",
+  shatranj_modern: "Shatranj Modern",
+  checkers_v2: "Checkers v2",
   chess960: "Chess960",
   shatranj960: "Shatranj960",
-  checkers_v2: "Checkers v2",
-  new_chess: "New Chess",
   new_chess960: "New Chess960",
   custom: "Custom",
-  four_player: "Four-player chess",
+  four_player_chess: "Four-player chess",
 };
 const MODE_ICONS = {
   chess: `${IMAGE_SRC.SRC_PIECES}/white_ferz.png`,
   shatranj: `${IMAGE_SRC.SRC_PIECES}/white_alfil.png`,
   new_chess: `${IMAGE_SRC.SRC_PIECES}/white_knight.png`,
+  shatranj_modern: `${IMAGE_SRC.SRC_PIECES}/white_elephant.png`,
   checkers_v2: `${IMAGE_SRC.SRC_PIECES}/white_checkers.png`,
   chess960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
   shatranj960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
   new_chess960: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
   custom: `${IMAGE_SRC.SRC_OTHER}/custom.png`,
-  four_player: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
+  four_player_chess: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
 };
 
 const getInitialStateByMode = (mode, boardSize = 8) => {
@@ -97,6 +101,13 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       position: [createNewVariantPosition(8)],
     };
   }
+  if (mode === "shatranj_modern") {
+    return {
+      ...initialModernShatranjGameState,
+      boardSize: 8,
+      position: [createModernShatranjPosition(8)],
+    };
+  }
   if (mode === "new_chess960") {
     return {
       ...initialNewChess960State,
@@ -111,7 +122,7 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
       position: [createSpecialPosition()],
     };
   }
-  if (mode === "four_player") {
+  if (mode === "four_player_chess") {
     return {
       ...initialFourPlayerGameState,
       boardSize: 14,
@@ -234,7 +245,7 @@ const GamesListPage = ({ start, setStart }) => {
       }
 
       const requiredPlayers =
-        info.maxPlayers || (info.gameMode === "four_player" ? 4 : 2);
+        info.maxPlayers || (info.gameMode === "four_player_chess" ? 4 : 2);
       if (info.playersCount >= requiredPlayers) {
         setGameReady(true);
       }
@@ -282,7 +293,7 @@ const GamesListPage = ({ start, setStart }) => {
       setPlayersCount(data?.playersCount || 1);
       if (
         data?.playersCount >=
-        (localStorage.getItem("chess_variant") === "four_player" ? 4 : 2)
+        (localStorage.getItem("chess_variant") === "four_player_chess" ? 4 : 2)
       ) {
         setGameReady(true);
       } else {
@@ -304,7 +315,7 @@ const GamesListPage = ({ start, setStart }) => {
     const onPlayerTimedOut = (data) => {
       if (
         data?.loser &&
-        localStorage.getItem("chess_variant") === "four_player"
+        localStorage.getItem("chess_variant") === "four_player_chess"
       ) {
         dispatch({
           type: actionTypes.TIME_UP,
@@ -544,7 +555,7 @@ const GamesListPage = ({ start, setStart }) => {
         localStorage.setItem("roomId", room.roomId);
         const joinedSide =
           response.side ||
-          (room.gameMode === "four_player" ? "yellow" : "black");
+          (room.gameMode === "four_player_chess" ? "yellow" : "black");
         localStorage.setItem("chess_side", joinedSide);
         dispatch({ type: actionTypes.SET_ORIENTATION, payload: joinedSide });
         localStorage.setItem("chess_variant", room.gameMode);
@@ -716,7 +727,7 @@ const GamesListPage = ({ start, setStart }) => {
           <p>
             {gameReady
               ? `${t("header.game-player-ready")}`
-              : `${t("header.game-player-waiting")} (${playersCount}/${gameMode === "four_player" ? 4 : 2})`}
+              : `${t("header.game-player-waiting")} (${playersCount}/${gameMode === "four_player_chess" ? 4 : 2})`}
           </p>
           <button onClick={handleExitGame}>{t("header.game-exit")}</button>
         </div>
