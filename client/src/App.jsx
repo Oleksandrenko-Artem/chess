@@ -140,7 +140,7 @@ function App() {
                 : savedVariant === "shatranj960"
                   ? [createShatranj960Position(8)]
                   : savedVariant === "checkers_v2"
-                    ? [createCheckersPosition()]
+                    ? [createCheckersPosition(8)]
                     : savedVariant === "new_chess"
                       ? [createNewVariantPosition(8)]
                       : savedVariant === "new_chess960"
@@ -148,7 +148,7 @@ function App() {
                         : savedVariant === "four_player_chess"
                           ? [createFourPlayerPosition()]
                           : savedVariant === "shatranj_modern"
-                            ? [createModernShatranjPosition]
+                            ? [createModernShatranjPosition(8)]
                             : [createPosition(8)],
       playerTurn:
         savedVariant === "special" && savedEditorState?.playerTurn
