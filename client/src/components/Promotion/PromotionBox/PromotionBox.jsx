@@ -33,7 +33,7 @@ const PromotionBox = ({ onClosePromotion }) => {
     typeof window !== "undefined"
       ? window.localStorage.getItem("chess_variant")
       : "chess";
-  const isFourPlayer = variant === "four_player";
+  const isFourPlayer = variant === "four_player_chess";
   const promotionPosition = appState.position[appState.position.length - 1];
   const color = promotionSquare
     ? promotionPosition[promotionSquare.rank]?.[promotionSquare.file]?.split(
@@ -103,14 +103,14 @@ const PromotionBox = ({ onClosePromotion }) => {
           const isInCheck = arbiter.isKingInCheck({
             position: newPosition,
             playerColor,
-            gameVariant: "four_player",
+            gameVariant: "four_player_chess",
           });
           const legalMoves = arbiter.getBoardValidMoves({
             position: newPosition,
             playerColor,
             prevPosition: currentPosition,
             castleDirection: newCastleDirection,
-            gameVariant: "four_player",
+            gameVariant: "four_player_chess",
           });
           if (legalMoves.length === 0) {
             wasCheckmate ||= isInCheck;
@@ -147,7 +147,7 @@ const PromotionBox = ({ onClosePromotion }) => {
           ? arbiter.isKingInCheck({
               position: newPosition,
               playerColor: nextPlayer,
-              gameVariant: "four_player",
+              gameVariant: "four_player_chess",
             })
           : false;
       const newMove = getNewMoveNotation({

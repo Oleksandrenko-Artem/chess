@@ -30,7 +30,7 @@ const CapturedPieces = ({
             ...redCaptures,
           ].map((piece, idx) => {
             const needsColorFilter =
-              localStorage.getItem("chess_variant") === "four_player" &&
+              localStorage.getItem("chess_variant") === "four_player_chess" &&
               !hasFourPlayerNativeIcon(normalizeFourPlayerPiece(piece));
             return (
               <div key={idx} className={styles["captured-piece"]}>
@@ -42,7 +42,7 @@ const CapturedPieces = ({
                   }
                   src={getPieceStyle(piece, piece.startsWith(myColor), user)}
                   alt={
-                    localStorage.getItem("chess_variant") === "four_player"
+                    localStorage.getItem("chess_variant") === "four_player_chess"
                       ? normalizeFourPlayerPiece(piece)
                       : piece
                   }

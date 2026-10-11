@@ -9,6 +9,7 @@ import {
   initialGameState,
   initialNewChess960State,
   initialNewVariantGameState,
+  initialModernShatranjGameState,
   initialOldGameState,
   initialShatranj960State,
   initialFourPlayerGameState,
@@ -23,7 +24,7 @@ import Timer from "../Timer/Timer";
 import { FOUR_PLAYER_COLORS } from "../../helpers/fourPlayer";
 
 const GameInfoPanel = (props) => {
-  const { status, turn, start, setStart } = props;
+  const { status, start, setStart } = props;
   const { dispatch, appState, socket } = useAppContext();
   const [botLevel, setBotLevel] = useState(
     parseInt(localStorage.getItem("bot_level") || "1", 10),
@@ -241,6 +242,18 @@ const GameInfoPanel = (props) => {
         },
       });
     }
+    if (window.localStorage.getItem("chess_variant") === "shatranj_modern") {
+      window.localStorage.setItem("chess_variant", "shatranj_modern");
+      dispatch({
+        type: actionTypes.RESET_GAME,
+        payload: {
+          initialState: {
+            ...initialModernShatranjGameState,
+            isVsBot: appState.isVsBot,
+          },
+        },
+      });
+    }
     if (window.localStorage.getItem("chess_variant") === "new_chess960") {
       window.localStorage.setItem("chess_variant", "new_chess960");
       dispatch({
@@ -253,7 +266,7 @@ const GameInfoPanel = (props) => {
         },
       });
     }
-    if (window.localStorage.getItem("chess_variant") === "four_player") {
+    if (window.localStorage.getItem("chess_variant") === "four_player_chess") {
       dispatch({
         type: actionTypes.RESET_GAME,
         payload: {
@@ -281,7 +294,7 @@ const GameInfoPanel = (props) => {
     }
   };
   const handleToggle = () => {
-    if (localStorage.getItem("chess_variant") === "four_player") {
+    if (localStorage.getItem("chess_variant") === "four_player_chess") {
       const currentIndex = FOUR_PLAYER_COLORS.indexOf(appState.orientation);
       const nextOrientation =
         FOUR_PLAYER_COLORS[
@@ -365,7 +378,7 @@ const GameInfoPanel = (props) => {
   };
   const unlockedSets = user?.achievements?.pieceSets || {};
   const isAdmin = user?.role === "admin";
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player";
+  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
 
   const pieceOptions = [
     { value: "standart", label: t("style_panel.standart"), unlocked: true },

@@ -226,7 +226,7 @@ export const isPawnCaptureSquare = (
 ) => {
   if (!piece?.endsWith("pawn") && !piece?.endsWith("soldier")) return false;
   if (
-    gameVariant === "four_player" &&
+    gameVariant === "four_player_chess" &&
     (piece.startsWith("blue_") || piece.startsWith("red_"))
   ) {
     return fromRank !== targetRank;

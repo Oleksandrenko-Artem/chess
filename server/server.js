@@ -11,8 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://9fdfa14fca9129a0-95-47-113-7.serveousercontent.com",
-            "https://287de0c0b6246f2c-95-47-113-7.serveousercontent.com",
+            "https://833ac8c770793cf0-95-47-113-29.serveousercontent.com",
+            "https://49e6c008279d4c11-95-47-113-29.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
@@ -26,12 +26,12 @@ const io = new Server(server, {
 
 const rooms = {};
 const FOUR_PLAYER_SIDES = ['yellow', 'blue', 'green', 'red'];
-const getRoomCapacity = (room) => room.gameMode === 'four_player' ? 4 : 2;
+const getRoomCapacity = (room) => room.gameMode === 'four_player_chess' ? 4 : 2;
 
 const normalizeInitialState = (gameMode, initialState) => {
     if (!initialState) return null;
 
-    if (gameMode === 'four_player') {
+    if (gameMode === 'four_player_chess') {
         return {
             ...initialState,
             gameMode,
@@ -101,7 +101,7 @@ async function finishGame(roomId, result) {
 
     room.finished = true;
 
-    if (room.gameMode === "custom" || room.gameMode === "four_player") {
+    if (room.gameMode === "custom" || room.gameMode === "four_player_chess") {
         return;
     }
 
@@ -331,7 +331,7 @@ io.on('connection', (socket) => {
             );
         }
 
-        const side = room.gameMode === 'four_player'
+        const side = room.gameMode === 'four_player_chess'
             ? FOUR_PLAYER_SIDES.find(candidate =>
                 !rooms[roomId].players.some(player => player.side === candidate)
             )
@@ -426,7 +426,7 @@ io.on('connection', (socket) => {
         const room = rooms[roomId];
         if (!room) return;
 
-        if (room.gameMode === 'four_player') {
+        if (room.gameMode === 'four_player_chess') {
             io.to(roomId).emit('playerTimedOut', { loser });
             return;
         }
@@ -463,7 +463,7 @@ io.on('connection', (socket) => {
         if (!room) return;
 
         const leaver = room.players.find(p => p.socketId === socket.id);
-        if (room.gameMode === 'four_player' && leaver) {
+        if (room.gameMode === 'four_player_chess' && leaver) {
             io.to(roomId).emit('playerTimedOut', {
                 loser: leaver.side,
                 reason: 'left',
@@ -525,7 +525,7 @@ io.on('connection', (socket) => {
                 player.disconnected = true;
                 player.disconnectTime = Date.now();
 
-                if (rooms[roomId].gameMode === 'four_player') {
+                if (rooms[roomId].gameMode === 'four_player_chess') {
                     io.to(roomId).emit('opponentDisconnected', {
                         message: 'A player disconnected. Waiting to reconnect...',
                         playersCount: rooms[roomId].players.filter(p => !p.disconnected).length,
@@ -539,7 +539,7 @@ io.on('connection', (socket) => {
                     });
                 }
                 rooms[roomId].timeout = setTimeout(async () => {
-                    if (rooms[roomId]?.gameMode === 'four_player') {
+                    if (rooms[roomId]?.gameMode === 'four_player_chess') {
                         io.to(roomId).emit('playerTimedOut', {
                             loser: player.side,
                             reason: 'disconnected',

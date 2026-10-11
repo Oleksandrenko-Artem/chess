@@ -130,6 +130,33 @@ export const createNewVariantPosition = (size = 8) => {
 
     return position;
 }
+export const createModernShatranjPosition = (size = 8) => {
+    const position = createEmptyPosition(size);
+    const cols = Math.min(size, 8);
+
+    for (let i = 0; i < cols; i++) {
+        position[6][i] = 'white_pawn';
+        position[1][i] = 'black_pawn';
+    }
+    position[7][0] = 'white_chariot';
+    position[7][1] = 'white_horse';
+    position[7][2] = 'white_elephant';
+    position[7][3] = 'white_advisor';
+    position[7][4] = 'white_imperator';
+    position[7][5] = 'white_elephant';
+    position[7][6] = 'white_horse';
+    position[7][7] = 'white_chariot';
+    position[0][0] = 'black_chariot';
+    position[0][1] = 'black_horse';
+    position[0][2] = 'black_elephant';
+    position[0][3] = 'black_advisor';
+    position[0][4] = 'black_imperator';
+    position[0][5] = 'black_elephant';
+    position[0][6] = 'black_horse';
+    position[0][7] = 'black_chariot';
+
+    return position;
+}
 export const createChess960Position = (size = 8) => {
     const position = createEmptyPosition(size);
 

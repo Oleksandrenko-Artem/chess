@@ -12,6 +12,7 @@ const SinglePlayerPage = (props) => {
     onPlayShatranj960,
     onPlayCheckers,
     onPlayNewVariantChess,
+    onPlayModernShatranj,
     onPlayNewVariantChess960,
     onPlayFourPlayer,
   } = props;
@@ -55,6 +56,14 @@ const SinglePlayerPage = (props) => {
       action: onPlayCheckers,
     },
     {
+      id: "shatranj_modern",
+      img: `${IMAGE_SRC.SRC_PIECES}/white_elephant.png`,
+      title: "header.shatranj-modern",
+      desc: "header.single-player-shatranj-modern",
+      link: "/play-shatranj-modern",
+      action: onPlayModernShatranj,
+    },
+    {
       id: "chess960",
       img: `${IMAGE_SRC.SRC_OTHER}/chess_960.png`,
       title: "header.chess960",
@@ -79,7 +88,7 @@ const SinglePlayerPage = (props) => {
       action: onPlayNewVariantChess960,
     },
     {
-      id: "four_player",
+      id: "four_player_chess",
       img: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
       title: "header.four-player-chess",
       desc: "header.single-player-four-player",

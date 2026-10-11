@@ -15,7 +15,7 @@ export const reducer = (state, action) => {
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive, halfmoveClock = 0 } = state;
-            const isFourPlayer = typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player';
+            const isFourPlayer = typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player_chess';
             const previousPosition = position[position.length - 1];
             gameStatus = action.payload.gameStatus || status.ongoing;
             if (!action.payload.keepTurn) {
@@ -59,13 +59,13 @@ export const reducer = (state, action) => {
                     const wasInCheck = arbiter.isKingInCheck({
                         position: previousPosition,
                         playerColor: color,
-                        gameVariant: 'four_player',
+                        gameVariant: 'four_player_chess',
                     });
 
                     const isNowInCheck = arbiter.isKingInCheck({
                         position: currentPosition,
                         playerColor: color,
-                        gameVariant: 'four_player',
+                        gameVariant: 'four_player_chess',
                     });
 
                     return !wasInCheck && isNowInCheck;
@@ -214,7 +214,7 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.TIME_UP: {
-            if (typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player') {
+            if (typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player_chess') {
                 const position = state.position[state.position.length - 1].map(row => [...row]);
                 const loser = action.payload.player;
                 if ((state.eliminatedColors || []).includes(loser)) return state;

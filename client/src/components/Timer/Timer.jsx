@@ -50,7 +50,7 @@ const Timer = () => {
 
         if (newTime < 0) {
           if (
-            localStorage.getItem("chess_variant") === "four_player" &&
+            localStorage.getItem("chess_variant") === "four_player_chess" &&
             appState.isMultiplayer
           ) {
             if (currentPlayer === localStorage.getItem("chess_side")) {
@@ -76,12 +76,12 @@ const Timer = () => {
       if (moveTimeoutRef.current) {
         clearTimeout(moveTimeoutRef.current);
       }
-      if (localStorage.getItem("chess_variant") !== "four_player") {
+      if (localStorage.getItem("chess_variant") !== "four_player_chess") {
         moveTimeoutRef.current = setTimeout(() => {
           const currentPlayer = currentPlayerRef.current;
           if (
             appState.isMultiplayer &&
-            localStorage.getItem("chess_variant") === "four_player"
+            localStorage.getItem("chess_variant") === "four_player_chess"
           ) {
             socket.emit("playerTimedOut", {
               roomId: appState.roomId,
@@ -136,7 +136,7 @@ const Timer = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (localStorage.getItem("chess_variant") === "four_player") {
+  if (localStorage.getItem("chess_variant") === "four_player_chess") {
     return (
       <div className={styles.timer}>
         {["yellow", "blue", "green", "red"].map((color) => (

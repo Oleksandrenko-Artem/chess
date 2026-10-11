@@ -1,4 +1,4 @@
-import { createNewVariantPosition, createOldPosition, createPosition, createSpecialPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position } from "./helpers";
+import { createNewVariantPosition, createOldPosition, createPosition, createSpecialPosition, createChess960Position, createShatranj960Position, createCheckersPosition, createNewChess960Position, createModernShatranjPosition } from "./helpers";
 import { createFourPlayerPosition } from "./helpers/fourPlayer";
 
 export const BOARD_STYLES = {
@@ -58,12 +58,13 @@ export const BOARD_STYLES = {
 export const GAME_MODES = [
     "chess",
     "shatranj",
-    "checkers_v2",
     "new_chess",
+    "shatranj_modern",
+    "checkers_v2",
     "chess960",
     "shatranj960",
     "new_chess960",
-    "four_player",
+    "four_player_chess",
     "custom",
 ];
 export const status = {
@@ -143,6 +144,28 @@ export const initialOldGameState = {
 };
 export const initialNewVariantGameState = {
     position: [createNewVariantPosition()],
+    playerTurn: 'white',
+    movesList: [],
+    validMoves: [],
+    status: status.ongoing,
+    promotionSquare: null,
+    castleDirection: {
+        white: 'both',
+        black: 'both',
+    },
+    captured: {
+        white: [],
+        black: [],
+    },
+    orientation: 'white',
+    whiteTime: 3600,
+    blackTime: 3600,
+    timerActive: false,
+    boardSize: 8,
+    isVsBot: false,
+};
+export const initialModernShatranjGameState = {
+    position: [createModernShatranjPosition()],
     playerTurn: 'white',
     movesList: [],
     validMoves: [],
