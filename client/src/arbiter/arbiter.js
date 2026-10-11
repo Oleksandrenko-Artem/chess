@@ -1,4 +1,4 @@
-import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getAlfilMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves } from "./getMoves"
+import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, getDinozavrMoves, getAlfilMoves, getFerzMoves, getFirzanMoves, getGiraffeMoves, getHorseMoves, getImperatorMoves, getKingMoves, getLionMoves, getPawnCaptures, getPawnMoves, getRookMoves, getRukhMoves, getSoldierCaptures, getSoldierMoves, getTankMoves, getWazirMoves, getZebraMoves, getArchbishopMoves, getMarshalMoves, getAmazonMoves, getKnightMoves, getElephantMoves, getRhinoMoves, getWildebeestMoves, getManMoves, getAlibabaMoves, getDukeMoves, getPrinceMoves, getAdvisorMoves, getAdvisorCaptures } from "./getMoves"
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 import {
@@ -237,6 +237,20 @@ const arbiter = {
             captureSquares.forEach(([r, f]) => {
                 if (position?.[r]?.[f] !== undefined) {
                     attacks.push([r, f]);
+                }
+            });
+        } else if (piece.endsWith('advisor')) {
+            const direction = [
+                [-1, 0],
+                [0, 1],
+                [1, 0],
+                [0, -1],
+            ];
+            direction.forEach(dir => {
+                const x = rank + dir[0];
+                const y = file + dir[1];
+                if (position?.[x]?.[y] !== undefined && !position[x][y].startsWith(us) && !position[x][y].endsWith('brick')) {
+                    attacks.push([x, y]);
                 }
             });
         } else if (piece.endsWith('king') || piece.endsWith('imperator')) {
@@ -876,6 +890,11 @@ const arbiter = {
             moves = [
                 ...getSoldierMoves({ position, piece, rank, file }),
                 ...getSoldierCaptures({ position, piece, rank, file }),
+            ];
+        } else if (piece.endsWith('advisor')) {
+            moves = [
+                ...getAdvisorMoves({ position, piece, rank, file }),
+                ...getAdvisorCaptures({ position, piece, rank, file }),
             ];
         } else if (piece.endsWith('elephant')) {
             moves = getElephantMoves({ position, piece, rank, file });

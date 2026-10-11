@@ -2,7 +2,7 @@ const modules = import.meta.glob('../assets/icons/pieces/*.png', { eager: true, 
 
 export const PIECES = [
     'imperator', 'king', 'ferz', 'rook', 'horse', 'bishop', 'soldier', 'pawn', 'alfil',
-    'firzan', 'dinozavr', 'tank', 'camel', 'giraffe', 'rukh', 'checkers',
+    'firzan', 'advisor', 'dinozavr', 'tank', 'camel', 'giraffe', 'rukh', 'checkers',
     'chariot', 'wazir', 'zebra', 'lion', 'archbishop', 'marshal', 'amazon',
     'knight', 'elephant', 'rhino', 'wildebeest', 'man', 'duke', 'prince',
     'alibaba', 'crown'

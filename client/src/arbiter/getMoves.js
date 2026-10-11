@@ -798,7 +798,6 @@ export const getAlibabaMoves = ({ position, rank, file }) => {
 };
 export const getPrinceMoves = ({ position, piece, rank, file }) => {
     const us = piece.startsWith('white') ? 'white' : 'black';
-    const boardSize = getBoardSize(position);
     const finalMoves = [];
     const princePaths = [
         { step1: [1, 1], step2: [1, 1], step3: [1, 0] },
@@ -841,7 +840,6 @@ export const getPrinceMoves = ({ position, piece, rank, file }) => {
 };
 export const getDukeMoves = ({ position, piece, rank, file }) => {
     const us = piece.startsWith('white') ? 'white' : 'black';
-    const boardSize = getBoardSize(position);
     const finalMoves = [];
     const dukePaths = [
         { step1: [1, 0], step2: [1, 0], step3: [1, 1] },
@@ -881,4 +879,55 @@ export const getDukeMoves = ({ position, piece, rank, file }) => {
         }
     });
     return finalMoves;
+};
+export const getAdvisorMoves = ({ position, piece, rank, file }) => {
+    const moves = [];
+
+    const directions = [
+        [-1, -1],
+        [-1, 1],
+        [1, -1],
+        [1, 1],
+    ];
+
+    directions.forEach(([dr, df]) => {
+        const x = rank + dr;
+        const y = file + df;
+
+        if (
+            isInBounds(position, x, y) &&
+            position[x][y] === ''
+        ) {
+            moves.push([x, y]);
+        }
+    });
+
+    return moves;
+};
+export const getAdvisorCaptures = ({ position, piece, rank, file }) => {
+    const moves = [];
+    const us = piece.startsWith('white') ? 'white' : 'black';
+    const enemy = us === 'white' ? 'black' : 'white';
+
+    const directions = [
+        [-1, 0],
+        [1, 0],
+        [0, -1],
+        [0, 1],
+    ];
+
+    directions.forEach(([dr, df]) => {
+        const x = rank + dr;
+        const y = file + df;
+
+        if (
+            isInBounds(position, x, y) &&
+            position[x][y].startsWith(enemy) &&
+            !position[x][y].endsWith('brick')
+        ) {
+            moves.push([x, y]);
+        }
+    });
+
+    return moves;
 };

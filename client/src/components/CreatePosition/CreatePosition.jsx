@@ -868,6 +868,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 }
               />
               <img
+                src={imageMap.white_advisor}
+                alt="white_advisor"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `white_advisor,isNew`)
+                }
+              />
+              <img
                 src={imageMap.white_knight}
                 alt="white_knight"
                 draggable={editorMode}
@@ -1140,6 +1148,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
                 draggable={editorMode}
                 onDragStart={(e) =>
                   e.dataTransfer.setData("text", `black_elephant,isNew`)
+                }
+              />
+              <img
+                src={imageMap.black_advisor}
+                alt="black_advisor"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `black_advisor,isNew`)
                 }
               />
               <img

@@ -305,7 +305,7 @@ export const piecesArrayPromotion = [
     'crown',
 ];
 export const PIECE_VALUES = {
-    pawn: 100, soldier: 80, firzan: 150, alfil: 150, horse: 300,
+    pawn: 100, soldier: 80, firzan: 150, alfil: 150, advisor: 200, horse: 300,
     bishop: 350, rook: 500, chariot: 500, ferz: 900, imperator: 20000, king: 20000,
     tank: 150, alibaba: 200, camel: 200, zebra: 150, amazon: 1300, dinozavr: 2000,
     lion: 350, giraffe: 550, rukh: 1000, wazir: 200, man: 300,
