@@ -30,6 +30,8 @@ const ChessBoard = (props) => {
 
   const arrowColor =
     user?.arrowColor || localStorage.getItem("arrowColor") || "#ffaa00";
+  const squareColor =
+    user?.squareColor || localStorage.getItem("squareColor") || "#0011ff7f";
   useEffect(() => {
     if (status !== "Ongoing" && status !== "Promotion") {
       const timer = setTimeout(() => {
@@ -374,7 +376,7 @@ const ChessBoard = (props) => {
     const piece = selected.piece || player.achievement;
     const style = selected.style || "bronze";
 
-    return `${IMAGE_SRC.SRC_PIECES}/${style}_${piece}.png`;
+    return `${IMAGE_SRC.SRC_ACHIEVEMENTS}/${style}_${piece}.png`;
   };
 
   return (
@@ -462,7 +464,7 @@ const ChessBoard = (props) => {
                     y={`${y}%`}
                     width={`${cellSize}%`}
                     height={`${cellSize}%`}
-                    fill={user?.squareColor}
+                    fill={squareColor}
                     fillOpacity="0.5"
                   />
                 );
