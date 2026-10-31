@@ -85,5 +85,5 @@ export const getPieceStyle = (piece, isOwnPiece, user, isEliminated = false) => 
 
     const pieceName = piece.replace(/^white_|^black_/, "");
 
-    return `${IMAGE_SRC.SRC_PIECES}/${style}_${pieceName}.png`;
+    return `${IMAGE_SRC.SRC_ACHIEVEMENTS}/${style}_${pieceName}.png`;
 };
