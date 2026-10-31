@@ -296,7 +296,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     chess: initialGameState,
     shatranj: initialOldGameState,
     new_chess: initialNewVariantGameState,
-    modern_shatranj: initialModernShatranjGameState,
+    shatranj_modern: initialModernShatranjGameState,
   };
   const deletePreset = (id) => {
     if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
@@ -490,7 +490,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             <option value="chess">{t("header.chess")}</option>
             <option value="shatranj">{t("header.shatranj")}</option>
             <option value="new_chess">{t("header.new_chess")}</option>
-            <option value="modern_shatranj">{t("header.shatranj-modern")}</option>
+            <option value="shatranj_modern">
+              {t("header.shatranj-modern")}
+            </option>
           </select>
           <button type="button" onClick={handleSaveCustomPreset}>
             {t("custom_panel.save_position")}

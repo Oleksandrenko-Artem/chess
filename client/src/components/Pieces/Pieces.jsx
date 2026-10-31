@@ -600,6 +600,8 @@ const Pieces = ({
           promotionPiece = "ferz";
         } else if (gameMode === "shatranj" || gameMode === "shatranj960") {
           promotionPiece = "firzan";
+        } else if (gameMode === "shatranj_modern") {
+          promotionPiece = "advisor";
         } else if (gameMode === "new_chess" || gameMode === "new_chess960") {
           promotionPiece = "prince";
         } else {

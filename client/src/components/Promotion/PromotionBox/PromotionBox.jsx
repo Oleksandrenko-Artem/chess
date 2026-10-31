@@ -224,6 +224,14 @@ const PromotionBox = ({ onClosePromotion }) => {
       processedPromotionRef.current = promotionKey;
       handlePromotion("firzan");
     }
+    if (promotionSquare && variant === "shatranj_modern") {
+      const promotionKey = `${promotionSquare.rank}-${promotionSquare.file}-${promotionSquare.targetRank}-${promotionSquare.targetFile}`;
+      if (processedPromotionRef.current === promotionKey) {
+        return;
+      }
+      processedPromotionRef.current = promotionKey;
+      handlePromotion("advisor");
+    }
   }, [promotionSquare, variant, handlePromotion]);
 
   if (!promotionSquare) {
@@ -234,7 +242,7 @@ const PromotionBox = ({ onClosePromotion }) => {
     handlePromotion(option);
     onClosePromotion?.();
   };
-  if (variant === "shatranj" || variant === "shatranj960") {
+  if (variant === "shatranj" || variant === "shatranj960" || variant === "shatranj_modern") {
     return null;
   }
   return (
