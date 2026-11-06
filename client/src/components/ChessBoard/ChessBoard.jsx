@@ -8,6 +8,7 @@ import computerIcon from "../../assets/icons/other/computer.png";
 import styles from "./ChessBoard.module.scss";
 import { useTranslation } from "react-i18next";
 import {
+  getConfiguredPlayerColors,
   getFourPlayerDisplaySquare,
   getFourPlayerRealSquare,
   isFourPlayerGame,
@@ -300,7 +301,10 @@ const ChessBoard = (props) => {
       </div>
     </div>
   );
-  const fourPlayerRoster = ["yellow", "blue", "green", "red"].map((color) => {
+  const playerColors = getConfiguredPlayerColors(
+    appState.position?.[appState.position.length - 1],
+  );
+  const fourPlayerRoster = playerColors.map((color) => {
     const roomPlayer = appState.roomPlayers?.find(
       (player) => player.side === color,
     );
