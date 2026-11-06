@@ -144,6 +144,11 @@
   .active {
     --btn-style-color: rgb(100, 185, 255);
   }
+  .unavailable {
+    opacity: 0.4;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
   @media screen and (max-width: $x) {
     min-height: auto;
   }

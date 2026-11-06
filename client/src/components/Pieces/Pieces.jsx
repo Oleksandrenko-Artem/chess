@@ -22,6 +22,7 @@ import { useTranslation } from "react-i18next";
 import { getPieceStyle } from "../../helpers/getPieceImage";
 import {
   FOUR_PLAYER_COLORS,
+  getConfiguredPlayerColors,
   getFourPlayerDisplaySquare,
   getFourPlayerGameStatus,
   getFourPlayerRealSquare,
@@ -31,6 +32,8 @@ import {
   isPawnCaptureSquare,
   normalizeFourPlayerPiece,
   getNextFourPlayerTurn,
+  isCustomMultiplayerGame,
+  isFourPlayerGame,
 } from "../../helpers/fourPlayer";
 
 const getActualPiece = (piece) => {
@@ -49,7 +52,7 @@ const Pieces = ({
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
+  const isFourPlayer = isFourPlayerGame();
   const boardOrientation = orientation || appState.orientation;
   const appStateRef = useRef(appState);
   const fourPlayerBotTimerRef = useRef(null);
@@ -209,11 +212,14 @@ const Pieces = ({
 
   useEffect(() => {
     const mode = localStorage.getItem("chess_mode");
-    const gameVariant = localStorage.getItem("chess_variant");
+    const storedGameVariant = localStorage.getItem("chess_variant");
+    const gameVariant = isFourPlayerGame(storedGameVariant)
+      ? "four_player_chess"
+      : storedGameVariant;
     if (
       !appState.isVsBot ||
       appState.status !== status.ongoing ||
-      (mode === "game" && gameVariant !== "four_player_chess")
+      (mode === "game" && !isFourPlayerGame(gameVariant))
     ) {
       return;
     }
@@ -221,7 +227,7 @@ const Pieces = ({
     const userSide = localStorage.getItem("chess_side");
     if (appState.playerTurn === userSide) return;
 
-    if (gameVariant === "four_player_chess") {
+    if (isFourPlayerGame(gameVariant)) {
       const timer = makeBotMove();
       return () => {
         if (timer) clearTimeout(timer);
@@ -279,12 +285,15 @@ const Pieces = ({
     } = appState;
     const userSide = localStorage.getItem("chess_side");
     const mode = localStorage.getItem("chess_mode");
-    const gameVariant = localStorage.getItem("chess_variant");
+    const storedGameVariant = localStorage.getItem("chess_variant");
+    const gameVariant = isFourPlayerGame(storedGameVariant)
+      ? "four_player_chess"
+      : storedGameVariant;
     const isGameMode = mode === "game";
 
     if (
       isGameMode &&
-      gameVariant !== "four_player_chess" &&
+      !isFourPlayerGame(gameVariant) &&
       currentStatus === status.ongoing &&
       playerTurn !== userSide &&
       !isBotThinking.current
@@ -432,13 +441,15 @@ const Pieces = ({
     const userSide = localStorage.getItem("chess_side");
     const isHuman = appState.playerTurn === userSide;
     const mode = localStorage.getItem("chess_mode");
-    const gameVariant = localStorage.getItem("chess_variant");
+    const storedGameVariant = localStorage.getItem("chess_variant");
+    const gameVariant = isFourPlayerGame(storedGameVariant)
+      ? "four_player_chess"
+      : storedGameVariant;
     const isEditorMode = mode === "editor";
-    const isFourPlayer =
-      localStorage.getItem("chess_variant") === "four_player_chess";
+    const isFourPlayer = isFourPlayerGame();
     const previousEliminatedColors = appState.eliminatedColors || [];
     const checkedColorsBefore = isFourPlayer
-      ? FOUR_PLAYER_COLORS.filter(
+      ? getConfiguredPlayerColors(currentPosition).filter(
           (color) =>
             hasFourPlayerKing(currentPosition, color) &&
             !previousEliminatedColors.includes(color) &&
@@ -455,20 +466,24 @@ const Pieces = ({
       isEditorMode &&
       (p?.endsWith("king") || p?.endsWith("imperator"))
     ) {
-      const color = p.startsWith("white") ? "white" : "black";
+      const color = p.split("_")[0];
       const hasKingOfThisColor = currentPosition
         .flat()
         .some(
           (currentPiece) =>
             currentPiece &&
-            currentPiece.startsWith(color) &&
+            currentPiece.startsWith(`${color}_`) &&
             (currentPiece.endsWith("king") ||
               currentPiece.endsWith("imperator")),
         );
 
       if (hasKingOfThisColor) {
         alert(
-          `${t("custom_panel.king_message")} ${color === "white" ? t("custom_panel.white") : t("custom_panel.black")} ${t("custom_panel.king")}!`,
+          `${t("custom_panel.king_message")} ${
+            color === "white" || color === "black"
+              ? t(`custom_panel.${color}`)
+              : t(`captured_pieces.${color}`)
+          } ${t("custom_panel.king")}!`,
         );
         return;
       }
@@ -498,6 +513,7 @@ const Pieces = ({
             targetRank,
             targetFile,
             appState.boardSize,
+            !isCustomMultiplayerGame(),
           )
         : targetRank === 0 || targetRank === appState.boardSize - 1;
       if ((p.endsWith("pawn") || p.endsWith("soldier")) && promotionSquare) {
@@ -569,13 +585,16 @@ const Pieces = ({
     const promotionOptions = JSON.parse(
       localStorage.getItem("promotion_options"),
     ) || ["ferz", "rook", "bishop", "horse"];
-    const gameMode = localStorage.getItem("chess_variant");
+    const gameMode = isFourPlayer
+      ? "four_player_chess"
+      : localStorage.getItem("chess_variant");
     const promotionSquare = isFourPlayer
       ? isFourPlayerPromotionSquare(
           p.split("_")[0],
           targetRank,
           targetFile,
           appState.boardSize,
+          !isCustomMultiplayerGame(),
         )
       : targetRank === 0 || targetRank === appState.boardSize - 1;
     const shouldPromoteChecker =
@@ -640,13 +659,14 @@ const Pieces = ({
     if (isFourPlayer) {
       const capturedKing = currentPosition[targetRank]?.[targetFile];
       if (
-        capturedKing?.endsWith("_king") &&
+        (capturedKing?.endsWith("_king") ||
+          capturedKing?.endsWith("_imperator")) &&
         !eliminatedColors.includes(capturedKing.split("_")[0])
       ) {
         eliminatedColors = [...eliminatedColors, capturedKing.split("_")[0]];
       }
 
-      FOUR_PLAYER_COLORS.forEach((color) => {
+      getConfiguredPlayerColors(currentPosition).forEach((color) => {
         if (
           !hasFourPlayerKing(newPosition, color) ||
           eliminatedColors.includes(color)
@@ -692,6 +712,7 @@ const Pieces = ({
               newPosition,
               appState.playerTurn,
               eliminatedColors,
+              getConfiguredPlayerColors(newPosition),
             )
           : appState.playerTurn === "white"
             ? "black"
@@ -774,7 +795,11 @@ const Pieces = ({
         ? status.ongoing
         : currentPlayer;
     } else if (isFourPlayer) {
-      gameStatus = getFourPlayerGameStatus(newPosition, eliminatedColors);
+      gameStatus = getFourPlayerGameStatus(
+        newPosition,
+        eliminatedColors,
+        getConfiguredPlayerColors(newPosition),
+      );
       if (appState.isVsBot && eliminatedColors.includes(userSide)) {
         gameStatus = `${currentPlayer} wins`;
       }
@@ -788,7 +813,7 @@ const Pieces = ({
       });
     }
     const checkedColorsAfter = isFourPlayer
-      ? FOUR_PLAYER_COLORS.filter(
+      ?       getConfiguredPlayerColors(newPosition).filter(
           (color) =>
             color !== currentPlayer &&
             hasFourPlayerKing(newPosition, color) &&
@@ -908,8 +933,11 @@ const Pieces = ({
 
   const makeBotMove = () => {
     if (appState.status !== status.ongoing || !appState.isVsBot) return;
-    const gameVariant = localStorage.getItem("chess_variant") || "chess";
-    const isFourPlayer = gameVariant === "four_player_chess";
+    const storedGameVariant = localStorage.getItem("chess_variant") || "chess";
+    const isFourPlayer = isFourPlayerGame(storedGameVariant);
+    const gameVariant = isFourPlayer
+      ? "four_player_chess"
+      : storedGameVariant;
     if (
       isFourPlayer &&
       (isBotThinking.current || fourPlayerBotTimerRef.current)
@@ -1060,7 +1088,7 @@ const Pieces = ({
     : null;
 
   const checkedKingPositions = isFourPlayer
-    ? FOUR_PLAYER_COLORS.filter(
+    ? getConfiguredPlayerColors(position).filter(
         (color) =>
           hasFourPlayerKing(position, color) &&
           !(appState.eliminatedColors || []).includes(color) &&
@@ -1185,7 +1213,7 @@ const Pieces = ({
     ? appState.status.replace(" wins", "").toLowerCase()
     : null;
   const eliminatedColors =
-    localStorage.getItem("chess_variant") === "four_player_chess"
+    isFourPlayer
       ? appState.eliminatedColors || []
       : winnerColor
         ? ["white", "black"].filter((color) => color !== winnerColor)
@@ -1285,7 +1313,9 @@ const Pieces = ({
                       fromFile,
                       realRank,
                       realFile,
-                      localStorage.getItem("chess_variant"),
+                      isFourPlayer
+                        ? "four_player_chess"
+                        : localStorage.getItem("chess_variant"),
                     );
                   }
 
@@ -1368,8 +1398,7 @@ const Pieces = ({
                         isEliminatedPiece(f),
                       )}
                       className={[
-                        localStorage.getItem("chess_variant") ===
-                          "four_player_chess" &&
+                        isFourPlayer &&
                         !hasFourPlayerNativeIcon(normalizeFourPlayerPiece(f))
                           ? pieceStyles[`piece-${f.split("_")[0]}`]
                           : "",

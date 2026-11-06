@@ -2,13 +2,16 @@ import { getBishopMoves, getCamelMoves, getCheckersCaptures, getCheckersMoves, g
 import { status } from "../constants";
 import { areSameColorBishops, findPieceCoords, generatePositionHash } from "../helpers";
 import {
-    FOUR_PLAYER_COLORS,
+    getConfiguredPlayerColors,
     getFourPlayerPawnDoubleMove,
+    isFourPlayerGame,
 } from "../helpers/fourPlayer";
 
 const getBoardSize = (position) => position?.length || 8;
 const isInBounds = (position, x, y) => x >= 0 && y >= 0 && x < getBoardSize(position) && y < getBoardSize(position);
 const fourPlayerPawnDirection = {
+    white: [-1, 0],
+    black: [1, 0],
     yellow: [-1, 0],
     blue: [0, -1],
     green: [1, 0],
@@ -19,7 +22,7 @@ const arbiter = {
     getBoardValidMoves: function ({ position, playerColor, prevPosition, castleDirection, gameVariant }) {
         const allMoves = [];
         const boardSize = position?.length || 8;
-        const isFourPlayer = gameVariant === 'four_player_chess';
+        const isFourPlayer = isFourPlayerGame(gameVariant);
         const currentCastleDir = castleDirection?.[playerColor] || 'both';
         for (let r = 0; r < boardSize; r++) {
             for (let f = 0; f < boardSize; f++) {
@@ -62,7 +65,7 @@ const arbiter = {
                         if (isInBounds(position, nextR, nextF) && position[nextR][nextF] === '') {
                             allMoves.push({ piece, rank: r, file: f, targetRank: nextR, targetFile: nextF });
                             const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : 'chess');
-                            if (variant === "four_player_chess") {
+                            if (isFourPlayerGame(variant)) {
                                 const doubleTarget = getFourPlayerPawnDoubleMove(
                                     position,
                                     playerColor,
@@ -206,12 +209,17 @@ const arbiter = {
     },
     getAttackSquares: function ({ position, piece, rank, file }) {
         const us = piece.split('_')[0];
-        const enemy = us === 'white' ? 'black' : 'white';
+        const isEnemyPiece = (candidate) =>
+            candidate &&
+            candidate !== 'brick' &&
+            !candidate.startsWith(`${us}_`);
         const boardSize = getBoardSize(position);
         const attacks = [];
 
         if (piece.endsWith('pawn')) {
             const directions = {
+                white: [-1, 0],
+                black: [1, 0],
                 yellow: [-1, 0],
                 blue: [0, -1],
                 green: [1, 0],
@@ -675,7 +683,7 @@ const arbiter = {
 
                 const firstCell = position[x][y];
 
-                if (firstCell === '' || firstCell.startsWith(enemy)) {
+                if (firstCell === '' || isEnemyPiece(firstCell)) {
                     attacks.push([x, y]);
                 }
 
@@ -692,7 +700,7 @@ const arbiter = {
                         if (cell === '') {
                             attacks.push([sx, sy]);
                         } else {
-                            if (cell.startsWith(enemy)) {
+                            if (isEnemyPiece(cell)) {
                                 attacks.push([sx, sy]);
                             }
                             break;
@@ -755,8 +763,11 @@ const arbiter = {
                 }
             });
         } else if (piece.endsWith('checkers') || piece.endsWith('crown')) {
-            const us = piece.startsWith('white') ? 'white' : 'black';
-            const enemy = us === 'white' ? 'black' : 'white';
+            const us = piece.split('_')[0];
+            const isEnemyPiece = (candidate) =>
+                candidate &&
+                candidate !== 'brick' &&
+                !candidate.startsWith(`${us}_`);
             const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
 
             if (piece.endsWith('crown')) {
@@ -787,7 +798,7 @@ const arbiter = {
                     const adjFile = file + df;
                     const landRank = rank + 2 * direction;
                     const landFile = file + 2 * df;
-                    if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                    if (isEnemyPiece(position?.[adjRank]?.[adjFile]) &&
                         position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
                         attacks.push([landRank, landFile]);
                     }
@@ -797,7 +808,7 @@ const arbiter = {
                     const adjFile = file + df;
                     const landRank = rank - 2 * direction;
                     const landFile = file + 2 * df;
-                    if (position?.[adjRank]?.[adjFile] && position[adjRank][adjFile].startsWith(enemy) &&
+                    if (isEnemyPiece(position?.[adjRank]?.[adjFile]) &&
                         position?.[landRank]?.[landFile] !== undefined && position[landRank][landFile] === '') {
                         attacks.push([landRank, landFile]);
                     }
@@ -808,8 +819,8 @@ const arbiter = {
     },
     isKingInCheck: function ({ position, playerColor, gameVariant }) {
         const variant = gameVariant || (typeof localStorage !== 'undefined' ? localStorage.getItem('chess_variant') : null);
-        const attackers = variant === 'four_player_chess'
-            ? FOUR_PLAYER_COLORS.filter((color) => color !== playerColor)
+        const attackers = isFourPlayerGame(variant)
+            ? getConfiguredPlayerColors(position).filter((color) => color !== playerColor)
             : [playerColor === 'white' ? 'black' : 'white'];
         const boardSize = getBoardSize(position);
         for (let r = 0; r < boardSize; r++) {
@@ -840,7 +851,7 @@ const arbiter = {
         newPosition[fromRank][fromFile] = '';
         newPosition[toRank][toFile] = piece;
 
-        if (gameVariant !== 'four_player_chess' && piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
+        if (!isFourPlayerGame(gameVariant) && piece.endsWith('pawn') && fromFile !== toFile && position[toRank][toFile] === '') {
             newPosition[fromRank][toFile] = '';
         }
 
@@ -861,7 +872,7 @@ const arbiter = {
             }
         }
 
-        if (gameVariant !== 'four_player_chess' && piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
+        if (!isFourPlayerGame(gameVariant) && piece.endsWith('king') && !piece.endsWith('imperator') && Math.abs(toFile - fromFile) === 2) {
             if (toFile === 2) {
                 newPosition[fromRank][0] = '';
                 newPosition[fromRank][3] = piece.replace('king', 'rook');
@@ -870,7 +881,7 @@ const arbiter = {
                 newPosition[fromRank][5] = piece.replace('king', 'rook');
             }
         }
-        if (gameVariant !== 'four_player_chess' && (piece.endsWith('king') || piece.endsWith('imperator'))) {
+        if (!isFourPlayerGame(gameVariant) && (piece.endsWith('king') || piece.endsWith('imperator'))) {
             const enemy = playerColor === 'white' ? 'black' : 'white';
             if (this.isSquareAttacked({ position: newPosition, rank: toRank, file: toFile, byPlayer: enemy })) {
                 return false;

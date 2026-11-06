@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import {
   getFourPlayerDisplaySquare,
   getFourPlayerRealSquare,
+  isFourPlayerGame,
 } from "../../helpers/fourPlayer";
 import { IMAGE_SRC } from "../../constants";
 
@@ -21,7 +22,7 @@ const ChessBoard = (props) => {
   const boardSize = appState.boardSize;
   const [window, setWindow] = useState(false);
   const orientation = appState.orientation;
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
+  const isFourPlayer = isFourPlayerGame();
 
   const [arrows, setArrows] = useState([]);
   const [startSquare, setStartSquare] = useState(null);

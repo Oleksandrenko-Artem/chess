@@ -30,7 +30,11 @@ import {
   createNewChess960Position,
   createModernShatranjPosition,
 } from "../../helpers";
-import { createFourPlayerPosition } from "../../helpers/fourPlayer";
+import {
+  getPlayerColorsInPosition,
+  PLAYER_COLORS,
+  createFourPlayerPosition,
+} from "../../helpers/fourPlayer";
 
 const MODE_LABELS = {
   chess: "Chess",
@@ -48,10 +52,18 @@ const MODE_LABELS = {
 const CreateRoomWindow = ({
   setWindowMode = () => {},
   setStart = () => {},
+  fromEditor = false,
 }) => {
   const storedVariant = localStorage.getItem("chess_variant");
+  const defaultGameMode =
+    storedVariant &&
+    storedVariant !== "special" &&
+    storedVariant !== "custom" &&
+    MODE_LABELS[storedVariant]
+      ? storedVariant
+      : "chess";
   const [gameMode, setGameMode] = useState(
-    storedVariant === "special" ? "custom" : storedVariant || "chess",
+    fromEditor ? "custom" : defaultGameMode,
   );
   const [type, setType] = useState("password");
   const [showPassword, setShowPassword] = useState(mdiEyeOutline);
@@ -62,6 +74,19 @@ const CreateRoomWindow = ({
   const { appState, dispatch, socket } = useAppContext();
   const { t } = useTranslation();
   const user = useSelector((state) => state.users.user);
+  const availableModes = fromEditor
+    ? [["custom", MODE_LABELS.custom]]
+    : [
+        ["chess", MODE_LABELS.chess],
+        ["shatranj", MODE_LABELS.shatranj],
+        ["new_chess", MODE_LABELS.new_chess],
+        ["shatranj_modern", MODE_LABELS.shatranj_modern],
+        ["checkers_v2", MODE_LABELS.checkers_v2],
+        ["chess960", MODE_LABELS.chess960],
+        ["shatranj960", MODE_LABELS.shatranj960],
+        ["new_chess960", MODE_LABELS.new_chess960],
+        ["four_player_chess", MODE_LABELS.four_player_chess],
+      ];
   const changeType = () => {
     if (type === "password") {
       setType("text");
@@ -170,10 +195,57 @@ const CreateRoomWindow = ({
   };
 
   const getRoomInitialState = () => {
+    if (fromEditor && appState?.position?.length) {
+      const currentPosition = appState.position.at(-1);
+      const playerColors = getPlayerColorsInPosition(currentPosition);
+      const isFourPlayerPosition =
+        storedVariant === "four_player_chess" &&
+        playerColors.length === 4 &&
+        playerColors.every((color) =>
+          ["yellow", "blue", "green", "red"].includes(color),
+        );
+      const rulesVariant = isFourPlayerPosition
+        ? "four_player_chess"
+        : "custom_multiplayer";
+      const firstPlayer = playerColors[0] || appState.playerTurn;
+      return {
+        ...appState,
+        playerTurn: firstPlayer,
+        orientation: firstPlayer,
+        gameMode: "custom",
+        rulesVariant,
+        playerColors,
+        ...Object.fromEntries(
+          (isFourPlayerPosition ? playerColors : PLAYER_COLORS).map((color) => [
+            `${color}Time`,
+            timeType,
+          ]),
+        ),
+      };
+    }
     if (gameMode === "custom" && appState?.position?.length) {
       return appState;
     }
     return getInitialStateByMode(gameMode, appState?.boardSize || 8);
+  };
+
+  const setStoredRoomMode = (mode, roomState, rulesVariant) => {
+    localStorage.setItem("chess_variant", mode);
+    const storedRulesVariant = roomState?.rulesVariant || rulesVariant;
+    if (
+      storedRulesVariant === "four_player_chess" ||
+      storedRulesVariant === "custom_multiplayer"
+    ) {
+      localStorage.setItem("chess_rules_variant", storedRulesVariant);
+      const playerColors =
+        roomState?.playerColors || roomState?.initialState?.playerColors;
+      if (Array.isArray(playerColors)) {
+        localStorage.setItem("chess_player_colors", JSON.stringify(playerColors));
+      }
+    } else {
+      localStorage.removeItem("chess_rules_variant");
+      localStorage.removeItem("chess_player_colors");
+    }
   };
 
   const applyRoomStateFromResponse = (response, roomId, roomName) => {
@@ -232,6 +304,7 @@ const CreateRoomWindow = ({
             foundRoomId,
             {
               gameMode,
+              rulesVariant: roomInitialState?.rulesVariant,
               roomName: trimmedRoomName,
               password: trimmedPassword,
               initialState: null,
@@ -280,8 +353,16 @@ const CreateRoomWindow = ({
 
               localStorage.setItem("chess_side", joinResponse.side);
               localStorage.setItem("chess_mode", "multiplayer");
-              localStorage.setItem("chess_variant", gameMode);
-              localStorage.setItem("gameMode", gameMode);
+              const joinedGameMode =
+                joinResponse.initialState?.gameMode ||
+                joinResponse.gameMode ||
+                gameMode;
+              setStoredRoomMode(
+                joinedGameMode,
+                joinResponse.initialState,
+                joinResponse.rulesVariant,
+              );
+              localStorage.setItem("gameMode", joinedGameMode);
               localStorage.setItem("roomId", foundRoomId);
 
               navigate("/games");
@@ -294,6 +375,7 @@ const CreateRoomWindow = ({
             roomId,
             {
               gameMode,
+              rulesVariant: roomInitialState?.rulesVariant,
               roomName: trimmedRoomName,
               password: trimmedPassword,
               initialState: {
@@ -344,8 +426,12 @@ const CreateRoomWindow = ({
               });
 
               localStorage.setItem("chess_mode", "multiplayer");
-              localStorage.setItem("chess_variant", gameMode);
-              localStorage.setItem("gameMode", gameMode);
+              const createdGameMode =
+                createResponse.initialState?.gameMode ||
+                createResponse.gameMode ||
+                gameMode;
+              setStoredRoomMode(createdGameMode, createResponse.initialState);
+              localStorage.setItem("gameMode", createdGameMode);
               localStorage.setItem("roomId", roomId);
               localStorage.setItem("chess_side", createResponse.side);
 
@@ -361,6 +447,7 @@ const CreateRoomWindow = ({
         roomId,
         {
           gameMode,
+          rulesVariant: roomInitialState?.rulesVariant,
           roomName: null,
           password: trimmedPassword,
           initialState: {
@@ -404,8 +491,10 @@ const CreateRoomWindow = ({
 
           localStorage.setItem("chess_side", response.side);
           localStorage.setItem("chess_mode", "multiplayer");
-          localStorage.setItem("chess_variant", gameMode);
-          localStorage.setItem("gameMode", gameMode);
+          const createdGameMode =
+            response.initialState?.gameMode || response.gameMode || gameMode;
+          setStoredRoomMode(createdGameMode, response.initialState);
+          localStorage.setItem("gameMode", createdGameMode);
           localStorage.setItem("roomId", roomId);
 
           navigate("/games");
@@ -417,32 +506,16 @@ const CreateRoomWindow = ({
     <div className={styles.wrapper}>
       <div>
         <h2>{t("header.creating-room")}</h2>
-        {localStorage.getItem("chess_variant") !== "special" && (
-          <select
-            value={gameMode}
-            onChange={(e) => setGameMode(e.target.value)}
-          >
-            <option value="chess">{MODE_LABELS.chess}</option>
-            <option value="shatranj">{MODE_LABELS.shatranj}</option>
-            <option value="new_chess">{MODE_LABELS.new_chess}</option>
-            <option value="shatranj_modern">{MODE_LABELS.shatranj_modern}</option>
-            <option value="checkers_v2">{MODE_LABELS.checkers_v2}</option>
-            <option value="chess960">{MODE_LABELS.chess960}</option>
-            <option value="shatranj960">{MODE_LABELS.shatranj960}</option>
-            <option value="new_chess960">{MODE_LABELS.new_chess960}</option>
-            <option value="four_player_chess">
-              {MODE_LABELS.four_player_chess}
+        <select
+          value={gameMode}
+          onChange={(e) => setGameMode(e.target.value)}
+        >
+          {availableModes.map(([mode, label]) => (
+            <option key={mode} value={mode}>
+              {label}
             </option>
-          </select>
-        )}
-        {localStorage.getItem("chess_variant") === "special" && (
-          <select
-            value={gameMode}
-            onChange={(e) => setGameMode(e.target.value)}
-          >
-            <option value="custom">{MODE_LABELS.custom}</option>
-          </select>
-        )}
+          ))}
+        </select>
         <input
           type="text"
           name="room-name"

@@ -26,7 +26,30 @@ const io = new Server(server, {
 
 const rooms = {};
 const FOUR_PLAYER_SIDES = ['yellow', 'blue', 'green', 'red'];
-const getRoomCapacity = (room) => room.gameMode === 'four_player_chess' ? 4 : 2;
+const PLAYER_SIDES = ['white', 'black', ...FOUR_PLAYER_SIDES];
+const getPositionPlayerColors = (initialState) => {
+    const position = Array.isArray(initialState?.position)
+        ? initialState.position.at(-1) || []
+        : [];
+    return PLAYER_SIDES.filter((color) =>
+        position.some((rank) => Array.isArray(rank) && rank.some((piece) =>
+            piece === `${color}_king` || piece === `${color}_imperator`
+        ))
+    );
+};
+const isFourPlayerRoom = (room) =>
+    room.gameMode === 'four_player_chess' ||
+    (room.gameMode === 'custom' &&
+        (room.rulesVariant === 'four_player_chess' ||
+            room.rulesVariant === 'custom_multiplayer'));
+const getRoomCapacity = (room) => {
+    if (room.gameMode === 'custom' && room.rulesVariant === 'custom_multiplayer') {
+        return room.playerColors.length;
+    }
+    return isFourPlayerRoom(room) ? 4 : 2;
+};
+const getRoomRulesVariant = (room) =>
+    room.rulesVariant || (room.gameMode === 'four_player_chess' ? 'four_player_chess' : null);
 
 const normalizeInitialState = (gameMode, initialState) => {
     if (!initialState) return null;
@@ -40,9 +63,20 @@ const normalizeInitialState = (gameMode, initialState) => {
     }
 
     if (gameMode === 'custom') {
+        const rulesVariant = ['four_player_chess', 'custom_multiplayer']
+            .includes(initialState.rulesVariant)
+            ? initialState.rulesVariant
+            : null;
+        const playerColors = rulesVariant === 'four_player_chess'
+            ? FOUR_PLAYER_SIDES
+            : rulesVariant === 'custom_multiplayer'
+                ? getPositionPlayerColors(initialState)
+                : undefined;
         return {
             ...initialState,
             gameMode,
+            rulesVariant,
+            ...(playerColors ? { playerColors } : {}),
             boardSize: initialState.boardSize || 8,
         };
     }
@@ -139,7 +173,9 @@ io.on('connection', (socket) => {
                 playersCount: activePlayers,
                 createdAt: room.createdAt || Date.now(),
                 gameMode: room.gameMode,
+                rulesVariant: getRoomRulesVariant(room),
                 maxPlayers: getRoomCapacity(room),
+                playerColors: room.playerColors,
                 hasPassword: !!room.password,
                 hasDisconnected,
             };
@@ -169,8 +205,14 @@ io.on('connection', (socket) => {
 
             const ratingDiff = Math.abs(room.players[0].rating - gameData.userRating);
 
+            const requestedRulesVariant =
+                gameData.gameMode === 'four_player_chess' ||
+                gameData.rulesVariant === 'four_player_chess'
+                    ? 'four_player_chess'
+                    : null;
             return (
                 room.gameMode === gameData.gameMode &&
+                getRoomRulesVariant(room) === requestedRulesVariant &&
                 room.whiteTime === gameData.whiteTime &&
                 room.blackTime === gameData.blackTime &&
                 ratingDiff <= maxDiff
@@ -245,6 +287,8 @@ io.on('connection', (socket) => {
                 playersCount: room.players.filter(p => !p.disconnected).length,
                 maxPlayers: getRoomCapacity(room),
                 gameMode: room.gameMode,
+                rulesVariant: getRoomRulesVariant(room),
+                playerColors: room.playerColors,
             });
 
             socket.emit('syncGameState', {
@@ -267,6 +311,7 @@ io.on('connection', (socket) => {
                         yourSide: player.side,
                         opponent: opponent ? { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel } : null,
                         players: activePlayers.map(({ side, name, avatar, rating, selectedAchievement, achievementLevel }) => ({ side, name, avatar, rating, selectedAchievement, achievementLevel })),
+                        playerColors: room.playerColors,
                         message: 'Players ready',
                     });
                 });
@@ -284,10 +329,33 @@ io.on('connection', (socket) => {
                 : gameData.initialState?.roomName && gameData.initialState.roomName.trim()
                     ? gameData.initialState.roomName.trim()
                     : null;
+            const requestedRulesVariant =
+                gameData.rulesVariant || gameData.initialState?.rulesVariant;
+            const rulesVariant = gameData.gameMode === 'custom' &&
+                ['four_player_chess', 'custom_multiplayer'].includes(requestedRulesVariant)
+                ? requestedRulesVariant
+                : null;
+            const playerColors = rulesVariant === 'custom_multiplayer'
+                ? getPositionPlayerColors(initialState)
+                : rulesVariant === 'four_player_chess' || gameData.gameMode === 'four_player_chess'
+                    ? FOUR_PLAYER_SIDES
+                    : null;
+            if (rulesVariant === 'custom_multiplayer' &&
+                (!playerColors || playerColors.length < 2 || playerColors.length > 6)) {
+                if (callback) {
+                    callback({
+                        success: false,
+                        error: 'Custom rooms require 2 to 6 players with a king for each color.',
+                    });
+                }
+                return;
+            }
             rooms[roomId] = {
                 players: [],
                 createdAt: Date.now(),
                 gameMode: gameData.gameMode,
+                rulesVariant,
+                playerColors,
                 initialState,
                 moves: [],
                 roomName,
@@ -331,8 +399,8 @@ io.on('connection', (socket) => {
             );
         }
 
-        const side = room.gameMode === 'four_player_chess'
-            ? FOUR_PLAYER_SIDES.find(candidate =>
+        const side = isFourPlayerRoom(room)
+            ? room.playerColors.find(candidate =>
                 !rooms[roomId].players.some(player => player.side === candidate)
             )
             : rooms[roomId].players.length === 0 ? 'white' : 'black';
@@ -354,6 +422,8 @@ io.on('connection', (socket) => {
             playersCount: rooms[roomId].players.length,
             maxPlayers: roomCapacity,
             gameMode: rooms[roomId].gameMode,
+            rulesVariant: getRoomRulesVariant(rooms[roomId]),
+            playerColors: room.playerColors,
             roomName: rooms[roomId].roomName || null,
         });
 
@@ -363,6 +433,9 @@ io.on('connection', (socket) => {
                 roomId,
                 side,
                 initialState: rooms[roomId].initialState || null,
+                gameMode: rooms[roomId].gameMode,
+                rulesVariant: getRoomRulesVariant(rooms[roomId]),
+                playerColors: room.playerColors,
                 moves: rooms[roomId].moves || [],
             });
         }
@@ -377,6 +450,8 @@ io.on('connection', (socket) => {
                 side: 'both',
                 message: 'Both players have joined!',
                 gameMode: rooms[roomId].gameMode,
+                rulesVariant: getRoomRulesVariant(rooms[roomId]),
+                playerColors: room.playerColors,
                 roomName: rooms[roomId].roomName,
             });
 
@@ -387,6 +462,7 @@ io.on('connection', (socket) => {
                     yourSide: player.side,
                     opponent: opponent ? { name: opponent.name, avatar: opponent.avatar, rating: opponent.rating, selectedAchievement: opponent.selectedAchievement, achievementLevel: opponent.achievementLevel } : null,
                     players: activePlayers.map(({ side, name, avatar, rating, selectedAchievement, achievementLevel }) => ({ side, name, avatar, rating, selectedAchievement, achievementLevel })),
+                    playerColors: room.playerColors,
                     message: 'Players ready',
                 });
             });
@@ -426,7 +502,7 @@ io.on('connection', (socket) => {
         const room = rooms[roomId];
         if (!room) return;
 
-        if (room.gameMode === 'four_player_chess') {
+        if (isFourPlayerRoom(room)) {
             io.to(roomId).emit('playerTimedOut', { loser });
             return;
         }
@@ -463,7 +539,7 @@ io.on('connection', (socket) => {
         if (!room) return;
 
         const leaver = room.players.find(p => p.socketId === socket.id);
-        if (room.gameMode === 'four_player_chess' && leaver) {
+        if (isFourPlayerRoom(room) && leaver) {
             io.to(roomId).emit('playerTimedOut', {
                 loser: leaver.side,
                 reason: 'left',
@@ -525,7 +601,7 @@ io.on('connection', (socket) => {
                 player.disconnected = true;
                 player.disconnectTime = Date.now();
 
-                if (rooms[roomId].gameMode === 'four_player_chess') {
+                if (isFourPlayerRoom(rooms[roomId])) {
                     io.to(roomId).emit('opponentDisconnected', {
                         message: 'A player disconnected. Waiting to reconnect...',
                         playersCount: rooms[roomId].players.filter(p => !p.disconnected).length,
@@ -539,7 +615,7 @@ io.on('connection', (socket) => {
                     });
                 }
                 rooms[roomId].timeout = setTimeout(async () => {
-                    if (rooms[roomId]?.gameMode === 'four_player_chess') {
+                    if (rooms[roomId] && isFourPlayerRoom(rooms[roomId])) {
                         io.to(roomId).emit('playerTimedOut', {
                             loser: player.side,
                             reason: 'disconnected',

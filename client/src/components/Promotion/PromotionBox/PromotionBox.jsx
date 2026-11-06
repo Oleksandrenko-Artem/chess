@@ -6,10 +6,11 @@ import { getPieceStyle } from "../../../helpers/getPieceImage";
 import { useSelector } from "react-redux";
 import arbiter from "../../../arbiter/arbiter";
 import {
-  FOUR_PLAYER_COLORS,
+  getConfiguredPlayerColors,
   getFourPlayerGameStatus,
   getNextFourPlayerTurn,
   hasFourPlayerKing,
+  isFourPlayerGame,
 } from "../../../helpers/fourPlayer";
 import styles from "../../Pieces/Pieces.module.scss";
 
@@ -33,7 +34,7 @@ const PromotionBox = ({ onClosePromotion }) => {
     typeof window !== "undefined"
       ? window.localStorage.getItem("chess_variant")
       : "chess";
-  const isFourPlayer = variant === "four_player_chess";
+  const isFourPlayer = isFourPlayerGame(variant);
   const promotionPosition = appState.position[appState.position.length - 1];
   const color = promotionSquare
     ? promotionPosition[promotionSquare.rank]?.[promotionSquare.file]?.split(
@@ -68,7 +69,8 @@ const PromotionBox = ({ onClosePromotion }) => {
         newCaptured[capturedColor].push(capturedPiece);
         if (
           isFourPlayer &&
-          capturedPiece.endsWith("_king") &&
+          (capturedPiece.endsWith("_king") ||
+            capturedPiece.endsWith("_imperator")) &&
           !eliminatedColors.includes(capturedColor)
         ) {
           eliminatedColors = [...eliminatedColors, capturedColor];
@@ -94,7 +96,7 @@ const PromotionBox = ({ onClosePromotion }) => {
       }
       let wasCheckmate = false;
       if (isFourPlayer) {
-        FOUR_PLAYER_COLORS.forEach((playerColor) => {
+        getConfiguredPlayerColors(newPosition).forEach((playerColor) => {
           if (
             eliminatedColors.includes(playerColor) ||
             !hasFourPlayerKing(newPosition, playerColor)
@@ -123,12 +125,17 @@ const PromotionBox = ({ onClosePromotion }) => {
             newPosition,
             appState.playerTurn,
             eliminatedColors,
+            getConfiguredPlayerColors(newPosition),
           )
         : appState.playerTurn === "white"
           ? "black"
           : "white";
       let gameStatus = isFourPlayer
-        ? getFourPlayerGameStatus(newPosition, eliminatedColors)
+        ? getFourPlayerGameStatus(
+            newPosition,
+            eliminatedColors,
+            getConfiguredPlayerColors(newPosition),
+          )
         : arbiter.getGameStatus({
             position: newPosition,
             playerColor: nextPlayer,

@@ -70,6 +70,10 @@ function App() {
       : null;
   const savedMode =
     typeof window !== "undefined" ? localStorage.getItem("chess_mode") : null;
+  const savedRulesVariant =
+    typeof window !== "undefined"
+      ? localStorage.getItem("chess_rules_variant")
+      : null;
   const savedBoardSize =
     typeof window !== "undefined"
       ? parseInt(localStorage.getItem("boardSize") || "8", 10)
@@ -88,7 +92,9 @@ function App() {
         })()
       : null;
   let initialStateAtLoad =
-    savedVariant === "shatranj"
+    savedVariant === "custom" && savedRulesVariant === "four_player_chess"
+      ? initialFourPlayerGameState
+      : savedVariant === "shatranj"
       ? initialOldGameState
       : savedVariant === "special"
         ? initialSpecialGameState
@@ -118,18 +124,28 @@ function App() {
       playerTurn: savedEditorState?.playerTurn || initialStateAtLoad.playerTurn,
       orientation:
         savedEditorState?.orientation || initialStateAtLoad.orientation,
+      rulesVariant: savedEditorState?.rulesVariant || null,
     };
   } else {
     initialStateAtLoad = {
       ...initialStateAtLoad,
       boardSize:
-        savedVariant === "four_player_chess"
+        savedVariant === "four_player_chess" ||
+        (savedVariant === "custom" &&
+          savedRulesVariant === "four_player_chess")
           ? 14
           : savedVariant === "special" && savedEditorState?.boardSize
             ? savedEditorState.boardSize
             : 8,
       position:
-        savedVariant === "special" && savedEditorState?.position
+        savedVariant === "custom" &&
+        savedRulesVariant === "four_player_chess" &&
+        savedEditorState?.position
+          ? savedEditorState.position
+          : savedVariant === "custom" &&
+              savedRulesVariant === "four_player_chess"
+            ? [createFourPlayerPosition()]
+            : savedVariant === "special" && savedEditorState?.position
           ? savedEditorState.position
           : savedVariant === "shatranj"
             ? [createOldPosition(8)]
@@ -220,6 +236,7 @@ function App() {
         boardSize: appState.boardSize,
         playerTurn: appState.playerTurn,
         orientation: appState.orientation,
+        rulesVariant: appState.rulesVariant || null,
       }),
     );
   }, [appState]);

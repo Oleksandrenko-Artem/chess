@@ -6,6 +6,7 @@ import { updateUserThunk } from "../../store/usersSlice";
 import {
   BOARD_STYLES,
   initialGameState,
+  initialFourPlayerGameState,
   initialNewVariantGameState,
   initialOldGameState,
   initialModernShatranjGameState,
@@ -14,6 +15,13 @@ import {
 } from "../../constants";
 import { rgbStringToHex } from "../../utils/color";
 import { createSpecialPosition } from "../../helpers";
+import {
+  FOUR_PLAYER_COLORS,
+  FOUR_PLAYER_NATIVE_PIECES,
+  PLAYER_COLORS,
+  getPlayerColorsInPosition,
+  hasFourPlayerKing,
+} from "../../helpers/fourPlayer";
 import { isSoundEnabled, setSoundEnabled } from "../../helpers/playMoveSound";
 import { imageMap } from '../../utils/chessIcons';
 import delete_icon from '../../assets/icons/other/delete.png';
@@ -23,6 +31,9 @@ import styles from "./CreatePosition.module.scss";
 const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
   const { appState, dispatch } = useAppContext();
   const { t } = useTranslation();
+  const isFourPlayer =
+    localStorage.getItem("chess_variant") === "four_player_chess";
+  const editorPieceColors = ["white", "black", ...FOUR_PLAYER_COLORS];
   const user = useSelector((state) => state.users.user);
   const dispatchRedux = useDispatch();
   const saveTimeoutRef = useRef();
@@ -43,7 +54,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
   const [selectedColor, setSelectedColor] = useState(
     localStorage.getItem("chess_side") || null,
   );
-  const [color, setColor] = useState("white");
+  const [color, setColor] = useState(isFourPlayer ? "yellow" : "white");
   const [piecesStyle, setPiecesStyle] = useState("standart");
   const [preset, setPreset] = useState("custom");
   const [savedPresets, setSavedPresets] = useState(() => {
@@ -235,20 +246,28 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     document.documentElement.style.setProperty("--square-color", initSquare);
   }, []);
   const handleChangeColor = () => {
-    if (color === "white") {
-      setColor("black");
-    } else {
-      setColor("white");
-    }
+    const currentIndex = editorPieceColors.indexOf(color);
+    setColor(
+      editorPieceColors[
+        (currentIndex + 1) % editorPieceColors.length
+      ],
+    );
   };
   const handleResetPosition = () => {
     localStorage.setItem("chess_mode", "editor");
     setStart("no");
-    const resetState = {
-      ...initialSpecialGameState,
-      position: [createSpecialPosition(appState.boardSize)],
-      boardSize: appState.boardSize,
-    };
+    const resetState = isFourPlayer
+      ? initialFourPlayerGameState
+      : {
+          ...initialSpecialGameState,
+          position: [createSpecialPosition(appState.boardSize)],
+          boardSize: appState.boardSize,
+        };
+    if (isFourPlayer) {
+      localStorage.setItem("chess_side", resetState.playerTurn);
+      setSelectedColor(resetState.playerTurn);
+      setColor(resetState.playerTurn);
+    }
     dispatch({
       type: actionTypes.RESET_GAME,
       payload: { initialState: resetState },
@@ -297,6 +316,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     shatranj: initialOldGameState,
     new_chess: initialNewVariantGameState,
     shatranj_modern: initialModernShatranjGameState,
+    four_player_chess: initialFourPlayerGameState,
   };
   const deletePreset = (id) => {
     if (!window.confirm(`${t("custom_panel.delete_preset")}`)) return;
@@ -314,11 +334,13 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     dispatch({
       type: actionTypes.RESET_GAME,
       payload: {
-        initialState: {
-          ...initialSpecialGameState,
-          position: [createSpecialPosition(appState.boardSize)],
-          boardSize: appState.boardSize,
-        },
+        initialState: isFourPlayer
+          ? initialFourPlayerGameState
+          : {
+              ...initialSpecialGameState,
+              position: [createSpecialPosition(appState.boardSize)],
+              boardSize: appState.boardSize,
+            },
       },
     });
   };
@@ -339,6 +361,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       position: currentPosition,
       playerTurn: appState?.playerTurn || "white",
       orientation: appState?.orientation || "white",
+      gameVariant: localStorage.getItem("chess_variant") || "special",
     };
     const updatedPresets = [...savedPresetList, nextPreset];
     localStorage.setItem(
@@ -358,25 +381,37 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       );
       if (!savedPreset) return;
 
+      const gameVariant = savedPreset.gameVariant || "special";
+      const baseState =
+        gameVariant === "four_player_chess"
+          ? initialFourPlayerGameState
+          : initialSpecialGameState;
       const restoredState = {
-        ...initialSpecialGameState,
+        ...baseState,
         boardSize: savedPreset.boardSize,
         position: JSON.parse(JSON.stringify(savedPreset.position || [])),
-        playerTurn: savedPreset.playerTurn || "white",
-        orientation: savedPreset.orientation || "white",
+        playerTurn: savedPreset.playerTurn || baseState.playerTurn,
+        orientation: savedPreset.orientation || baseState.orientation,
         validMoves: [],
         selected: null,
         promotionSquare: null,
-        status: initialSpecialGameState.status,
+        status: baseState.status,
         movesList: [],
-        captured: {
-          white: [],
-          black: [],
-        },
+        captured:
+          gameVariant === "four_player_chess"
+            ? { yellow: [], blue: [], green: [], red: [] }
+            : { white: [], black: [] },
       };
 
-      localStorage.setItem("chess_side", savedPreset.playerTurn || "white");
-      setSelectedColor(savedPreset.playerTurn || "white");
+      localStorage.setItem("chess_variant", gameVariant);
+      localStorage.removeItem("chess_rules_variant");
+      localStorage.removeItem("chess_player_colors");
+      localStorage.setItem(
+        "chess_side",
+        savedPreset.playerTurn || baseState.playerTurn,
+      );
+      setSelectedColor(savedPreset.playerTurn || baseState.playerTurn);
+      setColor(savedPreset.playerTurn || baseState.playerTurn);
       localStorage.setItem("chess_mode", "editor");
       setStart("no");
       dispatch({
@@ -387,13 +422,14 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     }
 
     const initialState = presetsMap[val] || initialSpecialGameState;
-    if (val !== "amazon") {
-      localStorage.setItem("chess_side", "white");
-      setSelectedColor("white");
-    } else {
-      localStorage.setItem("chess_side", "black");
-      setSelectedColor("black");
-    }
+    const gameVariant = val === "custom" ? "special" : val;
+    const selectedSide = initialState.playerTurn || "white";
+    localStorage.setItem("chess_variant", gameVariant);
+    localStorage.removeItem("chess_rules_variant");
+    localStorage.removeItem("chess_player_colors");
+    localStorage.setItem("chess_side", selectedSide);
+    setSelectedColor(selectedSide);
+    setColor(selectedSide);
     localStorage.setItem("chess_mode", "editor");
     setStart("no");
     dispatch({ type: actionTypes.RESET_GAME, payload: { initialState } });
@@ -408,16 +444,80 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       (cleanPiece.endsWith("king") || cleanPiece.endsWith("imperator"))
     );
   };
+  const hasKingForColor = (playerColor) => {
+    const position = appState?.position?.at(-1) || [];
+    return position.flat(Infinity).some((piece) => isKingPiece(piece, playerColor));
+  };
+  const handleSelectPlayerColor = (playerColor) => {
+    if (!hasKingForColor(playerColor)) return;
+
+    setColor(playerColor);
+    setSelectedColor(playerColor);
+    localStorage.setItem("chess_side", playerColor);
+    dispatch({
+      type: actionTypes.SET_PLAYER_TURN,
+      payload: playerColor,
+    });
+  };
 
   const hasValidKingSetup = () => {
     const position = appState?.position || [];
-    const flattened = position.flat(Infinity);
-    const hasWhiteKing = flattened.some((piece) => isKingPiece(piece, "white"));
-    const hasBlackKing = flattened.some((piece) => isKingPiece(piece, "black"));
-    return hasWhiteKing && hasBlackKing;
+    const currentPosition = position.at(-1) || [];
+    const activePlayers = getPlayerColorsInPosition(currentPosition);
+    return activePlayers.length >= 2 && activePlayers.length <= 6;
+  };
+  const hasValidRoomSetup = () => {
+    const currentPosition = appState?.position?.at(-1) || [];
+    const playerCount = getPlayerColorsInPosition(currentPosition).length;
+    return playerCount >= 2 && playerCount <= 6;
   };
 
   const handleStartVariant = () => {
+    const position = appState?.position?.at(-1) || [];
+    const playerColors = getPlayerColorsInPosition(position);
+    const isClassicFourPlayerSetup =
+      playerColors.length === FOUR_PLAYER_COLORS.length &&
+      FOUR_PLAYER_COLORS.every((playerColor) =>
+        playerColors.includes(playerColor),
+      );
+    const isStandardTwoPlayerSetup =
+      playerColors.length === 2 &&
+      playerColors.includes("white") &&
+      playerColors.includes("black");
+    const usesCustomPlayerRules =
+      !isClassicFourPlayerSetup && !isStandardTwoPlayerSetup;
+    const gameVariant = isClassicFourPlayerSetup
+      ? "four_player_chess"
+      : usesCustomPlayerRules
+        ? "custom"
+        : localStorage.getItem("chess_variant");
+    const availableSides = isClassicFourPlayerSetup
+      ? FOUR_PLAYER_COLORS
+      : playerColors;
+    const userSide = [
+      selectedColor,
+      localStorage.getItem("chess_side"),
+      playerColors[0],
+    ].find((candidate) => availableSides.includes(candidate));
+
+    localStorage.setItem("chess_variant", gameVariant);
+    localStorage.setItem("chess_side", userSide);
+    if (usesCustomPlayerRules) {
+      localStorage.setItem("chess_rules_variant", "custom_multiplayer");
+      localStorage.setItem(
+        "chess_player_colors",
+        JSON.stringify(playerColors),
+      );
+    } else {
+      localStorage.removeItem("chess_player_colors");
+      if (isClassicFourPlayerSetup) {
+        localStorage.setItem("chess_rules_variant", "four_player_chess");
+      } else {
+        localStorage.removeItem("chess_rules_variant");
+      }
+    }
+    dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: userSide });
+    dispatch({ type: actionTypes.SET_ORIENTATION, payload: userSide });
     localStorage.setItem("chess_mode", "game");
     setStart("yes");
     dispatch({ type: actionTypes.SET_VS_BOT, payload: { isVsBot: true } });
@@ -427,16 +527,6 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
   };
   const handleCloseRoom = () => {
     setRoomWindow(false);
-  };
-  const onClickWhite = () => {
-    localStorage.setItem("chess_side", "white");
-    setSelectedColor("white");
-    dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "white" });
-  };
-  const onClickBlack = () => {
-    localStorage.setItem("chess_side", "black");
-    setSelectedColor("black");
-    dispatch({ type: actionTypes.SET_PLAYER_TURN, payload: "black" });
   };
   const handleToggle = () => {
     dispatch({ type: actionTypes.TOGGLE_ORIENTATION });
@@ -454,6 +544,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
     );
   };
   const handleChangeBoardSize = (e) => {
+    if (isFourPlayer) return;
     const newSize = parseInt(e.target.value, 10);
     dispatch({ type: actionTypes.SET_BOARD_SIZE, payload: newSize });
     if (typeof window !== "undefined") {
@@ -467,7 +558,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           <select
             value={piecesStyle}
             onChange={handlePiecesChange}
-            disabled={promotion || start === "yes"}
+            disabled={isFourPlayer || promotion || start === "yes"}
           >
             <option value="standart">
               {t("custom_panel.standart_pieces")}
@@ -493,6 +584,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             <option value="shatranj_modern">
               {t("header.shatranj-modern")}
             </option>
+            <option value="four_player_chess">
+              {t("header.four-player-chess")}
+            </option>
           </select>
           <button type="button" onClick={handleSaveCustomPreset}>
             {t("custom_panel.save_position")}
@@ -508,7 +602,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
             value={appState.boardSize}
             onChange={handleChangeBoardSize}
             className={styles["board-size-select"]}
-            disabled={start === "yes"}
+            disabled={isFourPlayer || start === "yes"}
           >
             <option value={8}>8x8</option>
             <option value={10}>10x10</option>
@@ -532,7 +626,7 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
               {!roomWindow && (
                 <button
                   onClick={handlePlayInRoom}
-                  disabled={!hasValidKingSetup()}
+                  disabled={!hasValidRoomSetup()}
                 >
                   {t("custom_panel.play_in_room")}
                 </button>
@@ -627,47 +721,59 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           </button>
         </div>
         <div className={styles["img-div"]}>
-          <img
-            src={imageMap.black_king}
-            alt="black"
-            className={`${styles["img-style"]} ${appState.playerTurn === "black" ? styles["active"] : ""}`}
-            onClick={() => {
-              setSelectedColor("black");
-              onClickBlack();
-            }}
-          />
-          <img
-            src={imageMap.white_king}
-            alt="white"
-            className={`${styles["img-style"]} ${appState.playerTurn === "white" ? styles["active"] : ""}`}
-            onClick={() => {
-              setSelectedColor("white");
-              onClickWhite();
-            }}
-          />
-          {color === "white" && (
+          {PLAYER_COLORS.filter(
+            (playerColor) =>
+              !isFourPlayer ||
+              FOUR_PLAYER_COLORS.includes(playerColor) ||
+              hasKingForColor(playerColor),
+          ).map((playerColor) => {
+            const hasKing = hasKingForColor(playerColor);
+            return (
+                <img
+                  key={playerColor}
+                  src={imageMap[`${playerColor}_king`]}
+                  alt={`${playerColor}_king`}
+                  aria-disabled={!hasKing}
+                  className={`${styles["img-style"]} ${appState.playerTurn === playerColor ? styles["active"] : ""} ${!hasKing ? styles["unavailable"] : ""}`}
+                  onClick={() => handleSelectPlayerColor(playerColor)}
+                />
+            );
+          })}
+          {imageMap[`${color}_ferz`] && (
             <img
-              src={imageMap.white_ferz}
-              alt="white"
+              src={imageMap[`${color}_ferz`]}
+              alt={`${color}_ferz`}
               className={styles["img-style"]}
-              onClick={() => {
-                handleChangePromotion();
-              }}
-            />
-          )}
-          {color === "black" && (
-            <img
-              src={imageMap.black_ferz}
-              alt="black"
-              className={styles["img-style"]}
-              onClick={() => {
-                handleChangePromotion();
-              }}
+              onClick={handleChangePromotion}
             />
           )}
         </div>
       </div>
-      {color === "white" && !promotion && (
+      {(isFourPlayer || !["white", "black"].includes(color)) &&
+        !promotion && (
+        <div className={styles["piece-list"]} onClick={handlePieceClick}>
+          <div>
+            {FOUR_PLAYER_NATIVE_PIECES.map((pieceType) => {
+              const piece = `${color}_${pieceType}`;
+              return (
+                <img
+                  key={piece}
+                  src={imageMap[piece]}
+                  alt={piece}
+                  draggable={editorMode}
+                  onDragStart={(e) =>
+                    e.dataTransfer.setData("text", `${piece},isNew`)
+                  }
+                  className={pieceType === "pawn" ? styles.pawn : undefined}
+                />
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {!isFourPlayer &&
+        color === "white" &&
+        !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
             <div>
@@ -950,7 +1056,9 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
           )}
         </div>
       )}
-      {color === "black" && !promotion && (
+      {!isFourPlayer &&
+        color === "black" &&
+        !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>
           {piecesStyle === "standart" && (
             <div>

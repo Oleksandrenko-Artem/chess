@@ -21,7 +21,10 @@ import { setSoundEnabled, isSoundEnabled } from "../../helpers/playMoveSound";
 import { imageMap } from '../../utils/chessIcons';
 import styles from "./GameInfoPanel.module.scss";
 import Timer from "../Timer/Timer";
-import { FOUR_PLAYER_COLORS } from "../../helpers/fourPlayer";
+import {
+  getConfiguredPlayerColors,
+  isFourPlayerGame,
+} from "../../helpers/fourPlayer";
 
 const GameInfoPanel = (props) => {
   const { status, start, setStart } = props;
@@ -134,8 +137,9 @@ const GameInfoPanel = (props) => {
     localStorage.removeItem("botGameState");
     setStart(false);
     if (
-      appState?.isMultiplayer ||
-      window.localStorage.getItem("chess_mode") === "multiplayer"
+      !isFourPlayerGame() &&
+      (appState?.isMultiplayer ||
+        window.localStorage.getItem("chess_mode") === "multiplayer")
     ) {
       dispatch({
         type: actionTypes.RESET_GAME,
@@ -266,7 +270,7 @@ const GameInfoPanel = (props) => {
         },
       });
     }
-    if (window.localStorage.getItem("chess_variant") === "four_player_chess") {
+    if (isFourPlayerGame()) {
       dispatch({
         type: actionTypes.RESET_GAME,
         payload: {
@@ -278,8 +282,9 @@ const GameInfoPanel = (props) => {
       });
     }
     if (
-      appState?.isMultiplayer ||
-      window.localStorage.getItem("chess_mode") === "multiplayer"
+      !isFourPlayerGame() &&
+      (appState?.isMultiplayer ||
+        window.localStorage.getItem("chess_mode") === "multiplayer")
     ) {
       dispatch({
         type: actionTypes.RESET_GAME,
@@ -294,12 +299,13 @@ const GameInfoPanel = (props) => {
     }
   };
   const handleToggle = () => {
-    if (localStorage.getItem("chess_variant") === "four_player_chess") {
-      const currentIndex = FOUR_PLAYER_COLORS.indexOf(appState.orientation);
+    if (isFourPlayerGame()) {
+      const playerColors = getConfiguredPlayerColors();
+      const currentIndex = playerColors.indexOf(appState.orientation);
       const nextOrientation =
-        FOUR_PLAYER_COLORS[
-          (currentIndex + 1 + FOUR_PLAYER_COLORS.length) %
-            FOUR_PLAYER_COLORS.length
+        playerColors[
+          (currentIndex + 1 + playerColors.length) %
+            playerColors.length
         ];
       dispatch({ type: actionTypes.SET_ORIENTATION, payload: nextOrientation });
       return;
@@ -378,7 +384,7 @@ const GameInfoPanel = (props) => {
   };
   const unlockedSets = user?.achievements?.pieceSets || {};
   const isAdmin = user?.role === "admin";
-  const isFourPlayer = localStorage.getItem("chess_variant") === "four_player_chess";
+  const isFourPlayer = isFourPlayerGame();
 
   const pieceOptions = [
     { value: "standart", label: t("style_panel.standart"), unlocked: true },

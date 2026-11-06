@@ -15,10 +15,11 @@ export const imageMap = PIECES.reduce((acc, piece) => {
 
     const blackPath = modules[`../assets/icons/pieces/black_${fileName}.png`]?.default;
     const whitePath = modules[`../assets/icons/pieces/white_${fileName}.png`]?.default;
-    const redPath = modules[`../assets/icons/pieces/red_${fileName}.png`]?.default;
-    const yellowPath = modules[`../assets/icons/pieces/yellow_${fileName}.png`]?.default;
-    const greenPath = modules[`../assets/icons/pieces/green_${fileName}.png`]?.default;
-    const bluePath = modules[`../assets/icons/pieces/blue_${fileName}.png`]?.default;
+    const fourPlayerFileName = piece === 'pawn' ? piece : fileName;
+    const redPath = modules[`../assets/icons/pieces/red_${fourPlayerFileName}.png`]?.default;
+    const yellowPath = modules[`../assets/icons/pieces/yellow_${fourPlayerFileName}.png`]?.default;
+    const greenPath = modules[`../assets/icons/pieces/green_${fourPlayerFileName}.png`]?.default;
+    const bluePath = modules[`../assets/icons/pieces/blue_${fourPlayerFileName}.png`]?.default;
 
     if (blackPath) acc[`black_${piece}`] = blackPath;
     if (whitePath) acc[`white_${piece}`] = whitePath;

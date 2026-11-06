@@ -3,6 +3,10 @@ import { useAppContext } from "../../contexts/Context";
 import actionTypes from "../../reducers/actionTypes";
 import styles from "./Timer.module.scss";
 import { useTranslation } from "react-i18next";
+import {
+  getConfiguredPlayerColors,
+  isFourPlayerGame,
+} from "../../helpers/fourPlayer";
 
 const Timer = () => {
   const { appState, dispatch, socket } = useAppContext();
@@ -50,7 +54,7 @@ const Timer = () => {
 
         if (newTime < 0) {
           if (
-            localStorage.getItem("chess_variant") === "four_player_chess" &&
+            isFourPlayerGame() &&
             appState.isMultiplayer
           ) {
             if (currentPlayer === localStorage.getItem("chess_side")) {
@@ -76,12 +80,12 @@ const Timer = () => {
       if (moveTimeoutRef.current) {
         clearTimeout(moveTimeoutRef.current);
       }
-      if (localStorage.getItem("chess_variant") !== "four_player_chess") {
+      if (!isFourPlayerGame()) {
         moveTimeoutRef.current = setTimeout(() => {
           const currentPlayer = currentPlayerRef.current;
           if (
             appState.isMultiplayer &&
-            localStorage.getItem("chess_variant") === "four_player_chess"
+            isFourPlayerGame()
           ) {
             socket.emit("playerTimedOut", {
               roomId: appState.roomId,
@@ -136,10 +140,10 @@ const Timer = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
-  if (localStorage.getItem("chess_variant") === "four_player_chess") {
+  if (isFourPlayerGame()) {
     return (
       <div className={styles.timer}>
-        {["yellow", "blue", "green", "red"].map((color) => (
+        {getConfiguredPlayerColors().map((color) => (
           <div
             key={color}
             className={`${styles.time} ${appState.playerTurn === color ? styles.active : ""}`}

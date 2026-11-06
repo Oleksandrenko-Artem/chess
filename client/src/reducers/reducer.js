@@ -4,9 +4,11 @@ import { createSpecialPosition } from "../helpers";
 import { playMoveSound } from "../helpers/playMoveSound";
 import actionTypes from "./actionTypes";
 import {
-    FOUR_PLAYER_COLORS,
+    getConfiguredPlayerColors,
+    getPlayerColorsInPosition,
     getFourPlayerGameStatus,
     getNextFourPlayerTurn,
+    isFourPlayerGame,
 } from "../helpers/fourPlayer";
 
 export const reducer = (state, action) => {
@@ -15,7 +17,7 @@ export const reducer = (state, action) => {
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive, halfmoveClock = 0 } = state;
-            const isFourPlayer = typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player_chess';
+            const isFourPlayer = isFourPlayerGame();
             const previousPosition = position[position.length - 1];
             gameStatus = action.payload.gameStatus || status.ongoing;
             if (!action.payload.keepTurn) {
@@ -55,7 +57,7 @@ export const reducer = (state, action) => {
             const currentPosition = position[position.length - 1];
 
             const isCheck = isFourPlayer
-                ? FOUR_PLAYER_COLORS.some((color) => {
+                ? getConfiguredPlayerColors(currentPosition).some((color) => {
                     const wasInCheck = arbiter.isKingInCheck({
                         position: previousPosition,
                         playerColor: color,
@@ -186,11 +188,21 @@ export const reducer = (state, action) => {
                 },
                 halfmoveClock: 0,
             };
-        case actionTypes.TOGGLE_ORIENTATION:
+        case actionTypes.TOGGLE_ORIENTATION: {
+            const playerColors = isFourPlayerGame()
+                ? getConfiguredPlayerColors()
+                : localStorage.getItem('chess_mode') === 'editor'
+                    ? getPlayerColorsInPosition(state.position?.at(-1))
+                    : [];
             return {
                 ...state,
-                orientation: state.orientation === 'white' ? 'black' : 'white'
+                orientation: playerColors.length > 1
+                    ? playerColors[
+                        (playerColors.indexOf(state.orientation) + 1) % playerColors.length
+                    ]
+                    : state.orientation === 'white' ? 'black' : 'white'
             };
+        }
         case actionTypes.RESET_GAME: {
             return action.payload.initialState;
         };
@@ -214,15 +226,24 @@ export const reducer = (state, action) => {
             };
         };
         case actionTypes.TIME_UP: {
-            if (typeof localStorage !== 'undefined' && localStorage.getItem('chess_variant') === 'four_player_chess') {
+            if (isFourPlayerGame()) {
                 const position = state.position[state.position.length - 1].map(row => [...row]);
                 const loser = action.payload.player;
                 if ((state.eliminatedColors || []).includes(loser)) return state;
                 const eliminatedColors = [...(state.eliminatedColors || []), loser];
                 const nextPlayer = state.playerTurn === loser
-                    ? getNextFourPlayerTurn(position, loser, eliminatedColors)
+                    ? getNextFourPlayerTurn(
+                        position,
+                        loser,
+                        eliminatedColors,
+                        getConfiguredPlayerColors(position),
+                    )
                     : state.playerTurn;
-                let gameStatus = getFourPlayerGameStatus(position, eliminatedColors);
+                let gameStatus = getFourPlayerGameStatus(
+                    position,
+                    eliminatedColors,
+                    getConfiguredPlayerColors(position),
+                );
                 if (state.isVsBot && loser === localStorage.getItem('chess_side') && gameStatus === status.ongoing) {
                     gameStatus = `${nextPlayer} wins`;
                 }

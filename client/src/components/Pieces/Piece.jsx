@@ -4,6 +4,7 @@ import { status } from "../../constants";
 import styles from "./Pieces.module.scss";
 import arbiter from "../../arbiter/arbiter";
 import { generateValidMoves } from "../../reducers/actions/move";
+import { isFourPlayerGame } from "../../helpers/fourPlayer";
 
 const MOVE_DELAY_MS = 240;
 
@@ -67,7 +68,7 @@ const Piece = ({ rank, file, piece, imageSrc, className = "" }) => {
   const prevBoard = position.length > 1 ? position[position.length - 2] : null;
   const getSelectableMoves = () => {
     const gameVariant = localStorage.getItem("chess_variant");
-    if (gameVariant !== "checkers_v2" && gameVariant !== "four_player_chess") {
+    if (gameVariant !== "checkers_v2" && !isFourPlayerGame(gameVariant)) {
       return arbiter.getRegularMoves({
         position: currentPosition,
         prevPosition: prevBoard,

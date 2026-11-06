@@ -28,7 +28,11 @@ import {
   createModernShatranjPosition,
   createNewChess960Position,
 } from "../helpers";
-import { createFourPlayerPosition } from "../helpers/fourPlayer";
+import {
+  getConfiguredPlayerColors,
+  createFourPlayerPosition,
+  isFourPlayerGame,
+} from "../helpers/fourPlayer";
 import styles from "./Pages.module.scss";
 import CapturedPieces from "../components/CapturedPieces/CapturedPieces";
 import ChessBoard from "../components/ChessBoard/ChessBoard";
@@ -65,7 +69,7 @@ const MODE_ICONS = {
   four_player_chess: `${IMAGE_SRC.SRC_OTHER}/four_players.png`,
 };
 
-const getInitialStateByMode = (mode, boardSize = 8) => {
+const getInitialStateByMode = (mode, boardSize = 8, rulesVariant = null) => {
   if (mode === "shatranj") {
     return {
       ...initialOldGameState,
@@ -116,6 +120,15 @@ const getInitialStateByMode = (mode, boardSize = 8) => {
     };
   }
   if (mode === "custom") {
+    if (rulesVariant === "four_player_chess") {
+      return {
+        ...initialFourPlayerGameState,
+        boardSize: 14,
+        position: [createFourPlayerPosition(14)],
+        gameMode: "custom",
+        rulesVariant,
+      };
+    }
     return {
       ...initialSpecialGameState,
       boardSize,
@@ -243,9 +256,26 @@ const GamesListPage = ({ start, setStart }) => {
         localStorage.setItem("chess_variant", info.gameMode);
         localStorage.setItem("chess_mode", "multiplayer");
       }
+      if (
+        info.rulesVariant === "four_player_chess" ||
+        info.rulesVariant === "custom_multiplayer"
+      ) {
+        localStorage.setItem("chess_rules_variant", info.rulesVariant);
+        if (Array.isArray(info.playerColors)) {
+          localStorage.setItem(
+            "chess_player_colors",
+            JSON.stringify(info.playerColors),
+          );
+        }
+      } else {
+        localStorage.removeItem("chess_rules_variant");
+        localStorage.removeItem("chess_player_colors");
+      }
 
       const requiredPlayers =
-        info.maxPlayers || (info.gameMode === "four_player_chess" ? 4 : 2);
+        info.maxPlayers ||
+        info.playerColors?.length ||
+        (isFourPlayerGame(info.gameMode, info.rulesVariant) ? 4 : 2);
       if (info.playersCount >= requiredPlayers) {
         setGameReady(true);
       }
@@ -254,6 +284,12 @@ const GamesListPage = ({ start, setStart }) => {
     const onPlayersReady = (data) => {
       setPlayersCount(data.playersCount || 2);
       setGameReady(true);
+      if (Array.isArray(data.playerColors)) {
+        localStorage.setItem(
+          "chess_player_colors",
+          JSON.stringify(data.playerColors),
+        );
+      }
       setTimeout(() => {
         setStart(true);
         dispatch({ type: actionTypes.START_TIMER });
@@ -291,10 +327,10 @@ const GamesListPage = ({ start, setStart }) => {
 
     const onPlayerReconnected = (data) => {
       setPlayersCount(data?.playersCount || 1);
-      if (
-        data?.playersCount >=
-        (localStorage.getItem("chess_variant") === "four_player_chess" ? 4 : 2)
-      ) {
+      const requiredPlayers = isFourPlayerGame()
+        ? getConfiguredPlayerColors().length
+        : 2;
+      if (data?.playersCount >= requiredPlayers) {
         setGameReady(true);
       } else {
         setGameReady(false);
@@ -315,7 +351,7 @@ const GamesListPage = ({ start, setStart }) => {
     const onPlayerTimedOut = (data) => {
       if (
         data?.loser &&
-        localStorage.getItem("chess_variant") === "four_player_chess"
+        isFourPlayerGame()
       ) {
         dispatch({
           type: actionTypes.TIME_UP,
@@ -363,6 +399,24 @@ const GamesListPage = ({ start, setStart }) => {
         if (data.initialState.gameMode) {
           localStorage.setItem("chess_variant", data.initialState.gameMode);
           localStorage.setItem("chess_mode", "multiplayer");
+        }
+        if (
+          data.initialState.rulesVariant === "four_player_chess" ||
+          data.initialState.rulesVariant === "custom_multiplayer"
+        ) {
+          localStorage.setItem(
+            "chess_rules_variant",
+            data.initialState.rulesVariant,
+          );
+          if (Array.isArray(data.initialState.playerColors)) {
+            localStorage.setItem(
+              "chess_player_colors",
+              JSON.stringify(data.initialState.playerColors),
+            );
+          }
+        } else {
+          localStorage.removeItem("chess_rules_variant");
+          localStorage.removeItem("chess_player_colors");
         }
         if (Array.isArray(data?.moves) && data.moves.length > 0) {
           data.moves.forEach((move) => {
@@ -451,8 +505,8 @@ const GamesListPage = ({ start, setStart }) => {
     };
   }, [socket, user, reduxDispatch, dispatch]);
 
-  const setGameState = (mode) => {
-    const state = getInitialStateByMode(mode);
+  const setGameState = (mode, rulesVariant = null, playerColors = null) => {
+    const state = getInitialStateByMode(mode, 8, rulesVariant);
     dispatch({
       type: actionTypes.RESET_GAME,
       payload: { initialState: { ...state, isVsBot: false } },
@@ -460,6 +514,27 @@ const GamesListPage = ({ start, setStart }) => {
     localStorage.setItem("gameMode", mode);
     localStorage.setItem("chess_variant", mode);
     localStorage.setItem("chess_mode", "multiplayer");
+    if (
+    mode === "four_player_chess" ||
+    rulesVariant === "four_player_chess" ||
+    rulesVariant === "custom_multiplayer"
+    ) {
+    localStorage.setItem(
+      "chess_rules_variant",
+      rulesVariant === "custom_multiplayer"
+        ? "custom_multiplayer"
+        : "four_player_chess",
+    );
+    if (Array.isArray(playerColors)) {
+      localStorage.setItem(
+        "chess_player_colors",
+        JSON.stringify(playerColors),
+      );
+    }
+    } else {
+    localStorage.removeItem("chess_rules_variant");
+    localStorage.removeItem("chess_player_colors");
+    }
   };
 
   const handleFindGame = () => setWindowMode("create");
@@ -482,14 +557,15 @@ const GamesListPage = ({ start, setStart }) => {
     }
     const initialState = getInitialStateByMode(
       room.gameMode,
-      room.whiteTime || null,
-      room.blackTime || null,
+      room.boardSize || 8,
+      room.rulesVariant,
     );
     socket.emit(
       "joinGame",
       room.roomId,
       {
         gameMode: room.gameMode,
+        rulesVariant: room.rulesVariant,
         password,
         initialState,
         userName: user?.name,
@@ -528,7 +604,7 @@ const GamesListPage = ({ start, setStart }) => {
             },
           });
         } else {
-          setGameState(room.gameMode);
+          setGameState(room.gameMode, room.rulesVariant, room.playerColors);
         }
         if (Array.isArray(response?.moves) && response.moves.length > 0) {
           response.moves.forEach((move) => {
@@ -555,10 +631,31 @@ const GamesListPage = ({ start, setStart }) => {
         localStorage.setItem("roomId", room.roomId);
         const joinedSide =
           response.side ||
-          (room.gameMode === "four_player_chess" ? "yellow" : "black");
+          (isFourPlayerGame(room.gameMode, room.rulesVariant)
+            ? room.playerColors?.[0] || "yellow"
+            : "black");
         localStorage.setItem("chess_side", joinedSide);
         dispatch({ type: actionTypes.SET_ORIENTATION, payload: joinedSide });
         localStorage.setItem("chess_variant", room.gameMode);
+        const joinedRulesVariant =
+          response.rulesVariant || room.rulesVariant;
+        if (
+          joinedRulesVariant === "four_player_chess" ||
+          joinedRulesVariant === "custom_multiplayer"
+        ) {
+          localStorage.setItem("chess_rules_variant", joinedRulesVariant);
+          const playerColors =
+            response.playerColors || room.playerColors;
+          if (Array.isArray(playerColors)) {
+            localStorage.setItem(
+              "chess_player_colors",
+              JSON.stringify(playerColors),
+            );
+          }
+        } else {
+          localStorage.removeItem("chess_rules_variant");
+          localStorage.removeItem("chess_player_colors");
+        }
         localStorage.setItem("chess_mode", "multiplayer");
       },
     );
@@ -584,6 +681,8 @@ const GamesListPage = ({ start, setStart }) => {
     localStorage.removeItem("roomId");
     localStorage.removeItem("gameMode");
     localStorage.removeItem("chess_side");
+    localStorage.removeItem("chess_rules_variant");
+    localStorage.removeItem("chess_player_colors");
     setStart(false);
     setPlayersCount(1);
     setGameReady(false);
@@ -727,7 +826,7 @@ const GamesListPage = ({ start, setStart }) => {
           <p>
             {gameReady
               ? `${t("header.game-player-ready")}`
-              : `${t("header.game-player-waiting")} (${playersCount}/${gameMode === "four_player_chess" ? 4 : 2})`}
+              : `${t("header.game-player-waiting")} (${playersCount}/${isFourPlayerGame() ? getConfiguredPlayerColors().length : 2})`}
           </p>
           <button onClick={handleExitGame}>{t("header.game-exit")}</button>
         </div>

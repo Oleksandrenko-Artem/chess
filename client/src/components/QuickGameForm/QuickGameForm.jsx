@@ -45,7 +45,10 @@ const MODE_LABELS = {
 const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
   const storedVariant = localStorage.getItem("chess_variant");
   const [gameMode, setGameMode] = useState(
-    storedVariant === "special" ? "custom" : storedVariant || "chess",
+    storedVariant && MODE_LABELS[storedVariant] &&
+      storedVariant !== "special" && storedVariant !== "custom"
+      ? storedVariant
+      : "chess",
   );
   const [type, setType] = useState("password");
   const [showPassword, setShowPassword] = useState(mdiEyeOutline);
@@ -191,6 +194,8 @@ const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
       "findQuickGame",
       {
         gameMode,
+        rulesVariant:
+          gameMode === "four_player_chess" ? "four_player_chess" : null,
         whiteTime: timeType,
         blackTime: timeType,
         userRating: user.rating,
@@ -207,6 +212,8 @@ const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
           roomId,
           {
             gameMode,
+            rulesVariant:
+              gameMode === "four_player_chess" ? "four_player_chess" : null,
             initialState: roomInitialState,
             userName: user.name,
             userAvatar: user.avatar,
@@ -252,6 +259,11 @@ const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
             localStorage.setItem("chess_side", joinResponse.side);
             localStorage.setItem("chess_mode", "multiplayer");
             localStorage.setItem("chess_variant", gameMode);
+            if (gameMode === "four_player_chess") {
+              localStorage.setItem("chess_rules_variant", "four_player_chess");
+            } else {
+              localStorage.removeItem("chess_rules_variant");
+            }
             localStorage.setItem("gameMode", gameMode);
             localStorage.setItem("roomId", roomId);
 
@@ -265,11 +277,10 @@ const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
     <div className={styles.wrapper}>
       <div>
         <h2>{t("header.find-room")}</h2>
-        {localStorage.getItem("chess_variant") !== "special" && (
-          <select
-            value={gameMode}
-            onChange={(e) => setGameMode(e.target.value)}
-          >
+        <select
+          value={gameMode}
+          onChange={(e) => setGameMode(e.target.value)}
+        >
             <option value="chess">{MODE_LABELS.chess}</option>
             <option value="shatranj">{MODE_LABELS.shatranj}</option>
             <option value="new_chess">{MODE_LABELS.new_chess}</option>
@@ -281,16 +292,7 @@ const QuickGameForm = ({ setWindowMode, setStart = () => {} }) => {
             <option value="four_player_chess">
               {MODE_LABELS.four_player_chess}
             </option>
-          </select>
-        )}
-        {localStorage.getItem("chess_variant") === "special" && (
-          <select
-            value={gameMode}
-            onChange={(e) => setGameMode(e.target.value)}
-          >
-            <option value="custom">{MODE_LABELS.custom}</option>
-          </select>
-        )}
+        </select>
         <select
           value={timeType}
           onChange={(e) => setTimeType(Number(e.target.value))}

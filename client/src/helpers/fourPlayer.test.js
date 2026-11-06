@@ -4,7 +4,10 @@ import {
   createFourPlayerPosition,
   FOUR_PLAYER_BOARD_SIZE,
   FOUR_PLAYER_COLORS,
+  PLAYER_COLORS,
   FOUR_PLAYER_NATIVE_PIECES,
+  getPlayerColorsInPosition,
+  getConfiguredPlayerColors,
   getFourPlayerDisplaySquare,
   getFourPlayerGameStatus,
   getFourPlayerPawnDoubleMove,
@@ -14,9 +17,82 @@ import {
   isPawnCaptureSquare,
   getNextFourPlayerTurn,
   migrateFourPlayerState,
+  isFourPlayerGame,
 } from "./fourPlayer.js";
 
 describe("four-player chess setup", () => {
+  it("keeps custom room names while preserving four-player rules separately", () => {
+    assert.equal(isFourPlayerGame("custom", "four_player_chess"), true);
+    assert.equal(isFourPlayerGame("custom", null), false);
+    assert.equal(isFourPlayerGame("four_player_chess", null), true);
+    assert.equal(isFourPlayerGame("custom", "custom_multiplayer"), true);
+  });
+
+  it("derives custom player seats from distinct king colors", () => {
+    const position = [
+      ["black_king", "", "blue_king"],
+      ["white_king", "", "red_king"],
+    ];
+
+    assert.deepEqual(getPlayerColorsInPosition(position), [
+      "white",
+      "black",
+      "blue",
+      "red",
+    ]);
+    assert.deepEqual(getConfiguredPlayerColors(position, "custom_multiplayer"), [
+      "white",
+      "black",
+      "blue",
+      "red",
+    ]);
+  });
+
+  it("supports positions with any configured number of distinct players", () => {
+    for (const count of [2, 3, 4, 5, 6]) {
+      const position = [PLAYER_COLORS.slice(0, count).map((color) => `${color}_king`)];
+      assert.equal(getPlayerColorsInPosition(position).length, count);
+    }
+  });
+
+  it("supports directional pawns for white and black in custom games", () => {
+    const position = Array.from({ length: 8 }, () => Array(8).fill(""));
+    position[6][2] = "white_pawn";
+    position[1][4] = "black_pawn";
+
+    assert.deepEqual(getFourPlayerPawnDoubleMove(position, "white", 6, 2), [
+      4,
+      2,
+    ]);
+    assert.deepEqual(getFourPlayerPawnDoubleMove(position, "black", 1, 4), [
+      3,
+      4,
+    ]);
+  });
+
+  it("promotes custom pawns at their assigned board edges", () => {
+    assert.equal(isFourPlayerPromotionSquare("white", 0, 3, 8, false), true);
+    assert.equal(isFourPlayerPromotionSquare("black", 7, 3, 8, false), true);
+    assert.equal(isFourPlayerPromotionSquare("blue", 3, 0, 8, false), true);
+    assert.equal(isFourPlayerPromotionSquare("red", 3, 7, 8, false), true);
+  });
+
+  it("cycles only configured seats and declares the last remaining king", () => {
+    const position = [["white_king", "yellow_king", "red_king"]];
+    const playerColors = ["white", "yellow", "red"];
+
+    assert.equal(
+      getNextFourPlayerTurn(position, "white", [], playerColors),
+      "yellow",
+    );
+    position[0][1] = "";
+    position[0][2] = "";
+    assert.equal(
+      getFourPlayerGameStatus(position, [], playerColors),
+      "white wins",
+    );
+  });
+
   it("puts each player's home edge at the bottom and reverses board coordinates", () => {
     const homeSquares = {
       yellow: [13, 6],

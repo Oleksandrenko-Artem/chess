@@ -48,7 +48,9 @@ const CreatePositionPage = () => {
         onSelectPiece={setSelectedPiece}
       />
       <div className={styles.wrapper}>
-        {roomWindow && <CreateRoomWindow setRoomWindow={setRoomWindow} />}
+        {roomWindow && (
+          <CreateRoomWindow setRoomWindow={setRoomWindow} fromEditor />
+        )}
         {!roomWindow && (
           <div className={styles["chess-wrapper"]}>
             <ChessBoard
