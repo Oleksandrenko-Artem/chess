@@ -114,8 +114,8 @@ const PromotionBox = ({ onClosePromotion }) => {
             castleDirection: newCastleDirection,
             gameVariant: "four_player_chess",
           });
-          if (legalMoves.length === 0) {
-            wasCheckmate ||= isInCheck;
+          if (isInCheck && legalMoves.length === 0) {
+            wasCheckmate = true;
             eliminatedColors = [...eliminatedColors, playerColor];
           }
         });

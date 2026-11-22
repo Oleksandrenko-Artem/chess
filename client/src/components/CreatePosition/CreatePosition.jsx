@@ -17,16 +17,47 @@ import { rgbStringToHex } from "../../utils/color";
 import { createSpecialPosition } from "../../helpers";
 import {
   FOUR_PLAYER_COLORS,
-  FOUR_PLAYER_NATIVE_PIECES,
   PLAYER_COLORS,
   getPlayerColorsInPosition,
-  hasFourPlayerKing,
 } from "../../helpers/fourPlayer";
 import { isSoundEnabled, setSoundEnabled } from "../../helpers/playMoveSound";
 import { imageMap } from '../../utils/chessIcons';
 import delete_icon from '../../assets/icons/other/delete.png';
 import actionTypes from "../../reducers/actionTypes";
 import styles from "./CreatePosition.module.scss";
+
+const EDITOR_PIECE_TYPES = {
+  standart: ["pawn", "horse", "bishop", "rook", "ferz", "king"],
+  old: [
+    "firzan",
+    "wazir",
+    "man",
+    "chariot",
+    "alfil",
+    "tank",
+    "alibaba",
+    "camel",
+    "zebra",
+    "lion",
+    "rhino",
+    "wildebeest",
+    "giraffe",
+    "rukh",
+    "archbishop",
+    "marshal",
+    "amazon",
+  ],
+  special: [
+    "elephant",
+    "advisor",
+    "knight",
+    "prince",
+    "duke",
+    "dinozavr",
+    "checkers",
+    "crown",
+  ],
+};
 
 const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
   const { appState, dispatch } = useAppContext();
@@ -752,23 +783,42 @@ const CreatePosition = ({ roomWindow, setRoomWindow, onSelectPiece }) => {
       {(isFourPlayer || !["white", "black"].includes(color)) &&
         !promotion && (
         <div className={styles["piece-list"]} onClick={handlePieceClick}>
-          <div>
-            {FOUR_PLAYER_NATIVE_PIECES.map((pieceType) => {
-              const piece = `${color}_${pieceType}`;
-              return (
-                <img
-                  key={piece}
-                  src={imageMap[piece]}
-                  alt={piece}
-                  draggable={editorMode}
-                  onDragStart={(e) =>
-                    e.dataTransfer.setData("text", `${piece},isNew`)
-                  }
-                  className={pieceType === "pawn" ? styles.pawn : undefined}
-                />
-              );
-            })}
-          </div>
+          {EDITOR_PIECE_TYPES[piecesStyle] ? (
+            <div>
+              {EDITOR_PIECE_TYPES[piecesStyle].map((pieceType) => {
+                const piece = `${color}_${pieceType}`;
+                return (
+                  <img
+                    key={piece}
+                    src={imageMap[piece]}
+                    alt={piece}
+                    draggable={editorMode}
+                    onDragStart={(e) =>
+                      e.dataTransfer.setData("text", `${piece},isNew`)
+                    }
+                    className={pieceType === "pawn" ? styles.pawn : undefined}
+                  />
+                );
+              })}
+            </div>
+          ) : (
+            <div>
+              <img
+                src={imageMap.brick}
+                alt="brick"
+                draggable={editorMode}
+                onDragStart={(e) =>
+                  e.dataTransfer.setData("text", `brick,isNew`)
+                }
+              />
+              <img
+                src={delete_icon}
+                alt="delete"
+                draggable={editorMode}
+                onDragStart={(e) => e.dataTransfer.setData("text", `,isNew`)}
+              />
+            </div>
+          )}
         </div>
       )}
       {!isFourPlayer &&

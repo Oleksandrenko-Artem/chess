@@ -684,8 +684,8 @@ const Pieces = ({
           castleDirection: appState.castleDirection,
           gameVariant: "four_player_chess",
         });
-        if (legalMoves.length === 0) {
-          wasCheckmate ||= isInCheck;
+        if (isInCheck && legalMoves.length === 0) {
+          wasCheckmate = true;
           eliminatedColors = [...eliminatedColors, color];
         }
       });
