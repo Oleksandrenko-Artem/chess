@@ -999,8 +999,11 @@ const arbiter = {
         );
         return filteredMoves;
     },
-    getGameStatus: function ({ position, playerColor, castleDirection, prevPosition, positionHistory = [] }) {
+    getGameStatus: function ({ position, playerColor, castleDirection, prevPosition, positionHistory = [], gameVariant }) {
         try {
+            const variant = gameVariant || (typeof localStorage !== 'undefined'
+                ? localStorage.getItem('chess_variant')
+                : null);
             const currentHash = generatePositionHash(position, playerColor, castleDirection);
 
             const repetitions = positionHistory.filter(hash => hash === currentHash).length;
@@ -1013,7 +1016,7 @@ const arbiter = {
                 return playerColor === 'white' ? status.black : status.white;
             }
 
-            const isInCheck = this.isKingInCheck({ position, playerColor });
+            const isInCheck = this.isKingInCheck({ position, playerColor, gameVariant: variant });
             let hasLegalMove = false;
             const boardSize = getBoardSize(position);
             for (let r = 0; r < boardSize; r++) {
@@ -1042,9 +1045,10 @@ const arbiter = {
                 }
                 if (hasLegalMove) break;
             }
-            const isShatranj = localStorage.getItem('chess_variant') === 'shatranj' || localStorage.getItem('chess_variant') === 'shatranj960';
-            const isCheckers = localStorage.getItem('chess_variant') === 'checkers_v2';
-            const isNewChess = localStorage.getItem('chess_variant') === 'new_chess' || localStorage.getItem('chess_variant') === 'new_chess960';
+            const isShatranj = variant === 'shatranj' || variant === 'shatranj960';
+            const isModernShatranj = variant === 'shatranj_modern';
+            const isCheckers = variant === 'checkers_v2';
+            const isNewChess = variant === 'new_chess' || variant === 'new_chess960';
 
             if (isCheckers && !this.hasCheckers({ position, playerColor })) {
                 return playerColor === 'white' ? status.black : status.white;
@@ -1055,7 +1059,7 @@ const arbiter = {
             }
 
             else if (!isInCheck && !hasLegalMove) {
-                if (isShatranj || isCheckers || isNewChess) {
+                if (isShatranj || isModernShatranj || isCheckers || isNewChess) {
                     return playerColor === 'white' ? status.black : status.white;
                 } else {
                     return status.draw;

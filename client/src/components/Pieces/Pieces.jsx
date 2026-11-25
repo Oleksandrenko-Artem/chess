@@ -954,7 +954,24 @@ const Pieces = ({
       gameVariant,
     });
 
-    if (allMoves.length === 0) return;
+    if (allMoves.length === 0) {
+      const gameStatus = arbiter.getGameStatus({
+        position: currentPosition,
+        playerColor: botColor,
+        castleDirection: appState.castleDirection,
+        prevPosition: prevPositionRef.current,
+        positionHistory,
+        gameVariant,
+      });
+
+      if (gameStatus !== status.ongoing) {
+        dispatch({
+          type: actionTypes.SET_STATUS,
+          payload: gameStatus,
+        });
+      }
+      return;
+    }
 
     const randomMove = allMoves[Math.floor(Math.random() * allMoves.length)];
 
