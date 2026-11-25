@@ -153,6 +153,24 @@ const arbiter = {
                                 }
                             });
                         }
+                    } else if (piece.endsWith('advisor')) {
+                        const advisorMoves = this.getRegularMoves({
+                            position,
+                            prevPosition,
+                            castleDirection: currentCastleDir,
+                            piece,
+                            rank: r,
+                            file: f,
+                        });
+                        advisorMoves.forEach(([tr, tf]) => {
+                            allMoves.push({
+                                piece,
+                                rank: r,
+                                file: f,
+                                targetRank: tr,
+                                targetFile: tf,
+                            });
+                        });
                     } else {
                         const attacks = this.getAttackSquares({ position, piece, rank: r, file: f });
                         attacks.forEach(([tr, tf]) => {
