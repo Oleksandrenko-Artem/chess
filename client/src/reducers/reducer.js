@@ -17,6 +17,12 @@ export const reducer = (state, action) => {
         case actionTypes.PROMOTION_MOVE: {
             const isPromotion = action.type === actionTypes.PROMOTION_MOVE;
             let { playerTurn, position, movesList, castleDirection, status: gameStatus, captured, lastMove, timerActive, halfmoveClock = 0 } = state;
+            let castleDirectionHistory = [
+                ...(state.castleDirectionHistory || Array(position.length).fill(castleDirection)),
+            ];
+            let lastMoveHistory = [
+                ...(state.lastMoveHistory || Array(position.length).fill(null)),
+            ];
             const isFourPlayer = isFourPlayerGame();
             const previousPosition = position[position.length - 1];
             gameStatus = action.payload.gameStatus || status.ongoing;
@@ -27,6 +33,8 @@ export const reducer = (state, action) => {
                 ...position,
                 action.payload.newPosition
             ];
+            castleDirectionHistory.push(action.payload.castleDirection || castleDirection);
+            lastMoveHistory.push(action.payload.lastMove || null);
             movesList = [
                 ...movesList,
                 action.payload.newMove
@@ -104,6 +112,8 @@ export const reducer = (state, action) => {
                 selected: null,
                 promotionSquare: isPromotion ? null : state.promotionSquare,
                 castleDirection,
+                castleDirectionHistory,
+                lastMoveHistory,
                 captured,
                 halfmoveClock,
                 lastMove,
@@ -187,6 +197,8 @@ export const reducer = (state, action) => {
                     black: [],
                 },
                 halfmoveClock: 0,
+                castleDirectionHistory: [{ white: 'both', black: 'both' }],
+                lastMoveHistory: [null],
             };
         case actionTypes.TOGGLE_ORIENTATION: {
             const playerColors = isFourPlayerGame()
@@ -250,6 +262,14 @@ export const reducer = (state, action) => {
                 return {
                     ...state,
                     position: [...state.position, position],
+                    castleDirectionHistory: [
+                        ...(state.castleDirectionHistory || Array(state.position.length).fill(state.castleDirection)),
+                        state.castleDirection,
+                    ],
+                    lastMoveHistory: [
+                        ...(state.lastMoveHistory || Array(state.position.length).fill(null)),
+                        null,
+                    ],
                     eliminatedColors,
                     playerTurn: nextPlayer,
                     status: gameStatus,

@@ -58,6 +58,7 @@ import NewVariantChess960Page from "./pages/NewVariantChess960Page";
 import AchievementsPage from "./pages/AchievementsPage";
 import CollectionsPage from "./pages/CollectionsPage";
 import ModernShatranjPage from "./pages/ModernShatranjPage";
+import AnalysisPage from "./pages/AnalysisPage";
 
 function App() {
   const dispathUser = useDispatch();
@@ -258,7 +259,7 @@ function App() {
 
   useEffect(() => {
     const serverUrl =
-      "https://49e6c008279d4c11-95-47-113-29.serveousercontent.com";
+      "https://92cf6624f54e7010-87-244-190-9.serveousercontent.com";
     const newSocket = io(serverUrl, {
       transports: ["websocket", "polling"],
       autoConnect: true,
@@ -608,6 +609,9 @@ function App() {
           )}
           {user && (
             <Route path="/achievements" element={<AchievementsPage />} />
+          )}
+          {user && (
+            <Route path="/analysis" element={<AnalysisPage />} />
           )}
           {user && <Route path="/collections" element={<CollectionsPage />} />}
           <Route path="*" element={<NotFoundPage />} />

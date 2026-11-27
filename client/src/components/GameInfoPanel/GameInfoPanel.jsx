@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppContext } from "../../contexts/Context";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import {
   BOARD_STYLES,
   initialCheckersGameState,
@@ -34,6 +35,7 @@ const GameInfoPanel = (props) => {
   );
   const [soundEnabled, setSoundEnabledState] = useState(isSoundEnabled());
   const reduxDispatch = useDispatch();
+  const navigate = useNavigate();
   const user = useSelector((state) => state.users.user);
   const { t } = useTranslation();
   const [boardStyle, setBoardStyle] = useState(
@@ -491,6 +493,29 @@ const GameInfoPanel = (props) => {
             </div>
             <Timer />
             <div className={styles["buttons-div"]}>
+              {user?._id &&
+                status !== statusMap.ongoing &&
+                status !== statusMap.promotion && (
+                  <button
+                    onClick={() =>
+                      navigate("/analysis", {
+                        state: {
+                          positions: appState.position,
+                          moves: appState.movesList,
+                          lastMoves: appState.lastMoveHistory,
+                          castleDirections: appState.castleDirectionHistory,
+                          castleDirection: appState.castleDirection,
+                          gameVariant: localStorage.getItem("chess_variant"),
+                          playerColor:
+                            localStorage.getItem("chess_side") ||
+                            appState.orientation,
+                        },
+                      })
+                    }
+                  >
+                    {t("game_info_panel.analysis")}
+                  </button>
+                )}
               <h3>{t("style_panel.board_style")}</h3>
               <select value={boardStyle} onChange={handleBoardStyleChange}>
                 <option value="standart">{t("style_panel.standart")}</option>

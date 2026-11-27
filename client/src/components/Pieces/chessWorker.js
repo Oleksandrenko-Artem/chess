@@ -1,6 +1,7 @@
 import { PIECE_VALUES } from "../../constants";
 import arbiter from "./../../arbiter/arbiter";
 import { generatePositionHash } from "../../helpers";
+import { getLastMove } from "../../helpers/getLastMove";
 
 const PAWN_POSITION_TABLE = [
     [0, 0, 0, 0, 0, 0, 0, 0],
@@ -335,7 +336,17 @@ const getCaptureMoves = (position, moves, playerColor) => {
     });
 };
 
-const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant, qDepth = 0) => {
+const quiescence = (
+    position,
+    isMaximizing,
+    alpha,
+    beta,
+    castleDirection,
+    prevPosition,
+    gameVariant,
+    qDepth = 0,
+    searchOptions = null,
+) => {
     const playerColor = isMaximizing ? "white" : "black";
     const tableKey = getTableKey(position, 0, isMaximizing, castleDirection, gameVariant, qDepth);
     const cached = transpositionTable.get(tableKey);
@@ -344,7 +355,7 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
     }
 
     const standPat = evaluatePosition(position, gameVariant);
-    if (qDepth >= 5) {
+    if (qDepth >= (searchOptions?.quiescenceDepth ?? 5)) {
         transpositionTable.set(tableKey, standPat);
         return standPat;
     }
@@ -368,7 +379,7 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
             }),
             playerColor
         )
-    ).slice(0, MAX_QUIESCENCE_MOVES);
+    ).slice(0, searchOptions?.quiescenceMoves ?? MAX_QUIESCENCE_MOVES);
 
     if (captureMoves.length === 0) {
         transpositionTable.set(tableKey, standPat);
@@ -388,7 +399,8 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
                 castleDirection,
                 position,
                 gameVariant,
-                qDepth + 1
+                qDepth + 1,
+                searchOptions,
             );
             unmakeMoveOnBoard(position, move, piece, moveState);
 
@@ -403,7 +415,17 @@ const quiescence = (position, isMaximizing, alpha, beta, castleDirection, prevPo
     for (const move of captureMoves) {
         const piece = position[move.rank][move.file];
         const moveState = makeMoveOnBoard(position, move);
-        const evalScore = quiescence(position, true, alpha, beta, castleDirection, position, gameVariant);
+        const evalScore = quiescence(
+            position,
+            true,
+            alpha,
+            beta,
+            castleDirection,
+            position,
+            gameVariant,
+            qDepth + 1,
+            searchOptions,
+        );
         unmakeMoveOnBoard(position, move, piece, moveState);
 
         minEval = Math.min(minEval, evalScore);
@@ -424,8 +446,21 @@ const minimax = (
     castleDirection,
     prevPosition,
     gameVariant,
+    searchOptions = null,
 ) => {
-    if (depth === 0) return quiescence(position, isMaximizing, alpha, beta, castleDirection, prevPosition, gameVariant);
+    if (depth === 0) {
+        return quiescence(
+            position,
+            isMaximizing,
+            alpha,
+            beta,
+            castleDirection,
+            prevPosition,
+            gameVariant,
+            0,
+            searchOptions,
+        );
+    }
 
     const playerColor = isMaximizing ? "white" : "black";
     const tableKey = getTableKey(position, depth, isMaximizing, castleDirection, gameVariant);
@@ -476,13 +511,26 @@ const minimax = (
     const orderedMoves = [...captureMoves, ...quietMoves]
         .slice()
         .sort((a, b) => getMovePriority(position, b) - getMovePriority(position, a))
+    const searchMoves = searchOptions?.maxMoves
+        ? orderedMoves.slice(0, searchOptions.maxMoves)
+        : orderedMoves;
 
     if (isMaximizing) {
         let maxEval = -Infinity;
-        for (const move of orderedMoves) {
+        for (const move of searchMoves) {
             const piece = position[move.rank][move.file];
             const captured = makeMoveOnBoard(position, move);
-            const evalScore = minimax(position, depth - 1, false, alpha, beta, castleDirection, position, gameVariant);
+            const evalScore = minimax(
+                position,
+                depth - 1,
+                false,
+                alpha,
+                beta,
+                castleDirection,
+                position,
+                gameVariant,
+                searchOptions,
+            );
             unmakeMoveOnBoard(position, move, piece, captured);
 
             maxEval = Math.max(maxEval, evalScore);
@@ -492,10 +540,20 @@ const minimax = (
         return maxEval;
     } else {
         let minEval = Infinity;
-        for (const move of orderedMoves) {
+        for (const move of searchMoves) {
             const piece = position[move.rank][move.file];
             const captured = makeMoveOnBoard(position, move);
-            const evalScore = minimax(position, depth - 1, true, alpha, beta, castleDirection, position, gameVariant);
+            const evalScore = minimax(
+                position,
+                depth - 1,
+                true,
+                alpha,
+                beta,
+                castleDirection,
+                position,
+                gameVariant,
+                searchOptions,
+            );
             unmakeMoveOnBoard(position, move, piece, captured);
 
             minEval = Math.min(minEval, evalScore);
@@ -508,8 +566,244 @@ const minimax = (
     }
 };
 
-self.onmessage = (e) => {
+const getPlayerColor = (move, previousPosition, lastMove) => {
+    if (move?.color === "white" || move?.color === "black") return move.color;
+
+    const piece = previousPosition?.[lastMove?.fromRank]?.[lastMove?.fromFile];
+    const color = piece?.split("_")[0];
+    return color === "white" || color === "black" ? color : null;
+};
+
+const isSacrificedPiece = (position, move, playerColor, castleDirection) => {
+    const piece = position[move.rank]?.[move.file];
+    const pieceType = piece?.replace(/^(white|black)_/, "");
+    if (!pieceType || pieceType === "pawn" || pieceType === "soldier") {
+        return false;
+    }
+
+    const pieceValue = PIECE_VALUES[pieceType] || 0;
+    if (pieceValue < 300) return false;
+
+    const moveState = makeMoveOnBoard(position, move);
+    const opponentColor = playerColor === "white" ? "black" : "white";
+    const opponentMoves = arbiter.getBoardValidMoves({
+        position,
+        playerColor: opponentColor,
+        castleDirection,
+        prevPosition: position,
+    });
+    const canBeCaptured = opponentMoves.some(
+        (opponentMove) =>
+            opponentMove.targetRank === move.targetRank &&
+            opponentMove.targetFile === move.targetFile &&
+            isCaptureMove(position, opponentMove) &&
+            isMoveLegal(position, opponentMove, opponentColor),
+    );
+    unmakeMoveOnBoard(position, move, piece, moveState);
+
+    return canBeCaptured;
+};
+
+const getMoveAnalysis = ({
+    position,
+    prevPosition,
+    playerTurn,
+    castleDirection,
+    gameVariant,
+    depth,
+    lastMove,
+}) => {
+    if (!lastMove) return null;
+
+    const moves = arbiter.getBoardValidMoves({
+        position,
+        prevPosition,
+        playerColor: playerTurn,
+        castleDirection,
+        gameVariant,
+    });
+    const legalMoves = moves.filter((move) => {
+        const piece = position[move.rank]?.[move.file];
+        if (!piece) return false;
+        const captured = position[move.targetRank]?.[move.targetFile];
+        position[move.targetRank][move.targetFile] = piece;
+        position[move.rank][move.file] = "";
+        const isCheck = arbiter.isKingInCheck({ position, playerColor: playerTurn });
+        position[move.rank][move.file] = piece;
+        position[move.targetRank][move.targetFile] = captured;
+        return !isCheck;
+    });
+
+    const scoredMoves = [];
+    const isNextMaximizing = playerTurn === "black";
+    const searchOptions =
+        depth > 2
+            ? {
+                rootMoves: 6,
+                maxMoves: 4,
+                quiescenceDepth: 1,
+                quiescenceMoves: 4,
+            }
+            : null;
+    const orderedMoves = legalMoves
+        .slice()
+        .sort(
+            (a, b) =>
+                getMovePriority(position, b) - getMovePriority(position, a),
+        );
+    const candidateMoves = searchOptions
+        ? orderedMoves.slice(0, searchOptions.rootMoves)
+        : orderedMoves;
+    const playedMove = legalMoves.find(
+        (move) =>
+            move.rank === lastMove.fromRank &&
+            move.file === lastMove.fromFile &&
+            move.targetRank === lastMove.toRank &&
+            move.targetFile === lastMove.toFile,
+    );
+    if (playedMove && !candidateMoves.includes(playedMove)) {
+        candidateMoves.push(playedMove);
+    }
+
+    for (const move of candidateMoves) {
+        const piece = position[move.rank][move.file];
+        const moveState = makeMoveOnBoard(position, move);
+        const score = minimax(
+            position,
+            depth - 1,
+            isNextMaximizing,
+            -Infinity,
+            Infinity,
+            castleDirection,
+            position,
+            gameVariant,
+            searchOptions,
+        );
+        unmakeMoveOnBoard(position, move, piece, moveState);
+        scoredMoves.push({ move, score });
+    }
+
+    const orderedScores = scoredMoves.sort((a, b) =>
+        playerTurn === "white" ? b.score - a.score : a.score - b.score,
+    );
+    const bestScore = orderedScores[0]?.score;
+    const secondBestScore = orderedScores[1]?.score;
+    const playedResult = scoredMoves.find(
+        ({ move }) =>
+            move.rank === lastMove.fromRank &&
+            move.file === lastMove.fromFile &&
+            move.targetRank === lastMove.toRank &&
+            move.targetFile === lastMove.toFile,
+    );
+    if (!playedResult || !Number.isFinite(bestScore)) return null;
+
+    const moveLoss = Math.max(
+        0,
+        playerTurn === "white"
+            ? bestScore - playedResult.score
+            : playedResult.score - bestScore,
+    );
+    const playerAdvantage =
+        playerTurn === "white" ? playedResult.score : -playedResult.score;
+    const bestPlayerScore =
+        playerTurn === "white" ? bestScore : -bestScore;
+    const secondBestPlayerScore = Number.isFinite(secondBestScore)
+        ? playerTurn === "white"
+            ? secondBestScore
+            : -secondBestScore
+        : -Infinity;
+    const bestMoveGap = Number.isFinite(secondBestScore)
+        ? playerTurn === "white"
+            ? bestScore - secondBestScore
+            : secondBestScore - bestScore
+        : Infinity;
+    const uniqueBest =
+        moveLoss <= 10 &&
+        bestMoveGap >= 500 &&
+        bestPlayerScore >= 0 &&
+        secondBestPlayerScore <= -300;
+    const previousAdvantage =
+        playerTurn === "white"
+            ? evaluatePosition(position, gameVariant)
+            : -evaluatePosition(position, gameVariant);
+
+    return {
+        moveLoss,
+        evaluationChange: playerAdvantage - previousAdvantage,
+        bestMove: {
+            fromRank: orderedScores[0].move.rank,
+            fromFile: orderedScores[0].move.file,
+            toRank: orderedScores[0].move.targetRank,
+            toFile: orderedScores[0].move.targetFile,
+        },
+        uniqueBest,
+        isSacrifice:
+            uniqueBest &&
+            playerAdvantage >= 500 &&
+            isSacrificedPiece(position, playedResult.move, playerTurn, castleDirection),
+        missedChance:
+            moveLoss >= 300 &&
+            bestPlayerScore >= 500 &&
+            playerAdvantage <= 0,
+    };
+};
+
+self.onmessage = async (e) => {
     transpositionTable.clear();
+
+    if (e.data.type === "analyze-game") {
+        const {
+            positions,
+            moves,
+            lastMoves,
+            castleDirections,
+            castleDirection,
+            gameVariant,
+            depth = 2,
+        } = e.data;
+        const results = [];
+
+        for (let index = 0; index < moves.length; index += 1) {
+            const previousPosition = positions[index];
+            const lastMove =
+                lastMoves?.[index + 1] ||
+                getLastMove(
+                    previousPosition,
+                    positions[index + 1],
+                    moves[index]?.color,
+                );
+            const playerTurn = getPlayerColor(
+                moves[index],
+                previousPosition,
+                lastMove,
+            );
+            transpositionTable.clear();
+            const moveAnalysis = playerTurn && previousPosition
+                ? getMoveAnalysis({
+                    position: previousPosition.map((row) => [...row]),
+                    prevPosition: positions[index - 1] || null,
+                    playerTurn,
+                    castleDirection:
+                        castleDirections?.[index] || castleDirection,
+                    gameVariant,
+                    depth,
+                    lastMove,
+                })
+                : null;
+
+            results.push({ index, ...moveAnalysis });
+            self.postMessage({
+                type: "analysis-progress",
+                completed: index + 1,
+                total: moves.length,
+                result: results[index],
+            });
+            await new Promise((resolve) => setTimeout(resolve, 0));
+        }
+
+        self.postMessage({ type: "analysis-result", results });
+        return;
+    }
 
     const { currentPosition, prevPosition, playerTurn, castleDirection, depth, gameVariant } = e.data;
 

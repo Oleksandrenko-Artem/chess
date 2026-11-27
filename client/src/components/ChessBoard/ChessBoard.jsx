@@ -402,7 +402,6 @@ const ChessBoard = (props) => {
         <div className={styles["chess-div"]}>
           <div
             className={styles["board-wrapper"]}
-            style={{ position: "relative", width: "100%", height: "100%" }}
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onContextMenu={(e) => e.preventDefault()}
@@ -485,14 +484,13 @@ const ChessBoard = (props) => {
                     x2={endPt.x}
                     y2={endPt.y}
                     stroke={arrowColor}
-                    strokeWidth="5"
+                    strokeWidth="8"
                     markerEnd="url(#arrowhead)"
                   />
                 );
               })}
             </svg>
           </div>
-
           <div className={styles["promotion-div"]}>
             <Promotion />
           </div>

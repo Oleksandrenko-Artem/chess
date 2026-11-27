@@ -112,6 +112,11 @@
       @extend %flex-column;
       width: $containerWidth;
       position: relative;
+      .board-wrapper {
+        position: relative;
+        width: $containerWidth;
+        height: $containerWidth;
+      }
       .chess-board {
         display: grid;
         position: relative;

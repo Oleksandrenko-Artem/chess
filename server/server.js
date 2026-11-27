@@ -11,8 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: [
-            "https://833ac8c770793cf0-95-47-113-29.serveousercontent.com",
-            "https://49e6c008279d4c11-95-47-113-29.serveousercontent.com",
+            "https://0d6d73f60be03592-87-244-190-9.serveousercontent.com",
+            "https://92cf6624f54e7010-87-244-190-9.serveousercontent.com",
             "http://localhost:5173",
             "http://localhost:5174",
             "http://localhost:5175",
